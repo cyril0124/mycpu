@@ -1,0 +1,2 @@
+/home/cyril/workspace/riscv/mycpu/test/rv32i/build
+xori.log
