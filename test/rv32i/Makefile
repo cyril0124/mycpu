@@ -10,7 +10,7 @@ BUILD_DIR := $(PRJ_DIR)/build
 SRC_DIR := ${PRJ_DIR}/src
 CFG_FILE := cfg.txt
 
-# configure test program
+# configure test program for single test(test)
 prog := add
 
 CC := riscv32-unknown-elf-gcc
@@ -24,19 +24,20 @@ LSTO := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%.o.lst}
 LST := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%.lst}
 LOGS := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%.log}
 
-default: build
+PROG := ${SRCS:${SRC_DIR}/%.s=%} # all of the test case in this directory
 
-test: build objdump qemu-sim
-# 	generate disassemble read result
-	python3 ${SCRIPT_DIR}/disassemble_read/main.py ${BUILD_DIR}/${prog}.o.lst ${SCRIPT_DIR}/disassemble_read/out
-# 	load instruction to mycpu's instruction memory
-	mv ${TOP_PRJ_DIR}/src/main/resources/Imem.hex.txt ${TOP_PRJ_DIR}/src/main/resources/Imem.hex.txt.bak
-	cp ${SCRIPT_DIR}/disassemble_read/out ${TOP_PRJ_DIR}/src/main/resources/Imem.hex.txt
+default: test-all
+
+test-all: build objdump qemu-sim json_config_init 
+	$(foreach p,$(PROG), cd ${TOP_PRJ_DIR}/test; python3 ${SCRIPT_DIR}/json_config/main.py -a ${p}.log ${BUILD_DIR} 42)
+# 	run test
+	- cd ${TOP_PRJ_DIR}; mill -j 8 ${mill_mod}.test.testOnly ${PACKAGE}.${mod}Test | tee "${TOP_BUILD_DIR}/${mod}Test.log"
+	- cp ${TOP_BUILD_DIR}/${mod}Test.log ${TOP_PRJ_DIR}/temp
+	- cp ${shell find ${TOP_PRJ_DIR}/test_run_dir -name '${mod}.vcd'} ${TOP_PRJ_DIR}/temp
+
+test: build objdump qemu-sim json_config_init
 # 	set test case configuration file for MyCpuTest.scala to read
-	- rm ${CFG_FILE}
-	- touch ${CFG_FILE}
-	- echo ${BUILD_DIR} >> ${CFG_FILE}
-	- echo "${prog}.log" >> ${CFG_FILE}
+	- cd ${TOP_PRJ_DIR}/test; python3 ${SCRIPT_DIR}/json_config/main.py -a ${prog}.log ${BUILD_DIR} 42
 # 	run test
 	- cd ${TOP_PRJ_DIR}; mill -j 8 ${mill_mod}.test.testOnly ${PACKAGE}.${mod}Test | tee "${TOP_BUILD_DIR}/${mod}Test.log"
 	- cp ${TOP_BUILD_DIR}/${mod}Test.log ${TOP_PRJ_DIR}/temp
@@ -48,6 +49,8 @@ objdump: ${LST} ${LSTO}
 
 qemu-sim: ${LOGS}
 
+json_config_init:
+	cd ${TOP_PRJ_DIR}/test; python3 ${SCRIPT_DIR}/json_config/main.py -i 
 
 
 ${LOGS}: ${TARGET}
@@ -70,4 +73,4 @@ $(OBJS): $(SRCS)
 clean:
 	rm -rf ${BUILD_DIR}/*
 
-.PHONY: clean objdump build test qemu-sim test
+.PHONY: clean objdump build test qemu-sim test json_config_init test-all

@@ -25,7 +25,7 @@ def main():
                 if(len(strr[2]) != 8):
                     continue
                 num = num + 1
-                print(strr[2]+' '+str(num))
+                # print(strr[2]+' '+str(num))
                 for i in range(1,5):
                     byte = strr[2][8-i*2:8-2*(i-1)]
                     print(byte,file=wf)

@@ -31,6 +31,13 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   })
 
   val regs = Reg(Vec(rfSets,gen))
+  when(reset.asBool) {
+    regs.zipWithIndex.foreach { case (r,i) =>
+      r := 0.U
+      if(i ==  2) 
+        r := "h407ffc80".U // qemu-riscv32 will set this reg to this val before start the whole grogram
+    }
+  }
   regs(0) := 0.U
   assert(regs(0).asUInt === 0.U, "zero reg must be 0 !")
   
@@ -47,7 +54,6 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
     regs(io.w(0).addr) := io.w(0).data
   }
 
-  // io.envOut <> DontCare
   io.envOut(0) := regs(RegStrtoNum("a7"))
   io.envOut(1) := regs(RegStrtoNum("a6"))
   io.envOut(2) := regs(RegStrtoNum("a0"))
@@ -120,7 +126,9 @@ object RegPrint {
 
 object RegFileGenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
-        case MyCpuParamsKey => MyCpuParameters()
+        case MyCpuParamsKey => MyCpuParameters(
+          enableDebug = false
+        )
     })
 
     println("Generating the RegFile hardware")

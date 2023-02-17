@@ -18,7 +18,7 @@ abstract trait DecodeConstants
         //                                          memWrEn   memRdEn    memType                       immSrc immSign
         //                     isBranch?  resultSrc   |         |           |      aluOpSel  aluSrc       |     |     regWrEn
         //                          |       |         |         |           |         |         |         |     |       |
-        bitPatList2UIntList(List(   N, RET_SRC_A, MEM_WR_N, MEM_RD_Y, MEM_TYP_32, ALU_XXX, ALU_SRC_A, IMM_X, IMM_SE, REG_WR_N))
+        bitPatList2UIntList(List(   N, RET_SRC_A, MEM_WR_N, MEM_RD_N, MEM_TYP_32, ALU_XXX, ALU_SRC_A, IMM_X, IMM_SE, REG_WR_N))
 
     val table: Array[(BitPat, List[UInt])]
 }
@@ -102,6 +102,7 @@ class Decoder()(implicit val p: Parameters) extends MyModule {
     val defaultDecodeTable = XDecode.decodeDefault
 
     val decodeSigs = ListLookup(io.inst, defaultDecodeTable, decodeTable)
+    // decodeSigs :=   WireInit(0.U.asTypeOf(io.out))
 
     // TODO： expression ERROR
     // val (pcSrc: Bool) :: (resultSrc: Bool) :: (memWrEn: Bool) :: (memRdEn: Bool) :: memType :: aluOpSel :: (aluSrc: Bool) :: immSrc :: (immSign: Bool) :: (regWrEn: Bool) :: Nil = ctrlSigs

@@ -33,6 +33,7 @@ class CtrlSigs(aluOpWidth:Int = 4) extends Bundle {
 }
 
 class CtrlPort(ilen:Int = 32) extends Bundle {
+    val start = Input(Bool())
     val inst = Input(UInt(ilen.W))
     val zero = Input(Bool())
 }
@@ -68,7 +69,7 @@ class CtrlUnit()(implicit val p: Parameters) extends MyModule {
 
     val decoder = Module(new Decoder())
     val dout = decoder.io.out
-    decoder.io.inst := io.in.inst
+    decoder.io.inst := Mux(io.in.start, io.in.inst, 0.U)
 
     // out.pcSrc := Mux(dout.isBranch.asBool, Mux(io.in.zero, PC_NT, PC_N4), PC_N4)
     out.isBranch := dout.isBranch

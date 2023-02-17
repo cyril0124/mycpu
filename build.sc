@@ -56,7 +56,7 @@ object MyCPU extends SbtModule with ScalafmtModule with CommonModule {
   override def ivyDeps = super.ivyDeps() ++ Agg(
     getVersion("chisel3"),
     getVersion("chiseltest"),
-  )
+  ) ++ Agg(ivy"com.lihaoyi::upickle:3.0.0-M1") // ujson lib
   
   // object RegFileTest extends Tests {
 

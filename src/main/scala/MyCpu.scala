@@ -58,6 +58,7 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     val isJump = ctrlUnit.io.out.isJump
     val ecall = ctrlUnit.io.out.ecall
     val ebreak = ctrlUnit.io.out.ebreak
+    ctrlUnit.io.in.start := io.start
     ctrlUnit.io.in.zero := aluZero
     ctrlUnit.io.in.inst := inst
 
