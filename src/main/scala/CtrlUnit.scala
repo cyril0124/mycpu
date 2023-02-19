@@ -35,7 +35,7 @@ class CtrlSigs(aluOpWidth:Int = 4) extends Bundle {
 class CtrlPort(ilen:Int = 32) extends Bundle {
     val start = Input(Bool())
     val inst = Input(UInt(ilen.W))
-    val zero = Input(Bool())
+    // val zero = Input(Bool())
 }
 
 
