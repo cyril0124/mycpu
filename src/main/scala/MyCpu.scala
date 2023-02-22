@@ -26,7 +26,6 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
         val envOut = ValidIO(new EnvInfo)
         val cpuState = new CpuState
     })
-    // io <> DontCare
 
     val pcReg = RegInit(startAddr.U(addrWidth.W))
     val pcNext4 = WireInit((startAddr).U(addrWidth.W))
@@ -59,7 +58,7 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     val ecall = ctrlUnit.io.out.ecall
     val ebreak = ctrlUnit.io.out.ebreak
     ctrlUnit.io.in.start := io.start
-    ctrlUnit.io.in.zero := aluZero
+    // ctrlUnit.io.in.zero := aluZero
     ctrlUnit.io.in.inst := inst
 
     val instMem = Module(new IMem())
@@ -83,7 +82,8 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
         w.addr := regFileWrAddr(i)
     }
     // regFileWrData(0) := DontCare
-    val regFileEnvOut = regFile.io.envOut //  a7: SBI extension ID   a6: SBI function ID   a0: return error code  a1: return value 
+    val rfState = regFile.io.state.get.regState
+    val regFileEnvOut =  VecInit(Seq(rfState(RegStrtoNum("a7")), rfState(RegStrtoNum("a6")), rfState(RegStrtoNum("a0")), rfState(RegStrtoNum("a1"))))//  a7: SBI extension ID   a6: SBI function ID   a0: return error code  a1: return value 
     
     val alu = Module(new Alu())
     val aluOut = alu.io.out
@@ -103,7 +103,12 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     dataMem.io.write.dataType := memType
     dataMem.io.write.data := regFileRdData(1)
 
-    regFileWrData(0) := Mux(isJump, pcNext4, Mux(resultSrc, dataMemRdData, aluOut))
+    // regFileWrData(0) := Mux(isJump, pcNext4, Mux(resultSrc, dataMemRdData, aluOut))
+    regFileWrData(0) := MuxLookup(resultSrc, dataMemRdData, Seq(
+                            "b00".U -> aluOut,
+                            "b01".U -> dataMemRdData,
+                            "b10".U -> pcNext4
+                        ))
 
     val immGen = Module(new ImmGen())
     immGen.io.inst := inst
@@ -112,15 +117,8 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     imm := immGen.io.imm
     
     pcNext4 := pcReg + 4.U
-    pcTarget := Mux(pcAddReg, aluOut, imm)
-
-    val BTA = Mux(immSign, (pcReg.asSInt + pcTarget.asSInt).asUInt ,pcReg + pcTarget)
-    val JTA = Mux(immSign, (pcReg.asSInt + pcTarget.asSInt).asUInt ,pcReg + pcTarget)
-    pcNext := Mux(
-                    isBranch, 
-                    Mux(aluZero, BTA, pcNext4), 
-                    Mux(isJump,  JTA, pcNext4) // unconditional jump
-                )
+    pcTarget := Mux(pcAddReg, aluOut, Mux(immSign, (pcReg.asSInt + imm.asSInt).asUInt, pcReg + imm))
+    pcNext := Mux((isBranch && aluZero) || isJump, pcTarget, pcNext4)
 
     val envStop = ecall | ebreak
     val isEcall = ecall === true.B
@@ -147,21 +145,14 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
         }
     }
     
-    if(enableDebug){
-        val regStatus = WireInit(VecInit(Array.fill(rfSets)(0.U(xlen.W))))
-        BoringUtils.addSink(regStatus,"regStatus")
-        io.cpuState.intRegState.zip(regStatus).foreach{
-            case (sink, source) => sink := source
-        }
+    if(enableDebug & rfStateOut) {
         io.cpuState.inst := instMem.io.inst
-        io.cpuState.instCommit := RegNext(clock.asBool) // for singlecycle every clock commits a instruction
+        io.cpuState.instCommit := RegNext(clock.asBool)
         io.cpuState.pc := pcReg
-        // printf(cf"cpuState = ${io.cpuState}\n")
-        dontTouch(io.cpuState)
+        io.cpuState.intRegState.zip(regFile.io.state.get.regState).foreach { case(s, r) => s := r }
     }else{
         io.cpuState <> DontCare
     }
-
 
 
     // TODO: Merge Difftest into this project or Using Spike as reference model for the use of comparing every single result of instruction execution(e.g. reg info...)

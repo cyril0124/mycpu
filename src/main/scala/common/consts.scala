@@ -13,9 +13,10 @@ trait ScalarOpConstants {
     val Y = BitPat("b1")
     val N = BitPat("b0")
 
-    val RET_SRC_A = BitPat("b0")
-    val RET_SRC_B = BitPat("b1")
-    val RET_SRC_X = BitPat("b0")
+    val RET_SRC_A = BitPat("b00")
+    val RET_SRC_B = BitPat("b01")
+    val RET_SRC_C = BitPat("b10")
+    val RET_SRC_X = BitPat("b00")
 
     val MEM_WR_N = BitPat("b0")
     val MEM_WR_Y = BitPat("b1")

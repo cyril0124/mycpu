@@ -55,6 +55,7 @@ trait HasMyCpuParameters {
     val rfRdPort = myCpuParams.rfRdPort
     val rfWrPort = myCpuParams.rfWrPort
     val rfDebug = myCpuParams.rfDebug
+    val rfStateOut = myCpuParams.rfStateOut
     
 }
 
@@ -82,6 +83,7 @@ case class MyCpuParameters
     rfRdPort: Int = 2,
     rfWrPort: Int = 1,
     rfDebug: Boolean = false,
+    rfStateOut: Boolean = true,
 
 )
 {

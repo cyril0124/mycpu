@@ -1,0 +1,80 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Wed Feb 22 13:59:44 2023
+[*]
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/temp/Core.vcd"
+[dumpfile_mtime] "Wed Feb 22 13:58:53 2023"
+[dumpfile_size] 271201
+[savefile] "/home/cyril/workspace/riscv/mycpu/temp/Core.gtkw"
+[timestart] 0
+[size] 1920 1009
+[pos] -9 -9
+*-5.000000 70 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] Core.
+[treeopen] Core.memoryStage.
+[sst_width] 398
+[signals_width] 450
+[sst_expanded] 1
+[sst_vpaned_height] 471
+@200
+-
+@22
+Core.io_out_state_intRegState_regState_0[31:0]
+Core.io_out_state_intRegState_regState_1[31:0]
+Core.io_out_state_intRegState_regState_2[31:0]
+Core.io_out_state_intRegState_regState_3[31:0]
+Core.io_out_state_intRegState_regState_4[31:0]
+Core.io_out_state_intRegState_regState_5[31:0]
+Core.io_out_state_intRegState_regState_6[31:0]
+Core.io_out_state_intRegState_regState_7[31:0]
+Core.io_out_state_intRegState_regState_8[31:0]
+Core.io_out_state_intRegState_regState_9[31:0]
+Core.io_out_state_intRegState_regState_10[31:0]
+Core.io_out_state_intRegState_regState_11[31:0]
+Core.io_out_state_intRegState_regState_12[31:0]
+Core.io_out_state_intRegState_regState_13[31:0]
+Core.io_out_state_intRegState_regState_14[31:0]
+Core.io_out_state_intRegState_regState_15[31:0]
+Core.io_out_state_intRegState_regState_16[31:0]
+Core.io_out_state_intRegState_regState_17[31:0]
+Core.io_out_state_intRegState_regState_18[31:0]
+Core.io_out_state_intRegState_regState_19[31:0]
+Core.io_out_state_intRegState_regState_20[31:0]
+Core.io_out_state_intRegState_regState_21[31:0]
+Core.io_out_state_intRegState_regState_22[31:0]
+Core.io_out_state_intRegState_regState_23[31:0]
+Core.io_out_state_intRegState_regState_24[31:0]
+Core.io_out_state_intRegState_regState_25[31:0]
+Core.io_out_state_intRegState_regState_26[31:0]
+Core.io_out_state_intRegState_regState_27[31:0]
+Core.io_out_state_intRegState_regState_28[31:0]
+Core.io_out_state_intRegState_regState_29[31:0]
+Core.io_out_state_intRegState_regState_30[31:0]
+Core.io_out_state_intRegState_regState_31[31:0]
+@200
+-
+@28
+Core.io_out_state_instState_commit
+@22
+Core.io_out_state_instState_inst[31:0]
+Core.io_out_state_instState_pc[31:0]
+@200
+-
+-fetch
+-
+-decode
+-
+-execute
+-
+-memory
+-
+-writeback
+@28
+Core.hazardUnit.fwMem2ExeRs1
+Core.hazardUnit.fwMem2ExeRs2
+Core.hazardUnit.fwWb2ExeRs1
+Core.hazardUnit.fwWb2ExeRs2
+Core.hazardUnit.io_out_aluSrc1[1:0]
+Core.hazardUnit.io_out_aluSrc2[1:0]
+[pattern_trace] 1
+[pattern_trace] 0

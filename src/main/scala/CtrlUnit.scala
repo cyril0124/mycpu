@@ -15,7 +15,7 @@ class CtrlSigs(aluOpWidth:Int = 4) extends Bundle {
     val isBranch    = Output(Bool())
     val isJump      = Output(Bool()) // for jalr and jal instruction
 
-    val resultSrc   = Output(Bool())
+    val resultSrc   = Output(UInt(2.W))
     val memWrEn     = Output(Bool())
     val memRdEn     = Output(Bool())
     val memType     = Output(UInt(3.W))
@@ -35,7 +35,7 @@ class CtrlSigs(aluOpWidth:Int = 4) extends Bundle {
 class CtrlPort(ilen:Int = 32) extends Bundle {
     val start = Input(Bool())
     val inst = Input(UInt(ilen.W))
-    val zero = Input(Bool())
+    // val zero = Input(Bool())
 }
 
 

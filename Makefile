@@ -12,10 +12,10 @@ rtl:
 	@echo mod is $(mod)
 	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)GenRTL -dt $(BUILD_DIR) --output-file ${mod}.v
 
-test:
+tests:
 	mill -j 8 ${mill_mod}.test.testOnly ${PACKAGE}.${mod}Test | tee "${BUILD_DIR}/${mod}Test.log"
 	cp ${BUILD_DIR}/${mod}Test.log ${PRJ_DIR}/temp
-	cp ${shell find ${PRJ_DIR}/test_run_dir -name '${mod}.vcd'} ${PRJ_DIR}/temp
+	cp ${shell find ${PRJ_DIR}/test_run_dir -name "${mod}.vcd"} ${PRJ_DIR}/temp
 
 raw_test:
 	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)RawTest -dt $(BUILD_DIR) --output-file ${mod}.v
@@ -40,7 +40,7 @@ compile_asm:
 	@echo "compile done!"
 
 
-.phony: rtl test clean print_verilog idea amend_commit compile_asm test_and_log
+.phony: rtl tests clean print_verilog idea amend_commit compile_asm test_and_log
 
 clean:
 	rm -rf generated/ out/ test_run_dir/

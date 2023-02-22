@@ -22,12 +22,19 @@ sealed class WritePort[T <: Data](gen:T)(implicit val p: Parameters) extends MyB
   val data = Input(gen)
 }
 
+class RegFileState()(implicit val p: Parameters) extends MyBundle {
+  val regState = Vec(rfSets, UInt(xlen.W))
+  // val envOut = Vec(4, UInt(xlen.W))  // when there is a enviroment call, we should output 4 reg value according to <riscv-sbi>
+                                     //  a7: SBI extension ID   a6: SBI function ID   a0: return error code  a1: return value 
+}
+
 class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends MyModule {
   val io = IO(new Bundle{
     val r = Vec(rfRdPort, new ReadPort(gen))
     val w = Vec(rfWrPort, new WritePort(gen))
-    val envOut = Vec(4, Output(gen)) // when there is a enviroment call, we should output 4 reg value according to <riscv-sbi>
+    // val envOut = Vec(4, Output(gen)) // when there is a enviroment call, we should output 4 reg value according to <riscv-sbi>
                                      //  a7: SBI extension ID   a6: SBI function ID   a0: return error code  a1: return value 
+    val state = if(rfStateOut) Some(Output(new RegFileState)) else None
   })
 
   val regs = Reg(Vec(rfSets,gen))
@@ -54,11 +61,15 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
     regs(io.w(0).addr) := io.w(0).data
   }
 
-  io.envOut(0) := regs(RegStrtoNum("a7"))
-  io.envOut(1) := regs(RegStrtoNum("a6"))
-  io.envOut(2) := regs(RegStrtoNum("a0"))
-  io.envOut(3) := regs(RegStrtoNum("a1"))
+  // io.envOut(0) := regs(RegStrtoNum("a7"))
+  // io.envOut(1) := regs(RegStrtoNum("a6"))
+  // io.envOut(2) := regs(RegStrtoNum("a0"))
+  // io.envOut(3) := regs(RegStrtoNum("a1"))
 
+  if(rfStateOut) {
+    io.state.get.regState.zip(regs).foreach{ case(s,r) => s := r }
+  }
+  
   // ! sync read, output data will generated with delay of one cycle(sync time) after read request
   // val rportValids = RegInit(VecInit(Array.fill(readPort)(false.B)))
   // val rportAddr = RegInit(VecInit(Array.fill(readPort)(0.U(log2Up(set).W))))
@@ -97,14 +108,15 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   //   }
   // }
 
-  if(enableDebug){
-    val regStatus = Wire(Vec(rfSets, gen))
-    regStatus.zip(regs).foreach{ case (s, r) => 
-      s := r
-    }
-    BoringUtils.addSource(regStatus,"regStatus")
-    // dontTouch(regStatus)
-  }
+    // TODO: this may cause some bugs when you instantiate RegFile but you did not instantiate the Sink! (BoringUtils...)
+  // if(enableDebug){
+  //   val regStatus = Wire(Vec(rfSets, gen))
+  //   regStatus.zip(regs).foreach{ case (s, r) => 
+  //     s := r
+  //   }
+  //   BoringUtils.addSource(regStatus,"regStatus")
+  //   // dontTouch(regStatus)
+  // }
 }
 
 object RegPrint {
