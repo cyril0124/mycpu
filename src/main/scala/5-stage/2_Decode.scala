@@ -39,23 +39,29 @@ class DecodeIO()(implicit val p: Parameters) extends MyBundle{
                 val writeback = Flipped(Decoupled(new WritebackOut)) 
             }
     val out = Decoupled(new DecodeOut)
-    val ctrl = new Bundle{
-                val stall = Input(Bool())
-            }
+
     val regState = Output(new RegFileState)
+    val ctrl = Flipped(new PipelineCtrlBundle)
 }
 
 class Decode()(implicit val p: Parameters) extends MyModule{
     val io = IO(new DecodeIO)
     
+    val stall = io.ctrl.stall
+    val flush = io.ctrl.flush
+
     io.in.fetch.ready := io.out.ready
-    io.in.writeback.ready :=  ~io.ctrl.stall // io.out.ready
+    io.in.writeback.ready :=  ~stall && ~flush // io.out.ready
 
     val decodeLatch = io.out.ready && io.in.fetch.valid && io.in.writeback.valid
-    val stageRegF = RegEnable(io.in.fetch.bits, decodeLatch)
-    val stageRegW = RegEnable(io.in.writeback.bits, decodeLatch)
+    val stageReg = RegEnable(io.in.fetch.bits, decodeLatch)
+    
+    when(flush) {
+        stageReg := 0.U.asTypeOf(io.in.fetch.bits)
+    }
 
-    val inst = stageRegF.instState.inst
+
+    val inst = stageReg.instState.inst
     val rs1 = inst(19,15)
     val rs2 = inst(24,20)
     val rd = inst(11,7)
@@ -80,7 +86,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     // val ecall = ctrlUnit.io.out.ecall
     // val ebreak = ctrlUnit.io.out.ebreak
     ctrlUnit.io.in.start := true.B
-    ctrlUnit.io.in.inst := stageRegF.instState.inst
+    ctrlUnit.io.in.inst := inst
 
 
     val regFile = Module(new RegFile(UInt(xlen.W)))
@@ -90,10 +96,9 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     regFile.io.r(0).addr := rs1
     regFile.io.r(1).en := true.B
     regFile.io.r(1).addr := rs2
-    regFile.io.w(0).en := stageRegW.regWrEn
-    regFile.io.w(0).addr := stageRegW.rd
-    regFile.io.w(0).data := stageRegW.regWrData
-
+    regFile.io.w(0).en := io.in.writeback.bits.regWrEn & io.in.writeback.valid
+    regFile.io.w(0).addr := io.in.writeback.bits.rd
+    regFile.io.w(0).data := io.in.writeback.bits.regWrData
 
     val immGen = Module(new ImmGen())
     immGen.io.inst := inst
@@ -122,10 +127,10 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.data1 := data1
     io.out.bits.data2 := data2
     io.out.bits.imm := imm
-    io.out.bits.pcNext4 := stageRegF.pcNext4
+    io.out.bits.pcNext4 := stageReg.pcNext4
 
-    io.out.bits.instState <> stageRegF.instState
+    io.out.bits.instState <> stageReg.instState
     io.regState <> regFile.io.state.getOrElse(DontCare)
 
-    io.out.valid := io.out.ready
+    io.out.valid := io.out.ready && ~stall
 }

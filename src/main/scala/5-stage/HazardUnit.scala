@@ -28,6 +28,7 @@ class HazardUnit()(implicit val p: Parameters) extends MyModule{
     val regWrEnM = io.in.memory.regWrEn
     val regWrEnW = io.in.writeback.regWrEn
 
+    /* solve data dependency hazard on execute stage */
     // forward rdValM from memory stage to execute stage for rs1E
     val fwMem2ExeRs1 = (rs1E === rdM) && regWrEnM && rdM =/= 0.U
     // forward rdValM from memory stage to execute stage for rs2E
@@ -41,7 +42,15 @@ class HazardUnit()(implicit val p: Parameters) extends MyModule{
     // default 
     io.out.aluSrc1 := "b00".U
     io.out.aluSrc2 := "b00".U
+    
+    when( fwWb2ExeRs1 ) {
+        io.out.aluSrc1 := "b10".U
+    }
+    when( fwWb2ExeRs2 ) {
+        io.out.aluSrc2 := "b10".U
+    }
 
+    // memory stage has higher priority
     when( fwMem2ExeRs1 ) {
         io.out.aluSrc1 := "b01".U // TODO: replace this whith ENUM, increase code readability
     }
@@ -49,12 +58,7 @@ class HazardUnit()(implicit val p: Parameters) extends MyModule{
         io.out.aluSrc2 := "b01".U
     }
 
-    when( fwWb2ExeRs1 ) {
-        io.out.aluSrc1 := "b10".U
-    }
-    when( fwWb2ExeRs2 ) {
-        io.out.aluSrc2 := "b10".U
-    }
+
 
     io.out.rdValM := rdValM
     io.out.rdValW := rdValW

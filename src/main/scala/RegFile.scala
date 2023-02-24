@@ -51,7 +51,12 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
 
   (0 until rfRdPort).foreach{ i =>
     when(io.r(i).en) {
-      io.r(i).data := regs(io.r(i).addr)
+      // write operation has higher priority
+      when(io.w(0).en && io.r(i).addr === io.w(0).addr){
+        io.r(i).data := io.w(0).data
+      }.otherwise{
+        io.r(i).data := regs(io.r(i).addr)
+      }
     }.otherwise {
       io.r(i).data := DontCare
     }
@@ -60,6 +65,8 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   when(io.w(0).en && io.w(0).addr =/= 0.U) {
     regs(io.w(0).addr) := io.w(0).data
   }
+
+  // when(io.r(0).en & )
 
   // io.envOut(0) := regs(RegStrtoNum("a7"))
   // io.envOut(1) := regs(RegStrtoNum("a6"))

@@ -26,15 +26,23 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
     val out = DecoupledIO(new WritebackOut) // for execute stage
     val instState = Output(new InstState)
     val hazard = new WritebackHazardBundle
+    val ctrl = Flipped(new PipelineCtrlBundle)
 }
 
 
 class Writeback()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
 
-    io.in.ready := io.out.ready
+    val stall = io.ctrl.stall
+    val flush = io.ctrl.flush
+
+    io.in.ready := io.out.ready && ~flush
     val writebackLatch = io.in.valid && io.out.ready
     val stageReg = RegEnable(io.in.bits, writebackLatch)
+
+    when(flush) {
+        stageReg := 0.U.asTypeOf(io.in.bits)
+    }
     
     io.out.bits.regWrData := MuxLookup(stageReg.resultSrc, stageReg.aluOut, Seq(
                                 "b00".U -> stageReg.aluOut,
@@ -51,5 +59,5 @@ class Writeback()(implicit val p: Parameters) extends MyModule{
     io.hazard.rdVal := stageReg.aluOut
     io.hazard.regWrEn := stageReg.regWrEn
 
-    io.out.valid := io.out.ready
+    io.out.valid := io.out.ready && io.in.valid
 }

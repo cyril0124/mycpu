@@ -49,6 +49,18 @@ class Core()(implicit val p: Parameters) extends MyModule{
 
     // decode stage write back writeback info
     decodeStage.io.in.writeback <> writebackStage.io.out
+    
+    decodeStage.io.ctrl <> DontCare
+    executeStage.io.ctrl <> DontCare
+    memoryStage.io.ctrl <> DontCare
+    writebackStage.io.ctrl <> DontCare
+    // branch flush pipeline
+    val brTakenE = executeStage.io.out.fetch.bits.brTaken
+    // decodeStage.io.ctrl.flush := brTakenE === true.B
+    // executeStage.io.ctrl.flush := brTakenE === true.B
+    memoryStage.io.ctrl.flush := brTakenE === true.B
+    writebackStage.io.ctrl.flush := brTakenE === true.B
+
 
     // hazard detction
     val hazardUnit = Module(new HazardUnit)
@@ -58,8 +70,8 @@ class Core()(implicit val p: Parameters) extends MyModule{
     hazardUnit.io.out <> executeStage.io.hazard.in
 
     // core runtime instruction info and reg info
-    io.out.state.intRegState <> RegNext(decodeStage.io.regState)
-    io.out.state.instState <> writebackStage.io.instState
+    io.out.state.intRegState <> decodeStage.io.regState
+    io.out.state.instState <> (writebackStage.io.instState)
 }
 
 object CoreGenRTL extends App {

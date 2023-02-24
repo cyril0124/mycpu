@@ -17,7 +17,7 @@ class ExecuteOut()(implicit val p: Parameters) extends MyBundle{
     val memRdEn = Bool()
     val memSign = Bool()
     val regWrEn = Bool()
-    val aluOut = Bool()
+    val aluOut = UInt(xlen.W)
     val data2 = UInt(xlen.W)
     val pcNext4 = UInt(xlen.W)
 
@@ -57,15 +57,23 @@ class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
                 val fetch = Decoupled(new Execute2Fetch)
             }
     val hazard = new ExecuteHazardBundle
+    val ctrl = Flipped(new PipelineCtrlBundle)
 }
 
 
 class Execute()(implicit val p: Parameters) extends MyModule{
     val io = IO(new ExecuteIO)
 
-    io.in.ready := io.out.memory.ready && io.out.fetch.ready
+    val stall = io.ctrl.stall
+    val flush = io.ctrl.flush
+
+    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~flush
     val executeLatch = io.in.valid && io.out.memory.ready && io.out.fetch.ready
-    val stageReg = RegEnable(io.in.bits, executeLatch)
+    val stageReg = RegEnable(io.in.bits, 0.U.asTypeOf(io.in.bits), executeLatch)
+
+    when(flush) {
+        stageReg := 0.U.asTypeOf(io.in.bits)
+    }
 
     val aluZero = Wire(Bool())
 

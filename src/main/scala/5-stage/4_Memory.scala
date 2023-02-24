@@ -31,14 +31,22 @@ class MemoryIO()(implicit val p: Parameters) extends MyBundle{
     val in = Flipped(DecoupledIO(new ExecuteOut))
     val out = DecoupledIO(new MemoryOut)
     val hazard = new MemoryHazardBundle
+    val ctrl = Flipped(new PipelineCtrlBundle)
 }
 
 class Memory()(implicit val p: Parameters) extends MyModule{
     val io = IO(new MemoryIO)
 
-    io.in.ready := io.out.ready
+    val stall = io.ctrl.stall
+    val flush = io.ctrl.flush
+
+    io.in.ready := io.out.ready && ~flush
     val memoryLatch = io.in.valid && io.out.ready
     val stageReg = RegEnable(io.in.bits, memoryLatch)
+
+    when(flush) {
+        stageReg := 0.U.asTypeOf(io.in.bits)
+    }
 
     // data memory read
     val dataMem = Module(new DMem())
