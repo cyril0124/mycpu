@@ -126,6 +126,51 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   // }
 }
 
+class RegFile2[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends MyModule {
+  val io = IO(new Bundle{
+    val r = Vec(rfRdPort, new ReadPort(gen))
+    val w = Vec(rfWrPort, new WritePort(gen))
+    // val envOut = Vec(4, Output(gen)) // when there is a enviroment call, we should output 4 reg value according to <riscv-sbi>
+                                     //  a7: SBI extension ID   a6: SBI function ID   a0: return error code  a1: return value 
+    val state = if(rfStateOut) Some(Output(new RegFileState)) else None
+  })
+
+  val regs = Reg(Vec(rfSets,gen))
+  when(reset.asBool) {
+    regs.zipWithIndex.foreach { case (r,i) =>
+      r := 0.U
+      if(i ==  2) 
+        r := "h407ffc80".U // qemu-riscv32 will set this reg to this val before start the whole grogram
+    }
+  }
+  regs(0) := 0.U
+  assert(regs(0).asUInt === 0.U, "zero reg must be 0 !")
+  
+
+  (0 until rfRdPort).foreach{ i =>
+    when(io.r(i).en) {
+      // write operation has higher priority
+      // when(io.w(0).en && io.r(i).addr === io.w(0).addr){
+      //   io.r(i).data := io.w(0).data
+      // }.otherwise{
+      //   io.r(i).data := regs(io.r(i).addr)
+      // }
+      io.r(i).data := regs(io.r(i).addr)
+    }.otherwise {
+      io.r(i).data := DontCare
+    }
+  }
+
+  when(io.w(0).en && io.w(0).addr =/= 0.U) {
+    regs(io.w(0).addr) := io.w(0).data
+  }
+
+  if(rfStateOut) {
+    io.state.get.regState.zip(regs).foreach{ case(s,r) => s := r }
+  }
+
+}
+
 object RegPrint {
   def apply(params: MyCpuParameters): Any = 
     apply(params,0,31)

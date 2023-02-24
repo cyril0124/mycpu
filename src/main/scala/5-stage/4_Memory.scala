@@ -40,9 +40,9 @@ class Memory()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
-    io.in.ready := io.out.ready && ~flush
+    io.in.ready := io.out.ready && ~stall
     val memoryLatch = io.in.valid && io.out.ready
-    val stageReg = RegEnable(io.in.bits, memoryLatch)
+    val stageReg = RegEnable(io.in.bits, 0.U.asTypeOf(io.in.bits), memoryLatch)
 
     when(flush) {
         stageReg := 0.U.asTypeOf(io.in.bits)

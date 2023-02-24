@@ -78,6 +78,7 @@ class CoreTest extends AnyFlatSpec with ChiselScalatestTester {
                 var times = 0
                 var done = false
                 val maxTimes = 10000
+                var errorCount = 0
                 idx = 0
                 cpuInit()
                 
@@ -88,7 +89,7 @@ class CoreTest extends AnyFlatSpec with ChiselScalatestTester {
                     c.clock.step()
                 }
 
-                while(times <= maxTimes && done == false){
+                while(times <= maxTimes && done == false && idx < simListLen){
                     if(instCommit == true){
                         // if(c.io.envOut.valid.peek().litToBoolean == true){
                         //     done = true
@@ -96,6 +97,7 @@ class CoreTest extends AnyFlatSpec with ChiselScalatestTester {
                         // }
 
                         // parse reference instruction execution result
+                        // print(s"${idx} ==> ${simListLen}\n")
                         val inst = hexToInt(simList(idx+0)(1))
                         val pc = hexToInt(simList(idx+1)(2)) - pcOffset
                         val reg = (2 to 9).map{ i => 
@@ -147,13 +149,19 @@ class CoreTest extends AnyFlatSpec with ChiselScalatestTester {
                         c.clock.step()
                         
                         print(s"[${times}] inst commit and success\n")
+                        errorCount = 0
                     }
                     else {
+                        errorCount = errorCount + 1
+                        if(errorCount > 200){
+                            print("inst commit error\n")
+                            assert(false)
+                        }
                         c.clock.step()
                     }
                 }
                 // one test case complete
-                println("\n")
+                println("case pass!\n\n")
             }
 
 

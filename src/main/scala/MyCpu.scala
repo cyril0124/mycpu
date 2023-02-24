@@ -65,7 +65,7 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     instMem.io.addr := pcReg
     inst := instMem.io.inst
 
-    val regFile = Module(new RegFile(UInt(32.W)))
+    val regFile = Module(new RegFile2(UInt(32.W)))
     val regFileRdAddr = VecInit(rs1, rs2)
     val regFileRdData = Wire(Vec(regFile.io.r.length, chiselTypeOf(regFile.io.r(0).data)))
     regFile.io.r.zip(regFileRdAddr).zip(regFileRdData).foreach{ case ((r, s), d) => 

@@ -31,6 +31,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
+    // for pipeline stage, if one stage stall then all of the stage in front of the stall stage will stall too.
     io.in.execute.ready := io.in.start && ~stall
 
     val fetchLatch = io.out.ready && io.in.execute.valid
@@ -50,7 +51,8 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     val pcNext = Wire(UInt(xlen.W))
     val pcNext4 = pcReg + (ilen / 8).U
 
-    pcNext := Mux(stageReg.brTaken, stageReg.targetAddr, pcNext4)
+    // pcNext := Mux(stageReg.brTaken, stageReg.targetAddr, pcNext4)
+    pcNext := Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4)
     pcReg := Mux(io.in.start, pcNext, pcReg)
 
     io.out.bits.pcNext4 := pcNext4

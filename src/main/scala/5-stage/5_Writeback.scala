@@ -36,9 +36,9 @@ class Writeback()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
-    io.in.ready := io.out.ready && ~flush
+    io.in.ready := io.out.ready && ~stall
     val writebackLatch = io.in.valid && io.out.ready
-    val stageReg = RegEnable(io.in.bits, writebackLatch)
+    val stageReg = RegEnable(io.in.bits, 0.U.asTypeOf(io.in.bits), writebackLatch)
 
     when(flush) {
         stageReg := 0.U.asTypeOf(io.in.bits)

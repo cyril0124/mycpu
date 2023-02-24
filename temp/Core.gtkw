@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Thu Feb 23 15:28:41 2023
+[*] Fri Feb 24 16:57:08 2023
 [*]
 [dumpfile] "/home/cyril/workspace/riscv/mycpu/temp/Core.vcd"
-[dumpfile_mtime] "Thu Feb 23 15:27:29 2023"
-[dumpfile_size] 433440
+[dumpfile_mtime] "Fri Feb 24 16:52:42 2023"
+[dumpfile_size] 452051
 [savefile] "/home/cyril/workspace/riscv/mycpu/temp/Core.gtkw"
-[timestart] 360
+[timestart] 594
 [size] 1920 1009
-[pos] -9 -41
-*-6.000000 655 86 67 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-5.000000 700 86 67 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] Core.
 [treeopen] Core.decodeStage.
+[treeopen] Core.decodeStage.regFile.
 [treeopen] Core.executeStage.
 [treeopen] Core.memoryStage.
 [treeopen] Core.writebackStage.
@@ -73,17 +74,12 @@ Core.io_in_start
 [color] 2
 Core.fetchStage.io_out_bits_instState_inst[31:0]
 Core.fetchStage.io_out_bits_instState_pc[31:0]
-@28
-Core.fetchStage.stageReg_brTaken
-@22
-Core.fetchStage.stageReg_targetAddr[31:0]
 @200
 -
 -decode
-@23
+@22
 [color] 2
 Core.decodeStage.stageReg_instState_inst[31:0]
-@22
 Core.decodeStage.stageReg_instState_pc[31:0]
 Core.decodeStage.rs1[4:0]
 Core.decodeStage.rs2[4:0]
@@ -92,11 +88,8 @@ Core.decodeStage.io_out_bits_data2[31:0]
 Core.decodeStage.regFile.io_r_0_addr[4:0]
 @200
 -
-@22
-Core.decodeStage.regFile.io_w_0_addr[4:0]
-Core.decodeStage.regFile.io_w_0_data[31:0]
 @28
-Core.decodeStage.regFile.io_w_0_en
+Core.decodeStage.io_ctrl_flush
 @200
 -
 @22
@@ -108,11 +101,21 @@ Core.decodeStage.io_in_writeback_ready
 Core.decodeStage.io_in_writeback_valid
 @200
 -
+@22
+Core.decodeStage.stageReg_instState_inst[31:0]
+Core.decodeStage.stageReg_instState_pc[31:0]
+@200
+-
 -execute
 @22
 [color] 2
 Core.executeStage.stageReg_instState_inst[31:0]
 Core.executeStage.stageReg_instState_pc[31:0]
+@28
+Core.executeStage.io_ctrl_flush
+Core.executeStage.executeLatch
+Core.executeStage.io_out_memory_ready
+@22
 Core.executeStage.stageReg_rd[4:0]
 @200
 -
@@ -174,13 +177,23 @@ Core.executeStage.stageReg_data1[31:0]
 Core.executeStage.io_out_fetch_bits_brTaken
 @22
 Core.executeStage.io_out_fetch_bits_targetAddr[31:0]
+@28
+Core.executeStage.stageReg_isBranch
+Core.executeStage.stageReg_isJump
 @200
 -
 -memory
+@28
+Core.memoryStage.clock
+@29
+Core.memoryStage.reset
 @22
 [color] 2
 Core.memoryStage.stageReg_instState_inst[31:0]
 Core.memoryStage.stageReg_instState_pc[31:0]
+@28
+Core.memoryStage.memoryLatch
+@22
 Core.memoryStage.stageReg_pcNext4[31:0]
 Core.memoryStage.io_hazard_rdVal[31:0]
 @28
@@ -189,21 +202,27 @@ Core.memoryStage.stageReg_regWrEn
 @22
 Core.memoryStage.stageReg_rd[4:0]
 Core.memoryStage.stageReg_aluOut[31:0]
+@28
+Core.memoryStage.stageReg_instState_commit
 @200
 -
 -writeback
+@28
+Core.writebackStage.clock
+Core.writebackStage.reset
 @22
 [color] 2
 Core.writebackStage.stageReg_instState_inst[31:0]
 Core.writebackStage.stageReg_instState_pc[31:0]
 @28
+Core.writebackStage.io_instState_commit
+Core.writebackStage.stageReg_instState_commit
 Core.writebackStage.io_out_ready
 @22
 Core.writebackStage.io_out_bits_rd[4:0]
 Core.writebackStage.io_out_bits_regWrData[31:0]
 @28
 Core.writebackStage.io_out_valid
-Core.writebackStage.io_instState_commit
 @22
 Core.writebackStage.stageReg_rd[4:0]
 @28

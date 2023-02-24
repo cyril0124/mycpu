@@ -56,10 +56,10 @@ class Core()(implicit val p: Parameters) extends MyModule{
     writebackStage.io.ctrl <> DontCare
     // branch flush pipeline
     val brTakenE = executeStage.io.out.fetch.bits.brTaken
-    // decodeStage.io.ctrl.flush := brTakenE === true.B
-    // executeStage.io.ctrl.flush := brTakenE === true.B
-    memoryStage.io.ctrl.flush := brTakenE === true.B
-    writebackStage.io.ctrl.flush := brTakenE === true.B
+    decodeStage.io.ctrl.flush := brTakenE === true.B
+    executeStage.io.ctrl.flush := brTakenE === true.B
+    // memoryStage.io.ctrl.flush := brTakenE === true.B
+    // writebackStage.io.ctrl.flush := brTakenE === true.B
 
 
     // hazard detction

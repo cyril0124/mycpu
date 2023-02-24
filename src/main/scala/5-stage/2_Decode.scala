@@ -50,11 +50,11 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
-    io.in.fetch.ready := io.out.ready
-    io.in.writeback.ready :=  ~stall && ~flush // io.out.ready
+    io.in.fetch.ready := io.out.ready && ~stall
+    io.in.writeback.ready :=  ~stall // io.out.ready
 
     val decodeLatch = io.out.ready && io.in.fetch.valid && io.in.writeback.valid
-    val stageReg = RegEnable(io.in.fetch.bits, decodeLatch)
+    val stageReg = RegEnable(io.in.fetch.bits, 0.U.asTypeOf(io.in.fetch.bits),decodeLatch)
     
     when(flush) {
         stageReg := 0.U.asTypeOf(io.in.fetch.bits)
@@ -131,6 +131,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
 
     io.out.bits.instState <> stageReg.instState
     io.regState <> regFile.io.state.getOrElse(DontCare)
+
 
     io.out.valid := io.out.ready && ~stall
 }

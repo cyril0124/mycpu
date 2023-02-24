@@ -67,7 +67,7 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
-    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~flush
+    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~stall
     val executeLatch = io.in.valid && io.out.memory.ready && io.out.fetch.ready
     val stageReg = RegEnable(io.in.bits, 0.U.asTypeOf(io.in.bits), executeLatch)
 
@@ -117,6 +117,10 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.out.memory.bits.regWrEn := stageReg.regWrEn
     io.out.memory.bits.data2 := stageReg.data2
     io.out.memory.bits.pcNext4 := stageReg.pcNext4
+
+    when(flush){
+        io.out.memory.bits <> DontCare
+    }
 
     // hazard control
     io.hazard.out.rs1 := stageReg.rs1
