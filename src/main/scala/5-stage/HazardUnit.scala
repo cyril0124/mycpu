@@ -8,12 +8,18 @@ import mycpu.common._
 import mycpu.util._
 
 class HazardUnitIO()(implicit val p: Parameters) extends MyBundle{
-    val in = new Bundle{
-        val execute = Flipped(new ExecuteHazardOutBundle)
-        val memory = Flipped(new MemoryHazardBundle)
-        val writeback = Flipped(new WritebackHazardBundle)
-    }
-    val out = Flipped(new ExecuteHazardInBundle)
+    val in = Input(new Bundle{
+        val decode = new DecodeHazardOutBundle
+        val execute = new ExecuteHazardOutBundle
+        val memory = new MemoryHazardBundle
+        val writeback = new WritebackHazardBundle
+    })
+    val out = Output(new Bundle{
+        val execute = new ExecuteHazardInBundle
+        val decode = new Bundle{
+                val stall = Bool()
+            }
+    })
 }
 
 class HazardUnit()(implicit val p: Parameters) extends MyModule{
@@ -40,26 +46,37 @@ class HazardUnit()(implicit val p: Parameters) extends MyModule{
     val fwWb2ExeRs2 = (rs2E === rdW) && regWrEnW && rdW =/= 0.U
 
     // default 
-    io.out.aluSrc1 := "b00".U
-    io.out.aluSrc2 := "b00".U
+    io.out.execute.aluSrc1 := "b00".U
+    io.out.execute.aluSrc2 := "b00".U
     
     when( fwWb2ExeRs1 ) {
-        io.out.aluSrc1 := "b10".U
+        io.out.execute.aluSrc1 := "b10".U
     }
     when( fwWb2ExeRs2 ) {
-        io.out.aluSrc2 := "b10".U
+        io.out.execute.aluSrc2 := "b10".U
     }
 
     // memory stage has higher priority
     when( fwMem2ExeRs1 ) {
-        io.out.aluSrc1 := "b01".U // TODO: replace this whith ENUM, increase code readability
+        io.out.execute.aluSrc1 := "b01".U // TODO: replace this whith ENUM, increase code readability
     }
     when( fwMem2ExeRs2 ) {
-        io.out.aluSrc2 := "b01".U
+        io.out.execute.aluSrc2 := "b01".U
     }
 
+    io.out.execute.rdValM := rdValM
+    io.out.execute.rdValW := rdValW
 
+    val rdE = io.in.execute.rd
+    val resultSrcE = io.in.execute.resultSrc
+    val rs1D = io.in.decode.rs1
+    val rs2D = io.in.decode.rs2
 
-    io.out.rdValM := rdValM
-    io.out.rdValW := rdValW
+    io.out.decode.stall := false.B
+    when(resultSrcE === "b00".U) {// load instruction
+        when(rdE === rs1D || rdE === rs2D) {
+            io.out.decode.stall := true.B
+        }
+    }
+
 }

@@ -49,7 +49,7 @@ class CtrlUnit()(implicit val p: Parameters) extends MyModule {
     
     val inst = io.in.inst
     val out = io.out
-    val funct3 = inst(14,12)
+    val funct3 = InstField(inst, "funct3")
 
     // val decodeTable = XDecode.table
     // val defaultDecodeTable = XDecode.decodeDefault
@@ -84,8 +84,8 @@ class CtrlUnit()(implicit val p: Parameters) extends MyModule {
     out.regWrEn := dout.regWrEn
     out.memSign := ~funct3(2).asBool
 
-    val opcode = io.in.inst(6,0)
-    val funct12 = io.in.inst(31,20)
+    val opcode = InstField(inst, "opcode")
+    val funct12 = InstField(inst, "funct12")
     out.pcAddReg := opcode === JALR(6,0)
     out.isJump := opcode === JALR(6,0) || opcode === JAL(6,0)
     out.ecall := opcode === ECALL(6,0) && funct12 === ECALL(31,20)

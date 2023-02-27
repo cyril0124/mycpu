@@ -15,6 +15,7 @@ trait HasMyCpuParameters {
     val xlen = myCpuParams.xlen
     val ilen = myCpuParams.ilen
     val addrWidth = myCpuParams.addrWidth
+    val resetPc = myCpuParams.resetPc
 
 
     // TODO:
@@ -65,6 +66,7 @@ case class MyCpuParameters
     xlen: Int = 32,
     addrWidth: Int = 32,
     instMemSize: Int = 1024,
+    resetPc: Int = 0,
 
     // Memory Map Configuration
     textStart: Int = 0x100,

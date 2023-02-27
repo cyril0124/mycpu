@@ -126,6 +126,7 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   // }
 }
 
+// for single cycle
 class RegFile2[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends MyModule {
   val io = IO(new Bundle{
     val r = Vec(rfRdPort, new ReadPort(gen))

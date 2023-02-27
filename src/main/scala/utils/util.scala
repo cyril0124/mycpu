@@ -34,6 +34,24 @@ object ZeroExt {
     }
 }
 
+object InstField {
+    def apply(inst: UInt, field: String): UInt = {
+        field match {
+            case "rd"  => inst(11,7)
+            case "rs1" => inst(19,15)
+            case "rs2" => inst(24,20)
+            case "opcode" => inst(6,0)
+            case "funct3" => inst(14,12)
+            case "funct7" => inst(31,25)
+            case "funct12" => inst(31,20)
+            case  _    => {
+                    assert(false, s"invalid InstField ==> ${field}")
+                    inst(11,7)
+            }
+        }
+    }
+}
+
 
 object ParamRepoter{
     def apply(moduleName:String, args:Any*): Unit =  {

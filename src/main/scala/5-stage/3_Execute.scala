@@ -8,9 +8,6 @@ import mycpu.common._
 import mycpu.util._
 
 class ExecuteOut()(implicit val p: Parameters) extends MyBundle{
-    val rd = UInt(5.W)
-    val rs1 = UInt(5.W)
-    val rs2 = UInt(5.W)
     val resultSrc = UInt(2.W)
     val memWrEn = Bool()
     val memType = UInt(3.W)
@@ -31,23 +28,26 @@ class Execute2Fetch()(implicit val p: Parameters) extends MyBundle{
 
 class ExecuteHazardOutBundle()(implicit val p: Parameters) extends MyBundle{
     // output for hazard unit
-    val rs1 = Output(UInt(5.W))
-    val rs2 = Output(UInt(5.W))
+    val rs1 = UInt(5.W)
+    val rs2 = UInt(5.W)
+
+    val resultSrc = UInt(2.W)
+    val rd = UInt(5.W)
 }
 
 class ExecuteHazardInBundle()(implicit val p: Parameters) extends MyBundle{
     // from hazard unit
-    val aluSrc1 = Input(UInt(2.W)) 
-    val aluSrc2 = Input(UInt(2.W))
+    val aluSrc1 = UInt(2.W)
+    val aluSrc2 = UInt(2.W)
     // from memory stage
-    val rdValM = Input(UInt(xlen.W)) 
+    val rdValM = UInt(xlen.W)
     // from Writeback stage
-    val rdValW = Input(UInt(xlen.W)) 
+    val rdValW = UInt(xlen.W)
 }
 
-class ExecuteHazardBundle()(implicit val p: Parameters) extends MyBundle{
-    val out = new ExecuteHazardOutBundle
-    val in = new ExecuteHazardInBundle
+class ExecuteHazardIO()(implicit val p: Parameters) extends MyBundle{
+    val out = Output(new ExecuteHazardOutBundle)
+    val in = Input(new ExecuteHazardInBundle)
 }
 
 class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
@@ -56,8 +56,8 @@ class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
                 val memory = Decoupled(new ExecuteOut)
                 val fetch = Decoupled(new Execute2Fetch)
             }
-    val hazard = new ExecuteHazardBundle
-    val ctrl = Flipped(new PipelineCtrlBundle)
+    val hazard = new ExecuteHazardIO
+    val ctrl = Input(new PipelineCtrlBundle)
 }
 
 
@@ -106,9 +106,9 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     
     // output for memory stage
     io.out.memory.bits.aluOut := aluOut
-    io.out.memory.bits.rd := stageReg.rd
-    io.out.memory.bits.rs1 := stageReg.rs1
-    io.out.memory.bits.rs2 := stageReg.rs2
+    // io.out.memory.bits.rd := stageReg.rd
+    // io.out.memory.bits.rs1 := stageReg.rs1
+    // io.out.memory.bits.rs2 := stageReg.rs2
     io.out.memory.bits.resultSrc := stageReg.resultSrc
     io.out.memory.bits.memWrEn := stageReg.memWrEn
     io.out.memory.bits.memRdEn := stageReg.memRdEn
@@ -123,8 +123,14 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     }
 
     // hazard control
-    io.hazard.out.rs1 := stageReg.rs1
-    io.hazard.out.rs2 := stageReg.rs2
+    val inst = stageReg.instState.inst
+    io.hazard.out.rs1 := InstField(inst, "rs1")
+    io.hazard.out.rs2 := InstField(inst, "rs2")
+    // load hazard, which happens when the instruction in execute stage is load(lw), 
+    // and the subsequent instruction needs its(lw) result that is read from DataMemory.
+    // we can judge by resultSrc. (resultSrc == "b00".U indicates that this is a load instructions)
+    io.hazard.out.resultSrc := stageReg.resultSrc
+    io.hazard.out.rd := InstField(inst, "rd")
 
     // instruction state flow
     io.out.memory.bits.instState <> stageReg.instState

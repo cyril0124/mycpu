@@ -6,7 +6,8 @@ def main():
     argv_len = len(sys.argv)
 
     if(argv_len != 2):
-        assert "Usage: python3 main.py <file name> <out file>\n"
+        # read dissassembly file and generate hex code of instruction
+        assert "Usage: python3 main.py <file name(dissassemble file)> <out file>\n"
     
     file_name = sys.argv[1]
     out_file = sys.argv[2]
@@ -26,9 +27,15 @@ def main():
                     continue
                 num = num + 1
                 # print(strr[2]+' '+str(num))
+
+                # 8-bit per line
                 for i in range(1,5):
                     byte = strr[2][8-i*2:8-2*(i-1)]
                     print(byte,file=wf)
+
+                # 32-bit per line
+                # print(strr[2],file=wf)
+
             except:
                 pass
         wf.close

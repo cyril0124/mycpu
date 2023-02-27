@@ -7,6 +7,12 @@ import org.chipsalliance.cde.config._
 import mycpu.common._
 import mycpu.util._
 
+
+class DecodeHazardOutBundle()(implicit val p: Parameters) extends MyBundle{
+    val rs1 = UInt(5.W)
+    val rs2 = UInt(5.W)
+}
+
 // TODO: aluOpWidth...
 class DecodeOut(aluOpWidth: Int = 4)(implicit val p: Parameters) extends MyBundle{
     val isBranch = Bool()
@@ -23,9 +29,6 @@ class DecodeOut(aluOpWidth: Int = 4)(implicit val p: Parameters) extends MyBundl
     val aluSrc = Bool()
 
     val pcNext4 = UInt(xlen.W)
-    val rd = UInt(5.W)
-    val rs1 = UInt(5.W)
-    val rs2 = UInt(5.W)
     val data1 = UInt(xlen.W)
     val data2 = UInt(xlen.W)
     val imm = UInt(xlen.W)
@@ -34,14 +37,14 @@ class DecodeOut(aluOpWidth: Int = 4)(implicit val p: Parameters) extends MyBundl
 }
 
 class DecodeIO()(implicit val p: Parameters) extends MyBundle{
-    val in = new Bundle{
-                val fetch = Flipped(Decoupled(new FetchOut))
-                val writeback = Flipped(Decoupled(new WritebackOut)) 
-            }
+    val in = Flipped(new Bundle{
+                val fetch = Decoupled(new FetchOut)
+                val writeback = Decoupled(new WritebackOut)
+            })
     val out = Decoupled(new DecodeOut)
-
+    val hazard = Output(new DecodeHazardOutBundle)
     val regState = Output(new RegFileState)
-    val ctrl = Flipped(new PipelineCtrlBundle)
+    val ctrl = Input(new PipelineCtrlBundle)
 }
 
 class Decode()(implicit val p: Parameters) extends MyModule{
@@ -54,7 +57,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.in.writeback.ready :=  ~stall // io.out.ready
 
     val decodeLatch = io.out.ready && io.in.fetch.valid && io.in.writeback.valid
-    val stageReg = RegEnable(io.in.fetch.bits, 0.U.asTypeOf(io.in.fetch.bits),decodeLatch)
+    val stageReg = RegEnable(io.in.fetch.bits, 0.U.asTypeOf(io.in.fetch.bits), decodeLatch)
     
     when(flush) {
         stageReg := 0.U.asTypeOf(io.in.fetch.bits)
@@ -62,9 +65,9 @@ class Decode()(implicit val p: Parameters) extends MyModule{
 
 
     val inst = stageReg.instState.inst
-    val rs1 = inst(19,15)
-    val rs2 = inst(24,20)
-    val rd = inst(11,7)
+    val rs1 = InstField(inst, "rs1")
+    val rs2 = InstField(inst, "rs2")
+    val rd = InstField(inst,"rd")
     val imm = Wire(UInt(xlen.W))
 
 
@@ -121,9 +124,6 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.immSign := immSign
     io.out.bits.aluSrc := aluSrc
 
-    io.out.bits.rd := rd
-    io.out.bits.rs1 := rs1
-    io.out.bits.rs2 := rs2
     io.out.bits.data1 := data1
     io.out.bits.data2 := data2
     io.out.bits.imm := imm
@@ -132,6 +132,9 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.instState <> stageReg.instState
     io.regState <> regFile.io.state.getOrElse(DontCare)
 
+    // hazard detection
+    io.hazard.rs1 := rs1
+    io.hazard.rs2 := rs2
 
     io.out.valid := io.out.ready && ~stall
 }

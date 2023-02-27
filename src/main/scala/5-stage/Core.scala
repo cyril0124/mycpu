@@ -24,6 +24,8 @@ class CoreIO()(implicit val p: Parameters) extends MyBundle{
 class Core()(implicit val p: Parameters) extends MyModule{
     val io = IO(new CoreIO)
 
+    val stallDecode = WireInit(false.B)
+
     // 1_fetch stage
     val fetchStage = Module(new Fetch)
     fetchStage.io.in.start := io.in.start
@@ -32,7 +34,7 @@ class Core()(implicit val p: Parameters) extends MyModule{
     // 2_decode stage
     val decodeStage = Module(new Decode)
     decodeStage.io.in.fetch <> fetchStage.io.out
-    decodeStage.io.ctrl.stall := false.B
+    decodeStage.io.ctrl.stall := stallDecode
 
     // 3_execute stage
     val executeStage = Module(new Execute)
@@ -47,27 +49,26 @@ class Core()(implicit val p: Parameters) extends MyModule{
     val writebackStage = Module(new Writeback)
     writebackStage.io.in <> memoryStage.io.out
 
-    // decode stage write back writeback info
+    // decode stage write back writeback stage info
     decodeStage.io.in.writeback <> writebackStage.io.out
-    
-    decodeStage.io.ctrl <> DontCare
-    executeStage.io.ctrl <> DontCare
-    memoryStage.io.ctrl <> DontCare
-    writebackStage.io.ctrl <> DontCare
-    // branch flush pipeline
-    val brTakenE = executeStage.io.out.fetch.bits.brTaken
-    decodeStage.io.ctrl.flush := brTakenE === true.B
-    executeStage.io.ctrl.flush := brTakenE === true.B
-    // memoryStage.io.ctrl.flush := brTakenE === true.B
-    // writebackStage.io.ctrl.flush := brTakenE === true.B
 
+    // pipeline control
+    val pipelineCtrl = Module(new PipelineCtrl)
+    pipelineCtrl.io.in.brTaken := executeStage.io.out.fetch.bits.brTaken
+    fetchStage.io.ctrl <> pipelineCtrl.io.out.fetch
+    decodeStage.io.ctrl <> pipelineCtrl.io.out.decode
+    executeStage.io.ctrl <> pipelineCtrl.io.out.execute
+    memoryStage.io.ctrl <> pipelineCtrl.io.out.memory
+    writebackStage.io.ctrl <> pipelineCtrl.io.out.writeback
 
     // hazard detction
     val hazardUnit = Module(new HazardUnit)
+    hazardUnit.io.in.decode <> decodeStage.io.hazard
     hazardUnit.io.in.execute <> executeStage.io.hazard.out
     hazardUnit.io.in.memory <> memoryStage.io.hazard
     hazardUnit.io.in.writeback <> writebackStage.io.hazard
-    hazardUnit.io.out <> executeStage.io.hazard.in
+    hazardUnit.io.out.execute <> executeStage.io.hazard.in
+    stallDecode := hazardUnit.io.out.decode.stall
 
     // core runtime instruction info and reg info
     io.out.state.intRegState <> decodeStage.io.regState

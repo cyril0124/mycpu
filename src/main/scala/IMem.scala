@@ -31,10 +31,10 @@ class ReadIMem()(implicit val p: Parameters)  extends MyModule{
 
     // Creates a combinational/asynchronous-read, sequential/synchronous-write [[Mem]].
     val instByte = ilen / 8
-    // val mem = Mem(1024, UInt(ilen.W))
+    // val mem = Mem(instMemSize, UInt(xlen.W))
     val mem = Mem(instMemSize, UInt(8.W))
 
-    io.inst := Cat( ((0 until instByte).map{ i => mem(io.addr + i.U) }).reverse )
+    io.inst := Cat( ((0 until instByte).map{ i => mem(io.addr + i.U - resetPc.U(xlen.W)) }).reverse )
 
     loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Imem.hex.txt")
 }

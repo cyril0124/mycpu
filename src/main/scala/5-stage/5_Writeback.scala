@@ -25,8 +25,8 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
     val in = Flipped(DecoupledIO(new MemoryOut))
     val out = DecoupledIO(new WritebackOut) // for execute stage
     val instState = Output(new InstState)
-    val hazard = new WritebackHazardBundle
-    val ctrl = Flipped(new PipelineCtrlBundle)
+    val hazard = Output(new WritebackHazardBundle)
+    val ctrl = Input(new PipelineCtrlBundle)
 }
 
 
@@ -49,14 +49,15 @@ class Writeback()(implicit val p: Parameters) extends MyModule{
                                 "b01".U -> stageReg.rdData,
                                 "b10".U -> stageReg.pcNext4
                             ))
-    io.out.bits.rd := stageReg.rd
+    val inst = stageReg.instState.inst
+    io.out.bits.rd := InstField(inst, "rd")
     io.out.bits.regWrEn := stageReg.regWrEn
 
     io.instState <> stageReg.instState
 
     // hazard control
-    io.hazard.rd := stageReg.rd
-    io.hazard.rdVal := stageReg.aluOut
+    io.hazard.rd := InstField(inst, "rd")
+    io.hazard.rdVal := stageReg.aluOut // TODO: for lw instruction rdVal is the value of Dcache
     io.hazard.regWrEn := stageReg.regWrEn
 
     io.out.valid := io.out.ready && io.in.valid

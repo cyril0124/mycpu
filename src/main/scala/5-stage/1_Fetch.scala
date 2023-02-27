@@ -16,11 +16,9 @@ class FetchIO()(implicit val p: Parameters) extends MyBundle{
     val in = new Bundle{
         val start = Input(Bool())
         val execute = Flipped(DecoupledIO(new Execute2Fetch))
-        // TODO: pipeline control signals
-        // val stall = Input(Bool())
     }
     val out = DecoupledIO(new FetchOut)
-    val ctrl = Flipped(new PipelineCtrlBundle)
+    val ctrl = Input(new PipelineCtrlBundle)
 }
 
 
@@ -41,7 +39,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
         stageReg := 0.U.asTypeOf(io.in.execute.bits)
     }
 
-    val pcReg = RegInit(startAddr.U(xlen.W))
+    val pcReg = RegInit(resetPc.U(xlen.W))
     val inst = WireInit(0.U(ilen.W))
 
     val instMem = Module(new IMem())

@@ -18,7 +18,7 @@ tests:
 	cp ${shell find ${PRJ_DIR}/test_run_dir -name "${mod}.vcd"} ${PRJ_DIR}/temp
 
 raw_test:
-	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)RawTest -dt $(BUILD_DIR) --output-file ${mod}.v
+	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)RawTest -dt $(BUILD_DIR) --output-file ${mod}.v 
 
 print_verilog: 
 	@echo

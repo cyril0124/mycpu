@@ -9,7 +9,7 @@ import mycpu.util._
 
 
 class PipelineCtrlBundle()(implicit val p: Parameters) extends MyBundle{
-    val stall = Output(Bool())
-    val flush = Output(Bool())
+    val stall = Bool()
+    val flush = Bool()
 }
 

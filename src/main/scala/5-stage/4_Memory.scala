@@ -9,15 +9,12 @@ import mycpu.util._
 import dataclass.data
 
 class MemoryHazardBundle()(implicit val p: Parameters) extends MyBundle{
-    val rd = Output(UInt(5.W))
-    val rdVal = Output(UInt(xlen.W))
-    val regWrEn = Output(Bool())
+    val rd = UInt(5.W)
+    val rdVal = UInt(xlen.W)
+    val regWrEn = Bool()
 }
 
 class MemoryOut()(implicit val p: Parameters) extends MyBundle{
-    val rd = UInt(5.W)
-    val rs1 = UInt(5.W)
-    val rs2 = UInt(5.W)
     val resultSrc = UInt(2.W)
     val regWrEn = Bool()
     val rdData = Bool()
@@ -30,8 +27,8 @@ class MemoryOut()(implicit val p: Parameters) extends MyBundle{
 class MemoryIO()(implicit val p: Parameters) extends MyBundle{
     val in = Flipped(DecoupledIO(new ExecuteOut))
     val out = DecoupledIO(new MemoryOut)
-    val hazard = new MemoryHazardBundle
-    val ctrl = Flipped(new PipelineCtrlBundle)
+    val hazard = Output(new MemoryHazardBundle)
+    val ctrl = Input(new PipelineCtrlBundle)
 }
 
 class Memory()(implicit val p: Parameters) extends MyModule{
@@ -59,9 +56,6 @@ class Memory()(implicit val p: Parameters) extends MyModule{
     dataMem.io.write.dataType := stageReg.memType
     dataMem.io.write.data := stageReg.data2
 
-    io.out.bits.rd := stageReg.rd
-    io.out.bits.rs1 := stageReg.rs1
-    io.out.bits.rs2 := stageReg.rs2
     io.out.bits.resultSrc := stageReg.resultSrc
     io.out.bits.regWrEn := stageReg.regWrEn
     io.out.bits.rdData := dataMem.io.read.data.bits & dataMem.io.read.data.valid
@@ -71,7 +65,8 @@ class Memory()(implicit val p: Parameters) extends MyModule{
     io.out.bits.instState <> stageReg.instState
 
     // hazard control
-    io.hazard.rd := stageReg.rd
+    val inst = stageReg.instState.inst
+    io.hazard.rd := InstField(inst, "rd")
     io.hazard.regWrEn := stageReg.regWrEn
     io.hazard.rdVal := stageReg.aluOut
 
