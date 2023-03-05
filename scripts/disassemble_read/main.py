@@ -29,12 +29,12 @@ def main():
                 # print(strr[2]+' '+str(num))
 
                 # 8-bit per line
-                for i in range(1,5):
-                    byte = strr[2][8-i*2:8-2*(i-1)]
-                    print(byte,file=wf)
+                # for i in range(1,5):
+                #     byte = strr[2][8-i*2:8-2*(i-1)]
+                #     print(byte,file=wf)
 
                 # 32-bit per line
-                # print(strr[2],file=wf)
+                print(strr[2],file=wf)
 
             except:
                 pass

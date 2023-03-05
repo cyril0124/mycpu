@@ -61,9 +61,13 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     // ctrlUnit.io.in.zero := aluZero
     ctrlUnit.io.in.inst := inst
 
-    val instMem = Module(new IMem())
-    instMem.io.addr := pcReg
-    inst := instMem.io.inst
+    val instMem = Module(new ROM())
+    instMem.io <> DontCare
+    instMem.io.raddr := pcReg
+    inst := instMem.io.rdata
+    // val instMem = Module(new IMem())
+    // instMem.io.addr := pcReg
+    // inst := instMem.io.inst
 
     val regFile = Module(new RegFile2(UInt(32.W)))
     val regFileRdAddr = VecInit(rs1, rs2)
@@ -92,18 +96,13 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     alu.io.opSel := aluOpSel
     aluZero := alu.io.zero
 
-    val dataMem = Module(new DMem())
-    val dataMemRdData = RegEnable(dataMem.io.read.data.bits, dataMem.io.read.data.valid) 
-    dataMem.io.read.addr := aluOut
-    dataMem.io.read.en := memRdEn
-    dataMem.io.read.dataType := memType
-    dataMem.io.read.sign := memSign
-    dataMem.io.write.addr := aluOut
-    dataMem.io.write.en := memWrEn
-    dataMem.io.write.dataType := memType
-    dataMem.io.write.data := regFileRdData(1)
+    val dataMem = Module(new RAM())
+    val dataMemRdData = ReadMask(dataMem.io.rdata, memSign, memType, xlen)
+    dataMem.io.raddr := aluOut
+    dataMem.io.waddr := aluOut
+    dataMem.io.wen := memWrEn
+    dataMem.io.wdata := WriteMask(regFileRdData(1), memType, xlen)
 
-    // regFileWrData(0) := Mux(isJump, pcNext4, Mux(resultSrc, dataMemRdData, aluOut))
     regFileWrData(0) := MuxLookup(resultSrc, dataMemRdData, Seq(
                             "b00".U -> aluOut,
                             "b01".U -> dataMemRdData,
@@ -123,7 +122,6 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     val envStop = ecall | ebreak
     val isEcall = ecall === true.B
     val cpuStop = envStop | ~io.start
-    // pcReg := Mux(io.start, pcNext, pcReg)
     pcReg := Mux(cpuStop, pcReg, pcNext)
     DebugLog(myCpuParams, DebugLevel.DBG_HIGH, "pcReg=%x\tinst=%x\n",pcReg,inst)
 
@@ -146,7 +144,7 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
     }
     
     if(enableDebug & rfStateOut) {
-        io.cpuState.inst := instMem.io.inst
+        io.cpuState.inst := inst
         io.cpuState.instCommit := RegNext(clock.asBool)
         io.cpuState.pc := pcReg
         io.cpuState.intRegState.zip(regFile.io.state.get.regState).foreach { case(s, r) => s := r }
@@ -154,9 +152,6 @@ class MyCpu(startAddr: Int = 0)(implicit val p: Parameters) extends MyModule {
         io.cpuState <> DontCare
     }
 
-
-    // TODO: Merge Difftest into this project or Using Spike as reference model for the use of comparing every single result of instruction execution(e.g. reg info...)
-    // TODO: support tree manegement, every component needs one parameter: parentName: String = "Unknown" 
 }
 
 object MyCpuGenRTL extends App {

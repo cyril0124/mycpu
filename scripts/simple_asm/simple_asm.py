@@ -11,7 +11,9 @@ def code_write(code_str, comment, wf, with_comment = False):
     typ = type(code_str)
     if(typ == list):
         for code in code_str:
-            print(code,file=wf)
+            # print(code,file=wf)
+            print(code, file=wf, end='')
+        print(file=wf)
     elif(typ == str):
         print(code_str,file=wf,end='')
     if(with_comment):
@@ -67,8 +69,9 @@ def main():
                 assert out_format == 'bin' or out_format == 'hex', "code format error"
                 # write output file
                 code = inst.to_binary() if(out_format == 'bin') else inst.to_hex(to_one_line=False,prefix=False) if(out_format == 'hex') else ''
-                code_reverse = code[::-1]
-                # print(code_reverse)
+                # code_reverse = code[::-1]
+                code_reverse = code
+                print(code_reverse)
                 code_write(code_reverse,line[:-1],wf,with_comment=False)
                 
                 # readable version of generate output file

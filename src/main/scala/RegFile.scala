@@ -42,7 +42,8 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
     regs.zipWithIndex.foreach { case (r,i) =>
       r := 0.U
       if(i ==  2) 
-        r := "h407ffc80".U // qemu-riscv32 will set this reg to this val before start the whole grogram
+        // r := "h407ffac0".U // qemu-riscv32 will set this reg to this val before start the whole grogram
+        r := 0.U
     }
   }
   regs(0) := 0.U
@@ -52,7 +53,7 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   (0 until rfRdPort).foreach{ i =>
     when(io.r(i).en) {
       // write operation has higher priority
-      when(io.w(0).en && io.r(i).addr === io.w(0).addr){
+      when(io.w(0).en && io.r(i).addr === io.w(0).addr && io.w(0).addr =/= 0.U) { // !! cannot write zero reg, because it is hardwired to 0.
         io.r(i).data := io.w(0).data
       }.otherwise{
         io.r(i).data := regs(io.r(i).addr)
@@ -141,7 +142,7 @@ class RegFile2[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extend
     regs.zipWithIndex.foreach { case (r,i) =>
       r := 0.U
       if(i ==  2) 
-        r := "h407ffc80".U // qemu-riscv32 will set this reg to this val before start the whole grogram
+        r := "h407ffac0".U // qemu-riscv32 will set this reg to this val before start the whole grogram
     }
   }
   regs(0) := 0.U

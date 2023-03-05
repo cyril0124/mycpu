@@ -35,14 +35,6 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
 
     // it should "test BankRam1P" in {
     //     test(new BankRam1P_1()).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
-    //         val testCaseNum = 20
-
-    //         def reset(): Unit = {
-    //             c.reset.poke(true.B)
-    //             c.clock.step(2)
-    //             c.reset.poke(false.B)
-    //             c.clock.step(2)
-    //         }
 
     //         def write(addr: Int, data:Int, mask: UInt): Unit = {
     //             c.io.en.poke(1.U)
@@ -63,56 +55,67 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //             c.io.rdata.peek().litValue.toInt
     //         }
 
-    //         def rwTest(addr: Int, data: Int, mask: UInt): Unit = {
-    //             write(addr, data, mask)
-    //             val rdata = read(addr)
-    //             c.io.rdata.expect(data.U, s"in addr ${addr}")
+    //         // test write
+    //         val testCaseNum = 30
+    //         val addr = Seq.fill(testCaseNum)(nextInt(1024) / 4 * 4)
+    //         val data = Seq.fill(testCaseNum)(nextInt(1024))
+    //         val mask = (0 until testCaseNum).map{ i => 
+    //             val t = nextInt(3)
+    //             (t % 3) match {
+    //                 case 0 => 15 // "b1111".U // 32-bit
+    //                 case 1 => 3 // "b0011".U // 16-bit
+    //                 case 2 => 1 // "b0001".U // 8-bit
+    //             }
     //         }
-
-    //         println()
-    //         reset()
-    //         for( i <- 0 until testCaseNum) {
-    //             val addr = nextInt(1024) / 4 * 4
-    //             val data = nextInt(math.pow(2, 4*8).toInt)
-    //             rwTest(addr, data, "b1111".U)
-    //         }
-
-    //         println()
-    //         reset()
-    //         for( i <- 0 until testCaseNum) {
-    //             val addr = nextInt(1024) / 4 * 4
-    //             val data = nextInt(math.pow(2, 3*8).toInt)
-    //             rwTest(addr, data, "b0111".U)
+    //         val expectData = (0 until testCaseNum).map{ i => 
+    //             mask(i) match {
+    //                 case 15 => data(i)
+    //                 case 3 => data(i) & 0xFFFF
+    //                 case 1 => data(i) & 0xFF
+    //             }
     //         }
             
-    //         println()
-    //         reset()
-    //         for( i <- 0 until testCaseNum) {
-    //             val addr = nextInt(1024) / 4 * 4
-    //             val data = nextInt(math.pow(2, 3*8).toInt)
-    //             rwTest(addr, data, "b0011".U)
+    //         var scoreboard: scala.collection.mutable.Map[Int,Int] = scala.collection.mutable.Map() // (addr, data)
+    //         // write
+    //         var i = 0;
+    //         while(i < testCaseNum) {
+    //             val en = nextInt(2)
+    //             if(en == 1) {
+    //                 write(addr(i), data(i), mask(i).U)
+    //                 if(!scoreboard.contains(addr(i)))
+    //                     scoreboard += (addr(i) -> expectData(i))
+    //                 else
+    //                     scoreboard(addr(i)) = expectData(i)
+    //                 c.io.en.poke(0)
+    //                 i = i + 1
+    //             } else {
+    //                 c.io.en.poke(0)
+    //                 c.clock.step()
+    //             }
     //         }
-            
-    //         println()
-    //         reset()
-    //         for( i <- 0 until testCaseNum) {
-    //             val addr = nextInt(1024) / 4 * 4
-    //             val data = nextInt(math.pow(2, 1*8).toInt)
-    //             rwTest(addr, data, "b0001".U)
+    //         // read back
+    //         i = 0;
+    //         while(i < testCaseNum) {
+    //             val en = nextInt(2)
+    //             if(en == 1) {
+    //                 read(addr(i))
+    //                 c.io.rdata.expect(scoreboard(addr(i)), s"addr:${addr(i)}")
+    //                 c.io.en.poke(0)
+    //                 println(">>pass")
+    //                 i = i + 1
+    //             } else {
+    //                 c.io.en.poke(0)
+    //                 c.clock.step()
+    //             }
     //         }
+
+    //         c.clock.step(10)
+    //         println("BankRam1P test all PASS!")
     //     }
     // }
 
     // it should "test DataBank" in {
     //     test(new DCacheDataBank(UInt(64.W))).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
-    //         var scoreboard: scala.collection.mutable.Map[(Int, Int),Int] = scala.collection.mutable.Map()
-
-    //         val testCaseNum = 200
-    //         val wdata = Seq.fill(testCaseNum)(nextInt(math.pow(2, 32).toInt))
-    //         val en = Seq.fill(testCaseNum)(nextInt(2))
-    //         val set = Seq.fill(testCaseNum)(nextInt(64))
-    //         val way = Seq.fill(testCaseNum)(nextInt(4))
-
     //         def write(set: Int, way: Int, data: Int, memType: UInt): Unit = {
     //             c.io.r.en.poke(0.U)
     //             c.io.w.en.poke(1.U)
@@ -121,20 +124,6 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //             c.io.w.data.poke(data.U)
     //             c.io.w.memType.poke(memType)
     //             c.clock.step()
-    //         }
-
-    //         def writeWithEn(set: Int, way: Int, data: Int, memType: UInt, en: Int): Unit = {
-    //             if(en == 0) {
-    //                 c.io.r.en.poke(0.U)
-    //                 c.io.w.en.poke(0.U)
-    //                 c.io.w.set.poke(set.U)
-    //                 c.io.w.way.poke(way.U)
-    //                 c.io.w.data.poke(data.U)
-    //                 c.io.w.memType.poke(memType)
-    //                 c.clock.step()
-    //             }
-    //             else
-    //                 write(set,way,data,memType)
     //         }
 
     //         def read(set: Int, way: Int, memType: UInt): UInt = {
@@ -147,57 +136,63 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //             c.io.r.data.peek()
     //         }
 
-    //         def readWithEn(set: Int, way: Int, memType: UInt, en: Int): UInt = {
-    //             if(en == 0) {
-    //                 c.io.r.en.poke(0.U)
-    //                 c.clock.step()
-    //                 0.U
+    //         val testCaseNum = 200
+    //         val wdata = Seq.fill(testCaseNum)(nextInt(math.pow(2, 32).toInt))
+    //         val en = Seq.fill(testCaseNum)(nextInt(2))
+    //         val set = Seq.fill(testCaseNum)(nextInt(64))
+    //         val way = Seq.fill(testCaseNum)(nextInt(4))
+    //         val memType = (0 until testCaseNum).map{ i => 
+    //             val t = nextInt(3)  // 000: 8-bit  001: 16-bit  010: 32-bit  011: 64-bit
+    //             (t % 3) match {
+    //                 case 2 => 2  // 32-bit
+    //                 case 1 => 1  // 16-bit
+    //                 case 0 => 0  // 8-bit
     //             }
-    //             else
-    //                 read(set,way,memType)
+    //         }
+    //         val expectData = (0 until testCaseNum).map{ i => 
+    //             memType(i) match {
+    //                 case 2 => wdata(i)
+    //                 case 1 => wdata(i) & 0xFFFF
+    //                 case 0 => wdata(i) & 0xFF
+    //             }
     //         }
 
-    //         for(i <- 0 until testCaseNum){
-    //             val mset = set(i)
-    //             val mway = way(i)
-    //             val mwdata = wdata(i)
-    //             val men = en(i)
-    //             if(men == 1) {
-    //                 write(mset,mway,mwdata,"b010".U)
-    //                 if(scoreboard.contains((mset, mway))) {
-    //                     scoreboard((mset, mway)) = mwdata
-    //                     println(s"update ${mset}, ${mway} ${scoreboard.get((mset, mway)).get} ==> ${mwdata}")
-    //                 }
+    //         var scoreboard: scala.collection.mutable.Map[(Int, Int),(Int, Int)] = scala.collection.mutable.Map() // (set, way), (data, memType)
+
+    //         var i = 0
+    //         while( i < testCaseNum ) {
+    //             val en = nextInt(2)
+    //             if(en == 1) {
+    //                 write(set(i), way(i), wdata(i), memType(i).U)
+    //                 if(!scoreboard.contains((set(i), way(i))))
+    //                     scoreboard += ((set(i), way(i)) -> (expectData(i), memType(i)))
     //                 else
-    //                     scoreboard += ((mset, mway) -> mwdata)
-    //             }else {
-    //                 if(!scoreboard.contains((mset, mway)))
-    //                     scoreboard += ((mset, mway) -> 0)
+    //                     scoreboard((set(i), way(i))) = (expectData(i), memType(i))
+    //                 c.io.w.en.poke(0)
+    //                 i = i + 1
+    //             } else {
+    //                 c.io.w.en.poke(0)
+    //                 c.clock.step()
     //             }
     //         }
 
-    //         println("all test case:")
-    //         scoreboard.foreach(println)
-    //         println()
-
-    //         c.io.w.en.poke(0.U)
-    //         for(i <- 0 until testCaseNum){
-    //             val mset = set(i)
-    //             val mway = way(i)
-    //             val men = en(i)
-    //             val expect = scoreboard.get((mset, mway)).get
-    //             print(s"(${mset}, ${mway}), ${expect} en: ${men}")
-    //             if(men == 1) {
-    //                 print(s" expect: ${expect} ")
-    //                 val rdata = read(mset,mway,"b010".U)
-    //                 if(rdata.litValue != expect){
-    //                     assert(false, s"error expect: ${expect} but get: ${c.io.r.data.peek().litValue} in (${mset}, ${mway})\n")
-    //                 }
-    //                 println(s"\tok (${mset},${mway}) => ${expect}")
-    //             }else {
-    //                 println()
+    //         i = 0;
+    //         while( i < testCaseNum ) {
+    //             val en = nextInt(2)
+    //             if(en == 1) {
+    //                 read(set(i), way(i), scoreboard(set(i), way(i))._2.U)
+    //                 c.io.r.data.expect(scoreboard(set(i), way(i))._1)
+    //                 c.io.r.en.poke(0)
+    //                 i = i + 1
+    //                 println(">>pass")
+    //             } else {
+    //                 c.io.r.en.poke(0)
+    //                 c.clock.step()
     //             }
-    //         }
+    //         } 
+
+    //         c.clock.step(10)
+    //         println("DataBank test all PASS!")
     //     }
     // }
 
@@ -207,25 +202,94 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
         )
     })
     it should "test DCache" in {
-        test(new DCache()(defaultConfig)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
+        test(new DCache(nrSet = 16)(defaultConfig)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
+            val resp = c.io.tlbus.resp
+
             def read(addr: Int, memType: UInt): Unit = {
                 c.io.read.req.valid.poke(1)
                 c.io.read.req.bits.addr.poke(addr)
                 c.io.read.req.bits.memType.poke(memType)
+                c.clock.step()
+                c.io.read.req.valid.poke(0)
             }
-            read(8, "b010".U)
-            c.clock.step()
-            c.io.read.req.valid.poke(0)
-            c.io.missReq.valid.expect(true.B)
-            c.io.missReq.bits.addr.expect(8)
-            c.clock.step()
-            c.io.refillResp.valid.poke(1)
-            c.io.refillResp.bits.data.poke(123)
-            c.clock.step()
-            c.io.refillResp.valid.poke(0)
-            c.clock.step()
-            read(8, "b010".U)
-            c.clock.step()
+
+            def respRefill(data: Int, source: Int): Unit = {
+                resp.valid.poke(1)
+                resp.bits.data.poke(data)
+                resp.bits.source.poke(source)
+                c.clock.step()
+                // resp.valid.poke(0)
+            }
+
+            val testCaseNum = 200
+            val addrs = Seq.fill(testCaseNum)(nextInt(math.pow(2,31).toInt))
+            val datas = Seq.fill(testCaseNum)(nextInt(math.pow(2,31).toInt))
+            val memTypes = (0 until testCaseNum).map{ i =>
+                                 (addrs(i) % 3) match {
+                                    case 0 => "b000".U
+                                    case 1 => "b001".U
+                                    case 2 => "b010".U
+                                    case _ => "b010".U
+                                }
+                            }
+            val datasWithMask = datas.zip(addrs).map {
+                                    case(d,a) => ( a % 3) match {
+                                                    case 0 => d & 0xFF
+                                                    case 1 => d & 0xFFFF
+                                                    case 2 => d
+                                                    case _ => d
+                                                }
+                                }        
+
+            var scoreboard: scala.collection.mutable.Map[Int,(Int, UInt)] = scala.collection.mutable.Map() // (addr, (data, memType))
+            
+            c.io.tlbus.req.ready.poke(1)
+            for( i <- 0 until testCaseNum) {
+                if(!scoreboard.contains(addrs(i))) {
+                    println(s">>>[rd miss]expect: ${datasWithMask(i)}")
+                    read(addrs(i), memTypes(i))
+                    c.clock.step() // read cache info 
+                    c.clock.step() // miss & send sub req
+                    respRefill(datas(i), 1)
+
+                    c.io.read.resp.valid.expect(1)
+                    c.io.read.resp.bits.data.expect(datasWithMask(i))
+                    resp.valid.poke(0)
+                    
+                    println("PASS[rd miss]<<<")
+
+                    scoreboard += (addrs(i) -> (datasWithMask(i) -> memTypes(i)))
+                    c.clock.step()
+                } else {
+                    c.clock.step()
+                }
+            }
+
+            c.clock.step(10)
+            
+            println("\nread hit test")
+            for( i <- 0 until testCaseNum) {
+                println(s">>>[rd hit]expect: ${scoreboard(addrs(i))._1} at addr: ${addrs(i)}")
+
+                read(addrs(i), scoreboard(addrs(i))._2)
+                c.clock.step()
+
+                if(c.io.read.resp.valid.peekBoolean() == true) { 
+                    c.io.read.resp.valid.expect(1, s"expect: ${scoreboard(addrs(i))._1} at addr: ${addrs(i)}")
+                    c.io.read.resp.bits.data.expect(scoreboard(addrs(i))._1)
+                    println("PASS[rd hit]<<<")
+                } else { // cache block has been replaced
+                    c.clock.step()
+                    respRefill(datas(i), 1)
+                    resp.valid.poke(0)
+                }
+                
+                c.clock.step()
+            }
+            
+            
+            
+            c.clock.step(10)
         }
     }
 

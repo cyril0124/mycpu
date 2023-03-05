@@ -52,6 +52,62 @@ object InstField {
     }
 }
 
+object ReadMask{
+    // sign ==> 0: unsigned  1:signed
+    def apply(data: UInt, sign: UInt, typ: UInt, xlen: Int): UInt = {
+        val out = Wire(UInt(xlen.W))
+        val mask = Fill(xlen, 1.U)
+        out := data
+        switch(typ) {
+            // 8-bit
+            is("b000".U) { out := Cat(Fill(xlen-8, data(7) & sign), data(7, 0)) }
+            // 16-bit
+            is("b001".U) { out := Cat(Fill(xlen-16, data(7+8) & sign), data(7+8, 0)) }
+            // 32-bit
+            is("b010".U) { 
+                if(xlen == 32) {
+                    out := data
+                } else {
+                    out := Cat(Fill(xlen-32, data(7+8*3) & sign), data(7+8*3, 0)) 
+                }   
+            }
+            is("b011".U) {
+                if(xlen == 64) {
+                    out := data
+                } else if(xlen < 64) {
+                    // assert(false, "error usage in ReadType() xlen < 64 while you want read 64-bit data!")
+                } else { // xlen > 64
+                    out := Cat(Fill(xlen-64, data(7+8*7) & sign), data(7+8*7, 0))
+                }
+            }
+        }
+        out
+    }
+}
+
+object WriteMask {
+    def apply(wrData: UInt, typ: UInt, xlen: Int): UInt = {
+        val out = Wire(UInt(xlen.W))
+        out := wrData
+        switch(typ) {
+            // 8-bit
+            is("b000".U) { out := Cat(Fill(xlen-8, 0.U), wrData(7, 0)) }
+            // 16-bit
+            is("b001".U) { out := Cat(Fill(xlen-16, 1.U), wrData(7+8, 0)) }
+            // 32-bit
+            is("b010".U) { 
+                if(xlen == 32) {
+                    out := wrData
+                } else {
+                    out := Cat(Fill(xlen-32, 1.U), wrData(7+8*3, 0))
+                }
+            }
+            // 64-bit 
+            // TODO:
+        }
+        out
+    }
+}
 
 object ParamRepoter{
     def apply(moduleName:String, args:Any*): Unit =  {
@@ -148,38 +204,3 @@ object RegStrtoNum {
         readVec.reduce(_+_)
     }
 }
-
-// TODO: fill it
-/**
- * (1) drive signals with expect output checking
-  * driver(
-  *     drive signals:
-  *         Map(
-  *             c.io.in -> 1.U
-  *             ......
-  *         )
-  *     expect:
-  *         Map(
-  *             c.io.out -> 1.U
-  *         )
-  *     step? 
-  *         c.clock.step()
-  * )
-  * 
-  * (2) drive signals without expecting signal output checking
-  * 
-  * need to check whether the drive signals is "hit"
-  *     i.e. check the input signal ports and compare with input drived signals using "c.io.xxx.peek()"
-  */
-
-
-// TODO:
-// object Repeat{
-//     def apply(times:Int)(xs:Any) {
-//         (0 until times).foreach{ i =>
-//             println(times)
-//             xs
-//         }
-//     }
-// }
-

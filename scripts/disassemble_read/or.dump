@@ -1,0 +1,106 @@
+
+/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/or:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <main>:
+   0:	ff0100b7          	lui	ra,0xff010
+   4:	f0008093          	addi	ra,ra,-256 # ff00ff00 <pass+0xff00fdfc>
+   8:	0f0f1137          	lui	sp,0xf0f1
+   c:	f0f10113          	addi	sp,sp,-241 # f0f0f0f <pass+0xf0f0e0b>
+  10:	0020ef33          	or	t5,ra,sp
+  14:	ff100eb7          	lui	t4,0xff100
+  18:	f0fe8e93          	addi	t4,t4,-241 # ff0fff0f <pass+0xff0ffe0b>
+  1c:	00200193          	li	gp,2
+  20:	0ddf1c63          	bne	t5,t4,f8 <fail>
+
+00000024 <test_3>:
+  24:	0ff010b7          	lui	ra,0xff01
+  28:	ff008093          	addi	ra,ra,-16 # ff00ff0 <pass+0xff00eec>
+  2c:	f0f0f137          	lui	sp,0xf0f0f
+  30:	0f010113          	addi	sp,sp,240 # f0f0f0f0 <pass+0xf0f0efec>
+  34:	0020ef33          	or	t5,ra,sp
+  38:	fff10eb7          	lui	t4,0xfff10
+  3c:	ff0e8e93          	addi	t4,t4,-16 # fff0fff0 <pass+0xfff0feec>
+  40:	00300193          	li	gp,3
+  44:	0bdf1a63          	bne	t5,t4,f8 <fail>
+
+00000048 <test_4>:
+  48:	00ff00b7          	lui	ra,0xff0
+  4c:	0ff08093          	addi	ra,ra,255 # ff00ff <pass+0xfefffb>
+  50:	0f0f1137          	lui	sp,0xf0f1
+  54:	f0f10113          	addi	sp,sp,-241 # f0f0f0f <pass+0xf0f0e0b>
+  58:	0020ef33          	or	t5,ra,sp
+  5c:	0fff1eb7          	lui	t4,0xfff1
+  60:	fffe8e93          	addi	t4,t4,-1 # fff0fff <pass+0xfff0efb>
+  64:	00400193          	li	gp,4
+  68:	09df1863          	bne	t5,t4,f8 <fail>
+
+0000006c <test_5>:
+  6c:	f00ff0b7          	lui	ra,0xf00ff
+  70:	00f08093          	addi	ra,ra,15 # f00ff00f <pass+0xf00fef0b>
+  74:	f0f0f137          	lui	sp,0xf0f0f
+  78:	0f010113          	addi	sp,sp,240 # f0f0f0f0 <pass+0xf0f0efec>
+  7c:	0020ef33          	or	t5,ra,sp
+  80:	f0fffeb7          	lui	t4,0xf0fff
+  84:	0ffe8e93          	addi	t4,t4,255 # f0fff0ff <pass+0xf0ffeffb>
+  88:	00500193          	li	gp,5
+  8c:	07df1663          	bne	t5,t4,f8 <fail>
+
+00000090 <test_6>:
+  90:	ff0100b7          	lui	ra,0xff010
+  94:	f0008093          	addi	ra,ra,-256 # ff00ff00 <pass+0xff00fdfc>
+  98:	0f0f1137          	lui	sp,0xf0f1
+  9c:	f0f10113          	addi	sp,sp,-241 # f0f0f0f <pass+0xf0f0e0b>
+  a0:	0020e0b3          	or	ra,ra,sp
+  a4:	ff100eb7          	lui	t4,0xff100
+  a8:	f0fe8e93          	addi	t4,t4,-241 # ff0fff0f <pass+0xff0ffe0b>
+  ac:	00600193          	li	gp,6
+  b0:	05d09463          	bne	ra,t4,f8 <fail>
+
+000000b4 <test_7>:
+  b4:	ff0100b7          	lui	ra,0xff010
+  b8:	f0008093          	addi	ra,ra,-256 # ff00ff00 <pass+0xff00fdfc>
+  bc:	0f0f1137          	lui	sp,0xf0f1
+  c0:	f0f10113          	addi	sp,sp,-241 # f0f0f0f <pass+0xf0f0e0b>
+  c4:	0020e133          	or	sp,ra,sp
+  c8:	ff100eb7          	lui	t4,0xff100
+  cc:	f0fe8e93          	addi	t4,t4,-241 # ff0fff0f <pass+0xff0ffe0b>
+  d0:	00700193          	li	gp,7
+  d4:	03d11263          	bne	sp,t4,f8 <fail>
+
+000000d8 <test_8>:
+  d8:	ff0100b7          	lui	ra,0xff010
+  dc:	f0008093          	addi	ra,ra,-256 # ff00ff00 <pass+0xff00fdfc>
+  e0:	0010e0b3          	or	ra,ra,ra
+  e4:	ff010eb7          	lui	t4,0xff010
+  e8:	f00e8e93          	addi	t4,t4,-256 # ff00ff00 <pass+0xff00fdfc>
+  ec:	00800193          	li	gp,8
+  f0:	01d09463          	bne	ra,t4,f8 <fail>
+  f4:	00301863          	bne	zero,gp,104 <pass>
+
+000000f8 <fail>:
+  f8:	00000513          	li	a0,0
+  fc:	05d00893          	li	a7,93
+ 100:	00000073          	ecall
+
+00000104 <pass>:
+ 104:	02a00513          	li	a0,42
+ 108:	05d00893          	li	a7,93
+ 10c:	00000073          	ecall
+
+Disassembly of section .riscv.attributes:
+
+00000000 <.riscv.attributes>:
+   0:	1941                	.2byte	0x1941
+   2:	0000                	.2byte	0x0
+   4:	7200                	.2byte	0x7200
+   6:	7369                	.2byte	0x7369
+   8:	01007663          	bgeu	zero,a6,14 <main+0x14>
+   c:	0000000f          	fence	unknown,unknown
+  10:	7205                	.2byte	0x7205
+  12:	3376                	.2byte	0x3376
+  14:	6932                	.2byte	0x6932
+  16:	7032                	.2byte	0x7032
+  18:	0030                	.2byte	0x30

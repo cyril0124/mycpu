@@ -39,14 +39,14 @@ object XDecode extends DecodeConstants {
         SLTIU   -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(SLTU), ALU_SRC_B,  IMM_I,  IMM_SE, REG_WR_Y),
         XORI    -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(XOR),  ALU_SRC_B,  IMM_I,  IMM_SE, REG_WR_Y),
         SRLI    -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(SRL),  ALU_SRC_B,  IMM_I,  IMM_ZE, REG_WR_Y),
-        SRAI    -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(SRA),  ALU_SRC_B,  IMM_I,  IMM_ZE, REG_WR_Y),
+        SRAI    -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(SRA),  ALU_SRC_B,  IMM_I,  IMM_SE, REG_WR_Y),
         ORI     -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(OR),   ALU_SRC_B,  IMM_I,  IMM_SE, REG_WR_Y),
         ANDI    -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(AND),  ALU_SRC_B,  IMM_I,  IMM_SE, REG_WR_Y),
         AUIPC   -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(ADD),  ALU_SRC_B,  IMM_U,  IMM_ZE, REG_WR_Y),
 
-        SB      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_8,  BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_ZE, REG_WR_N),
-        SH      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_16, BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_ZE, REG_WR_N),
-        SW      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_32, BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_ZE, REG_WR_N),
+        SB      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_8,  BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_SE, REG_WR_N),
+        SH      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_16, BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_SE, REG_WR_N),
+        SW      -> List(N,  RET_SRC_X,  MEM_WR_Y,   MEM_RD_N,   MEM_TYP_32, BitPat(ADD),  ALU_SRC_B,  IMM_S,  IMM_SE, REG_WR_N),
 
         Instructions.ADD     -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(ADD),  ALU_SRC_A,  IMM_X,  IMM_ZE, REG_WR_Y),
         Instructions.SUB     -> List(N,  RET_SRC_A,  MEM_WR_N,   MEM_RD_N,   MEM_TYP_XX, BitPat(SUB),  ALU_SRC_A,  IMM_X,  IMM_ZE, REG_WR_Y),

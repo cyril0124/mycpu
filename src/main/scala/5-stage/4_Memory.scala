@@ -17,7 +17,7 @@ class MemoryHazardBundle()(implicit val p: Parameters) extends MyBundle{
 class MemoryOut()(implicit val p: Parameters) extends MyBundle{
     val resultSrc = UInt(2.W)
     val regWrEn = Bool()
-    val rdData = Bool()
+    val rdData = UInt(xlen.W)
     val aluOut = UInt(xlen.W)
     val pcNext4 = UInt(xlen.W)
 
@@ -46,19 +46,27 @@ class Memory()(implicit val p: Parameters) extends MyModule{
     }
 
     // data memory read
-    val dataMem = Module(new DMem())
-    dataMem.io.read.addr := stageReg.aluOut
-    dataMem.io.read.en := stageReg.memRdEn
-    dataMem.io.read.dataType := stageReg.memType
-    dataMem.io.read.sign := stageReg.memSign
-    dataMem.io.write.addr := stageReg.aluOut
-    dataMem.io.write.en := stageReg.memWrEn
-    dataMem.io.write.dataType := stageReg.memType
-    dataMem.io.write.data := stageReg.data2
+    // val dataMem = Module(new DMem())
+    // dataMem.io.read.addr := stageReg.aluOut
+    // dataMem.io.read.en := stageReg.memRdEn
+    // dataMem.io.read.dataType := stageReg.memType
+    // dataMem.io.read.sign := stageReg.memSign
+    // dataMem.io.write.addr := stageReg.aluOut
+    // dataMem.io.write.en := stageReg.memWrEn
+    // dataMem.io.write.dataType := stageReg.memType
+    // dataMem.io.write.data := stageReg.data2
+    val dataMem = Module(new RAM())
+    val dataMemRdData = ReadMask(dataMem.io.rdata, stageReg.memSign, stageReg.memType, xlen)
+    dataMem.io.raddr := stageReg.aluOut // Mux(memoryLatch, io.in.bits.aluOut, stageReg.aluOut)
+    dataMem.io.waddr := stageReg.aluOut
+    dataMem.io.wen := stageReg.memWrEn
+    dataMem.io.wdata := WriteMask(stageReg.data2, stageReg.memType, xlen)
+    dontTouch(dataMemRdData)
 
     io.out.bits.resultSrc := stageReg.resultSrc
     io.out.bits.regWrEn := stageReg.regWrEn
-    io.out.bits.rdData := dataMem.io.read.data.bits & dataMem.io.read.data.valid
+    // io.out.bits.rdData := dataMem.io.read.data.bits & dataMem.io.read.data.valid
+    io.out.bits.rdData := dataMemRdData
     io.out.bits.aluOut := stageReg.aluOut
     io.out.bits.pcNext4 := stageReg.pcNext4
 
@@ -71,4 +79,13 @@ class Memory()(implicit val p: Parameters) extends MyModule{
     io.hazard.rdVal := stageReg.aluOut
 
     io.out.valid := io.out.ready
+}
+
+object MemoryGenRTL extends App {
+    val defaultConfig = new Config((_,_,_) => {
+        case MyCpuParamsKey => MyCpuParameters()
+    })
+
+    println("Generating the Memory hardware")
+    (new chisel3.stage.ChiselStage).emitVerilog(new Memory()(defaultConfig), Array("--target-dir", "build"))
 }

@@ -85,12 +85,16 @@ class Execute()(implicit val p: Parameters) extends MyModule{
                                 "b01".U -> io.hazard.in.rdValM, 
                                 "b10".U -> io.hazard.in.rdValW)
                             )
-    alu.io.in2 := MuxLookup(io.hazard.in.aluSrc2, Mux(stageReg.aluSrc, stageReg.imm, stageReg.data2), Seq(
-                                "b00".U -> Mux(stageReg.aluSrc, stageReg.imm, stageReg.data2), 
-                                "b01".U -> io.hazard.in.rdValM, 
-                                "b10".U -> io.hazard.in.rdValW)
-                            )
     
+    // check regfile data2 sources for hazard
+    val data2 = WireInit(0.U(xlen.W))
+    data2 := MuxLookup(io.hazard.in.aluSrc2, stageReg.data2, Seq(
+                            "b00".U -> stageReg.data2,
+                            "b01".U -> io.hazard.in.rdValM,
+                            "b10".U -> io.hazard.in.rdValW
+                        ))
+    alu.io.in2 := Mux(stageReg.aluSrc, stageReg.imm, data2)
+
     alu.io.opSel := stageReg.aluOpSel
     aluZero := alu.io.zero
 
@@ -106,16 +110,13 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     
     // output for memory stage
     io.out.memory.bits.aluOut := aluOut
-    // io.out.memory.bits.rd := stageReg.rd
-    // io.out.memory.bits.rs1 := stageReg.rs1
-    // io.out.memory.bits.rs2 := stageReg.rs2
     io.out.memory.bits.resultSrc := stageReg.resultSrc
     io.out.memory.bits.memWrEn := stageReg.memWrEn
     io.out.memory.bits.memRdEn := stageReg.memRdEn
     io.out.memory.bits.memSign := stageReg.memSign
     io.out.memory.bits.memType := stageReg.memType
     io.out.memory.bits.regWrEn := stageReg.regWrEn
-    io.out.memory.bits.data2 := stageReg.data2
+    io.out.memory.bits.data2 := data2 // stageReg.data2
     io.out.memory.bits.pcNext4 := stageReg.pcNext4
 
     when(flush){

@@ -1,0 +1,118 @@
+{
+    "test_case_num": 23,
+    "1": {
+        "name": "or.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "2": {
+        "name": "sll.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "3": {
+        "name": "slli.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "4": {
+        "name": "andi.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "5": {
+        "name": "sub.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "6": {
+        "name": "lui.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "7": {
+        "name": "sltu.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "8": {
+        "name": "slti.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "9": {
+        "name": "ori.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "10": {
+        "name": "simple.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "11": {
+        "name": "xori.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "12": {
+        "name": "srl.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "13": {
+        "name": "srai.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "14": {
+        "name": "test2.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "15": {
+        "name": "sra.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "16": {
+        "name": "add.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "17": {
+        "name": "srli.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "18": {
+        "name": "xor.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "19": {
+        "name": "slt.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "20": {
+        "name": "and.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "21": {
+        "name": "test_sw.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "22": {
+        "name": "sltiu.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    },
+    "23": {
+        "name": "addi.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "err_code": 42
+    }
+}

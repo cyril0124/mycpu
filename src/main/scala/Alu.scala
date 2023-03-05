@@ -30,8 +30,8 @@ class Alu()(implicit val p: Parameters) extends MyModule
     // shift operation
     val shamt = io.in2(4,0).asUInt // shift amount
     val shiftr = Mux( io.opSel(1), 
-                        (io.in1.asSInt >> shamt)(xlen-1,0), // arithmetic shift
-                        io.in1 >> shamt // logical shift
+                        io.in1 >> shamt,  // logical shift
+                        (io.in1.asSInt >> shamt)(xlen-1,0) // arithmetic shift
                     )
     val shiftl = io.in1 << shamt
     val shout = Mux(io.opSel === SRL || io.opSel === SRA, shiftr, 0.U) |

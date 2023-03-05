@@ -1,5 +1,5 @@
 {
-    "test_case_num": 21,
+    "test_case_num": 22,
     "1": {
         "name": "or.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
@@ -16,91 +16,96 @@
         "err_code": 42
     },
     "4": {
-        "name": "andi.log",
+        "name": "test-0.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "5": {
-        "name": "sub.log",
+        "name": "andi.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "6": {
-        "name": "lui.log",
+        "name": "sub.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "7": {
-        "name": "sltu.log",
+        "name": "lui.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "8": {
-        "name": "slti.log",
+        "name": "sltu.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "9": {
-        "name": "ori.log",
+        "name": "slti.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "10": {
-        "name": "simple.log",
+        "name": "ori.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "11": {
-        "name": "xori.log",
+        "name": "simple.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "12": {
-        "name": "srl.log",
+        "name": "xori.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "13": {
-        "name": "srai.log",
+        "name": "srl.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "14": {
-        "name": "sra.log",
+        "name": "srai.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "15": {
-        "name": "add.log",
+        "name": "sra.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "16": {
-        "name": "srli.log",
+        "name": "add.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "17": {
-        "name": "xor.log",
+        "name": "srli.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "18": {
-        "name": "slt.log",
+        "name": "xor.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "19": {
-        "name": "and.log",
+        "name": "slt.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "20": {
-        "name": "sltiu.log",
+        "name": "and.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42
     },
     "21": {
+        "name": "sltiu.log",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
+        "err_code": 42
+    },
+    "22": {
         "name": "addi.log",
         "dir": "/home/cyril/workspace/riscv/mycpu/test/rv32i/build",
         "err_code": 42

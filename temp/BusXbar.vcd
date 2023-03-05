@@ -1,0 +1,281 @@
+$date
+2023-03-07T15:25+0000
+$end
+$version
+0.2
+$end
+$comment
+
+$end
+$timescale 1ns  $end
+$scope module BusXbar $end
+ $var wire 1 ! io_slaveFace_out_1_ready $end
+ $var wire 32 " io_slaveFace_in_1_bits_addr $end
+ $var wire 1 % masterArb $end
+ $var wire 1 ' io_slaveFace_out_1_bits_sourceID $end
+ $var wire 2 ) io_slaveFace_in_0_bits_reqType $end
+ $var wire 1 * io_slaveFace_in_0_ready $end
+ $var wire 32 + io_slaveFace_out_1_bits_data $end
+ $var wire 1 - io_masterFace_in_1_bits_sourceID $end
+ $var wire 32 / io_masterFace_in_0_bits_addr $end
+ $var wire 1 2 io_slaveFace_in_1_bits_sourceID $end
+ $var wire 32 3 io_slaveFace_in_0_bits_data $end
+ $var wire 4 4 io_masterFace_in_1_bits_mask $end
+ $var wire 2 5 io_slaveFace_out_0_bits_respType $end
+ $var wire 32 9 io_masterFace_in_1_bits_addr $end
+ $var wire 2 > io_masterFace_in_1_bits_reqType $end
+ $var wire 32 A io_masterFace_out_0_bits_data $end
+ $var wire 1 B io_slaveFace_out_1_bits_sinkID $end
+ $var wire 1 D io_masterFace_out_0_ready $end
+ $var wire 2 G slaveChosenVec $end
+ $var wire 1 I io_masterFace_in_0_valid $end
+ $var wire 1 J io_slaveFace_in_1_valid $end
+ $var wire 1 K valid $end
+ $var wire 1 L io_slaveFace_in_1_bits_sinkID $end
+ $var wire 1 M io_slaveFace_in_0_bits_sourceID $end
+ $var wire 1 N io_slaveFace_out_0_bits_sinkID $end
+ $var wire 1 P io_slaveFace_out_0_ready $end
+ $var wire 1 Q io_masterFace_in_0_bits_sourceID $end
+ $var wire 32 S io_masterFace_in_0_bits_data $end
+ $var wire 1 U io_slaveFace_out_0_bits_sourceID $end
+ $var wire 1 V io_masterFace_in_1_ready $end
+ $var wire 2 W io_masterFace_in_0_bits_reqType $end
+ $var wire 1 Z io_slaveFace_in_0_bits_sinkID $end
+ $var wire 1 [ io_masterFace_out_1_valid $end
+ $var wire 2 ] io_masterFace_out_1_bits_respType $end
+ $var wire 32 _ io_slaveFace_in_1_bits_data $end
+ $var wire 1 a io_masterFace_out_1_bits_sinkID $end
+ $var wire 1 c clock $end
+ $var wire 1 d slaveArb $end
+ $var wire 1 e io_slaveFace_in_0_valid $end
+ $var wire 32 f io_masterFace_in_1_bits_data $end
+ $var wire 1 h io_masterFace_out_1_bits_sourceID $end
+ $var wire 32 i io_masterFace_out_1_bits_data $end
+ $var wire 4 j io_slaveFace_in_0_bits_mask $end
+ $var wire 1 k io_masterFace_in_1_bits_sinkID $end
+ $var wire 1 l io_masterFace_in_0_bits_sinkID $end
+ $var wire 1 m io_slaveFace_out_1_valid $end
+ $var wire 1 p io_slaveFace_in_1_ready $end
+ $var wire 1 q valid_1 $end
+ $var wire 1 s io_masterFace_out_0_bits_sinkID $end
+ $var wire 2 v io_masterFace_out_0_bits_respType $end
+ $var wire 1 w io_masterFace_out_0_bits_sourceID $end
+ $var wire 1 z io_masterFace_out_0_valid $end
+ $var wire 1 { io_masterFace_in_0_ready $end
+ $var wire 2 | io_slaveFace_in_1_bits_reqType $end
+ $var wire 1 } io_slaveFace_out_0_valid $end
+ $var wire 1 ~ reset $end
+ $var wire 32 "! io_slaveFace_in_0_bits_addr $end
+ $var wire 4 "# io_masterFace_in_0_bits_mask $end
+ $var wire 2 "$ io_slaveFace_out_1_bits_respType $end
+ $var wire 1 "' io_masterFace_in_1_valid $end
+ $var wire 4 "( io_slaveFace_in_1_bits_mask $end
+ $var wire 1 ") io_masterFace_out_1_ready $end
+ $var wire 32 "* io_slaveFace_out_0_bits_data $end
+  $scope module slaveArb $end
+   $var wire 32 $ io_out_bits_data $end
+   $var wire 32 ( io_in_0_bits_data $end
+   $var wire 1 0 io_in_1_bits_sourceID $end
+   $var wire 1 6 io_in_1_ready $end
+   $var wire 2 = io_out_bits_respType $end
+   $var wire 2 @ io_in_0_bits_respType $end
+   $var wire 1 E io_out_ready $end
+   $var wire 32 O io_in_1_bits_data $end
+   $var wire 1 T io_in_1_bits_sinkID $end
+   $var wire 1 Y io_in_0_ready $end
+   $var wire 1 \ io_out_bits_sourceID $end
+   $var wire 1 ^ io_in_0_bits_sinkID $end
+   $var wire 1 ` io_in_0_bits_sourceID $end
+   $var wire 1 g io_out_bits_sinkID $end
+   $var wire 1 x grant_1 $end
+   $var wire 2 "% io_in_1_bits_respType $end
+   $var wire 1 "& io_in_0_valid $end
+  $upscope $end
+  $scope module masterArb $end
+   $var wire 32 # io_in_0_bits_addr $end
+   $var wire 4 & io_out_bits_mask $end
+   $var wire 32 , io_out_bits_addr $end
+   $var wire 32 . io_in_1_bits_addr $end
+   $var wire 1 1 io_in_0_ready $end
+   $var wire 2 7 io_out_bits_reqType $end
+   $var wire 1 8 io_out_valid $end
+   $var wire 1 : io_out_bits_sinkID $end
+   $var wire 1 ; io_in_1_bits_sinkID $end
+   $var wire 2 < io_in_1_bits_reqType $end
+   $var wire 32 ? io_in_0_bits_data $end
+   $var wire 1 C io_in_1_bits_sourceID $end
+   $var wire 1 F io_in_1_valid $end
+   $var wire 1 H io_in_0_bits_sinkID $end
+   $var wire 32 R io_in_1_bits_data $end
+   $var wire 2 X io_in_0_bits_reqType $end
+   $var wire 32 b io_out_bits_data $end
+   $var wire 1 n io_in_0_valid $end
+   $var wire 1 o io_in_0_bits_sourceID $end
+   $var wire 1 r io_out_ready $end
+   $var wire 4 t io_in_0_bits_mask $end
+   $var wire 1 u grant_1 $end
+   $var wire 1 y io_in_1_ready $end
+   $var wire 4 "" io_in_1_bits_mask $end
+   $var wire 1 "+ io_out_bits_sourceID $end
+  $upscope $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+b00 v
+0C
+0;
+0o
+0Z
+b00000000000000000000000000000000 S
+b00000000000000000000000000000000 "!
+b00 >
+b00 )
+b0000 j
+0q
+0T
+b00 ]
+b00 @
+b00000000000000000000000000000000 #
+0k
+0V
+0N
+b00 W
+b00000000000000000000000000000000 O
+b00 "$
+0m
+b00000000000000000000000000000000 f
+0P
+b0000 4
+0e
+b00 <
+0"'
+0g
+0J
+0")
+b00000000000000000000000000000000 .
+0-
+0~
+b00000000000000000000000000000000 b
+0a
+0L
+0"+
+0D
+b0000 "#
+0x
+0c
+b00000000000000000000000000000000 "*
+0F
+01
+0[
+b00 G
+0z
+0r
+0H
+b00000000000000000000000000000000 A
+b00000000000000000000000000000000 ,
+b00000000000000000000000000000000 $
+0B
+b0000 &
+0%
+0n
+0Y
+b00000000000000000000000000000000 (
+0'
+b00 =
+0p
+b00000000000000000000000000000000 ?
+06
+b00000000000000000000000000000000 "
+0!
+0U
+0M
+b00000000000000000000000000000000 9
+08
+0l
+0d
+b00 X
+0:
+02
+b00 "%
+b00000000000000000000000000000000 3
+0{
+0Q
+b00000000000000000000000000000000 R
+0I
+b0000 "(
+b00 5
+0}
+0h
+b00000000000000000000000000000000 i
+0`
+0K
+b00 7
+b00000000000000000000000000000000 /
+b0000 ""
+0w
+0E
+00
+0y
+0\
+0"&
+0*
+b00000000000000000000000000000000 +
+b0000 t
+0s
+0^
+b00 |
+b00000000000000000000000000000000 _
+0u
+$end
+#0
+1u
+b01 G
+1z
+1K
+1~
+1x
+#1
+1c
+#6
+b00000000000000000000000001111011 3
+b00000000000000000000000011011111 f
+0u
+1-
+1C
+b00000000000000000000000011011111 R
+b00000000000000000001010100000000 .
+b00000000000000000000000001111011 S
+0~
+1"'
+b00000000000000000000000001111011 b
+0c
+b00000000000000000000000001111011 ?
+1F
+18
+1e
+b00000000000000000001010100000000 9
+1I
+b00000000000000000000000001111011 _
+1n
+#11
+1c
+#16
+0c
+#21
+1c
+#26
+0c
+#31
+1c
+#36
+0c
+#41
+1c
+#46
+b00000000000000000000000000000000 f
+0c
+0-
+b00000000000000000000000000000000 S
+b00000000000000000000000000000000 9
+0I
+0"'

@@ -21,8 +21,7 @@ abstract class BaseSram extends Module {
     }
 }
 
-
-class BankRam1P(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)extends BaseSram {
+class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)extends BaseSram {
     val io = IO(new Bundle{
         val en      = Input(Bool())
         val addr    = Input(UInt(log2Ceil(depth).W))
@@ -33,74 +32,13 @@ class BankRam1P(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)extend
     })
     assert(maskSegments >= 1, s"error maskSegments! ==> ${maskSegments}")
 
-    val ram = Mem(depth, Vec(maskSegments, UInt( (width / maskSegments).W)))
+    val ram = SyncReadMem(depth, Vec(maskSegments, UInt( (width / maskSegments).W)))
     val wen = io.en & io.rw
     val ren = io.en & ~io.rw
     // read: rdata will keep stable until the next read enable.
     val rdata = WireInit(ram.read(io.addr))
-    io.rdata := RegEnable(rdata.asUInt, ren)
-    // write with mask
-    val wmask = if(io.wmask.isDefined) io.wmask.get else Fill(maskSegments, 1.U)
-    val wdata = io.wdata.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
-    when(wen) {
-        ram(io.addr).zip(wdata).zipWithIndex.foreach{
-            case ((sink, source), i) => 
-                when(wmask(i)) {
-                    sink := source
-                }
-        }
-    }
-
-    def init(): Unit = {
-        io.en := false.B
-        io.rw := false.B
-        io.wdata := DontCare
-        io.addr := DontCare
-        if(io.wmask.isDefined) io.wmask.get := DontCare
-    }
-    
-    def write(idx: UInt, data: UInt, mask: UInt): Unit = {
-        io.en := true.B
-        io.rw := true.B
-        io.wdata := data
-        io.addr := idx
-        if(io.wmask.isDefined) io.wmask.get := mask
-    }
-
-    def write(idx: UInt, data: UInt): Unit = {
-        val wmask = Fill(maskSegments, 1.U)
-        write(idx, data, wmask)
-    }
-
-    def read(idx: UInt): UInt = {
-        io.en := true.B
-        io.rw := false.B
-        io.addr := idx
-        io.rdata
-    }
-}
-
-class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, combRead: Boolean = true)extends BaseSram {
-    val io = IO(new Bundle{
-        val en      = Input(Bool())
-        val addr    = Input(UInt(log2Ceil(depth).W))
-        val rw      = Input(Bool()) // true: write   false: read
-        val wdata   = Input(UInt(width.W))
-        val wmask   = if(maskSegments > 1) Some(Input(UInt(maskSegments.W))) else None 
-        val rdata   = Output(UInt(width.W))
-    })
-    assert(maskSegments >= 1, s"error maskSegments! ==> ${maskSegments}")
-
-    val ram = Mem(depth, Vec(maskSegments, UInt( (width / maskSegments).W)))
-    val wen = io.en & io.rw
-    val ren = io.en & ~io.rw
-    // read: rdata will keep stable until the next read enable.
-    val rdata = WireInit(ram.read(io.addr))
-    if(combRead == true) {
-        io.rdata := rdata.asUInt
-    } else {
-        io.rdata := RegEnable(rdata.asUInt, ren)
-    }
+    io.rdata := DontCare
+    io.rdata := rdata.asUInt
     // write with mask
     val wmask = if(io.wmask.isDefined) io.wmask.get else Fill(maskSegments, 1.U)
     val wdata = io.wdata.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
@@ -317,19 +255,19 @@ class BankRam2P_1(width: Int = 64, depth: Int = 16, maskSegments: Int = 8, combR
 }
 
 object SRAM{
-    def apply(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true, combRead: Boolean = true): BaseSram = {
+    def apply(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true): BaseSram = {
         assert(maskSegments >= 1, s"error maskSegments! ==> ${maskSegments}")
         val sram = if(singlePort == true) {
-                        Module(new BankRam1P_1(width, depth, maskSegments, combRead))
+                        Module(new BankRam1P_1(width, depth, maskSegments))
                     }else {
-                        Module(new BankRam2P_1(width, depth, maskSegments, combRead))
+                        Module(new BankRam2P_1(width, depth, maskSegments))
                     }
         sram.init()
         sram
     }
 }
 
-class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true, combRead: Boolean = false) extends Module {
+class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true) extends Module {
     val io = IO(new Bundle{
         val r = new Bundle{
             val en = Input(Bool())
@@ -344,7 +282,7 @@ class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, si
         }
     })
     // println(s"width = ${width}")
-    val sram = SRAM(width, depth, maskSegments, singlePort, combRead)
+    val sram = SRAM(width, depth, maskSegments, singlePort)
 
     io.r.data := sram.read(io.r.addr,io.r.en)
     
@@ -383,12 +321,12 @@ class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, si
 object BankRam1PGenRTL extends App {
 
     println("Generating the BankRam1P hardware")
-    (new chisel3.stage.ChiselStage).emitVerilog(new BankRam1P(), Array("--target-dir", "build"))
+    (new chisel3.stage.ChiselStage).emitVerilog(new BankRam1P_1(), Array("--target-dir", "build"))
 }
 
 object BankRam2PGenRTL extends App {
 
     println("Generating the BankRam2P hardware")
-    (new chisel3.stage.ChiselStage).emitVerilog(new BankRam2P(), Array("--target-dir", "build"))
+    (new chisel3.stage.ChiselStage).emitVerilog(new BankRam2P_1(), Array("--target-dir", "build"))
 }
 
