@@ -9,6 +9,7 @@ import mycpu.util._
 
 import mycpu.BusReq._
 import mycpu.BusMasterId._
+import mycpu.csr.CsrFile
 
 class CoreState()(implicit val p: Parameters) extends MyBundle{
     val intRegState = new RegFileState
@@ -27,64 +28,98 @@ class CoreIO()(implicit val p: Parameters) extends MyBundle{
 class Core()(implicit val p: Parameters) extends MyModule{
     val io = IO(new CoreIO)
 
-    val stallDecode = WireInit(false.B)
+    val stallDec = Wire(Bool())
+
+    val trapVec = Wire(UInt(xlen.W))
+    val mepc = Wire(UInt(xlen.W))
 
     // 1_fetch stage
-    val fetchStage = Module(new Fetch)
-    fetchStage.io.in.start := RegNext(io.in.start)
-    fetchStage.io.ctrl <> DontCare
+    val ife = Module(new Fetch)
+    ife.io.in.start := RegNext(io.in.start)
+    ife.io.ctrl <> DontCare
+    ife.io.trapVec := trapVec
+    ife.io.mepc := mepc
+    // ife.io.excpValid <> excpValid
 
     // 2_decode stage
-    val decodeStage = Module(new Decode)
-    decodeStage.io.in.fetch <> fetchStage.io.out
-    decodeStage.io.ctrl.stall := stallDecode
+    val dec = Module(new Decode)
+    dec.io.in <> ife.io.out
+    dec.io.hazard.in.stall := stallDec
 
     // 3_execute stage
-    val executeStage = Module(new Execute)
-    executeStage.io.in <> decodeStage.io.out
-    fetchStage.io.in.execute <> executeStage.io.out.fetch
+    val exe = Module(new Execute)
+    exe.io.in <> dec.io.out
+    ife.io.in.execute <> exe.io.out.fetch
 
     // 4_memory stage
-    val memoryStage = Module(new Memory)
-    memoryStage.io.in <> executeStage.io.out.memory
+    val mem = Module(new Mem)
+    mem.io.in <> exe.io.out.memory
+
+    ife.io.excp <> mem.io.excp
 
     // 5_writeback stage
-    val writebackStage = Module(new Writeback)
-    writebackStage.io.in <> memoryStage.io.out
+    val wb = Module(new WriteBack)
+    wb.io.in <> mem.io.out
+    wb.io.ramData := mem.io.ramData
 
-    // decode stage write back writeback stage info
-    decodeStage.io.in.writeback <> writebackStage.io.out
 
     // pipeline control
     val pipelineCtrl = Module(new PipelineCtrl)
-    pipelineCtrl.io.in.brTaken := executeStage.io.out.fetch.bits.brTaken
-    fetchStage.io.ctrl <> pipelineCtrl.io.out.fetch
-    decodeStage.io.ctrl <> pipelineCtrl.io.out.decode
-    executeStage.io.ctrl <> pipelineCtrl.io.out.execute
-    memoryStage.io.ctrl <> pipelineCtrl.io.out.memory
-    writebackStage.io.ctrl <> pipelineCtrl.io.out.writeback
+    pipelineCtrl.io.in.excpValid := mem.io.excp.valid
+    pipelineCtrl.io.in.brTaken := exe.io.out.fetch.bits.brTaken
+    ife.io.ctrl <> pipelineCtrl.io.out.fetch
+    dec.io.ctrl <> pipelineCtrl.io.out.decode
+    exe.io.ctrl <> pipelineCtrl.io.out.execute
+    mem.io.ctrl <> pipelineCtrl.io.out.memory
+    wb.io.ctrl <> pipelineCtrl.io.out.writeback
 
     // hazard detction
-    val hazardUnit = Module(new HazardUnit)
-    hazardUnit.io.in.decode <> decodeStage.io.hazard
-    hazardUnit.io.in.execute <> executeStage.io.hazard.out
-    hazardUnit.io.in.memory <> memoryStage.io.hazard
-    hazardUnit.io.in.writeback <> writebackStage.io.hazard
-    hazardUnit.io.out.execute <> executeStage.io.hazard.in
-    stallDecode := hazardUnit.io.out.decode.stall
+    val hazardU = Module(new HazardUnit)
+    hazardU.io.in.decode <> dec.io.hazard.out
+    hazardU.io.in.execute <> exe.io.hazard.out
+    hazardU.io.in.memory <> mem.io.hazard
+    hazardU.io.in.writeback <> wb.io.hazard
+    hazardU.io.out.execute <> exe.io.hazard.in
+    stallDec := hazardU.io.out.decode.stall
+
+
+    val regFile = Module(new RegFile(UInt(xlen.W)))
+    regFile.io.r(0).en := true.B
+    regFile.io.r(1).en := true.B
+    regFile.io.r(0).addr := dec.io.regfile.rs1
+    regFile.io.r(1).addr := dec.io.regfile.rs2
+    dec.io.regfile.rdata1 := regFile.io.r(0).data
+    dec.io.regfile.rdata2 := regFile.io.r(1).data
+    regFile.io.w(0).en := wb.io.regfile.regWrEn
+    regFile.io.w(0).addr := wb.io.regfile.rd
+    regFile.io.w(0).data := wb.io.regfile.regWrData
+
+
+    val csrFile = Module(new CsrFile())
+    dontTouch(csrFile.io)
+    csrFile.io.except <> mem.io.excp
+    csrFile.io.read <> exe.io.csrRead
+    csrFile.io.write <> wb.io.csrWrite
+    mem.io.csrBusy := csrFile.io.busy
+    mem.io.csrMode := csrFile.io.mode
+    trapVec := csrFile.io.trapVec
+    mepc := csrFile.io.mepc
+    
 
     // core runtime instruction info and reg info
-    io.out.state.intRegState <> decodeStage.io.regState
-    io.out.state.instState <> RegNext(writebackStage.io.instState)
+    io.out.state.instState <> RegNext(wb.io.instState)
+    io.out.state.intRegState <> regFile.io.state.getOrElse(DontCare)
 
     //----------------soc part(temp)-------------------------
     val busCrossBar = Module(new BusCrossBar())
     busCrossBar.io <> DontCare
-    busCrossBar.io.masterFace.in(0) <> fetchStage.io.rom.req
-    fetchStage.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+    busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
+    ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
 
 
     val rom = Module(new ROM())
+    rom.io.clock := clock
+    rom.io.reset := reset
     // rom handshake
     busCrossBar.io.slaveFace.in(0).ready := true.B
     // val romReqReg = RegEnable(busCrossBar.io.slaveFace.in(0).bits, busCrossBar.io.slaveFace.in(0).fire)
@@ -97,6 +132,7 @@ class Core()(implicit val p: Parameters) extends MyModule{
     // busCrossBar.io.slaveFace.out(0).bits.sourceID := romReqReg.sourceID
 
     rom.io.wen := busCrossBar.io.slaveFace.in(0).valid && isPut(busCrossBar.io.slaveFace.in(0).bits.opcode) 
+    rom.io.wmask := "b1111".U
     rom.io.wdata := busCrossBar.io.slaveFace.in(0).bits.data
     rom.io.waddr := busCrossBar.io.slaveFace.in(0).bits.address
     rom.io.raddr := busCrossBar.io.slaveFace.in(0).bits.address // read

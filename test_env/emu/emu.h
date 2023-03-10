@@ -80,6 +80,11 @@ inline void Emu::pos_edge() {
 }
 
 inline void Emu::step() {
+    // dut_ptr->eval();
+    // dut_ptr->clock = 0;
+    // dut_ptr->eval();
+    // dut_ptr->clock = 1;
+    // dut_ptr->eval();
     neg_edge();
     pos_edge();
     // dut_ptr->eval();

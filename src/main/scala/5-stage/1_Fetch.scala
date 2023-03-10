@@ -9,6 +9,7 @@ import mycpu.util._
 
 import mycpu.BusReq._
 import mycpu.BusMasterId._
+import mycpu.csr.ExceptionIO
 
 class FetchOut()(implicit val p: Parameters) extends MyBundle{
     val pcNext4 = UInt(xlen.W) // for Decode stage
@@ -24,33 +25,40 @@ class FetchIO()(implicit val p: Parameters) extends MyBundle{
     val ctrl = Input(new PipelineCtrlBundle)
     // val rom = DecoupledIO(new BusMasterBundle)
     val rom = new TLMasterBusUL
+
+    val trapVec = Input(UInt(xlen.W))
+    val mepc = Input(UInt(xlen.W))
+    val excp = Flipped(ValidIO(new ExceptionIO))
 }
 
-
+// IFU
 class Fetch()(implicit val p: Parameters) extends MyModule{
     val io = IO(new FetchIO)
     
-    // pipeline control
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
     // for pipeline stage, if one stage stall then all of the stage in front of the stall stage will stall too.
     io.in.execute.ready := io.in.start && ~stall
 
+    val commit = io.out.ready && io.in.start && ~stall && io.rom.resp.valid // commit when inst is read back from ROM
+
     val pcReg = RegInit(resetPc.U(xlen.W))
     val pc = Wire(UInt(xlen.W))
+    val pcNext = Wire(UInt(xlen.W))
+    val pcNext4 = pcReg + (ilen / 8).U
     val inst = WireInit(0.U(ilen.W))
-    val instReady = RegNext(RegNext(io.in.start, false.B))
 
     val instMem = Module(new ROM())
     instMem.io <> DontCare
-    instMem.io.raddr := pc // pcReg
+    instMem.io.clock := clock
+    instMem.io.reset := reset
+    // instMem.io.raddr := pc(xlen-1, 2)
+    instMem.io.raddr := pc // for sync read mem, output will delay one cycle after latching address, it is not an ideal memory model
+    // instMem.io.raddr := pcReg // for mem, when address is latched, effective data will output when next clock edge arrive. this is an ideal memory model
     inst := instMem.io.rdata
-
-    val commit = io.rom.resp.valid && io.in.start // commit when inst is read back from ROM
-    val pcNext = Wire(UInt(xlen.W))
-    val pcNext4 = pcReg + (ilen / 8).U
-
+    
+    
     io.rom <> DontCare
     // // send bus req
     // io.rom.req.bits <> DontCare
@@ -63,21 +71,18 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     // io.rom.resp.ready := io.out.ready
     // inst := io.rom.resp.bits.data
 
-    pcNext := Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4)
-    // pcReg := Mux(io.in.start && commit, pcNext, pcReg)
+    pcNext := Mux(io.excp.valid, Mux(io.excp.bits.isMret, io.mepc, io.trapVec),
+                Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4))
     pc := Mux(commit, pcNext, pcReg)
 
-    when(commit) {
-        pcReg := pcNext
-    }
+    when(commit) { pcReg := pcNext } // update pc
 
     io.out.bits.pcNext4 := pcNext4
-
-    io.out.bits.instState.commit := commit // io.in.start // TODO: for now this is always true, when we implement pipeline control, it will be depended on pipeline control signals
+    io.out.bits.instState.commit := commit
     io.out.bits.instState.pc := pcReg
     io.out.bits.instState.inst := inst
 
-    io.out.valid := ( io.out.ready || io.in.start ) && ~stall && commit
+    io.out.valid := commit 
 }
 
 object FetchGenRTL extends App {

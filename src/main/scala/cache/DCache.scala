@@ -137,12 +137,12 @@ class DCache(nrSet: Int = 64, nrWay: Int = 4, blockBytes: Int = 8)(implicit val 
     
     // local param
     val cacheSize = nrSet * nrWay * blockBytes
-    val blockOffsetBits = log2Ceil(blockBytes)
+    val mblockOffsetBits = log2Ceil(blockBytes)
     val setBits = log2Ceil(nrSet)
-    val tagBits = xlen - blockOffsetBits - setBits
+    val tagBits = xlen - mblockOffsetBits - setBits
     val metaBits = (new DCacheMeta).getWidth
     println(s"cacheSize: ${cacheSize} Byte")
-    println(s"blockOffsetBits: ${blockOffsetBits}")
+    println(s"blockOffsetBits: ${mblockOffsetBits}")
     println(s"setBits: ${setBits}")
     println(s"tagBits: ${tagBits}")
     
@@ -215,7 +215,7 @@ class DCache(nrSet: Int = 64, nrWay: Int = 4, blockBytes: Int = 8)(implicit val 
 
     // tag read
     tagRdVec := tagArray.io.r.data.asTypeOf(Vec(nrWay, UInt(tagBits.W)))
-    tagArray.io.r.en := rReqValid || wReqValid
+    tagArray.io.r.en := (rReqValid || wReqValid) && ~wbCache
     tagArray.io.r.addr := rwSet // Mux(r.req.valid, rSet, wSet)
     
     // meta read
@@ -240,20 +240,26 @@ class DCache(nrSet: Int = 64, nrWay: Int = 4, blockBytes: Int = 8)(implicit val 
     wbWrHit := wReqValid && isHit // writeback cache when hit and req is write
     wbCache := io.tlbus.resp.fire // writeback cache when miss
 
-    dataBank.io.r.en := rReqValid
-    dataBank.io.r.set := rSet
-    dataBank.io.r.way := OHToUInt(choseWayOH)
-    dataBank.io.r.memType := rMemType
-    dataBankRdData := dataBank.io.r.data
-
+    dataBank.io.r.en :=  rReqValid// (rReqValid || wReqValid) && ~wbCache // TODO:
+    dataBank.io.r.set := rwSet // TODO: 
+    dataBank.io.r.way := OHToUInt(choseWayOH) // TODO:
+    dataBank.io.r.memType := rMemType// "b011".U // read 64-bit // TODO:
+    dataBankRdData := dataBank.io.r.data // TODO:
+    // dataBankRdData := ReadMask(dataBank.io.r.data, 0.U, rwMemType, xlen)
 
 // ----------------------------------miss process-------------------------------------------------------------
 // --------------------------stage 1: send sub request to the next level memory-------------------------------
-    when(isDirtyWay && ~isHit) {
+    when(isDirtyWay && ~isHit) { // miss but chosen way is a dirty way
         // TODO: release dirty way, using PutFullData
         io.tlbus.req <> DontCare
+        // io.tlbus.req.valid := ~isHit && (rReqValid || wReqValid)
+        // io.tlbus.req.bits.opcode := PutFullData
+        // io.tlbus.req.bits.source := ID_RAM
+        // io.tlbus.req.bits.size := (xlen / 8).U
+        // io.tlbus.req.bits.mask := "b1111".U
+        // io.tlbus.req.bits.corrupt := false.B
     }.otherwise {
-        io.tlbus.req.valid := ~isHit && (rReqValid || wReqValid) // && rdReady
+        io.tlbus.req.valid := ~isHit && (rReqValid || wReqValid)
         io.tlbus.req.bits <> DontCare
         io.tlbus.req.bits.address := rwAddr
         io.tlbus.req.bits.opcode := Get

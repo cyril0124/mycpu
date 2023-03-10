@@ -1,7 +1,7 @@
 {
-    "test_case_num": 23,
+    "test_case_num": 1,
     "1": {
-        "name": "or.bin",
+        "name": "rv32ui-p-lb.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },
@@ -11,12 +11,12 @@
         "err_code": 42
     },
     "3": {
-        "name": "slli.bin",
+        "name": "test_sw.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },
     "4": {
-        "name": "andi.bin",
+        "name": "test_sw.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },

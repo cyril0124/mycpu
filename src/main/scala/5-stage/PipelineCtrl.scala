@@ -10,6 +10,7 @@ import mycpu.util._
 class PipelineCtrlIO()(implicit val p: Parameters) extends MyBundle{
     val in = Input(new Bundle{
                 val brTaken = Bool()
+                val excpValid = Bool()
             })
     val out  = Output(new Bundle{
                 val fetch = new PipelineCtrlBundle
@@ -28,7 +29,12 @@ class PipelineCtrl()(implicit val p: Parameters) extends MyModule{
 
     // branch flush pipeline. when branch is taken, instructions behind and in the decode stage should be flushed.(except fetch stage)
     val brIsTaken = io.in.brTaken === true.B
-    io.out.decode.flush := brIsTaken
-    io.out.execute.flush := brIsTaken
+    val excpValid = io.in.excpValid
+
+
+    io.out.decode.flush := brIsTaken || excpValid
+    io.out.execute.flush := brIsTaken  || excpValid
+    // io.out.execute.flush := excpValid
+    io.out.memory.flush := excpValid
 
 }

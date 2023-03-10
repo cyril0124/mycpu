@@ -44,6 +44,7 @@ object InstField {
             case "funct3" => inst(14,12)
             case "funct7" => inst(31,25)
             case "funct12" => inst(31,20)
+            case "csr_dest" => inst(31,20)
             case  _    => {
                     assert(false, s"invalid InstField ==> ${field}")
                     inst(11,7)

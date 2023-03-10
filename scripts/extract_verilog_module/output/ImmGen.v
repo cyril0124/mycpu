@@ -9,7 +9,7 @@ module ImmGen(
   wire [31:0] immS = {{20'd0}, _immS_T_2}; // @[util.scala 31:36]
   wire [12:0] _immB_T_4 = {io_inst[31],io_inst[7],io_inst[30:25],io_inst[11:8],1'h0}; // @[Cat.scala 33:92]
   wire [31:0] immB = {{19'd0}, _immB_T_4}; // @[util.scala 31:36]
-  wire [31:0] immU = {io_inst[31:12], 12'h0}; // @[ImmGen.scala 25:36]
+  wire [31:0] immU = {io_inst[31:12], 12'h0}; // @[ImmGen.scala 26:36]
   wire [19:0] _immJ_T_4 = {io_inst[31],io_inst[19:12],io_inst[20],io_inst[30:21]}; // @[Cat.scala 33:92]
   wire [31:0] immJ = {{12'd0}, _immJ_T_4}; // @[util.scala 31:36]
   wire [11:0] _immI_S_T_1 = io_inst[31:20]; // @[util.scala 20:20]
@@ -48,5 +48,7 @@ module ImmGen(
   wire [31:0] _out_T_15 = 3'h2 == io_immSrc ? immB : _out_T_13; // @[Mux.scala 81:58]
   wire [31:0] _out_T_17 = 3'h3 == io_immSrc ? immU : _out_T_15; // @[Mux.scala 81:58]
   wire [31:0] _out_T_19 = 3'h4 == io_immSrc ? immJ : _out_T_17; // @[Mux.scala 81:58]
-  assign io_imm = io_immSign ? _out_T_9 : _out_T_19; // @[ImmGen.scala 36:19 37:13 45:13]
+  wire [31:0] _GEN_0 = io_immSign ? _out_T_9 : _out_T_19; // @[ImmGen.scala 37:19 38:13 46:13]
+  wire [31:0] out_out = {{27'd0}, io_inst[19:15]}; // @[util.scala 31:36]
+  assign io_imm = io_immSrc == 3'h5 ? out_out : _GEN_0; // @[ImmGen.scala 55:30 56:13]
 endmodule

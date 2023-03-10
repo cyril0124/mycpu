@@ -26,7 +26,7 @@ class CoreTest extends AnyFlatSpec with ChiselScalatestTester {
     it should "test some specific code " in {
         test(new Core()(defaultConfig)).withAnnotations(Seq(WriteVcdAnnotation)) { c =>
             c.io.in.start.poke(1.U)
-            c.clock.step(20)
+            c.clock.step(1000)
         }
     }
 

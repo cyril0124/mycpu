@@ -44,512 +44,741 @@ module Core(
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
 `endif // RANDOMIZE_REG_INIT
-  wire  fetchStage_clock; // @[Core.scala 33:28]
-  wire  fetchStage_reset; // @[Core.scala 33:28]
-  wire  fetchStage_io_in_start; // @[Core.scala 33:28]
-  wire  fetchStage_io_in_execute_ready; // @[Core.scala 33:28]
-  wire  fetchStage_io_in_execute_bits_brTaken; // @[Core.scala 33:28]
-  wire [31:0] fetchStage_io_in_execute_bits_targetAddr; // @[Core.scala 33:28]
-  wire  fetchStage_io_out_ready; // @[Core.scala 33:28]
-  wire  fetchStage_io_out_valid; // @[Core.scala 33:28]
-  wire [31:0] fetchStage_io_out_bits_pcNext4; // @[Core.scala 33:28]
-  wire  fetchStage_io_out_bits_instState_commit; // @[Core.scala 33:28]
-  wire [31:0] fetchStage_io_out_bits_instState_pc; // @[Core.scala 33:28]
-  wire [31:0] fetchStage_io_out_bits_instState_inst; // @[Core.scala 33:28]
-  wire  fetchStage_io_rom_resp_valid; // @[Core.scala 33:28]
-  wire  decodeStage_clock; // @[Core.scala 38:29]
-  wire  decodeStage_reset; // @[Core.scala 38:29]
-  wire  decodeStage_io_in_fetch_ready; // @[Core.scala 38:29]
-  wire  decodeStage_io_in_fetch_valid; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_in_fetch_bits_pcNext4; // @[Core.scala 38:29]
-  wire  decodeStage_io_in_fetch_bits_instState_commit; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_in_fetch_bits_instState_pc; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_in_fetch_bits_instState_inst; // @[Core.scala 38:29]
-  wire [4:0] decodeStage_io_in_writeback_bits_rd; // @[Core.scala 38:29]
-  wire  decodeStage_io_in_writeback_bits_regWrEn; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_in_writeback_bits_regWrData; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_ready; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_valid; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_isBranch; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_isJump; // @[Core.scala 38:29]
-  wire [1:0] decodeStage_io_out_bits_resultSrc; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_memWrEn; // @[Core.scala 38:29]
-  wire [2:0] decodeStage_io_out_bits_memType; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_memSign; // @[Core.scala 38:29]
-  wire [3:0] decodeStage_io_out_bits_aluOpSel; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_immSign; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_regWrEn; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_pcAddReg; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_aluSrc; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_pcNext4; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_data1; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_data2; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_imm; // @[Core.scala 38:29]
-  wire  decodeStage_io_out_bits_instState_commit; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_instState_pc; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_out_bits_instState_inst; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_0; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_1; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_2; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_3; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_4; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_5; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_6; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_7; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_8; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_9; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_10; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_11; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_12; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_13; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_14; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_15; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_16; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_17; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_18; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_19; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_20; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_21; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_22; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_23; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_24; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_25; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_26; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_27; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_28; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_29; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_30; // @[Core.scala 38:29]
-  wire [31:0] decodeStage_io_regState_regState_31; // @[Core.scala 38:29]
-  wire  decodeStage_io_ctrl_flush; // @[Core.scala 38:29]
-  wire  executeStage_clock; // @[Core.scala 43:30]
-  wire  executeStage_reset; // @[Core.scala 43:30]
-  wire  executeStage_io_in_ready; // @[Core.scala 43:30]
-  wire  executeStage_io_in_valid; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_isBranch; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_isJump; // @[Core.scala 43:30]
-  wire [1:0] executeStage_io_in_bits_resultSrc; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_memWrEn; // @[Core.scala 43:30]
-  wire [2:0] executeStage_io_in_bits_memType; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_memSign; // @[Core.scala 43:30]
-  wire [3:0] executeStage_io_in_bits_aluOpSel; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_immSign; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_regWrEn; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_pcAddReg; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_aluSrc; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_pcNext4; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_data1; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_data2; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_imm; // @[Core.scala 43:30]
-  wire  executeStage_io_in_bits_instState_commit; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_instState_pc; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_in_bits_instState_inst; // @[Core.scala 43:30]
-  wire [1:0] executeStage_io_out_memory_bits_resultSrc; // @[Core.scala 43:30]
-  wire  executeStage_io_out_memory_bits_memWrEn; // @[Core.scala 43:30]
-  wire [2:0] executeStage_io_out_memory_bits_memType; // @[Core.scala 43:30]
-  wire  executeStage_io_out_memory_bits_memSign; // @[Core.scala 43:30]
-  wire  executeStage_io_out_memory_bits_regWrEn; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_memory_bits_aluOut; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_memory_bits_data2; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_memory_bits_pcNext4; // @[Core.scala 43:30]
-  wire  executeStage_io_out_memory_bits_instState_commit; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_memory_bits_instState_pc; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_memory_bits_instState_inst; // @[Core.scala 43:30]
-  wire  executeStage_io_out_fetch_ready; // @[Core.scala 43:30]
-  wire  executeStage_io_out_fetch_bits_brTaken; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_out_fetch_bits_targetAddr; // @[Core.scala 43:30]
-  wire [4:0] executeStage_io_hazard_out_rs1; // @[Core.scala 43:30]
-  wire [4:0] executeStage_io_hazard_out_rs2; // @[Core.scala 43:30]
-  wire [1:0] executeStage_io_hazard_in_aluSrc1; // @[Core.scala 43:30]
-  wire [1:0] executeStage_io_hazard_in_aluSrc2; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_hazard_in_rdValM; // @[Core.scala 43:30]
-  wire [31:0] executeStage_io_hazard_in_rdValW; // @[Core.scala 43:30]
-  wire  executeStage_io_ctrl_flush; // @[Core.scala 43:30]
-  wire  memoryStage_clock; // @[Core.scala 48:29]
-  wire  memoryStage_reset; // @[Core.scala 48:29]
-  wire [1:0] memoryStage_io_in_bits_resultSrc; // @[Core.scala 48:29]
-  wire  memoryStage_io_in_bits_memWrEn; // @[Core.scala 48:29]
-  wire [2:0] memoryStage_io_in_bits_memType; // @[Core.scala 48:29]
-  wire  memoryStage_io_in_bits_memSign; // @[Core.scala 48:29]
-  wire  memoryStage_io_in_bits_regWrEn; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_in_bits_aluOut; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_in_bits_data2; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_in_bits_pcNext4; // @[Core.scala 48:29]
-  wire  memoryStage_io_in_bits_instState_commit; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_in_bits_instState_pc; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_in_bits_instState_inst; // @[Core.scala 48:29]
-  wire [1:0] memoryStage_io_out_bits_resultSrc; // @[Core.scala 48:29]
-  wire  memoryStage_io_out_bits_regWrEn; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_out_bits_rdData; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_out_bits_aluOut; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_out_bits_pcNext4; // @[Core.scala 48:29]
-  wire  memoryStage_io_out_bits_instState_commit; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_out_bits_instState_pc; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_out_bits_instState_inst; // @[Core.scala 48:29]
-  wire [4:0] memoryStage_io_hazard_rd; // @[Core.scala 48:29]
-  wire [31:0] memoryStage_io_hazard_rdVal; // @[Core.scala 48:29]
-  wire  memoryStage_io_hazard_regWrEn; // @[Core.scala 48:29]
-  wire  writebackStage_clock; // @[Core.scala 52:32]
-  wire  writebackStage_reset; // @[Core.scala 52:32]
-  wire [1:0] writebackStage_io_in_bits_resultSrc; // @[Core.scala 52:32]
-  wire  writebackStage_io_in_bits_regWrEn; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_in_bits_rdData; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_in_bits_aluOut; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_in_bits_pcNext4; // @[Core.scala 52:32]
-  wire  writebackStage_io_in_bits_instState_commit; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_in_bits_instState_pc; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_in_bits_instState_inst; // @[Core.scala 52:32]
-  wire [4:0] writebackStage_io_out_bits_rd; // @[Core.scala 52:32]
-  wire  writebackStage_io_out_bits_regWrEn; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_out_bits_regWrData; // @[Core.scala 52:32]
-  wire  writebackStage_io_instState_commit; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_instState_pc; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_instState_inst; // @[Core.scala 52:32]
-  wire [4:0] writebackStage_io_hazard_rd; // @[Core.scala 52:32]
-  wire [31:0] writebackStage_io_hazard_rdVal; // @[Core.scala 52:32]
-  wire  writebackStage_io_hazard_regWrEn; // @[Core.scala 52:32]
-  wire  pipelineCtrl_io_in_brTaken; // @[Core.scala 59:30]
-  wire  pipelineCtrl_io_out_decode_flush; // @[Core.scala 59:30]
-  wire  pipelineCtrl_io_out_execute_flush; // @[Core.scala 59:30]
-  wire [4:0] hazardUnit_io_in_execute_rs1; // @[Core.scala 68:28]
-  wire [4:0] hazardUnit_io_in_execute_rs2; // @[Core.scala 68:28]
-  wire [4:0] hazardUnit_io_in_memory_rd; // @[Core.scala 68:28]
-  wire [31:0] hazardUnit_io_in_memory_rdVal; // @[Core.scala 68:28]
-  wire  hazardUnit_io_in_memory_regWrEn; // @[Core.scala 68:28]
-  wire [4:0] hazardUnit_io_in_writeback_rd; // @[Core.scala 68:28]
-  wire [31:0] hazardUnit_io_in_writeback_rdVal; // @[Core.scala 68:28]
-  wire  hazardUnit_io_in_writeback_regWrEn; // @[Core.scala 68:28]
-  wire [1:0] hazardUnit_io_out_execute_aluSrc1; // @[Core.scala 68:28]
-  wire [1:0] hazardUnit_io_out_execute_aluSrc2; // @[Core.scala 68:28]
-  wire [31:0] hazardUnit_io_out_execute_rdValM; // @[Core.scala 68:28]
-  wire [31:0] hazardUnit_io_out_execute_rdValW; // @[Core.scala 68:28]
-  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 81:29]
-  wire  rom_clock; // @[Core.scala 87:21]
-  wire [31:0] rom_io_raddr; // @[Core.scala 87:21]
-  wire [31:0] rom_io_rdata; // @[Core.scala 87:21]
-  reg  fetchStage_io_in_start_REG; // @[Core.scala 34:38]
-  reg  io_out_state_instState_REG_commit; // @[Core.scala 78:38]
-  reg [31:0] io_out_state_instState_REG_pc; // @[Core.scala 78:38]
-  reg [31:0] io_out_state_instState_REG_inst; // @[Core.scala 78:38]
-  Fetch fetchStage ( // @[Core.scala 33:28]
-    .clock(fetchStage_clock),
-    .reset(fetchStage_reset),
-    .io_in_start(fetchStage_io_in_start),
-    .io_in_execute_ready(fetchStage_io_in_execute_ready),
-    .io_in_execute_bits_brTaken(fetchStage_io_in_execute_bits_brTaken),
-    .io_in_execute_bits_targetAddr(fetchStage_io_in_execute_bits_targetAddr),
-    .io_out_ready(fetchStage_io_out_ready),
-    .io_out_valid(fetchStage_io_out_valid),
-    .io_out_bits_pcNext4(fetchStage_io_out_bits_pcNext4),
-    .io_out_bits_instState_commit(fetchStage_io_out_bits_instState_commit),
-    .io_out_bits_instState_pc(fetchStage_io_out_bits_instState_pc),
-    .io_out_bits_instState_inst(fetchStage_io_out_bits_instState_inst),
-    .io_rom_resp_valid(fetchStage_io_rom_resp_valid)
+  wire  ife_clock; // @[Core.scala 37:21]
+  wire  ife_reset; // @[Core.scala 37:21]
+  wire  ife_io_in_start; // @[Core.scala 37:21]
+  wire  ife_io_in_execute_ready; // @[Core.scala 37:21]
+  wire  ife_io_in_execute_bits_brTaken; // @[Core.scala 37:21]
+  wire [31:0] ife_io_in_execute_bits_targetAddr; // @[Core.scala 37:21]
+  wire  ife_io_out_ready; // @[Core.scala 37:21]
+  wire  ife_io_out_valid; // @[Core.scala 37:21]
+  wire [31:0] ife_io_out_bits_pcNext4; // @[Core.scala 37:21]
+  wire  ife_io_out_bits_instState_commit; // @[Core.scala 37:21]
+  wire [31:0] ife_io_out_bits_instState_pc; // @[Core.scala 37:21]
+  wire [31:0] ife_io_out_bits_instState_inst; // @[Core.scala 37:21]
+  wire  ife_io_rom_resp_valid; // @[Core.scala 37:21]
+  wire [31:0] ife_io_trapVec; // @[Core.scala 37:21]
+  wire [31:0] ife_io_mepc; // @[Core.scala 37:21]
+  wire  ife_io_excp_valid; // @[Core.scala 37:21]
+  wire  ife_io_excp_bits_isMret; // @[Core.scala 37:21]
+  wire  dec_clock; // @[Core.scala 45:21]
+  wire  dec_reset; // @[Core.scala 45:21]
+  wire  dec_io_in_ready; // @[Core.scala 45:21]
+  wire  dec_io_in_valid; // @[Core.scala 45:21]
+  wire [31:0] dec_io_in_bits_pcNext4; // @[Core.scala 45:21]
+  wire  dec_io_in_bits_instState_commit; // @[Core.scala 45:21]
+  wire [31:0] dec_io_in_bits_instState_pc; // @[Core.scala 45:21]
+  wire [31:0] dec_io_in_bits_instState_inst; // @[Core.scala 45:21]
+  wire  dec_io_out_ready; // @[Core.scala 45:21]
+  wire  dec_io_out_valid; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_isBranch; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_isJump; // @[Core.scala 45:21]
+  wire [1:0] dec_io_out_bits_resultSrc; // @[Core.scala 45:21]
+  wire [4:0] dec_io_out_bits_lsuOp; // @[Core.scala 45:21]
+  wire [3:0] dec_io_out_bits_aluOpSel; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_immSign; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_regWrEn; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_pcAddReg; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_pcNext4; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_aluIn1; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_aluIn2; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_aluIn1IsReg; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_aluIn2IsReg; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_imm; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_data2; // @[Core.scala 45:21]
+  wire [3:0] dec_io_out_bits_excType; // @[Core.scala 45:21]
+  wire [2:0] dec_io_out_bits_csrOp; // @[Core.scala 45:21]
+  wire  dec_io_out_bits_instState_commit; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_instState_pc; // @[Core.scala 45:21]
+  wire [31:0] dec_io_out_bits_instState_inst; // @[Core.scala 45:21]
+  wire [4:0] dec_io_hazard_out_rs1; // @[Core.scala 45:21]
+  wire [4:0] dec_io_hazard_out_rs2; // @[Core.scala 45:21]
+  wire  dec_io_hazard_in_stall; // @[Core.scala 45:21]
+  wire [4:0] dec_io_regfile_rs1; // @[Core.scala 45:21]
+  wire [4:0] dec_io_regfile_rs2; // @[Core.scala 45:21]
+  wire [31:0] dec_io_regfile_rdata1; // @[Core.scala 45:21]
+  wire [31:0] dec_io_regfile_rdata2; // @[Core.scala 45:21]
+  wire  dec_io_ctrl_flush; // @[Core.scala 45:21]
+  wire  exe_clock; // @[Core.scala 50:21]
+  wire  exe_reset; // @[Core.scala 50:21]
+  wire  exe_io_in_ready; // @[Core.scala 50:21]
+  wire  exe_io_in_valid; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_isBranch; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_isJump; // @[Core.scala 50:21]
+  wire [1:0] exe_io_in_bits_resultSrc; // @[Core.scala 50:21]
+  wire [4:0] exe_io_in_bits_lsuOp; // @[Core.scala 50:21]
+  wire [3:0] exe_io_in_bits_aluOpSel; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_immSign; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_regWrEn; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_pcAddReg; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_pcNext4; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_aluIn1; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_aluIn2; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_aluIn1IsReg; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_aluIn2IsReg; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_imm; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_data2; // @[Core.scala 50:21]
+  wire [3:0] exe_io_in_bits_excType; // @[Core.scala 50:21]
+  wire [2:0] exe_io_in_bits_csrOp; // @[Core.scala 50:21]
+  wire  exe_io_in_bits_instState_commit; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_instState_pc; // @[Core.scala 50:21]
+  wire [31:0] exe_io_in_bits_instState_inst; // @[Core.scala 50:21]
+  wire [1:0] exe_io_out_memory_bits_resultSrc; // @[Core.scala 50:21]
+  wire [4:0] exe_io_out_memory_bits_lsuOp; // @[Core.scala 50:21]
+  wire  exe_io_out_memory_bits_regWrEn; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_aluOut; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_data2; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_pcNext4; // @[Core.scala 50:21]
+  wire [2:0] exe_io_out_memory_bits_csrOp; // @[Core.scala 50:21]
+  wire  exe_io_out_memory_bits_csrWrEn; // @[Core.scala 50:21]
+  wire  exe_io_out_memory_bits_csrValid; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_csrWrData; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_csrAddr; // @[Core.scala 50:21]
+  wire [3:0] exe_io_out_memory_bits_excType; // @[Core.scala 50:21]
+  wire  exe_io_out_memory_bits_instState_commit; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_instState_pc; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_memory_bits_instState_inst; // @[Core.scala 50:21]
+  wire  exe_io_out_fetch_ready; // @[Core.scala 50:21]
+  wire  exe_io_out_fetch_bits_brTaken; // @[Core.scala 50:21]
+  wire [31:0] exe_io_out_fetch_bits_targetAddr; // @[Core.scala 50:21]
+  wire [4:0] exe_io_hazard_out_rs1; // @[Core.scala 50:21]
+  wire [4:0] exe_io_hazard_out_rs2; // @[Core.scala 50:21]
+  wire [1:0] exe_io_hazard_out_resultSrc; // @[Core.scala 50:21]
+  wire [4:0] exe_io_hazard_out_rd; // @[Core.scala 50:21]
+  wire [1:0] exe_io_hazard_in_aluSrc1; // @[Core.scala 50:21]
+  wire [1:0] exe_io_hazard_in_aluSrc2; // @[Core.scala 50:21]
+  wire [31:0] exe_io_hazard_in_rdValM; // @[Core.scala 50:21]
+  wire [31:0] exe_io_hazard_in_rdValW; // @[Core.scala 50:21]
+  wire  exe_io_ctrl_flush; // @[Core.scala 50:21]
+  wire [2:0] exe_io_csrRead_op; // @[Core.scala 50:21]
+  wire  exe_io_csrRead_valid; // @[Core.scala 50:21]
+  wire [11:0] exe_io_csrRead_addr; // @[Core.scala 50:21]
+  wire  mem_clock; // @[Core.scala 55:21]
+  wire  mem_reset; // @[Core.scala 55:21]
+  wire  mem_io_in_ready; // @[Core.scala 55:21]
+  wire [1:0] mem_io_in_bits_resultSrc; // @[Core.scala 55:21]
+  wire [4:0] mem_io_in_bits_lsuOp; // @[Core.scala 55:21]
+  wire  mem_io_in_bits_regWrEn; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_aluOut; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_data2; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_pcNext4; // @[Core.scala 55:21]
+  wire [2:0] mem_io_in_bits_csrOp; // @[Core.scala 55:21]
+  wire  mem_io_in_bits_csrWrEn; // @[Core.scala 55:21]
+  wire  mem_io_in_bits_csrValid; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_csrWrData; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_csrAddr; // @[Core.scala 55:21]
+  wire [3:0] mem_io_in_bits_excType; // @[Core.scala 55:21]
+  wire  mem_io_in_bits_instState_commit; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_instState_pc; // @[Core.scala 55:21]
+  wire [31:0] mem_io_in_bits_instState_inst; // @[Core.scala 55:21]
+  wire [1:0] mem_io_out_bits_resultSrc; // @[Core.scala 55:21]
+  wire  mem_io_out_bits_regWrEn; // @[Core.scala 55:21]
+  wire [31:0] mem_io_out_bits_aluOut; // @[Core.scala 55:21]
+  wire [31:0] mem_io_out_bits_pcNext4; // @[Core.scala 55:21]
+  wire [2:0] mem_io_out_bits_csrOp; // @[Core.scala 55:21]
+  wire  mem_io_out_bits_csrWrEn; // @[Core.scala 55:21]
+  wire [31:0] mem_io_out_bits_csrWrData; // @[Core.scala 55:21]
+  wire [11:0] mem_io_out_bits_csrAddr; // @[Core.scala 55:21]
+  wire  mem_io_out_bits_instState_commit; // @[Core.scala 55:21]
+  wire [31:0] mem_io_out_bits_instState_pc; // @[Core.scala 55:21]
+  wire [31:0] mem_io_out_bits_instState_inst; // @[Core.scala 55:21]
+  wire [31:0] mem_io_ramData; // @[Core.scala 55:21]
+  wire [4:0] mem_io_hazard_rd; // @[Core.scala 55:21]
+  wire [31:0] mem_io_hazard_rdVal; // @[Core.scala 55:21]
+  wire  mem_io_hazard_regWrEn; // @[Core.scala 55:21]
+  wire  mem_io_ctrl_flush; // @[Core.scala 55:21]
+  wire  mem_io_excp_valid; // @[Core.scala 55:21]
+  wire  mem_io_excp_bits_isMret; // @[Core.scala 55:21]
+  wire  mem_io_excp_bits_isSret; // @[Core.scala 55:21]
+  wire [30:0] mem_io_excp_bits_excCause; // @[Core.scala 55:21]
+  wire [31:0] mem_io_excp_bits_excPc; // @[Core.scala 55:21]
+  wire  mem_io_csrBusy; // @[Core.scala 55:21]
+  wire [1:0] mem_io_csrMode; // @[Core.scala 55:21]
+  wire  wb_clock; // @[Core.scala 61:20]
+  wire  wb_reset; // @[Core.scala 61:20]
+  wire  wb_io_in_ready; // @[Core.scala 61:20]
+  wire [1:0] wb_io_in_bits_resultSrc; // @[Core.scala 61:20]
+  wire  wb_io_in_bits_regWrEn; // @[Core.scala 61:20]
+  wire [31:0] wb_io_in_bits_aluOut; // @[Core.scala 61:20]
+  wire [31:0] wb_io_in_bits_pcNext4; // @[Core.scala 61:20]
+  wire [2:0] wb_io_in_bits_csrOp; // @[Core.scala 61:20]
+  wire  wb_io_in_bits_csrWrEn; // @[Core.scala 61:20]
+  wire [31:0] wb_io_in_bits_csrWrData; // @[Core.scala 61:20]
+  wire [11:0] wb_io_in_bits_csrAddr; // @[Core.scala 61:20]
+  wire  wb_io_in_bits_instState_commit; // @[Core.scala 61:20]
+  wire [31:0] wb_io_in_bits_instState_pc; // @[Core.scala 61:20]
+  wire [31:0] wb_io_in_bits_instState_inst; // @[Core.scala 61:20]
+  wire  wb_io_instState_commit; // @[Core.scala 61:20]
+  wire [31:0] wb_io_instState_pc; // @[Core.scala 61:20]
+  wire [31:0] wb_io_instState_inst; // @[Core.scala 61:20]
+  wire [4:0] wb_io_hazard_rd; // @[Core.scala 61:20]
+  wire [31:0] wb_io_hazard_rdVal; // @[Core.scala 61:20]
+  wire  wb_io_hazard_regWrEn; // @[Core.scala 61:20]
+  wire [4:0] wb_io_regfile_rd; // @[Core.scala 61:20]
+  wire  wb_io_regfile_regWrEn; // @[Core.scala 61:20]
+  wire [31:0] wb_io_regfile_regWrData; // @[Core.scala 61:20]
+  wire [2:0] wb_io_csrWrite_op; // @[Core.scala 61:20]
+  wire [11:0] wb_io_csrWrite_addr; // @[Core.scala 61:20]
+  wire [31:0] wb_io_csrWrite_data; // @[Core.scala 61:20]
+  wire  wb_io_csrWrite_retired; // @[Core.scala 61:20]
+  wire [31:0] wb_io_ramData; // @[Core.scala 61:20]
+  wire  pipelineCtrl_io_in_brTaken; // @[Core.scala 67:30]
+  wire  pipelineCtrl_io_in_excpValid; // @[Core.scala 67:30]
+  wire  pipelineCtrl_io_out_decode_flush; // @[Core.scala 67:30]
+  wire  pipelineCtrl_io_out_execute_flush; // @[Core.scala 67:30]
+  wire  pipelineCtrl_io_out_memory_flush; // @[Core.scala 67:30]
+  wire [4:0] hazardU_io_in_decode_rs1; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_decode_rs2; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_execute_rs1; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_execute_rs2; // @[Core.scala 77:25]
+  wire [1:0] hazardU_io_in_execute_resultSrc; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_execute_rd; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_memory_rd; // @[Core.scala 77:25]
+  wire [31:0] hazardU_io_in_memory_rdVal; // @[Core.scala 77:25]
+  wire  hazardU_io_in_memory_regWrEn; // @[Core.scala 77:25]
+  wire [4:0] hazardU_io_in_writeback_rd; // @[Core.scala 77:25]
+  wire [31:0] hazardU_io_in_writeback_rdVal; // @[Core.scala 77:25]
+  wire  hazardU_io_in_writeback_regWrEn; // @[Core.scala 77:25]
+  wire [1:0] hazardU_io_out_execute_aluSrc1; // @[Core.scala 77:25]
+  wire [1:0] hazardU_io_out_execute_aluSrc2; // @[Core.scala 77:25]
+  wire [31:0] hazardU_io_out_execute_rdValM; // @[Core.scala 77:25]
+  wire [31:0] hazardU_io_out_execute_rdValW; // @[Core.scala 77:25]
+  wire  hazardU_io_out_decode_stall; // @[Core.scala 77:25]
+  wire  regFile_clock; // @[Core.scala 86:25]
+  wire  regFile_reset; // @[Core.scala 86:25]
+  wire [4:0] regFile_io_r_0_addr; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_r_0_data; // @[Core.scala 86:25]
+  wire [4:0] regFile_io_r_1_addr; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_r_1_data; // @[Core.scala 86:25]
+  wire [4:0] regFile_io_w_0_addr; // @[Core.scala 86:25]
+  wire  regFile_io_w_0_en; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_w_0_data; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_0; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_1; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_2; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_3; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_4; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_5; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_6; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_7; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_8; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_9; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_10; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_11; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_12; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_13; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_14; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_15; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_16; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_17; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_18; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_19; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_20; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_21; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_22; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_23; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_24; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_25; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_26; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_27; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_28; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_29; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_30; // @[Core.scala 86:25]
+  wire [31:0] regFile_io_state_regState_31; // @[Core.scala 86:25]
+  wire  csrFile_clock; // @[Core.scala 98:25]
+  wire  csrFile_reset; // @[Core.scala 98:25]
+  wire [2:0] csrFile_io_read_op; // @[Core.scala 98:25]
+  wire  csrFile_io_read_valid; // @[Core.scala 98:25]
+  wire [11:0] csrFile_io_read_addr; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_read_data; // @[Core.scala 98:25]
+  wire [2:0] csrFile_io_write_op; // @[Core.scala 98:25]
+  wire [11:0] csrFile_io_write_addr; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_write_data; // @[Core.scala 98:25]
+  wire  csrFile_io_write_retired; // @[Core.scala 98:25]
+  wire  csrFile_io_except_valid; // @[Core.scala 98:25]
+  wire  csrFile_io_except_bits_isMret; // @[Core.scala 98:25]
+  wire  csrFile_io_except_bits_isSret; // @[Core.scala 98:25]
+  wire [30:0] csrFile_io_except_bits_excCause; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_except_bits_excPc; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_except_bits_excValue; // @[Core.scala 98:25]
+  wire [1:0] csrFile_io_mode; // @[Core.scala 98:25]
+  wire  csrFile_io_busy; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_mepc; // @[Core.scala 98:25]
+  wire [31:0] csrFile_io_trapVec; // @[Core.scala 98:25]
+  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 114:29]
+  wire  rom_clock; // @[Core.scala 120:21]
+  wire  rom_reset; // @[Core.scala 120:21]
+  wire  rom_wen; // @[Core.scala 120:21]
+  wire [31:0] rom_waddr; // @[Core.scala 120:21]
+  wire [31:0] rom_wdata; // @[Core.scala 120:21]
+  wire [3:0] rom_wmask; // @[Core.scala 120:21]
+  wire [31:0] rom_raddr; // @[Core.scala 120:21]
+  wire [31:0] rom_rdata; // @[Core.scala 120:21]
+  reg  ife_io_in_start_REG; // @[Core.scala 38:31]
+  reg  io_out_state_instState_REG_commit; // @[Core.scala 110:38]
+  reg [31:0] io_out_state_instState_REG_pc; // @[Core.scala 110:38]
+  reg [31:0] io_out_state_instState_REG_inst; // @[Core.scala 110:38]
+  Fetch ife ( // @[Core.scala 37:21]
+    .clock(ife_clock),
+    .reset(ife_reset),
+    .io_in_start(ife_io_in_start),
+    .io_in_execute_ready(ife_io_in_execute_ready),
+    .io_in_execute_bits_brTaken(ife_io_in_execute_bits_brTaken),
+    .io_in_execute_bits_targetAddr(ife_io_in_execute_bits_targetAddr),
+    .io_out_ready(ife_io_out_ready),
+    .io_out_valid(ife_io_out_valid),
+    .io_out_bits_pcNext4(ife_io_out_bits_pcNext4),
+    .io_out_bits_instState_commit(ife_io_out_bits_instState_commit),
+    .io_out_bits_instState_pc(ife_io_out_bits_instState_pc),
+    .io_out_bits_instState_inst(ife_io_out_bits_instState_inst),
+    .io_rom_resp_valid(ife_io_rom_resp_valid),
+    .io_trapVec(ife_io_trapVec),
+    .io_mepc(ife_io_mepc),
+    .io_excp_valid(ife_io_excp_valid),
+    .io_excp_bits_isMret(ife_io_excp_bits_isMret)
   );
-  Decode decodeStage ( // @[Core.scala 38:29]
-    .clock(decodeStage_clock),
-    .reset(decodeStage_reset),
-    .io_in_fetch_ready(decodeStage_io_in_fetch_ready),
-    .io_in_fetch_valid(decodeStage_io_in_fetch_valid),
-    .io_in_fetch_bits_pcNext4(decodeStage_io_in_fetch_bits_pcNext4),
-    .io_in_fetch_bits_instState_commit(decodeStage_io_in_fetch_bits_instState_commit),
-    .io_in_fetch_bits_instState_pc(decodeStage_io_in_fetch_bits_instState_pc),
-    .io_in_fetch_bits_instState_inst(decodeStage_io_in_fetch_bits_instState_inst),
-    .io_in_writeback_bits_rd(decodeStage_io_in_writeback_bits_rd),
-    .io_in_writeback_bits_regWrEn(decodeStage_io_in_writeback_bits_regWrEn),
-    .io_in_writeback_bits_regWrData(decodeStage_io_in_writeback_bits_regWrData),
-    .io_out_ready(decodeStage_io_out_ready),
-    .io_out_valid(decodeStage_io_out_valid),
-    .io_out_bits_isBranch(decodeStage_io_out_bits_isBranch),
-    .io_out_bits_isJump(decodeStage_io_out_bits_isJump),
-    .io_out_bits_resultSrc(decodeStage_io_out_bits_resultSrc),
-    .io_out_bits_memWrEn(decodeStage_io_out_bits_memWrEn),
-    .io_out_bits_memType(decodeStage_io_out_bits_memType),
-    .io_out_bits_memSign(decodeStage_io_out_bits_memSign),
-    .io_out_bits_aluOpSel(decodeStage_io_out_bits_aluOpSel),
-    .io_out_bits_immSign(decodeStage_io_out_bits_immSign),
-    .io_out_bits_regWrEn(decodeStage_io_out_bits_regWrEn),
-    .io_out_bits_pcAddReg(decodeStage_io_out_bits_pcAddReg),
-    .io_out_bits_aluSrc(decodeStage_io_out_bits_aluSrc),
-    .io_out_bits_pcNext4(decodeStage_io_out_bits_pcNext4),
-    .io_out_bits_data1(decodeStage_io_out_bits_data1),
-    .io_out_bits_data2(decodeStage_io_out_bits_data2),
-    .io_out_bits_imm(decodeStage_io_out_bits_imm),
-    .io_out_bits_instState_commit(decodeStage_io_out_bits_instState_commit),
-    .io_out_bits_instState_pc(decodeStage_io_out_bits_instState_pc),
-    .io_out_bits_instState_inst(decodeStage_io_out_bits_instState_inst),
-    .io_regState_regState_0(decodeStage_io_regState_regState_0),
-    .io_regState_regState_1(decodeStage_io_regState_regState_1),
-    .io_regState_regState_2(decodeStage_io_regState_regState_2),
-    .io_regState_regState_3(decodeStage_io_regState_regState_3),
-    .io_regState_regState_4(decodeStage_io_regState_regState_4),
-    .io_regState_regState_5(decodeStage_io_regState_regState_5),
-    .io_regState_regState_6(decodeStage_io_regState_regState_6),
-    .io_regState_regState_7(decodeStage_io_regState_regState_7),
-    .io_regState_regState_8(decodeStage_io_regState_regState_8),
-    .io_regState_regState_9(decodeStage_io_regState_regState_9),
-    .io_regState_regState_10(decodeStage_io_regState_regState_10),
-    .io_regState_regState_11(decodeStage_io_regState_regState_11),
-    .io_regState_regState_12(decodeStage_io_regState_regState_12),
-    .io_regState_regState_13(decodeStage_io_regState_regState_13),
-    .io_regState_regState_14(decodeStage_io_regState_regState_14),
-    .io_regState_regState_15(decodeStage_io_regState_regState_15),
-    .io_regState_regState_16(decodeStage_io_regState_regState_16),
-    .io_regState_regState_17(decodeStage_io_regState_regState_17),
-    .io_regState_regState_18(decodeStage_io_regState_regState_18),
-    .io_regState_regState_19(decodeStage_io_regState_regState_19),
-    .io_regState_regState_20(decodeStage_io_regState_regState_20),
-    .io_regState_regState_21(decodeStage_io_regState_regState_21),
-    .io_regState_regState_22(decodeStage_io_regState_regState_22),
-    .io_regState_regState_23(decodeStage_io_regState_regState_23),
-    .io_regState_regState_24(decodeStage_io_regState_regState_24),
-    .io_regState_regState_25(decodeStage_io_regState_regState_25),
-    .io_regState_regState_26(decodeStage_io_regState_regState_26),
-    .io_regState_regState_27(decodeStage_io_regState_regState_27),
-    .io_regState_regState_28(decodeStage_io_regState_regState_28),
-    .io_regState_regState_29(decodeStage_io_regState_regState_29),
-    .io_regState_regState_30(decodeStage_io_regState_regState_30),
-    .io_regState_regState_31(decodeStage_io_regState_regState_31),
-    .io_ctrl_flush(decodeStage_io_ctrl_flush)
+  Decode dec ( // @[Core.scala 45:21]
+    .clock(dec_clock),
+    .reset(dec_reset),
+    .io_in_ready(dec_io_in_ready),
+    .io_in_valid(dec_io_in_valid),
+    .io_in_bits_pcNext4(dec_io_in_bits_pcNext4),
+    .io_in_bits_instState_commit(dec_io_in_bits_instState_commit),
+    .io_in_bits_instState_pc(dec_io_in_bits_instState_pc),
+    .io_in_bits_instState_inst(dec_io_in_bits_instState_inst),
+    .io_out_ready(dec_io_out_ready),
+    .io_out_valid(dec_io_out_valid),
+    .io_out_bits_isBranch(dec_io_out_bits_isBranch),
+    .io_out_bits_isJump(dec_io_out_bits_isJump),
+    .io_out_bits_resultSrc(dec_io_out_bits_resultSrc),
+    .io_out_bits_lsuOp(dec_io_out_bits_lsuOp),
+    .io_out_bits_aluOpSel(dec_io_out_bits_aluOpSel),
+    .io_out_bits_immSign(dec_io_out_bits_immSign),
+    .io_out_bits_regWrEn(dec_io_out_bits_regWrEn),
+    .io_out_bits_pcAddReg(dec_io_out_bits_pcAddReg),
+    .io_out_bits_pcNext4(dec_io_out_bits_pcNext4),
+    .io_out_bits_aluIn1(dec_io_out_bits_aluIn1),
+    .io_out_bits_aluIn2(dec_io_out_bits_aluIn2),
+    .io_out_bits_aluIn1IsReg(dec_io_out_bits_aluIn1IsReg),
+    .io_out_bits_aluIn2IsReg(dec_io_out_bits_aluIn2IsReg),
+    .io_out_bits_imm(dec_io_out_bits_imm),
+    .io_out_bits_data2(dec_io_out_bits_data2),
+    .io_out_bits_excType(dec_io_out_bits_excType),
+    .io_out_bits_csrOp(dec_io_out_bits_csrOp),
+    .io_out_bits_instState_commit(dec_io_out_bits_instState_commit),
+    .io_out_bits_instState_pc(dec_io_out_bits_instState_pc),
+    .io_out_bits_instState_inst(dec_io_out_bits_instState_inst),
+    .io_hazard_out_rs1(dec_io_hazard_out_rs1),
+    .io_hazard_out_rs2(dec_io_hazard_out_rs2),
+    .io_hazard_in_stall(dec_io_hazard_in_stall),
+    .io_regfile_rs1(dec_io_regfile_rs1),
+    .io_regfile_rs2(dec_io_regfile_rs2),
+    .io_regfile_rdata1(dec_io_regfile_rdata1),
+    .io_regfile_rdata2(dec_io_regfile_rdata2),
+    .io_ctrl_flush(dec_io_ctrl_flush)
   );
-  Execute executeStage ( // @[Core.scala 43:30]
-    .clock(executeStage_clock),
-    .reset(executeStage_reset),
-    .io_in_ready(executeStage_io_in_ready),
-    .io_in_valid(executeStage_io_in_valid),
-    .io_in_bits_isBranch(executeStage_io_in_bits_isBranch),
-    .io_in_bits_isJump(executeStage_io_in_bits_isJump),
-    .io_in_bits_resultSrc(executeStage_io_in_bits_resultSrc),
-    .io_in_bits_memWrEn(executeStage_io_in_bits_memWrEn),
-    .io_in_bits_memType(executeStage_io_in_bits_memType),
-    .io_in_bits_memSign(executeStage_io_in_bits_memSign),
-    .io_in_bits_aluOpSel(executeStage_io_in_bits_aluOpSel),
-    .io_in_bits_immSign(executeStage_io_in_bits_immSign),
-    .io_in_bits_regWrEn(executeStage_io_in_bits_regWrEn),
-    .io_in_bits_pcAddReg(executeStage_io_in_bits_pcAddReg),
-    .io_in_bits_aluSrc(executeStage_io_in_bits_aluSrc),
-    .io_in_bits_pcNext4(executeStage_io_in_bits_pcNext4),
-    .io_in_bits_data1(executeStage_io_in_bits_data1),
-    .io_in_bits_data2(executeStage_io_in_bits_data2),
-    .io_in_bits_imm(executeStage_io_in_bits_imm),
-    .io_in_bits_instState_commit(executeStage_io_in_bits_instState_commit),
-    .io_in_bits_instState_pc(executeStage_io_in_bits_instState_pc),
-    .io_in_bits_instState_inst(executeStage_io_in_bits_instState_inst),
-    .io_out_memory_bits_resultSrc(executeStage_io_out_memory_bits_resultSrc),
-    .io_out_memory_bits_memWrEn(executeStage_io_out_memory_bits_memWrEn),
-    .io_out_memory_bits_memType(executeStage_io_out_memory_bits_memType),
-    .io_out_memory_bits_memSign(executeStage_io_out_memory_bits_memSign),
-    .io_out_memory_bits_regWrEn(executeStage_io_out_memory_bits_regWrEn),
-    .io_out_memory_bits_aluOut(executeStage_io_out_memory_bits_aluOut),
-    .io_out_memory_bits_data2(executeStage_io_out_memory_bits_data2),
-    .io_out_memory_bits_pcNext4(executeStage_io_out_memory_bits_pcNext4),
-    .io_out_memory_bits_instState_commit(executeStage_io_out_memory_bits_instState_commit),
-    .io_out_memory_bits_instState_pc(executeStage_io_out_memory_bits_instState_pc),
-    .io_out_memory_bits_instState_inst(executeStage_io_out_memory_bits_instState_inst),
-    .io_out_fetch_ready(executeStage_io_out_fetch_ready),
-    .io_out_fetch_bits_brTaken(executeStage_io_out_fetch_bits_brTaken),
-    .io_out_fetch_bits_targetAddr(executeStage_io_out_fetch_bits_targetAddr),
-    .io_hazard_out_rs1(executeStage_io_hazard_out_rs1),
-    .io_hazard_out_rs2(executeStage_io_hazard_out_rs2),
-    .io_hazard_in_aluSrc1(executeStage_io_hazard_in_aluSrc1),
-    .io_hazard_in_aluSrc2(executeStage_io_hazard_in_aluSrc2),
-    .io_hazard_in_rdValM(executeStage_io_hazard_in_rdValM),
-    .io_hazard_in_rdValW(executeStage_io_hazard_in_rdValW),
-    .io_ctrl_flush(executeStage_io_ctrl_flush)
+  Execute exe ( // @[Core.scala 50:21]
+    .clock(exe_clock),
+    .reset(exe_reset),
+    .io_in_ready(exe_io_in_ready),
+    .io_in_valid(exe_io_in_valid),
+    .io_in_bits_isBranch(exe_io_in_bits_isBranch),
+    .io_in_bits_isJump(exe_io_in_bits_isJump),
+    .io_in_bits_resultSrc(exe_io_in_bits_resultSrc),
+    .io_in_bits_lsuOp(exe_io_in_bits_lsuOp),
+    .io_in_bits_aluOpSel(exe_io_in_bits_aluOpSel),
+    .io_in_bits_immSign(exe_io_in_bits_immSign),
+    .io_in_bits_regWrEn(exe_io_in_bits_regWrEn),
+    .io_in_bits_pcAddReg(exe_io_in_bits_pcAddReg),
+    .io_in_bits_pcNext4(exe_io_in_bits_pcNext4),
+    .io_in_bits_aluIn1(exe_io_in_bits_aluIn1),
+    .io_in_bits_aluIn2(exe_io_in_bits_aluIn2),
+    .io_in_bits_aluIn1IsReg(exe_io_in_bits_aluIn1IsReg),
+    .io_in_bits_aluIn2IsReg(exe_io_in_bits_aluIn2IsReg),
+    .io_in_bits_imm(exe_io_in_bits_imm),
+    .io_in_bits_data2(exe_io_in_bits_data2),
+    .io_in_bits_excType(exe_io_in_bits_excType),
+    .io_in_bits_csrOp(exe_io_in_bits_csrOp),
+    .io_in_bits_instState_commit(exe_io_in_bits_instState_commit),
+    .io_in_bits_instState_pc(exe_io_in_bits_instState_pc),
+    .io_in_bits_instState_inst(exe_io_in_bits_instState_inst),
+    .io_out_memory_bits_resultSrc(exe_io_out_memory_bits_resultSrc),
+    .io_out_memory_bits_lsuOp(exe_io_out_memory_bits_lsuOp),
+    .io_out_memory_bits_regWrEn(exe_io_out_memory_bits_regWrEn),
+    .io_out_memory_bits_aluOut(exe_io_out_memory_bits_aluOut),
+    .io_out_memory_bits_data2(exe_io_out_memory_bits_data2),
+    .io_out_memory_bits_pcNext4(exe_io_out_memory_bits_pcNext4),
+    .io_out_memory_bits_csrOp(exe_io_out_memory_bits_csrOp),
+    .io_out_memory_bits_csrWrEn(exe_io_out_memory_bits_csrWrEn),
+    .io_out_memory_bits_csrValid(exe_io_out_memory_bits_csrValid),
+    .io_out_memory_bits_csrWrData(exe_io_out_memory_bits_csrWrData),
+    .io_out_memory_bits_csrAddr(exe_io_out_memory_bits_csrAddr),
+    .io_out_memory_bits_excType(exe_io_out_memory_bits_excType),
+    .io_out_memory_bits_instState_commit(exe_io_out_memory_bits_instState_commit),
+    .io_out_memory_bits_instState_pc(exe_io_out_memory_bits_instState_pc),
+    .io_out_memory_bits_instState_inst(exe_io_out_memory_bits_instState_inst),
+    .io_out_fetch_ready(exe_io_out_fetch_ready),
+    .io_out_fetch_bits_brTaken(exe_io_out_fetch_bits_brTaken),
+    .io_out_fetch_bits_targetAddr(exe_io_out_fetch_bits_targetAddr),
+    .io_hazard_out_rs1(exe_io_hazard_out_rs1),
+    .io_hazard_out_rs2(exe_io_hazard_out_rs2),
+    .io_hazard_out_resultSrc(exe_io_hazard_out_resultSrc),
+    .io_hazard_out_rd(exe_io_hazard_out_rd),
+    .io_hazard_in_aluSrc1(exe_io_hazard_in_aluSrc1),
+    .io_hazard_in_aluSrc2(exe_io_hazard_in_aluSrc2),
+    .io_hazard_in_rdValM(exe_io_hazard_in_rdValM),
+    .io_hazard_in_rdValW(exe_io_hazard_in_rdValW),
+    .io_ctrl_flush(exe_io_ctrl_flush),
+    .io_csrRead_op(exe_io_csrRead_op),
+    .io_csrRead_valid(exe_io_csrRead_valid),
+    .io_csrRead_addr(exe_io_csrRead_addr)
   );
-  Memory memoryStage ( // @[Core.scala 48:29]
-    .clock(memoryStage_clock),
-    .reset(memoryStage_reset),
-    .io_in_bits_resultSrc(memoryStage_io_in_bits_resultSrc),
-    .io_in_bits_memWrEn(memoryStage_io_in_bits_memWrEn),
-    .io_in_bits_memType(memoryStage_io_in_bits_memType),
-    .io_in_bits_memSign(memoryStage_io_in_bits_memSign),
-    .io_in_bits_regWrEn(memoryStage_io_in_bits_regWrEn),
-    .io_in_bits_aluOut(memoryStage_io_in_bits_aluOut),
-    .io_in_bits_data2(memoryStage_io_in_bits_data2),
-    .io_in_bits_pcNext4(memoryStage_io_in_bits_pcNext4),
-    .io_in_bits_instState_commit(memoryStage_io_in_bits_instState_commit),
-    .io_in_bits_instState_pc(memoryStage_io_in_bits_instState_pc),
-    .io_in_bits_instState_inst(memoryStage_io_in_bits_instState_inst),
-    .io_out_bits_resultSrc(memoryStage_io_out_bits_resultSrc),
-    .io_out_bits_regWrEn(memoryStage_io_out_bits_regWrEn),
-    .io_out_bits_rdData(memoryStage_io_out_bits_rdData),
-    .io_out_bits_aluOut(memoryStage_io_out_bits_aluOut),
-    .io_out_bits_pcNext4(memoryStage_io_out_bits_pcNext4),
-    .io_out_bits_instState_commit(memoryStage_io_out_bits_instState_commit),
-    .io_out_bits_instState_pc(memoryStage_io_out_bits_instState_pc),
-    .io_out_bits_instState_inst(memoryStage_io_out_bits_instState_inst),
-    .io_hazard_rd(memoryStage_io_hazard_rd),
-    .io_hazard_rdVal(memoryStage_io_hazard_rdVal),
-    .io_hazard_regWrEn(memoryStage_io_hazard_regWrEn)
+  Mem mem ( // @[Core.scala 55:21]
+    .clock(mem_clock),
+    .reset(mem_reset),
+    .io_in_ready(mem_io_in_ready),
+    .io_in_bits_resultSrc(mem_io_in_bits_resultSrc),
+    .io_in_bits_lsuOp(mem_io_in_bits_lsuOp),
+    .io_in_bits_regWrEn(mem_io_in_bits_regWrEn),
+    .io_in_bits_aluOut(mem_io_in_bits_aluOut),
+    .io_in_bits_data2(mem_io_in_bits_data2),
+    .io_in_bits_pcNext4(mem_io_in_bits_pcNext4),
+    .io_in_bits_csrOp(mem_io_in_bits_csrOp),
+    .io_in_bits_csrWrEn(mem_io_in_bits_csrWrEn),
+    .io_in_bits_csrValid(mem_io_in_bits_csrValid),
+    .io_in_bits_csrWrData(mem_io_in_bits_csrWrData),
+    .io_in_bits_csrAddr(mem_io_in_bits_csrAddr),
+    .io_in_bits_excType(mem_io_in_bits_excType),
+    .io_in_bits_instState_commit(mem_io_in_bits_instState_commit),
+    .io_in_bits_instState_pc(mem_io_in_bits_instState_pc),
+    .io_in_bits_instState_inst(mem_io_in_bits_instState_inst),
+    .io_out_bits_resultSrc(mem_io_out_bits_resultSrc),
+    .io_out_bits_regWrEn(mem_io_out_bits_regWrEn),
+    .io_out_bits_aluOut(mem_io_out_bits_aluOut),
+    .io_out_bits_pcNext4(mem_io_out_bits_pcNext4),
+    .io_out_bits_csrOp(mem_io_out_bits_csrOp),
+    .io_out_bits_csrWrEn(mem_io_out_bits_csrWrEn),
+    .io_out_bits_csrWrData(mem_io_out_bits_csrWrData),
+    .io_out_bits_csrAddr(mem_io_out_bits_csrAddr),
+    .io_out_bits_instState_commit(mem_io_out_bits_instState_commit),
+    .io_out_bits_instState_pc(mem_io_out_bits_instState_pc),
+    .io_out_bits_instState_inst(mem_io_out_bits_instState_inst),
+    .io_ramData(mem_io_ramData),
+    .io_hazard_rd(mem_io_hazard_rd),
+    .io_hazard_rdVal(mem_io_hazard_rdVal),
+    .io_hazard_regWrEn(mem_io_hazard_regWrEn),
+    .io_ctrl_flush(mem_io_ctrl_flush),
+    .io_excp_valid(mem_io_excp_valid),
+    .io_excp_bits_isMret(mem_io_excp_bits_isMret),
+    .io_excp_bits_isSret(mem_io_excp_bits_isSret),
+    .io_excp_bits_excCause(mem_io_excp_bits_excCause),
+    .io_excp_bits_excPc(mem_io_excp_bits_excPc),
+    .io_csrBusy(mem_io_csrBusy),
+    .io_csrMode(mem_io_csrMode)
   );
-  Writeback writebackStage ( // @[Core.scala 52:32]
-    .clock(writebackStage_clock),
-    .reset(writebackStage_reset),
-    .io_in_bits_resultSrc(writebackStage_io_in_bits_resultSrc),
-    .io_in_bits_regWrEn(writebackStage_io_in_bits_regWrEn),
-    .io_in_bits_rdData(writebackStage_io_in_bits_rdData),
-    .io_in_bits_aluOut(writebackStage_io_in_bits_aluOut),
-    .io_in_bits_pcNext4(writebackStage_io_in_bits_pcNext4),
-    .io_in_bits_instState_commit(writebackStage_io_in_bits_instState_commit),
-    .io_in_bits_instState_pc(writebackStage_io_in_bits_instState_pc),
-    .io_in_bits_instState_inst(writebackStage_io_in_bits_instState_inst),
-    .io_out_bits_rd(writebackStage_io_out_bits_rd),
-    .io_out_bits_regWrEn(writebackStage_io_out_bits_regWrEn),
-    .io_out_bits_regWrData(writebackStage_io_out_bits_regWrData),
-    .io_instState_commit(writebackStage_io_instState_commit),
-    .io_instState_pc(writebackStage_io_instState_pc),
-    .io_instState_inst(writebackStage_io_instState_inst),
-    .io_hazard_rd(writebackStage_io_hazard_rd),
-    .io_hazard_rdVal(writebackStage_io_hazard_rdVal),
-    .io_hazard_regWrEn(writebackStage_io_hazard_regWrEn)
+  WriteBack wb ( // @[Core.scala 61:20]
+    .clock(wb_clock),
+    .reset(wb_reset),
+    .io_in_ready(wb_io_in_ready),
+    .io_in_bits_resultSrc(wb_io_in_bits_resultSrc),
+    .io_in_bits_regWrEn(wb_io_in_bits_regWrEn),
+    .io_in_bits_aluOut(wb_io_in_bits_aluOut),
+    .io_in_bits_pcNext4(wb_io_in_bits_pcNext4),
+    .io_in_bits_csrOp(wb_io_in_bits_csrOp),
+    .io_in_bits_csrWrEn(wb_io_in_bits_csrWrEn),
+    .io_in_bits_csrWrData(wb_io_in_bits_csrWrData),
+    .io_in_bits_csrAddr(wb_io_in_bits_csrAddr),
+    .io_in_bits_instState_commit(wb_io_in_bits_instState_commit),
+    .io_in_bits_instState_pc(wb_io_in_bits_instState_pc),
+    .io_in_bits_instState_inst(wb_io_in_bits_instState_inst),
+    .io_instState_commit(wb_io_instState_commit),
+    .io_instState_pc(wb_io_instState_pc),
+    .io_instState_inst(wb_io_instState_inst),
+    .io_hazard_rd(wb_io_hazard_rd),
+    .io_hazard_rdVal(wb_io_hazard_rdVal),
+    .io_hazard_regWrEn(wb_io_hazard_regWrEn),
+    .io_regfile_rd(wb_io_regfile_rd),
+    .io_regfile_regWrEn(wb_io_regfile_regWrEn),
+    .io_regfile_regWrData(wb_io_regfile_regWrData),
+    .io_csrWrite_op(wb_io_csrWrite_op),
+    .io_csrWrite_addr(wb_io_csrWrite_addr),
+    .io_csrWrite_data(wb_io_csrWrite_data),
+    .io_csrWrite_retired(wb_io_csrWrite_retired),
+    .io_ramData(wb_io_ramData)
   );
-  PipelineCtrl pipelineCtrl ( // @[Core.scala 59:30]
+  PipelineCtrl pipelineCtrl ( // @[Core.scala 67:30]
     .io_in_brTaken(pipelineCtrl_io_in_brTaken),
+    .io_in_excpValid(pipelineCtrl_io_in_excpValid),
     .io_out_decode_flush(pipelineCtrl_io_out_decode_flush),
-    .io_out_execute_flush(pipelineCtrl_io_out_execute_flush)
+    .io_out_execute_flush(pipelineCtrl_io_out_execute_flush),
+    .io_out_memory_flush(pipelineCtrl_io_out_memory_flush)
   );
-  HazardUnit hazardUnit ( // @[Core.scala 68:28]
-    .io_in_execute_rs1(hazardUnit_io_in_execute_rs1),
-    .io_in_execute_rs2(hazardUnit_io_in_execute_rs2),
-    .io_in_memory_rd(hazardUnit_io_in_memory_rd),
-    .io_in_memory_rdVal(hazardUnit_io_in_memory_rdVal),
-    .io_in_memory_regWrEn(hazardUnit_io_in_memory_regWrEn),
-    .io_in_writeback_rd(hazardUnit_io_in_writeback_rd),
-    .io_in_writeback_rdVal(hazardUnit_io_in_writeback_rdVal),
-    .io_in_writeback_regWrEn(hazardUnit_io_in_writeback_regWrEn),
-    .io_out_execute_aluSrc1(hazardUnit_io_out_execute_aluSrc1),
-    .io_out_execute_aluSrc2(hazardUnit_io_out_execute_aluSrc2),
-    .io_out_execute_rdValM(hazardUnit_io_out_execute_rdValM),
-    .io_out_execute_rdValW(hazardUnit_io_out_execute_rdValW)
+  HazardUnit hazardU ( // @[Core.scala 77:25]
+    .io_in_decode_rs1(hazardU_io_in_decode_rs1),
+    .io_in_decode_rs2(hazardU_io_in_decode_rs2),
+    .io_in_execute_rs1(hazardU_io_in_execute_rs1),
+    .io_in_execute_rs2(hazardU_io_in_execute_rs2),
+    .io_in_execute_resultSrc(hazardU_io_in_execute_resultSrc),
+    .io_in_execute_rd(hazardU_io_in_execute_rd),
+    .io_in_memory_rd(hazardU_io_in_memory_rd),
+    .io_in_memory_rdVal(hazardU_io_in_memory_rdVal),
+    .io_in_memory_regWrEn(hazardU_io_in_memory_regWrEn),
+    .io_in_writeback_rd(hazardU_io_in_writeback_rd),
+    .io_in_writeback_rdVal(hazardU_io_in_writeback_rdVal),
+    .io_in_writeback_regWrEn(hazardU_io_in_writeback_regWrEn),
+    .io_out_execute_aluSrc1(hazardU_io_out_execute_aluSrc1),
+    .io_out_execute_aluSrc2(hazardU_io_out_execute_aluSrc2),
+    .io_out_execute_rdValM(hazardU_io_out_execute_rdValM),
+    .io_out_execute_rdValW(hazardU_io_out_execute_rdValW),
+    .io_out_decode_stall(hazardU_io_out_decode_stall)
   );
-  BusCrossBar busCrossBar ( // @[Core.scala 81:29]
+  RegFile regFile ( // @[Core.scala 86:25]
+    .clock(regFile_clock),
+    .reset(regFile_reset),
+    .io_r_0_addr(regFile_io_r_0_addr),
+    .io_r_0_data(regFile_io_r_0_data),
+    .io_r_1_addr(regFile_io_r_1_addr),
+    .io_r_1_data(regFile_io_r_1_data),
+    .io_w_0_addr(regFile_io_w_0_addr),
+    .io_w_0_en(regFile_io_w_0_en),
+    .io_w_0_data(regFile_io_w_0_data),
+    .io_state_regState_0(regFile_io_state_regState_0),
+    .io_state_regState_1(regFile_io_state_regState_1),
+    .io_state_regState_2(regFile_io_state_regState_2),
+    .io_state_regState_3(regFile_io_state_regState_3),
+    .io_state_regState_4(regFile_io_state_regState_4),
+    .io_state_regState_5(regFile_io_state_regState_5),
+    .io_state_regState_6(regFile_io_state_regState_6),
+    .io_state_regState_7(regFile_io_state_regState_7),
+    .io_state_regState_8(regFile_io_state_regState_8),
+    .io_state_regState_9(regFile_io_state_regState_9),
+    .io_state_regState_10(regFile_io_state_regState_10),
+    .io_state_regState_11(regFile_io_state_regState_11),
+    .io_state_regState_12(regFile_io_state_regState_12),
+    .io_state_regState_13(regFile_io_state_regState_13),
+    .io_state_regState_14(regFile_io_state_regState_14),
+    .io_state_regState_15(regFile_io_state_regState_15),
+    .io_state_regState_16(regFile_io_state_regState_16),
+    .io_state_regState_17(regFile_io_state_regState_17),
+    .io_state_regState_18(regFile_io_state_regState_18),
+    .io_state_regState_19(regFile_io_state_regState_19),
+    .io_state_regState_20(regFile_io_state_regState_20),
+    .io_state_regState_21(regFile_io_state_regState_21),
+    .io_state_regState_22(regFile_io_state_regState_22),
+    .io_state_regState_23(regFile_io_state_regState_23),
+    .io_state_regState_24(regFile_io_state_regState_24),
+    .io_state_regState_25(regFile_io_state_regState_25),
+    .io_state_regState_26(regFile_io_state_regState_26),
+    .io_state_regState_27(regFile_io_state_regState_27),
+    .io_state_regState_28(regFile_io_state_regState_28),
+    .io_state_regState_29(regFile_io_state_regState_29),
+    .io_state_regState_30(regFile_io_state_regState_30),
+    .io_state_regState_31(regFile_io_state_regState_31)
+  );
+  CsrFile csrFile ( // @[Core.scala 98:25]
+    .clock(csrFile_clock),
+    .reset(csrFile_reset),
+    .io_read_op(csrFile_io_read_op),
+    .io_read_valid(csrFile_io_read_valid),
+    .io_read_addr(csrFile_io_read_addr),
+    .io_read_data(csrFile_io_read_data),
+    .io_write_op(csrFile_io_write_op),
+    .io_write_addr(csrFile_io_write_addr),
+    .io_write_data(csrFile_io_write_data),
+    .io_write_retired(csrFile_io_write_retired),
+    .io_except_valid(csrFile_io_except_valid),
+    .io_except_bits_isMret(csrFile_io_except_bits_isMret),
+    .io_except_bits_isSret(csrFile_io_except_bits_isSret),
+    .io_except_bits_excCause(csrFile_io_except_bits_excCause),
+    .io_except_bits_excPc(csrFile_io_except_bits_excPc),
+    .io_except_bits_excValue(csrFile_io_except_bits_excValue),
+    .io_mode(csrFile_io_mode),
+    .io_busy(csrFile_io_busy),
+    .io_mepc(csrFile_io_mepc),
+    .io_trapVec(csrFile_io_trapVec)
+  );
+  BusCrossBar busCrossBar ( // @[Core.scala 114:29]
     .io_masterFace_out_0_valid(busCrossBar_io_masterFace_out_0_valid)
   );
-  ROM rom ( // @[Core.scala 87:21]
+  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) rom ( // @[Core.scala 120:21]
     .clock(rom_clock),
-    .io_raddr(rom_io_raddr),
-    .io_rdata(rom_io_rdata)
+    .reset(rom_reset),
+    .wen(rom_wen),
+    .waddr(rom_waddr),
+    .wdata(rom_wdata),
+    .wmask(rom_wmask),
+    .raddr(rom_raddr),
+    .rdata(rom_rdata)
   );
-  assign io_out_state_intRegState_regState_0 = decodeStage_io_regState_regState_0; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_1 = decodeStage_io_regState_regState_1; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_2 = decodeStage_io_regState_regState_2; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_3 = decodeStage_io_regState_regState_3; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_4 = decodeStage_io_regState_regState_4; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_5 = decodeStage_io_regState_regState_5; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_6 = decodeStage_io_regState_regState_6; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_7 = decodeStage_io_regState_regState_7; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_8 = decodeStage_io_regState_regState_8; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_9 = decodeStage_io_regState_regState_9; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_10 = decodeStage_io_regState_regState_10; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_11 = decodeStage_io_regState_regState_11; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_12 = decodeStage_io_regState_regState_12; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_13 = decodeStage_io_regState_regState_13; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_14 = decodeStage_io_regState_regState_14; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_15 = decodeStage_io_regState_regState_15; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_16 = decodeStage_io_regState_regState_16; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_17 = decodeStage_io_regState_regState_17; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_18 = decodeStage_io_regState_regState_18; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_19 = decodeStage_io_regState_regState_19; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_20 = decodeStage_io_regState_regState_20; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_21 = decodeStage_io_regState_regState_21; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_22 = decodeStage_io_regState_regState_22; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_23 = decodeStage_io_regState_regState_23; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_24 = decodeStage_io_regState_regState_24; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_25 = decodeStage_io_regState_regState_25; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_26 = decodeStage_io_regState_regState_26; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_27 = decodeStage_io_regState_regState_27; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_28 = decodeStage_io_regState_regState_28; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_29 = decodeStage_io_regState_regState_29; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_30 = decodeStage_io_regState_regState_30; // @[Core.scala 77:30]
-  assign io_out_state_intRegState_regState_31 = decodeStage_io_regState_regState_31; // @[Core.scala 77:30]
-  assign io_out_state_instState_commit = io_out_state_instState_REG_commit; // @[Core.scala 78:28]
-  assign io_out_state_instState_pc = io_out_state_instState_REG_pc; // @[Core.scala 78:28]
-  assign io_out_state_instState_inst = io_out_state_instState_REG_inst; // @[Core.scala 78:28]
-  assign fetchStage_clock = clock;
-  assign fetchStage_reset = reset;
-  assign fetchStage_io_in_start = fetchStage_io_in_start_REG; // @[Core.scala 34:28]
-  assign fetchStage_io_in_execute_bits_brTaken = executeStage_io_out_fetch_bits_brTaken; // @[Core.scala 45:30]
-  assign fetchStage_io_in_execute_bits_targetAddr = executeStage_io_out_fetch_bits_targetAddr; // @[Core.scala 45:30]
-  assign fetchStage_io_out_ready = decodeStage_io_in_fetch_ready; // @[Core.scala 39:29]
-  assign fetchStage_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 84:28]
-  assign decodeStage_clock = clock;
-  assign decodeStage_reset = reset;
-  assign decodeStage_io_in_fetch_valid = fetchStage_io_out_valid; // @[Core.scala 39:29]
-  assign decodeStage_io_in_fetch_bits_pcNext4 = fetchStage_io_out_bits_pcNext4; // @[Core.scala 39:29]
-  assign decodeStage_io_in_fetch_bits_instState_commit = fetchStage_io_out_bits_instState_commit; // @[Core.scala 39:29]
-  assign decodeStage_io_in_fetch_bits_instState_pc = fetchStage_io_out_bits_instState_pc; // @[Core.scala 39:29]
-  assign decodeStage_io_in_fetch_bits_instState_inst = fetchStage_io_out_bits_instState_inst; // @[Core.scala 39:29]
-  assign decodeStage_io_in_writeback_bits_rd = writebackStage_io_out_bits_rd; // @[Core.scala 56:33]
-  assign decodeStage_io_in_writeback_bits_regWrEn = writebackStage_io_out_bits_regWrEn; // @[Core.scala 56:33]
-  assign decodeStage_io_in_writeback_bits_regWrData = writebackStage_io_out_bits_regWrData; // @[Core.scala 56:33]
-  assign decodeStage_io_out_ready = executeStage_io_in_ready; // @[Core.scala 44:24]
-  assign decodeStage_io_ctrl_flush = pipelineCtrl_io_out_decode_flush; // @[Core.scala 62:25]
-  assign executeStage_clock = clock;
-  assign executeStage_reset = reset;
-  assign executeStage_io_in_valid = decodeStage_io_out_valid; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_isBranch = decodeStage_io_out_bits_isBranch; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_isJump = decodeStage_io_out_bits_isJump; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_resultSrc = decodeStage_io_out_bits_resultSrc; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_memWrEn = decodeStage_io_out_bits_memWrEn; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_memType = decodeStage_io_out_bits_memType; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_memSign = decodeStage_io_out_bits_memSign; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_aluOpSel = decodeStage_io_out_bits_aluOpSel; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_immSign = decodeStage_io_out_bits_immSign; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_regWrEn = decodeStage_io_out_bits_regWrEn; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_pcAddReg = decodeStage_io_out_bits_pcAddReg; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_aluSrc = decodeStage_io_out_bits_aluSrc; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_pcNext4 = decodeStage_io_out_bits_pcNext4; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_data1 = decodeStage_io_out_bits_data1; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_data2 = decodeStage_io_out_bits_data2; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_imm = decodeStage_io_out_bits_imm; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_instState_commit = decodeStage_io_out_bits_instState_commit; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_instState_pc = decodeStage_io_out_bits_instState_pc; // @[Core.scala 44:24]
-  assign executeStage_io_in_bits_instState_inst = decodeStage_io_out_bits_instState_inst; // @[Core.scala 44:24]
-  assign executeStage_io_out_fetch_ready = fetchStage_io_in_execute_ready; // @[Core.scala 45:30]
-  assign executeStage_io_hazard_in_aluSrc1 = hazardUnit_io_out_execute_aluSrc1; // @[Core.scala 73:31]
-  assign executeStage_io_hazard_in_aluSrc2 = hazardUnit_io_out_execute_aluSrc2; // @[Core.scala 73:31]
-  assign executeStage_io_hazard_in_rdValM = hazardUnit_io_out_execute_rdValM; // @[Core.scala 73:31]
-  assign executeStage_io_hazard_in_rdValW = hazardUnit_io_out_execute_rdValW; // @[Core.scala 73:31]
-  assign executeStage_io_ctrl_flush = pipelineCtrl_io_out_execute_flush; // @[Core.scala 63:26]
-  assign memoryStage_clock = clock;
-  assign memoryStage_reset = reset;
-  assign memoryStage_io_in_bits_resultSrc = executeStage_io_out_memory_bits_resultSrc; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_memWrEn = executeStage_io_out_memory_bits_memWrEn; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_memType = executeStage_io_out_memory_bits_memType; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_memSign = executeStage_io_out_memory_bits_memSign; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_regWrEn = executeStage_io_out_memory_bits_regWrEn; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_aluOut = executeStage_io_out_memory_bits_aluOut; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_data2 = executeStage_io_out_memory_bits_data2; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_pcNext4 = executeStage_io_out_memory_bits_pcNext4; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_instState_commit = executeStage_io_out_memory_bits_instState_commit; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_instState_pc = executeStage_io_out_memory_bits_instState_pc; // @[Core.scala 49:23]
-  assign memoryStage_io_in_bits_instState_inst = executeStage_io_out_memory_bits_instState_inst; // @[Core.scala 49:23]
-  assign writebackStage_clock = clock;
-  assign writebackStage_reset = reset;
-  assign writebackStage_io_in_bits_resultSrc = memoryStage_io_out_bits_resultSrc; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_regWrEn = memoryStage_io_out_bits_regWrEn; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_rdData = memoryStage_io_out_bits_rdData; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_aluOut = memoryStage_io_out_bits_aluOut; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_pcNext4 = memoryStage_io_out_bits_pcNext4; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_instState_commit = memoryStage_io_out_bits_instState_commit; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_instState_pc = memoryStage_io_out_bits_instState_pc; // @[Core.scala 53:26]
-  assign writebackStage_io_in_bits_instState_inst = memoryStage_io_out_bits_instState_inst; // @[Core.scala 53:26]
-  assign pipelineCtrl_io_in_brTaken = executeStage_io_out_fetch_bits_brTaken; // @[Core.scala 60:32]
-  assign hazardUnit_io_in_execute_rs1 = executeStage_io_hazard_out_rs1; // @[Core.scala 70:30]
-  assign hazardUnit_io_in_execute_rs2 = executeStage_io_hazard_out_rs2; // @[Core.scala 70:30]
-  assign hazardUnit_io_in_memory_rd = memoryStage_io_hazard_rd; // @[Core.scala 71:29]
-  assign hazardUnit_io_in_memory_rdVal = memoryStage_io_hazard_rdVal; // @[Core.scala 71:29]
-  assign hazardUnit_io_in_memory_regWrEn = memoryStage_io_hazard_regWrEn; // @[Core.scala 71:29]
-  assign hazardUnit_io_in_writeback_rd = writebackStage_io_hazard_rd; // @[Core.scala 72:32]
-  assign hazardUnit_io_in_writeback_rdVal = writebackStage_io_hazard_rdVal; // @[Core.scala 72:32]
-  assign hazardUnit_io_in_writeback_regWrEn = writebackStage_io_hazard_regWrEn; // @[Core.scala 72:32]
-  assign rom_clock = clock;
-  assign rom_io_raddr = 32'h0; // @[Core.scala 102:18]
+  assign io_out_state_intRegState_regState_0 = regFile_io_state_regState_0; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_1 = regFile_io_state_regState_1; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_2 = regFile_io_state_regState_2; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_3 = regFile_io_state_regState_3; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_4 = regFile_io_state_regState_4; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_5 = regFile_io_state_regState_5; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_6 = regFile_io_state_regState_6; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_7 = regFile_io_state_regState_7; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_8 = regFile_io_state_regState_8; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_9 = regFile_io_state_regState_9; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_10 = regFile_io_state_regState_10; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_11 = regFile_io_state_regState_11; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_12 = regFile_io_state_regState_12; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_13 = regFile_io_state_regState_13; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_14 = regFile_io_state_regState_14; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_15 = regFile_io_state_regState_15; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_16 = regFile_io_state_regState_16; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_17 = regFile_io_state_regState_17; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_18 = regFile_io_state_regState_18; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_19 = regFile_io_state_regState_19; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_20 = regFile_io_state_regState_20; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_21 = regFile_io_state_regState_21; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_22 = regFile_io_state_regState_22; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_23 = regFile_io_state_regState_23; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_24 = regFile_io_state_regState_24; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_25 = regFile_io_state_regState_25; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_26 = regFile_io_state_regState_26; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_27 = regFile_io_state_regState_27; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_28 = regFile_io_state_regState_28; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_29 = regFile_io_state_regState_29; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_30 = regFile_io_state_regState_30; // @[Core.scala 111:30]
+  assign io_out_state_intRegState_regState_31 = regFile_io_state_regState_31; // @[Core.scala 111:30]
+  assign io_out_state_instState_commit = io_out_state_instState_REG_commit; // @[Core.scala 110:28]
+  assign io_out_state_instState_pc = io_out_state_instState_REG_pc; // @[Core.scala 110:28]
+  assign io_out_state_instState_inst = io_out_state_instState_REG_inst; // @[Core.scala 110:28]
+  assign ife_clock = clock;
+  assign ife_reset = reset;
+  assign ife_io_in_start = ife_io_in_start_REG; // @[Core.scala 38:21]
+  assign ife_io_in_execute_bits_brTaken = exe_io_out_fetch_bits_brTaken; // @[Core.scala 52:23]
+  assign ife_io_in_execute_bits_targetAddr = exe_io_out_fetch_bits_targetAddr; // @[Core.scala 52:23]
+  assign ife_io_out_ready = dec_io_in_ready; // @[Core.scala 46:15]
+  assign ife_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 117:21]
+  assign ife_io_trapVec = csrFile_io_trapVec; // @[Core.scala 105:13 33:23]
+  assign ife_io_mepc = csrFile_io_mepc; // @[Core.scala 106:10 34:20]
+  assign ife_io_excp_valid = mem_io_excp_valid; // @[Core.scala 58:17]
+  assign ife_io_excp_bits_isMret = mem_io_excp_bits_isMret; // @[Core.scala 58:17]
+  assign dec_clock = clock;
+  assign dec_reset = reset;
+  assign dec_io_in_valid = ife_io_out_valid; // @[Core.scala 46:15]
+  assign dec_io_in_bits_pcNext4 = ife_io_out_bits_pcNext4; // @[Core.scala 46:15]
+  assign dec_io_in_bits_instState_commit = ife_io_out_bits_instState_commit; // @[Core.scala 46:15]
+  assign dec_io_in_bits_instState_pc = ife_io_out_bits_instState_pc; // @[Core.scala 46:15]
+  assign dec_io_in_bits_instState_inst = ife_io_out_bits_instState_inst; // @[Core.scala 46:15]
+  assign dec_io_out_ready = exe_io_in_ready; // @[Core.scala 51:15]
+  assign dec_io_hazard_in_stall = hazardU_io_out_decode_stall; // @[Core.scala 31:24 83:14]
+  assign dec_io_regfile_rdata1 = regFile_io_r_0_data; // @[Core.scala 91:27]
+  assign dec_io_regfile_rdata2 = regFile_io_r_1_data; // @[Core.scala 92:27]
+  assign dec_io_ctrl_flush = pipelineCtrl_io_out_decode_flush; // @[Core.scala 71:17]
+  assign exe_clock = clock;
+  assign exe_reset = reset;
+  assign exe_io_in_valid = dec_io_out_valid; // @[Core.scala 51:15]
+  assign exe_io_in_bits_isBranch = dec_io_out_bits_isBranch; // @[Core.scala 51:15]
+  assign exe_io_in_bits_isJump = dec_io_out_bits_isJump; // @[Core.scala 51:15]
+  assign exe_io_in_bits_resultSrc = dec_io_out_bits_resultSrc; // @[Core.scala 51:15]
+  assign exe_io_in_bits_lsuOp = dec_io_out_bits_lsuOp; // @[Core.scala 51:15]
+  assign exe_io_in_bits_aluOpSel = dec_io_out_bits_aluOpSel; // @[Core.scala 51:15]
+  assign exe_io_in_bits_immSign = dec_io_out_bits_immSign; // @[Core.scala 51:15]
+  assign exe_io_in_bits_regWrEn = dec_io_out_bits_regWrEn; // @[Core.scala 51:15]
+  assign exe_io_in_bits_pcAddReg = dec_io_out_bits_pcAddReg; // @[Core.scala 51:15]
+  assign exe_io_in_bits_pcNext4 = dec_io_out_bits_pcNext4; // @[Core.scala 51:15]
+  assign exe_io_in_bits_aluIn1 = dec_io_out_bits_aluIn1; // @[Core.scala 51:15]
+  assign exe_io_in_bits_aluIn2 = dec_io_out_bits_aluIn2; // @[Core.scala 51:15]
+  assign exe_io_in_bits_aluIn1IsReg = dec_io_out_bits_aluIn1IsReg; // @[Core.scala 51:15]
+  assign exe_io_in_bits_aluIn2IsReg = dec_io_out_bits_aluIn2IsReg; // @[Core.scala 51:15]
+  assign exe_io_in_bits_imm = dec_io_out_bits_imm; // @[Core.scala 51:15]
+  assign exe_io_in_bits_data2 = dec_io_out_bits_data2; // @[Core.scala 51:15]
+  assign exe_io_in_bits_excType = dec_io_out_bits_excType; // @[Core.scala 51:15]
+  assign exe_io_in_bits_csrOp = dec_io_out_bits_csrOp; // @[Core.scala 51:15]
+  assign exe_io_in_bits_instState_commit = dec_io_out_bits_instState_commit; // @[Core.scala 51:15]
+  assign exe_io_in_bits_instState_pc = dec_io_out_bits_instState_pc; // @[Core.scala 51:15]
+  assign exe_io_in_bits_instState_inst = dec_io_out_bits_instState_inst; // @[Core.scala 51:15]
+  assign exe_io_out_fetch_ready = ife_io_in_execute_ready; // @[Core.scala 52:23]
+  assign exe_io_hazard_in_aluSrc1 = hazardU_io_out_execute_aluSrc1; // @[Core.scala 82:28]
+  assign exe_io_hazard_in_aluSrc2 = hazardU_io_out_execute_aluSrc2; // @[Core.scala 82:28]
+  assign exe_io_hazard_in_rdValM = hazardU_io_out_execute_rdValM; // @[Core.scala 82:28]
+  assign exe_io_hazard_in_rdValW = hazardU_io_out_execute_rdValW; // @[Core.scala 82:28]
+  assign exe_io_ctrl_flush = pipelineCtrl_io_out_execute_flush; // @[Core.scala 72:17]
+  assign exe_io_csrRead_valid = csrFile_io_read_valid; // @[Core.scala 101:21]
+  assign mem_clock = clock;
+  assign mem_reset = reset;
+  assign mem_io_in_bits_resultSrc = exe_io_out_memory_bits_resultSrc; // @[Core.scala 56:15]
+  assign mem_io_in_bits_lsuOp = exe_io_out_memory_bits_lsuOp; // @[Core.scala 56:15]
+  assign mem_io_in_bits_regWrEn = exe_io_out_memory_bits_regWrEn; // @[Core.scala 56:15]
+  assign mem_io_in_bits_aluOut = exe_io_out_memory_bits_aluOut; // @[Core.scala 56:15]
+  assign mem_io_in_bits_data2 = exe_io_out_memory_bits_data2; // @[Core.scala 56:15]
+  assign mem_io_in_bits_pcNext4 = exe_io_out_memory_bits_pcNext4; // @[Core.scala 56:15]
+  assign mem_io_in_bits_csrOp = exe_io_out_memory_bits_csrOp; // @[Core.scala 56:15]
+  assign mem_io_in_bits_csrWrEn = exe_io_out_memory_bits_csrWrEn; // @[Core.scala 56:15]
+  assign mem_io_in_bits_csrValid = exe_io_out_memory_bits_csrValid; // @[Core.scala 56:15]
+  assign mem_io_in_bits_csrWrData = exe_io_out_memory_bits_csrWrData; // @[Core.scala 56:15]
+  assign mem_io_in_bits_csrAddr = exe_io_out_memory_bits_csrAddr; // @[Core.scala 56:15]
+  assign mem_io_in_bits_excType = exe_io_out_memory_bits_excType; // @[Core.scala 56:15]
+  assign mem_io_in_bits_instState_commit = exe_io_out_memory_bits_instState_commit; // @[Core.scala 56:15]
+  assign mem_io_in_bits_instState_pc = exe_io_out_memory_bits_instState_pc; // @[Core.scala 56:15]
+  assign mem_io_in_bits_instState_inst = exe_io_out_memory_bits_instState_inst; // @[Core.scala 56:15]
+  assign mem_io_ctrl_flush = pipelineCtrl_io_out_memory_flush; // @[Core.scala 73:17]
+  assign mem_io_csrBusy = csrFile_io_busy; // @[Core.scala 103:20]
+  assign mem_io_csrMode = csrFile_io_mode; // @[Core.scala 104:20]
+  assign wb_clock = clock;
+  assign wb_reset = reset;
+  assign wb_io_in_bits_resultSrc = mem_io_out_bits_resultSrc; // @[Core.scala 62:14]
+  assign wb_io_in_bits_regWrEn = mem_io_out_bits_regWrEn; // @[Core.scala 62:14]
+  assign wb_io_in_bits_aluOut = mem_io_out_bits_aluOut; // @[Core.scala 62:14]
+  assign wb_io_in_bits_pcNext4 = mem_io_out_bits_pcNext4; // @[Core.scala 62:14]
+  assign wb_io_in_bits_csrOp = mem_io_out_bits_csrOp; // @[Core.scala 62:14]
+  assign wb_io_in_bits_csrWrEn = mem_io_out_bits_csrWrEn; // @[Core.scala 62:14]
+  assign wb_io_in_bits_csrWrData = mem_io_out_bits_csrWrData; // @[Core.scala 62:14]
+  assign wb_io_in_bits_csrAddr = mem_io_out_bits_csrAddr; // @[Core.scala 62:14]
+  assign wb_io_in_bits_instState_commit = mem_io_out_bits_instState_commit; // @[Core.scala 62:14]
+  assign wb_io_in_bits_instState_pc = mem_io_out_bits_instState_pc; // @[Core.scala 62:14]
+  assign wb_io_in_bits_instState_inst = mem_io_out_bits_instState_inst; // @[Core.scala 62:14]
+  assign wb_io_ramData = mem_io_ramData; // @[Core.scala 63:19]
+  assign pipelineCtrl_io_in_brTaken = exe_io_out_fetch_bits_brTaken; // @[Core.scala 69:32]
+  assign pipelineCtrl_io_in_excpValid = mem_io_excp_valid; // @[Core.scala 68:34]
+  assign hazardU_io_in_decode_rs1 = dec_io_hazard_out_rs1; // @[Core.scala 78:26]
+  assign hazardU_io_in_decode_rs2 = dec_io_hazard_out_rs2; // @[Core.scala 78:26]
+  assign hazardU_io_in_execute_rs1 = exe_io_hazard_out_rs1; // @[Core.scala 79:27]
+  assign hazardU_io_in_execute_rs2 = exe_io_hazard_out_rs2; // @[Core.scala 79:27]
+  assign hazardU_io_in_execute_resultSrc = exe_io_hazard_out_resultSrc; // @[Core.scala 79:27]
+  assign hazardU_io_in_execute_rd = exe_io_hazard_out_rd; // @[Core.scala 79:27]
+  assign hazardU_io_in_memory_rd = mem_io_hazard_rd; // @[Core.scala 80:26]
+  assign hazardU_io_in_memory_rdVal = mem_io_hazard_rdVal; // @[Core.scala 80:26]
+  assign hazardU_io_in_memory_regWrEn = mem_io_hazard_regWrEn; // @[Core.scala 80:26]
+  assign hazardU_io_in_writeback_rd = wb_io_hazard_rd; // @[Core.scala 81:29]
+  assign hazardU_io_in_writeback_rdVal = wb_io_hazard_rdVal; // @[Core.scala 81:29]
+  assign hazardU_io_in_writeback_regWrEn = wb_io_hazard_regWrEn; // @[Core.scala 81:29]
+  assign regFile_clock = clock;
+  assign regFile_reset = reset;
+  assign regFile_io_r_0_addr = dec_io_regfile_rs1; // @[Core.scala 89:26]
+  assign regFile_io_r_1_addr = dec_io_regfile_rs2; // @[Core.scala 90:26]
+  assign regFile_io_w_0_addr = wb_io_regfile_rd; // @[Core.scala 94:26]
+  assign regFile_io_w_0_en = wb_io_regfile_regWrEn; // @[Core.scala 93:24]
+  assign regFile_io_w_0_data = wb_io_regfile_regWrData; // @[Core.scala 95:26]
+  assign csrFile_clock = clock;
+  assign csrFile_reset = reset;
+  assign csrFile_io_read_op = exe_io_csrRead_op; // @[Core.scala 101:21]
+  assign csrFile_io_read_addr = exe_io_csrRead_addr; // @[Core.scala 101:21]
+  assign csrFile_io_write_op = wb_io_csrWrite_op; // @[Core.scala 102:22]
+  assign csrFile_io_write_addr = wb_io_csrWrite_addr; // @[Core.scala 102:22]
+  assign csrFile_io_write_data = wb_io_csrWrite_data; // @[Core.scala 102:22]
+  assign csrFile_io_write_retired = wb_io_csrWrite_retired; // @[Core.scala 102:22]
+  assign csrFile_io_except_valid = mem_io_excp_valid; // @[Core.scala 100:23]
+  assign csrFile_io_except_bits_isMret = mem_io_excp_bits_isMret; // @[Core.scala 100:23]
+  assign csrFile_io_except_bits_isSret = mem_io_excp_bits_isSret; // @[Core.scala 100:23]
+  assign csrFile_io_except_bits_excCause = mem_io_excp_bits_excCause; // @[Core.scala 100:23]
+  assign csrFile_io_except_bits_excPc = mem_io_excp_bits_excPc; // @[Core.scala 100:23]
+  assign csrFile_io_except_bits_excValue = 32'h0; // @[Core.scala 100:23]
+  assign rom_clock = clock; // @[Core.scala 121:18]
+  assign rom_reset = reset; // @[Core.scala 122:18]
+  assign rom_wen = 1'h0; // @[Core.scala 134:56]
+  assign rom_waddr = 32'h0; // @[Core.scala 137:18]
+  assign rom_wdata = 32'h0; // @[Core.scala 136:18]
+  assign rom_wmask = 4'hf; // @[Core.scala 135:18]
+  assign rom_raddr = 32'h0; // @[Core.scala 138:18]
   always @(posedge clock) begin
-    fetchStage_io_in_start_REG <= io_in_start; // @[Core.scala 34:38]
-    io_out_state_instState_REG_commit <= writebackStage_io_instState_commit; // @[Core.scala 78:38]
-    io_out_state_instState_REG_pc <= writebackStage_io_instState_pc; // @[Core.scala 78:38]
-    io_out_state_instState_REG_inst <= writebackStage_io_instState_inst; // @[Core.scala 78:38]
+    ife_io_in_start_REG <= io_in_start; // @[Core.scala 38:31]
+    io_out_state_instState_REG_commit <= wb_io_instState_commit; // @[Core.scala 110:38]
+    io_out_state_instState_REG_pc <= wb_io_instState_pc; // @[Core.scala 110:38]
+    io_out_state_instState_REG_inst <= wb_io_instState_inst; // @[Core.scala 110:38]
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -588,7 +817,7 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  fetchStage_io_in_start_REG = _RAND_0[0:0];
+  ife_io_in_start_REG = _RAND_0[0:0];
   _RAND_1 = {1{`RANDOM}};
   io_out_state_instState_REG_commit = _RAND_1[0:0];
   _RAND_2 = {1{`RANDOM}};

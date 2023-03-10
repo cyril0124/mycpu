@@ -15,6 +15,9 @@
 #define IMAGE_PATH "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build"
 #define IMAGE "or.bin"
 
+// some specifiy instructions
+#define MRET 0x30200073
+
 typedef uint32_t xlen_t;
 typedef uint32_t ilen_t;
 
@@ -50,7 +53,8 @@ class UcEngine {
         uc_hook trace_inst;
 
         bool stop = false;
-        bool verbose = true;
+        bool verbose = false;
+        // bool verbose = true;
 
         std::string image_name;
         uint8_t *image_buffer;

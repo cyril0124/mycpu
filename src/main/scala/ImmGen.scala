@@ -6,6 +6,7 @@ import org.chipsalliance.cde.config._
 
 import mycpu.common._
 import mycpu.util._
+import mycpu.common.consts.Control._
 
 class ImmGen(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
@@ -21,34 +22,38 @@ class ImmGen(implicit val p: Parameters) extends MyModule {
 
     val immI = ZeroExt(inst(31,20), xlen)
     val immS = ZeroExt(Cat(inst(31,25),inst(11,7)),xlen)
-    val immB = ZeroExt(Cat(Seq(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W))), xlen)
+    val immB = ZeroExt(Cat(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W)), xlen)
     val immU = ZeroExt(inst(31,12) << 12, xlen)
-    val immJ = ZeroExt(Cat(Seq(inst(31),inst(19,12),inst(20),inst(30,21))),xlen)
+    val immJ = ZeroExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21)),xlen)
 
     val immI_S = SignExt(inst(31,20), xlen)
     val immS_S = SignExt(Cat(inst(31,25),inst(11,7)),xlen)
-    val immB_S = SignExt(Cat(Seq(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W))), xlen)
+    val immB_S = SignExt(Cat(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W)), xlen)
     val immU_S = SignExt(inst(31,12) << 12, xlen)
-    val immJ_S = SignExt(Cat(Seq(inst(31),inst(19,12),inst(20),inst(30,21))),xlen)
+    val immJ_S = SignExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21)),xlen)
 
     val out = WireInit(0.U.asTypeOf(io.imm))
 
     when(immSign) { // signed
         out := MuxLookup(immSrc, immI_S, Seq(
-            0.U -> immI_S,
-            1.U -> immS_S,
-            2.U -> immB_S,
-            3.U -> immU_S,
-            4.U -> immJ_S
+            IMM_I -> immI_S,
+            IMM_S -> immS_S,
+            IMM_B -> immB_S,
+            IMM_U -> immU_S,
+            IMM_J -> immJ_S
         ))
     }.otherwise { // unsigned
         out := MuxLookup(immSrc, immI, Seq(
-            0.U -> immI,
-            1.U -> immS,
-            2.U -> immB,
-            3.U -> immU,
-            4.U -> immJ
+            IMM_I -> immI,
+            IMM_S -> immS,
+            IMM_B -> immB,
+            IMM_U -> immU,
+            IMM_J -> immJ
         ))
+    }
+
+    when(immSrc === IMM_CSR) {
+        out := ZeroExt(InstField(inst, "rs1"), xlen)
     }
     
     io.imm := out

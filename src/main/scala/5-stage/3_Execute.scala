@@ -6,17 +6,32 @@ import org.chipsalliance.cde.config._
 
 import mycpu.common._
 import mycpu.util._
+import dataclass.data
+import mycpu.csr.CsrRead
+import mycpu.common.consts.CsrOp._
+import mycpu.common.consts.ExceptType._
+import mycpu.common.consts.Control._
+import mycpu.common.consts.LsuOp._
 
 class ExecuteOut()(implicit val p: Parameters) extends MyBundle{
     val resultSrc = UInt(2.W)
-    val memWrEn = Bool()
-    val memType = UInt(3.W)
-    val memRdEn = Bool()
-    val memSign = Bool()
+    // val memWrEn = Bool()
+    // val memType = UInt(MEM_TYP_WIDTH.W)
+    // val memRdEn = Bool()
+    // val memSign = Bool()
+    val lsuOp  = UInt(LSU_OP_WIDTH.W)
     val regWrEn = Bool()
     val aluOut = UInt(xlen.W)
     val data2 = UInt(xlen.W)
     val pcNext4 = UInt(xlen.W)
+    
+    val csrOp = UInt(CSR_OP_WIDTH.W)
+    val csrWrEn = Bool()
+    val csrValid = Bool()
+    val csrRdData  = UInt(xlen.W)
+    val csrWrData = UInt(xlen.W)
+    val csrAddr = UInt(xlen.W)
+    val excType = UInt(EXC_TYPE_WIDTH.W) 
 
     val instState = new InstState
 }
@@ -58,6 +73,7 @@ class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
             }
     val hazard = new ExecuteHazardIO
     val ctrl = Input(new PipelineCtrlBundle)
+    val csrRead = new CsrRead
 }
 
 
@@ -67,33 +83,41 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
-    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~stall
-    val executeLatch = io.in.valid && io.out.memory.ready && io.out.fetch.ready
-    val stageReg = RegEnable(io.in.bits, 0.U.asTypeOf(io.in.bits), executeLatch)
 
-    when(flush) {
+    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~stall 
+    val executeLatch = io.in.fire
+    val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
+    when(executeLatch) {
+        stageReg := io.in.bits
+    }.elsewhen(!stall){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
 
+    when(flush) { stageReg := 0.U.asTypeOf(io.in.bits) }
+
     val aluZero = Wire(Bool())
+    val inst = stageReg.instState.inst
 
     // alu 
-    val alu = Module(new Alu())
+    val alu = Module(new ALU())
     val aluOut = alu.io.out
-    alu.io.in1 := MuxLookup(io.hazard.in.aluSrc1, stageReg.data1, Seq(
-                                "b00".U -> stageReg.data1, 
+    val hazardData1 = WireInit(0.U(xlen.W))
+    hazardData1 := MuxLookup(io.hazard.in.aluSrc1, stageReg.aluIn1, Seq(
+                                "b00".U -> stageReg.aluIn1, 
                                 "b01".U -> io.hazard.in.rdValM, 
                                 "b10".U -> io.hazard.in.rdValW)
                             )
-    
-    // check regfile data2 sources for hazard
-    val data2 = WireInit(0.U(xlen.W))
-    data2 := MuxLookup(io.hazard.in.aluSrc2, stageReg.data2, Seq(
-                            "b00".U -> stageReg.data2,
+    val aluIn1 = Mux(stageReg.aluIn1IsReg, hazardData1, stageReg.aluIn1)
+    // alu.io.in1 := Mux(stageReg.aluIn1IsReg, hazardData1, stageReg.aluIn1)
+    alu.io.in1 := aluIn1
+    val hazardData2 = WireInit(0.U(xlen.W))
+    hazardData2 := MuxLookup(io.hazard.in.aluSrc2, stageReg.aluIn2, Seq(
+                            "b00".U -> stageReg.aluIn2,
                             "b01".U -> io.hazard.in.rdValM,
                             "b10".U -> io.hazard.in.rdValW
                         ))
-    alu.io.in2 := Mux(stageReg.aluSrc, stageReg.imm, data2)
+    alu.io.in2 := Mux(stageReg.aluIn2IsReg, hazardData2, stageReg.aluIn2)
+    
 
     alu.io.opSel := stageReg.aluOpSel
     aluZero := alu.io.zero
@@ -111,20 +135,33 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     // output for memory stage
     io.out.memory.bits.aluOut := aluOut
     io.out.memory.bits.resultSrc := stageReg.resultSrc
-    io.out.memory.bits.memWrEn := stageReg.memWrEn
-    io.out.memory.bits.memRdEn := stageReg.memRdEn
-    io.out.memory.bits.memSign := stageReg.memSign
-    io.out.memory.bits.memType := stageReg.memType
+    // io.out.memory.bits.memWrEn := stageReg.memWrEn
+    // io.out.memory.bits.memSign := stageReg.memSign
+    // io.out.memory.bits.memType := stageReg.memType
+    io.out.memory.bits.lsuOp := stageReg.lsuOp
     io.out.memory.bits.regWrEn := stageReg.regWrEn
-    io.out.memory.bits.data2 := data2 // stageReg.data2
+    io.out.memory.bits.data2 := Mux(io.hazard.in.aluSrc2 === 0.U, stageReg.data2, 
+                                    Mux(io.hazard.in.aluSrc2 === "b01".U, io.hazard.in.rdValM, 
+                                    Mux(io.hazard.in.aluSrc2 === "b10".U, io.hazard.in.rdValW, stageReg.data2))) 
     io.out.memory.bits.pcNext4 := stageReg.pcNext4
 
     when(flush){
         io.out.memory.bits <> DontCare
     }
 
+
+    val csrAddr = InstField(inst, "csr_dest")
+    io.csrRead.addr := csrAddr
+    io.csrRead.op   := stageReg.csrOp
+    io.out.memory.bits.csrOp      := stageReg.csrOp
+    io.out.memory.bits.csrWrEn    := stageReg.csrOp =/= CSR_NOP && io.csrRead.valid
+    io.out.memory.bits.csrValid   := io.csrRead.valid
+    io.out.memory.bits.csrRdData  := io.csrRead.data
+    io.out.memory.bits.csrWrData  := aluIn1
+    io.out.memory.bits.csrAddr    := csrAddr
+    io.out.memory.bits.excType    := stageReg.excType
+
     // hazard control
-    val inst = stageReg.instState.inst
     io.hazard.out.rs1 := InstField(inst, "rs1")
     io.hazard.out.rs2 := InstField(inst, "rs2")
     // load hazard, which happens when the instruction in execute stage is load(lw), 
@@ -137,6 +174,6 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.out.memory.bits.instState <> stageReg.instState
 
 
-    io.out.memory.valid := io.out.memory.ready
-    io.out.fetch.valid := io.out.memory.ready
+    io.out.memory.valid := io.out.memory.ready && ~stall 
+    io.out.fetch.valid := io.out.fetch.ready && ~stall 
 }

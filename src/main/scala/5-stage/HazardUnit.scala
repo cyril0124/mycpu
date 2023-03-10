@@ -7,11 +7,13 @@ import org.chipsalliance.cde.config._
 import mycpu.common._
 import mycpu.util._
 
+import  mycpu.common.consts.Control._
+
 class HazardUnitIO()(implicit val p: Parameters) extends MyBundle{
     val in = Input(new Bundle{
         val decode = new DecodeHazardOutBundle
         val execute = new ExecuteHazardOutBundle
-        val memory = new MemoryHazardBundle
+        val memory = new MemHazardBundle
         val writeback = new WritebackHazardBundle
     })
     val out = Output(new Bundle{
@@ -71,9 +73,9 @@ class HazardUnit()(implicit val p: Parameters) extends MyModule{
     val resultSrcE = io.in.execute.resultSrc
     val rs1D = io.in.decode.rs1
     val rs2D = io.in.decode.rs2
-
+    
     io.out.decode.stall := false.B
-    when(resultSrcE === "b00".U) {// load instruction
+    when(resultSrcE === RET_SRC_B && rdE =/= 0.U) {// load instruction
         when(rdE === rs1D || rdE === rs2D) {
             io.out.decode.stall := true.B
         }

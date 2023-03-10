@@ -49,11 +49,14 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   regs(0) := 0.U
   assert(regs(0).asUInt === 0.U, "zero reg must be 0 !")
   
-
+  // !! cannot write zero reg, because it is hardwired to 0.
+  val writeBypassVec = (0 until rfRdPort).map{ i => 
+      io.w(0).en && io.r(i).addr === io.w(0).addr && io.w(0).addr =/= 0.U } 
+  
   (0 until rfRdPort).foreach{ i =>
     when(io.r(i).en) {
       // write operation has higher priority
-      when(io.w(0).en && io.r(i).addr === io.w(0).addr && io.w(0).addr =/= 0.U) { // !! cannot write zero reg, because it is hardwired to 0.
+      when(writeBypassVec(i)) { 
         io.r(i).data := io.w(0).data
       }.otherwise{
         io.r(i).data := regs(io.r(i).addr)

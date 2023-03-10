@@ -8,6 +8,47 @@ static void hook_code(uc_engine *uc, uint64_t address, uint32_t size,
             address, size);
 }
 
+std::string get_int_reg_name(int idx) {
+    std::string str;
+    switch (idx)
+    {
+        case 0: str = "zero"; break;
+        case 1: str = "ra"; break;
+        case 2: str = "sp"; break;
+        case 3: str = "gp"; break;
+        case 4: str = "tp"; break;
+        case 5: str = "t0"; break;
+        case 6: str = "t1"; break;
+        case 7: str = "t2"; break;
+        case 8: str = "s0"; break;
+        case 9: str = "s1"; break;
+        case 10: str = "a0"; break;
+        case 11: str = "a1"; break;
+        case 12: str = "a2"; break;
+        case 13: str = "a3"; break;
+        case 14: str = "a4"; break;
+        case 15: str = "a5"; break;
+        case 16: str = "a6"; break;
+        case 17: str = "a7"; break;
+        case 18: str = "s2"; break;
+        case 19: str = "s3"; break;
+        case 20: str = "s4"; break;
+        case 21: str = "s5"; break;
+        case 22: str = "s6"; break;
+        case 23: str = "s7"; break;
+        case 24: str = "s8"; break;
+        case 25: str = "s9"; break;
+        case 26: str = "s10"; break;
+        case 27: str = "s11"; break;
+        case 28: str = "t3"; break;
+        case 29: str = "t4"; break;
+        case 30: str = "t5"; break;
+        case 31: str = "t6"; break;
+        default: str = "err"; break;
+    }
+    return str;
+}
+
 UcEngine::UcEngine() {
     uc_err err;
     
@@ -42,21 +83,46 @@ UcEngine::~UcEngine() {
 }
 
 void UcEngine::step() {
-    // emulate 1 instruction
-    uc_err err;
-    err = uc_emu_start(uc, engine_pc, image_size, 0, 1);
-    // get int regs info
-    get_int_regs();
-    // get instruction
+    uc_err err = UC_ERR_OK;
+
+    // uint8_t bytes[10];
+    // uc_mem_read(uc, 0x2000, bytes, 3);
+
     engine_inst = image_buffer[engine_pc+3] << 24 | image_buffer[engine_pc+2] << 16 | \
                 image_buffer[engine_pc+1] << 8 | image_buffer[engine_pc];
+
+    bool is_mret = false;
+    if(engine_inst == MRET) {
+        is_mret = true;
+        uc_reg_read(uc, UC_RISCV_REG_MEPC, &engine_next_pc); // mret will load mepc into pc
+        printf("Tracing Instruction at %x => MRET\n", engine_pc);
+    } else {
+        err = uc_emu_start(uc, engine_pc, image_size, 0, 1); // emulate 1 instruction
+    }
+
+    get_int_regs();
+
     if(verbose)
         printf("inst: 0x%08x at pc: 0x%08x\n\n", engine_inst, engine_pc);
+
+    // xlen_t mepc = 0;
+    // uc_reg_read(uc, UC_RISCV_REG_MEPC,&mepc);
+    // printf("mepc = 0x%0x\n", mepc);
     
     if (err) {
-        printf("Failed on uc_emu_start() with error returned: %u\n", err);
-        printf("with return value: " PRINT_YELLOW "%d" PRINT_RESET " (int reg \"a0\")\n", int_reg_vals[UC_RISCV_REG_A0-1]);
-        return_val = int_reg_vals[UC_RISCV_REG_A0-1];
+        if(err == UC_ERR_EXCEPTION) {
+            xlen_t mcause = 0;
+            xlen_t mepc = 0;
+            err = uc_reg_read(uc, UC_RISCV_REG_MCAUSE, &mcause);
+            uc_reg_read(uc, UC_RISCV_REG_MEPC,&mepc);
+            printf("unhandle cpu exception ==> " PRINT_RED "mcause: 0x%0x  mepc: 0x%0x\n" PRINT_RESET, mcause, mepc);
+        } else {
+            printf("Failed on uc_emu_start() with error returned: %u\n", err);
+            printf("with return value: " PRINT_YELLOW "%d" PRINT_RESET " (int reg \"a0\")\n", int_reg_vals[UC_RISCV_REG_A0-1]);
+            return_val = int_reg_vals[UC_RISCV_REG_A0-1];
+        }
+
+        
         stop = true;
         // m_assert(false, PRINT_RED "uc_emu_start() error simulation terminate..." PRINT_RESET );
     }
@@ -65,9 +131,11 @@ void UcEngine::step() {
         stop = true;
         printf("run out of program...\n");
     }
-    
+
     // get next pc
-    uc_reg_read(uc, UC_RISCV_REG_PC, &engine_next_pc);
+    if(!is_mret) 
+        uc_reg_read(uc, UC_RISCV_REG_PC, &engine_next_pc);
+    
     
     // update cycles
     engine_cycles += 1;
@@ -153,9 +221,9 @@ void UcEngine::get_int_regs(void) {
     if(verbose) {
         for(int i = 0; i < 32; i++) {
             if(int_reg_vals[i] != 0)
-                printf(PRINT_RED "x%2d = 0x%08x ", i, int_reg_vals[i]);
+                printf(PRINT_RED "x%2d /%4s = 0x%08x  ", i, get_int_reg_name(i).c_str(), int_reg_vals[i]);
             else
-                printf(PRINT_RESET "x%2d = 0x%08x ", i, int_reg_vals[i]);
+                printf(PRINT_RESET "x%2d /%4s = 0x%08x  ", i, get_int_reg_name(i).c_str(), int_reg_vals[i]);
             if((i+1) % 4 == 0 )
                 printf("\n");
         }
@@ -184,9 +252,9 @@ cmp_err_t UcEngine::compare_int_reg(xlen_t *regs) {
     else {
         for(int i = 0; i < 32; i++) {
             if(same[i] == false) {
-                printf(PRINT_RED "x%2d = m 0x%08x << 0x%08x " PRINT_RESET, i, regs[i], int_reg_vals[i]);
+                printf(PRINT_RED "x%2d /%4s = m 0x%08x << 0x%08x " PRINT_RESET, i, get_int_reg_name(i).c_str(), regs[i], int_reg_vals[i]);
             } else {
-                printf("x%2d = m 0x%08x << 0x%08x ", i, regs[i], int_reg_vals[i]);
+                printf("x%2d /%4s = m 0x%08x << 0x%08x ", i, get_int_reg_name(i).c_str(), regs[i], int_reg_vals[i]);
             }
             if((i+1) % 4 == 0 )
                 printf("\n");

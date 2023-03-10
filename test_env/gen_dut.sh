@@ -11,3 +11,4 @@ cp ../../build/Core.v .
 python3 main.py Core.v
 
 cp output/* ../../test_env/dut/rtl
+cp /home/cyril/workspace/riscv/mycpu/src/main/resources/*.v ../../test_env/dut/rtl
