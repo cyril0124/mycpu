@@ -53,9 +53,8 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     instMem.io <> DontCare
     instMem.io.clock := clock
     instMem.io.reset := reset
-    // instMem.io.raddr := pc(xlen-1, 2)
-    instMem.io.raddr := pc // for sync read mem, output will delay one cycle after latching address, it is not an ideal memory model
-    // instMem.io.raddr := pcReg // for mem, when address is latched, effective data will output when next clock edge arrive. this is an ideal memory model
+    instMem.io.raddr := pc 
+    // instMem.io.raddr := pcReg 
     inst := instMem.io.rdata
     
     

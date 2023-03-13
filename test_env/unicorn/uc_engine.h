@@ -47,7 +47,7 @@ class UcEngine {
         cmp_err_t compare_int_reg(xlen_t *regs);
         cmp_err_t compare_pc(xlen_t pc_in);
         cmp_err_t compare_inst(ilen_t inst);
-    
+
     private:
         uc_engine *uc;
         uc_hook trace_inst;

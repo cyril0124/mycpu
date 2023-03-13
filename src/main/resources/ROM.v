@@ -20,7 +20,9 @@ reg [BLOCK_BYTES*8-1:0] mem[MEM_SIZE-1:0];
 // reg [XLEN-1:0] data_out; 
 
 always@(posedge clock) begin
-    if( !reset ) begin
+    if(reset == 1'b1)
+        rdata <= 'd0;
+    else begin
         if(wen == 1'b1) begin
             if(wmask[0] == 1'b1) 
                 mem[waddr[MEM_WIDTH + 1:2]][7:0] <= wdata[7:0];
@@ -31,8 +33,8 @@ always@(posedge clock) begin
             if(wmask[3] == 1'b1) 
                 mem[waddr[MEM_WIDTH + 1:2]][31:24] <= wdata[31:24];
         end
-
-        rdata <= mem[raddr[MEM_WIDTH + 1:2]];
+        else
+            rdata <= mem[raddr[MEM_WIDTH + 1:2]];
     end
 end
 

@@ -53,12 +53,17 @@ void Emu::execute(uint64_t nr_cycles) {
         std::string bin_file = data[std::to_string(test_case)]["name"]; // e.g. or.bin
         std::string bin_name = bin_file.substr(0, bin_file.length()-4); // e.g. or
         
-        std::string scripts_dir = prj_dir + "scripts/disassemble_read/";
+        std::string scripts_dir = prj_dir + "scripts/load_image/";
         std::string scripts = scripts_dir + "main.py";
         std::string rom_dir = prj_dir + "src/main/resources/";
 
+        if(test_case == 29) {
+            printf("hello");
+        }
         // parse disassemble file
-        std::string command = std::string("python3 ") + scripts + " " + dir + "/" + bin_name + ".dump" + " " + scripts_dir + bin_name + ".out";
+        // std::string command = std::string("python3 ") + scripts + " " + dir + "/" + bin_name + ".dump" + " " + scripts_dir + bin_name + ".out";
+        // system(command.c_str());
+        std::string command = std::string("python3 ") + scripts + " " + dir + "/" + bin_name; //+ ".dump" + " " + scripts_dir + bin_name + ".out";
         system(command.c_str());
 
         // backup rom
@@ -68,7 +73,13 @@ void Emu::execute(uint64_t nr_cycles) {
 
         // load rom
         command.clear();
-        command = std::string("cp ") + scripts_dir + bin_name + ".out " + rom_dir + "Imem.hex";
+        // command = std::string("cp ") + scripts_dir + bin_name + ".out " + rom_dir + "Imem.hex";
+        command = std::string("cp ")   + "Imem.hex " + rom_dir + "Imem.hex";
+        system(command.c_str()); 
+
+        // load ram
+        command.clear();
+        command = std::string("cp ")  + "Dmem.hex " + rom_dir + "Dmem.hex";
         system(command.c_str()); 
 
         // rest sys
@@ -86,6 +97,10 @@ void Emu::execute(uint64_t nr_cycles) {
         auto &inst = dut_ptr->io_out_state_instState_inst;
         uint32_t int_regs[32] = {0};
         uint32_t cmp_err[3] = {0};
+
+        if(cycles >= nr_cycles) {
+            m_assert(false, "run out of cycles!");
+        }
 
         while(cycles < nr_cycles) {
             if(commit == 1) {

@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char **argv) {
     Emu emu(argc, argv);
 
-    emu.execute(10000);
+    emu.execute(-1);
 
     return 0;
 }

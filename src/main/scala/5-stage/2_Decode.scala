@@ -27,9 +27,6 @@ class DecodeOut()(implicit val p: Parameters) extends MyBundle{
     val isBranch = Bool()
     val isJump = Bool()
     val resultSrc = UInt(2.W)
-    // val memWrEn = Bool()
-    // val memType = UInt(MEM_TYP_WIDTH.W)
-    // val memSign = Bool()
     val lsuOp = UInt(LSU_OP_WIDTH.W)
     val aluOpSel = UInt(aluOpWidth.W)
     val immSign = Bool()
@@ -124,10 +121,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     val aluOpSel    = ctrlUnit.io.out.aluOpSel
     val aluSrc1     = ctrlUnit.io.out.aluSrc1
     val aluSrc2     = ctrlUnit.io.out.aluSrc2
-    // val memWrEn     = ctrlUnit.io.out.memWrEn
-    // val memType     = ctrlUnit.io.out.memType
     val lsuOp       = ctrlUnit.io.out.lsuOp
-    // val memSign     = ctrlUnit.io.out.memSign
     val regWrEn     = ctrlUnit.io.out.regWrEn
     val resultSrc   = ctrlUnit.io.out.resultSrc
     val pcAddReg    = ctrlUnit.io.out.pcAddReg
@@ -138,7 +132,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     ctrlUnit.io.in.inst := inst
 
     
-    // regfile rdData
+    // regfile read data
     io.regfile.rs1 := rs1
     io.regfile.rs2 := rs2
     rfRdData1 := io.regfile.rdata1
@@ -155,9 +149,6 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.isBranch    := isBranch
     io.out.bits.isJump      := isJump
     io.out.bits.resultSrc   := resultSrc
-    // io.out.bits.memWrEn     := memWrEn
-    // io.out.bits.memType     := memType
-    // io.out.bits.memSign     := memSign
     io.out.bits.lsuOp       := lsuOp
     io.out.bits.aluOpSel    := aluOpSel
     io.out.bits.pcAddReg    := pcAddReg

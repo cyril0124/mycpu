@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sun Mar 12 15:51:21 2023
+[*] Mon Mar 13 06:33:31 2023
 [*]
-[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-12@23:49:21_0.vcd"
-[dumpfile_mtime] "Sun Mar 12 15:49:22 2023"
-[dumpfile_size] 192295
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-13@14:29:22_0.vcd"
+[dumpfile_mtime] "Mon Mar 13 06:29:31 2023"
+[dumpfile_size] 3027958
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 159
-[size] 2560 1369
-[pos] -1 -1
-*-1.000000 170 4786 494 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 3085
+[size] 1920 1009
+[pos] -9 -9
+*-2.000000 3103 4786 494 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -22,7 +22,7 @@
 [sst_width] 364
 [signals_width] 468
 [sst_expanded] 1
-[sst_vpaned_height] 422
+[sst_vpaned_height] 397
 @800200
 -ife
 @28
@@ -99,13 +99,15 @@ TOP.top_tb.core_inst.mem.io_hazard_rdVal[31:0]
 -
 @28
 TOP.top_tb.core_inst.mem.lsu.en
-@29
 TOP.top_tb.core_inst.mem.lsu.signed_
 @22
 TOP.top_tb.core_inst.mem.lsu.io_addr[31:0]
 TOP.top_tb.core_inst.mem.lsu.ram_rdata[31:0]
 TOP.top_tb.core_inst.mem.lsu.ram_raddr[31:0]
 TOP.top_tb.core_inst.mem.lsu.ram_waddr[31:0]
+@28
+TOP.top_tb.core_inst.mem.lsu.ram_wmask[3:0]
+TOP.top_tb.core_inst.mem.lsu.ram_wen
 @c00022
 TOP.top_tb.core_inst.mem.lsu.ram_wdata[31:0]
 @28
@@ -143,9 +145,12 @@ TOP.top_tb.core_inst.mem.lsu.ram_wdata[31:0]
 (31)TOP.top_tb.core_inst.mem.lsu.ram_wdata[31:0]
 @1401200
 -group_end
+@29
+TOP.top_tb.core_inst.mem.lsu.width[1:0]
 @28
-TOP.top_tb.core_inst.mem.lsu.ram_wmask[3:0]
-TOP.top_tb.core_inst.mem.lsu.ram_wen
+TOP.top_tb.core_inst.mem.lsu.offset[1:0]
+TOP.top_tb.core_inst.mem.lsu.offserReg[1:0]
+TOP.top_tb.core_inst.mem.lsu.signedReg
 @200
 -
 @22
@@ -154,7 +159,6 @@ TOP.top_tb.core_inst.mem.lsu.ram.rdata[31:0]
 TOP.top_tb.core_inst.mem.io_ramData[31:0]
 @28
 TOP.top_tb.core_inst.mem.lsu.width[1:0]
-TOP.top_tb.core_inst.mem.lsu.blockIdx[1:0]
 @1000200
 -mem
 @200

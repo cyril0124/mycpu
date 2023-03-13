@@ -31,8 +31,23 @@ $(BUILD_DIR)/%.dump: $(BUILD_DIR)/%
 	$(RISCV_OBJCOPY) -O verilog $< $<.verilog
 	$(RISCV_OBJCOPY) -O binary $< $<.bin
 
-clean:
+
+RV32UI_P_DIR := ${PRJ_DIR}/rv32ui-p
+RV32UI_P_DUMPS := $(shell find $(RV32UI_P_DIR) -name '*.dump')
+RV32UI_P_TGT := $(RV32UI_P_DUMPS:$(RV32UI_P_DIR)/%.dump=$(RV32UI_P_DIR)/%)
+RV32UI_P_BIN := $(RV32UI_P_DUMPS:$(RV32UI_P_DIR)/%.dump=$(RV32UI_P_DIR)/%.bin)
+
+rv32ui-p: json_clean ${RV32UI_P_BIN}
+
+${RV32UI_P_DIR}/%.bin: ${RV32UI_P_DIR}/%
+	$(RISCV_OBJCOPY) -O binary $< $<.bin
+	- cd ${TOP_PRJ_DIR}/test_env/tests; python3 ${SCRIPT_DIR}/json_config/main.py -a $(@F) ${RV32UI_P_DIR} 42
+
+json_clean:
+	cd ${TOP_PRJ_DIR}/test_env/tests; python3 ${SCRIPT_DIR}/json_config/main.py -i
+
+clean: json_clean
 	rm -rf ${BUILD_DIR}/*
-	cd ${TOP_PRJ_DIR}/test_env/tests; python3 ${SCRIPT_DIR}/json_config/main.py -i 
+	rm -rf ${RV32UI_P_BIN}
 
 

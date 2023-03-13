@@ -59,8 +59,8 @@ UcEngine::UcEngine() {
         return;
     }
 
-    auto image_src = std::string(IMAGE_PATH) + "/" + std::string(IMAGE);
-    load_image(image_src);
+    // auto image_src = std::string(IMAGE_PATH) + "/" + std::string(IMAGE);
+    // load_image(image_src);
 
     if(verbose) {
         // hook_user_data = new hook_user_data_t;

@@ -22,7 +22,6 @@ class MemHazardBundle()(implicit val p: Parameters) extends MyBundle{
 class MemOut()(implicit val p: Parameters) extends MyBundle{
     val resultSrc = UInt(2.W)
     val regWrEn = Bool()
-    // val rdData = UInt(xlen.W)
     val aluOut = UInt(xlen.W)
     val pcNext4 = UInt(xlen.W)
 
@@ -112,7 +111,6 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     // dataMem.io.wmask := "b1111".U
     // dataMem.io.wdata := WriteMask(stageReg.data2, stageReg.memType, xlen)
 
-    // val dataMemRdData = Wire(UInt(xlen.W))
     val lsu = Module(new LSU())
     lsu.io <> DontCare
     lsu.io.addr := stageReg.aluOut
@@ -120,19 +118,9 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     lsu.io.hasTrap := hasTrap
     lsu.io.lsuOp := stageReg.lsuOp
     io.ramData := lsu.io.data
-    // lsu.io.load.addr :=  stageReg.aluOut // Mux(io.in.bits.resultSrc === RET_SRC_B, io.in.bits.aluOut, stageReg.aluOut) // Mux(memoryLatch, io.in.bits.aluOut, stageReg.aluOut) // stageReg.aluOut
-    // lsu.io.load.memType := stageReg.memType
-    // lsu.io.load.sign :=stageReg.memSign
-    // lsu.io.load.en := true.B
-    // dataMemRdData := lsu.io.load.data
-    // lsu.io.store.en := stageReg.memWrEn && !hasTrap
-    // lsu.io.store.addr := stageReg.aluOut
-    // lsu.io.store.memType := stageReg.memType
-    // lsu.io.store.data := stageReg.data2
 
     io.out.bits.resultSrc := stageReg.resultSrc
     io.out.bits.regWrEn := stageReg.regWrEn
-    // io.out.bits.rdData := dataMemRdData
     io.out.bits.aluOut := stageReg.aluOut
     io.out.bits.pcNext4 := stageReg.pcNext4
     io.out.bits.instState <> stageReg.instState
@@ -141,8 +129,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     val inst = stageReg.instState.inst
     io.hazard.rd := InstField(inst, "rd")
     io.hazard.regWrEn := stageReg.regWrEn
-    io.hazard.rdVal :=  stageReg.aluOut // Mux(stageReg.resultSrc === RET_SRC_B, dataMemRdData, stageReg.aluOut)
-    // TODO： rvValValid .... for dataMemRdData
+    io.hazard.rdVal :=  stageReg.aluOut
 
     io.out.valid := io.out.ready && !stall
 }

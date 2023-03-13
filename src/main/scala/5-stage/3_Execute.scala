@@ -15,10 +15,6 @@ import mycpu.common.consts.LsuOp._
 
 class ExecuteOut()(implicit val p: Parameters) extends MyBundle{
     val resultSrc = UInt(2.W)
-    // val memWrEn = Bool()
-    // val memType = UInt(MEM_TYP_WIDTH.W)
-    // val memRdEn = Bool()
-    // val memSign = Bool()
     val lsuOp  = UInt(LSU_OP_WIDTH.W)
     val regWrEn = Bool()
     val aluOut = UInt(xlen.W)
@@ -135,9 +131,6 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     // output for memory stage
     io.out.memory.bits.aluOut := aluOut
     io.out.memory.bits.resultSrc := stageReg.resultSrc
-    // io.out.memory.bits.memWrEn := stageReg.memWrEn
-    // io.out.memory.bits.memSign := stageReg.memSign
-    // io.out.memory.bits.memType := stageReg.memType
     io.out.memory.bits.lsuOp := stageReg.lsuOp
     io.out.memory.bits.regWrEn := stageReg.regWrEn
     io.out.memory.bits.data2 := Mux(io.hazard.in.aluSrc2 === 0.U, stageReg.data2, 

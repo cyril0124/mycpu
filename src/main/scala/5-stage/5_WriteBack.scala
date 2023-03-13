@@ -21,10 +21,6 @@ class WritebackOut()(implicit val p: Parameters) extends MyBundle{
     val rd = UInt(5.W)
     val regWrEn = Bool()
     val regWrData = UInt(xlen.W)
-
-    // val csrRd = UInt(12.W)
-    // val csrWrEn = Bool()
-    // val csrWrData = UInt(xlen.W)
 }
 
 class WritebackIO()(implicit val p: Parameters) extends MyBundle{
@@ -34,7 +30,6 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
     val ctrl = Input(new PipelineCtrlBundle)
     val regfile = Output(new WritebackOut)
     val csrWrite = Flipped(new CsrWrite)
-    // val loadData = Input(UInt(xlen.W))
 
     val ramData = Input(UInt(xlen.W))
 }
