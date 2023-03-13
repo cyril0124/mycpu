@@ -17,7 +17,6 @@ module ROM#(
 
 reg [BLOCK_BYTES*8-1:0] mem[MEM_SIZE-1:0];
 
-// reg [XLEN-1:0] data_out; 
 
 always@(posedge clock) begin
     if(reset == 1'b1)
@@ -37,20 +36,5 @@ always@(posedge clock) begin
             rdata <= mem[raddr[MEM_WIDTH + 1:2]];
     end
 end
-
-// always@(posedge clock) begin
-//     if(reset == 1'b1) 
-//         data_out <= 'd0;
-//     else
-//         data_out <= mem[raddr[MEM_WIDTH + 1:2]];
-// end
-
-// always@(*) begin
-//     if(reset == 1'b1) 
-//         rdata = 'd0;
-//     else
-//         rdata = mem[raddr[MEM_WIDTH + 1:2]];
-// end
-
 
 endmodule

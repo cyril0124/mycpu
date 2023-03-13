@@ -33,22 +33,6 @@ object LsuDecode {
     )
 }
 
-
-// class LoadIO()(implicit val p: Parameters) extends MyBundle {
-//     val en = Input(Bool())
-//     val addr = Input(UInt(xlen.W))
-//     val memType = Input(UInt(MEM_TYP_WIDTH.W))
-//     val data = Output(UInt(xlen.W))
-//     val sign = Input(Bool()) // signed bit 
-// }
-
-// class StoreIO()(implicit val p: Parameters) extends MyBundle {
-//     val en = Input(Bool())
-//     val addr = Input(UInt(xlen.W))
-//     val memType = Input(UInt(MEM_TYP_WIDTH.W))
-//     val data = Input(UInt(xlen.W)) 
-// }
-
 sealed class LsuStatusBundle()(implicit val p: Parameters) extends MyBundle {
     val storeUnalign = Bool()
     val loadUnalign = Bool()
@@ -59,8 +43,11 @@ class LsuIO()(implicit val p: Parameters) extends MyBundle {
     val addr = Input(UInt(xlen.W))
     val wdata = Input(UInt(xlen.W))
     val data = Output(UInt(xlen.W))
+    val dataValid = Output(Bool())
     val lsuOp = Input(UInt(LSU_OP_WIDTH.W))
     val excp = Output(new LsuStatusBundle)
+    
+    // val ram = new TLMasterBusUL
 }
 
 import LsuDecode._
@@ -83,6 +70,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     val offserReg = Reg(UInt(blockOffsetBits.W))
     val offset = io.addr(blockOffsetBits-1, 0)
     dontTouch(offset)
+    
     when(en) {
         offserReg := io.addr(blockOffsetBits-1, 0)
         signedReg := signed
@@ -111,7 +99,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     val ramOffset = "h2000".U
     ram.io.wen := wen && !io.excp.storeUnalign
     ram.io.waddr := io.addr - ramOffset
-    ram.io.wdata := io.wdata << (offset << 3) // io.wdata
+    ram.io.wdata := io.wdata << (offset << 3)
     ram.io.wmask := MuxLookup(width, "b1111".U, Seq(
         LS_DATA_BYTE -> UIntToOH(io.addr(blockOffsetBits-1, 0)),
         LS_DATA_HALF -> MuxLookup(io.addr(blockOffsetBits-1, 0), "b0011".U, Seq(
@@ -123,6 +111,26 @@ class LSU()(implicit val p: Parameters) extends MyModule {
         LS_DATA_WORD -> "b1111".U,
         // TODO: consider xlen=64
     ))
+
+    // io.ram.req <> DontCare
+    // io.ram.req.valid := wen && !io.excp.storeUnalign
+    // io.ram.req.bits.address := io.addr - ramOffset
+    // io.ram.req.bits.data := io.wdata << (offset << 3)
+    // io.ram.req.bits.opcode := BusReq.PutFullData
+    // io.ram.req.bits.mask := MuxLookup(width, "b1111".U, Seq(
+    //     LS_DATA_BYTE -> UIntToOH(io.addr(blockOffsetBits-1, 0)),
+    //     LS_DATA_HALF -> MuxLookup(io.addr(blockOffsetBits-1, 0), "b0011".U, Seq(
+    //                         0.U -> "b0011".U,
+    //                         1.U -> "b0110".U,
+    //                         2.U -> "b1100".U,
+    //                         // 3.U -> unalign addr
+    //                     )),
+    //     LS_DATA_WORD -> "b1111".U,
+    //     // TODO: consider xlen=64
+    // ))
+
+    // io.ram.resp <> DontCare
+    // io.ram.resp.valid
 
     
     ram.io.raddr := io.addr - ramOffset
@@ -140,5 +148,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
                             LS_DATA_WORD -> Mux(signedReg, SignExt(ramRdData(31,0).asSInt, xlen), ZeroExt(ramRdData(31,0),xlen)),
                             // TODO: consider xlen=64 
                         ))
+
+    io.dataValid := true.B
 
 }

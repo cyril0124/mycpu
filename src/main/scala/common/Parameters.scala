@@ -22,6 +22,15 @@ trait HasMyCpuParameters {
     val blockBytes = myCpuParams.xlen / 8
     val blockOffsetBits = log2Ceil(blockBytes)
 
+      // DCache Configuration
+    val dcacheWays = myCpuParams.dcacheWays
+    val dcacheSets = myCpuParams.dcacheSets
+    val dcacheBlockBytes = myCpuParams.dcacheBlockBytes
+    val dcacheWayBits = log2Ceil(myCpuParams.dcacheWays)
+    val dcacheSetBits = log2Ceil(myCpuParams.dcacheSets)
+    val dcacheBlockOffsetBits = log2Ceil(dcacheBlockBytes)
+    val dcacheTagBits = xlen - dcacheSetBits - dcacheBlockOffsetBits
+
 
     // TODO:
     /**           Memory Map Configuration
@@ -60,7 +69,7 @@ trait HasMyCpuParameters {
     val busBeatSize = myCpuParams.xlen
     val busMaskWidth = myCpuParams.xlen / 8
 
-    val enableDebug = myCpuParams.enableDebug
+    val simulation = myCpuParams.simulation
     val debugThreshold = myCpuParams.debugThreshold
 
     val instMemSize = myCpuParams.instMemSize
@@ -85,7 +94,10 @@ case class MyCpuParameters
     romSize: Int = 1024,
     ramSize: Int = 1024,
 
-    // blockBytes: Int = 4,
+    // DCache Configuration
+    dcacheWays: Int = 4,
+    dcacheSets: Int = 64,
+    dcacheBlockBytes: Int = 8,
 
     // Memory Map Configuration
     textStart: Int = 0x100,
@@ -103,7 +115,7 @@ case class MyCpuParameters
     nrBusMaster: Int = 2,
     nrBusSlave: Int = 2,
 
-    enableDebug: Boolean = true,
+    simulation: Boolean = false,
     debugThreshold: Int = 0, //0: HIGH  1: MEDIAN  2: LOW
     enableRegStatus: Boolean = true,
 

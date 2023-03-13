@@ -61,6 +61,7 @@ class Core()(implicit val p: Parameters) extends MyModule{
     val wb = Module(new WriteBack)
     wb.io.in <> mem.io.out
     wb.io.ramData := mem.io.ramData
+    wb.io.ramDataValid := mem.io.ramDataValid
 
 
     // pipeline control
@@ -110,26 +111,15 @@ class Core()(implicit val p: Parameters) extends MyModule{
     io.out.state.instState <> RegNext(wb.io.instState)
     io.out.state.intRegState <> regFile.io.state.getOrElse(DontCare)
 
-    //----------------soc part(temp)-------------------------
+    // ----------------soc part(temp)-------------------------
     val busCrossBar = Module(new BusCrossBar())
     busCrossBar.io <> DontCare
     busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
     ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
 
-
     val rom = Module(new ROM())
     rom.io.clock := clock
     rom.io.reset := reset
-    // rom handshake
-    busCrossBar.io.slaveFace.in(0).ready := true.B
-    // val romReqReg = RegEnable(busCrossBar.io.slaveFace.in(0).bits, busCrossBar.io.slaveFace.in(0).fire)
-    // rom.io.wen := isPut(romReqReg.reqType) 
-    // rom.io.wdata := romReqReg.data
-    // rom.io.waddr := romReqReg.addr
-    // rom.io.raddr := romReqReg.addr // read
-    // busCrossBar.io.slaveFace.out(0).bits.data := rom.io.rdata
-    // busCrossBar.io.slaveFace.out(0).valid := true.B // RegNext(busCrossBar.io.slaveFace.in(0).fire, 0.U)
-    // busCrossBar.io.slaveFace.out(0).bits.sourceID := romReqReg.sourceID
 
     rom.io.wen := busCrossBar.io.slaveFace.in(0).valid && isPut(busCrossBar.io.slaveFace.in(0).bits.opcode) 
     rom.io.wmask := "b1111".U
@@ -138,14 +128,15 @@ class Core()(implicit val p: Parameters) extends MyModule{
     rom.io.raddr := busCrossBar.io.slaveFace.in(0).bits.address // read
     busCrossBar.io.slaveFace.in(0).ready := true.B
     busCrossBar.io.slaveFace.out(0).bits.data := rom.io.rdata
-    busCrossBar.io.slaveFace.out(0).valid := true.B
+    val mCounter = Counter(true.B,100)
+    busCrossBar.io.slaveFace.out(0).valid := true.B // mCounter._1 < 10.U// true.B
     busCrossBar.io.slaveFace.out(0).bits.source := busCrossBar.io.slaveFace.in(0).bits.source
 }
 
 object CoreGenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
-            enableDebug = false
+            simulation = true
         )
     })
 

@@ -23,7 +23,7 @@ class FetchIO()(implicit val p: Parameters) extends MyBundle{
     }
     val out = DecoupledIO(new FetchOut)
     val ctrl = Input(new PipelineCtrlBundle)
-    // val rom = DecoupledIO(new BusMasterBundle)
+    
     val rom = new TLMasterBusUL
 
     val trapVec = Input(UInt(xlen.W))
@@ -41,47 +41,55 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     // for pipeline stage, if one stage stall then all of the stage in front of the stall stage will stall too.
     io.in.execute.ready := io.in.start && ~stall
 
-    val commit = io.out.ready && io.in.start && ~stall && io.rom.resp.valid // commit when inst is read back from ROM
+    val romValid        = WireInit(true.B)
+    val romValidReg     = RegNext(io.rom.resp.valid)
+    // val brTakenDly      = Reg(Bool())
+    // when(!romValid && !brTakenDly) { brTakenDly := io.in.execute.bits.brTaken }
+    // val targetAddrDly   = Reg(UInt(xlen.W))
+    // when(!romValid && !brTakenDly) { targetAddrDly := io.in.execute.bits.targetAddr }
+    // dontTouch(targetAddrDly)
+    // dontTouch(brTakenDly)
+    val pcReg           = RegInit(resetPc.U(xlen.W))
+    val pc              = Wire(UInt(xlen.W))
+    val pcNext          = Wire(UInt(xlen.W))
+    val pcNext4         = pcReg + (ilen / 8).U
+    val inst            = WireInit(0.U(ilen.W))
+    val commit          = io.out.ready && io.in.start && ~stall && romValidReg // commit when inst is read back from ROM
 
-    val pcReg = RegInit(resetPc.U(xlen.W))
-    val pc = Wire(UInt(xlen.W))
-    val pcNext = Wire(UInt(xlen.W))
-    val pcNext4 = pcReg + (ilen / 8).U
-    val inst = WireInit(0.U(ilen.W))
-
-    val instMem = Module(new ROM())
-    instMem.io <> DontCare
-    instMem.io.clock := clock
-    instMem.io.reset := reset
-    instMem.io.raddr := pc 
-    // instMem.io.raddr := pcReg 
-    inst := instMem.io.rdata
+    // val instMem = Module(new ROM()) 
+    // instMem.io <> DontCare
+    // instMem.io.clock := clock
+    // instMem.io.reset := reset
+    // instMem.io.raddr := pc 
+    // // instMem.io.raddr := pcReg 
+    // inst := instMem.io.rdata
     
     
     io.rom <> DontCare
-    // // send bus req
-    // io.rom.req.bits <> DontCare
-    // io.rom.req.valid := ~flush // && io.rom.req.ready
+    io.rom.req.bits <> DontCare
+    io.rom.req.valid := ~flush // && io.rom.req.ready
+    io.rom.req.bits.address := pc
     // io.rom.req.bits.address := pcReg
-    // io.rom.req.bits.opcode := Get
-    // io.rom.req.bits.source := ID_ROM
-    // // get bus resp
-    // io.rom.resp.bits <> DontCare
-    // io.rom.resp.ready := io.out.ready
-    // inst := io.rom.resp.bits.data
+    io.rom.req.bits.opcode := Get
+    io.rom.req.bits.source := ID_ROM
+    io.rom.resp.bits <> DontCare
+    io.rom.resp.ready := io.out.ready
+    inst := io.rom.resp.bits.data
+    romValid := io.rom.resp.valid
 
     pcNext := Mux(io.excp.valid, Mux(io.excp.bits.isMret, io.mepc, io.trapVec),
                 Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4))
+    // pc := Mux(commit, Mux(brTakenDly, targetAddrDly, pcNext), pcReg)
     pc := Mux(commit, pcNext, pcReg)
 
-    when(commit) { pcReg := pcNext } // update pc
+    when(commit && romValid) { pcReg := pcNext } // update pc
 
     io.out.bits.pcNext4 := pcNext4
     io.out.bits.instState.commit := commit
     io.out.bits.instState.pc := pcReg
     io.out.bits.instState.inst := inst
 
-    io.out.valid := commit 
+    io.out.valid := commit && romValid
 }
 
 object FetchGenRTL extends App {

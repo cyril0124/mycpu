@@ -145,7 +145,7 @@ import  DebugLevel._
 
 object DebugLog {
     def apply(params: MyCpuParameters, level: Int, fmt: String, data: Bits*): Any = {
-        if(params.enableDebug && level >= params.debugThreshold){
+        if(params.simulation && level >= params.debugThreshold){
             val levelStr: String = level match{
                 case DBG_HIGH => "DBG_HIGH"
                 case DBG_MEDIEN => "DBG_MEDIEN"

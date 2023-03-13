@@ -1,0 +1,57 @@
+Name:	SimTop
+Umask:	0002
+State:	S (sleeping)
+Tgid:	87904
+Ngid:	0
+Pid:	87904
+PPid:	86972
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	256
+Groups:	4 24 27 30 46 120 131 132 1000 
+NStgid:	87904
+NSpid:	87904
+NSpgid:	82889
+NSsid:	4162807
+VmPeak:	  173568 kB
+VmSize:	  173472 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   86752 kB
+VmRSS:	   86752 kB
+RssAnon:	   28788 kB
+RssFile:	   57964 kB
+RssShmem:	       0 kB
+VmData:	   36336 kB
+VmStk:	     136 kB
+VmExe:	     512 kB
+VmLib:	   97152 kB
+VmPTE:	     356 kB
+VmSwap:	       0 kB
+HugetlbPages:	       0 kB
+CoreDumping:	0
+THP_enabled:	1
+Threads:	1
+SigQ:	2/127986
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000010046
+SigIgn:	0000000006000006
+SigCgt:	00000001c08a76e9
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	000001ffffffffff
+CapAmb:	0000000000000000
+NoNewPrivs:	0
+Seccomp:	0
+Seccomp_filters:	0
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+Cpus_allowed:	ffffffff,ffffffff,ffffffff,ffffffff
+Cpus_allowed_list:	0-127
+Mems_allowed:	00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	39
+nonvoluntary_ctxt_switches:	6

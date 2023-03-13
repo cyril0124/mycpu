@@ -120,7 +120,7 @@ class RegFile[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extends
   // }
 
     // TODO: this may cause some bugs when you instantiate RegFile but you did not instantiate the Sink! (BoringUtils...)
-  // if(enableDebug){
+  // if(simulation){
   //   val regStatus = Wire(Vec(rfSets, gen))
   //   regStatus.zip(regs).foreach{ case (s, r) => 
   //     s := r
@@ -196,7 +196,7 @@ object RegPrint {
 object RegFileGenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
-          enableDebug = false
+          simulation = false
         )
     })
 

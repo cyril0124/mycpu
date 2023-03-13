@@ -11,7 +11,9 @@ module Fetch(
   output        io_out_bits_instState_commit,
   output [31:0] io_out_bits_instState_pc,
   output [31:0] io_out_bits_instState_inst,
+  output [31:0] io_rom_req_bits_address,
   input         io_rom_resp_valid,
+  input  [31:0] io_rom_resp_bits_data,
   input  [31:0] io_trapVec,
   input  [31:0] io_mepc,
   input         io_excp_valid,
@@ -19,55 +21,34 @@ module Fetch(
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
+  reg [31:0] _RAND_1;
 `endif // RANDOMIZE_REG_INIT
-  wire  instMem_clock; // @[1_Fetch.scala 52:25]
-  wire  instMem_reset; // @[1_Fetch.scala 52:25]
-  wire  instMem_wen; // @[1_Fetch.scala 52:25]
-  wire [31:0] instMem_waddr; // @[1_Fetch.scala 52:25]
-  wire [31:0] instMem_wdata; // @[1_Fetch.scala 52:25]
-  wire [3:0] instMem_wmask; // @[1_Fetch.scala 52:25]
-  wire [31:0] instMem_raddr; // @[1_Fetch.scala 52:25]
-  wire [31:0] instMem_rdata; // @[1_Fetch.scala 52:25]
-  wire  commit = io_out_ready & io_in_start & io_rom_resp_valid; // @[1_Fetch.scala 44:56]
-  reg [31:0] pcReg; // @[1_Fetch.scala 46:24]
-  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 49:25]
-  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 73:37]
-  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 74:20]
-  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 73:18]
-  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) instMem ( // @[1_Fetch.scala 52:25]
-    .clock(instMem_clock),
-    .reset(instMem_reset),
-    .wen(instMem_wen),
-    .waddr(instMem_waddr),
-    .wdata(instMem_wdata),
-    .wmask(instMem_wmask),
-    .raddr(instMem_raddr),
-    .rdata(instMem_rdata)
-  );
+  reg  romValidReg; // @[1_Fetch.scala 45:34]
+  reg [31:0] pcReg; // @[1_Fetch.scala 52:34]
+  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 55:33]
+  wire  commit = io_out_ready & io_in_start & romValidReg; // @[1_Fetch.scala 57:65]
+  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 80:37]
+  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 81:20]
+  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 80:18]
   assign io_in_execute_ready = io_in_start; // @[1_Fetch.scala 42:40]
-  assign io_out_valid = io_out_ready & io_in_start & io_rom_resp_valid; // @[1_Fetch.scala 44:56]
-  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 49:25]
-  assign io_out_bits_instState_commit = io_out_ready & io_in_start & io_rom_resp_valid; // @[1_Fetch.scala 44:56]
-  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 81:30]
-  assign io_out_bits_instState_inst = instMem_rdata; // @[1_Fetch.scala 50:24 58:10]
-  assign instMem_clock = clock; // @[1_Fetch.scala 54:22]
-  assign instMem_reset = reset; // @[1_Fetch.scala 55:22]
-  assign instMem_wen = 1'h0;
-  assign instMem_waddr = 32'h0;
-  assign instMem_wdata = 32'h0;
-  assign instMem_wmask = 4'h0;
-  assign instMem_raddr = commit ? pcNext : pcReg; // @[1_Fetch.scala 75:14]
+  assign io_out_valid = commit & io_rom_resp_valid; // @[1_Fetch.scala 92:28]
+  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 55:33]
+  assign io_out_bits_instState_commit = io_out_ready & io_in_start & romValidReg; // @[1_Fetch.scala 57:65]
+  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 89:30]
+  assign io_out_bits_instState_inst = io_rom_resp_bits_data; // @[1_Fetch.scala 56:35 77:10]
+  assign io_rom_req_bits_address = commit ? pcNext : pcReg; // @[1_Fetch.scala 83:14]
   always @(posedge clock) begin
-    if (reset) begin // @[1_Fetch.scala 46:24]
-      pcReg <= 32'h0; // @[1_Fetch.scala 46:24]
-    end else if (commit) begin // @[1_Fetch.scala 75:14]
-      if (io_excp_valid) begin // @[1_Fetch.scala 73:18]
-        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 73:37]
+    romValidReg <= io_rom_resp_valid; // @[1_Fetch.scala 45:34]
+    if (reset) begin // @[1_Fetch.scala 52:34]
+      pcReg <= 32'h0; // @[1_Fetch.scala 52:34]
+    end else if (commit & io_rom_resp_valid) begin // @[1_Fetch.scala 85:30]
+      if (io_excp_valid) begin // @[1_Fetch.scala 80:18]
+        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 80:37]
           pcReg <= io_mepc;
         end else begin
           pcReg <= io_trapVec;
         end
-      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 74:20]
+      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 81:20]
         pcReg <= io_in_execute_bits_targetAddr;
       end else begin
         pcReg <= pcNext4;
@@ -111,7 +92,9 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  pcReg = _RAND_0[31:0];
+  romValidReg = _RAND_0[0:0];
+  _RAND_1 = {1{`RANDOM}};
+  pcReg = _RAND_1[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

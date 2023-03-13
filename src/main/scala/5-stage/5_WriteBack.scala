@@ -32,6 +32,7 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
     val csrWrite = Flipped(new CsrWrite)
 
     val ramData = Input(UInt(xlen.W))
+    val ramDataValid = Input(Bool())
 }
 
 
@@ -42,7 +43,7 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     val flush = io.ctrl.flush
     val commit = ~stall
 
-    io.in.ready := ~stall
+    io.in.ready := ~stall && io.ramDataValid
     val writebackLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(writebackLatch) {

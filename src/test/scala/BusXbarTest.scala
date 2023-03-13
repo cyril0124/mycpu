@@ -12,7 +12,7 @@ class BusXbarTest extends AnyFlatSpec with ChiselScalatestTester {
 
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
-            enableDebug = false,
+            simulation = false,
             nrBusMaster = 3
         )
     })

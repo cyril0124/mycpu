@@ -40,6 +40,7 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
     val out = DecoupledIO(new MemOut)
 
     val ramData = Output(UInt(xlen.W))
+    val ramDataValid = Output(Bool())
 
     val hazard = Output(new MemHazardBundle)
     val ctrl = Input(new PipelineCtrlBundle)
@@ -118,6 +119,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     lsu.io.hasTrap := hasTrap
     lsu.io.lsuOp := stageReg.lsuOp
     io.ramData := lsu.io.data
+    io.ramDataValid := lsu.io.dataValid
 
     io.out.bits.resultSrc := stageReg.resultSrc
     io.out.bits.regWrEn := stageReg.regWrEn

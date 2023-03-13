@@ -54,8 +54,13 @@ inline void Emu::reset(uint64_t n) {
 }
 
 inline void Emu::neg_edge() {
+    // dut_ptr->eval();
+    // dut_ptr->clock = 0;
+    // dut_ptr->eval();
+
+    // posedge
     dut_ptr->eval();
-    dut_ptr->clock = 0;
+    dut_ptr->clock = 1;
     dut_ptr->eval();
 #if VM_TRACE == 1
     if (this->enable_wave && cycles >= this->wave_begin && cycles <= this->wave_end) {
@@ -66,11 +71,12 @@ inline void Emu::neg_edge() {
 }
 
 inline void Emu::pos_edge() {
-    dut_ptr->clock = 1;
+    // dut_ptr->clock = 1;
+    // dut_ptr->eval();
+
+    // negedeg
+    dut_ptr->clock = 0;
     dut_ptr->eval();
-    if(cycles >= 340 && engine->engine_cycles == 38) {
-        printf("\n");
-    }
 #if VM_TRACE == 1
     if (this->enable_wave && cycles >= this->wave_begin && cycles <= this->wave_end) {
         this->tfp->dump((vluint64_t)cycles * 2 + 1);
@@ -80,27 +86,8 @@ inline void Emu::pos_edge() {
 }
 
 inline void Emu::step() {
-    // dut_ptr->eval();
-    // dut_ptr->clock = 0;
-    // dut_ptr->eval();
-    // dut_ptr->clock = 1;
-    // dut_ptr->eval();
     neg_edge();
     pos_edge();
-    // dut_ptr->eval();
-    // if (this->enable_wave && cycles >= this->wave_begin && cycles <= this->wave_end) {
-    //     this->tfp->dump((vluint64_t)10*cycles-2);
-    // }
-    // dut_ptr->clock = 1;
-    // dut_ptr->eval();
-    // if (this->enable_wave && cycles >= this->wave_begin && cycles <= this->wave_end) {
-    //     this->tfp->dump((vluint64_t)10*cycles);
-    // }
-    // dut_ptr->clock = 0;
-    // if (this->enable_wave && cycles >= this->wave_begin && cycles <= this->wave_end) {
-    //     this->tfp->dump((vluint64_t)10*cycles+5);
-    //     this->tfp->flush();
-    // }
 }
 
 inline void Emu::step(uint64_t n){
