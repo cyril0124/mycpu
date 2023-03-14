@@ -13,11 +13,12 @@ abstract class BaseSRAM extends Module {
     def write(idx: UInt, data: UInt): Unit
     def read(idx: UInt): UInt
     def read(idx: UInt, enable: Bool): UInt = {
-        var rdata = 0.U
-        when(enable) {
-            rdata = read(idx)
-        }
-        rdata
+        // var rdata = 0.U
+        // when(enable) {
+        //     rdata = read(idx)
+        // }
+        // rdata
+        read(idx)
     }
 }
 
@@ -34,7 +35,7 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
 
     val ram = SyncReadMem(depth, Vec(maskSegments, UInt( (width / maskSegments).W)))
     val wen = io.en & io.rw
-    val ren = io.en & ~io.rw
+    val ren = io.en & !io.rw
 
     // read: rdata will keep stable until the next read enable.
     // withReset(reset) {
@@ -51,13 +52,20 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
 
 
     // read: rdata will keep stable until the next read enable.
-    val rdata = WireInit(ram.read(io.addr))
-    io.rdata := rdata.asUInt
+    // val rdata = WireInit(ram.read(io.addr))
+    // val rdataReg = RegEnable(rdata.asUInt, ren)
+    // io.rdata := Mux(ren, rdata.asUInt, rdataReg)
+    // io.rdata := RegEnable(rdata.asUInt, ren)
+    withReset(reset) {
+        io.rdata := DontCare
+    }
     // write with mask
     val wmask = if(io.wmask.isDefined) io.wmask.get.asTypeOf(Vec(maskSegments, Bool())) else Fill(maskSegments, 1.U).asTypeOf(Vec(maskSegments, Bool()))
     val wdata = io.wdata.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
     when(wen) {
         ram.write(io.addr, wdata, wmask)
+    }.otherwise{
+        io.rdata := ram.read(io.addr).asUInt
     }
 
     def init(): Unit = {
@@ -196,7 +204,8 @@ class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, si
     // println(s"width = ${width}")
     val sram = SRAM(width, depth, maskSegments, singlePort)
 
-    io.r.data := sram.read(io.r.addr,io.r.en)
+    // io.r.data := sram.read(io.r.addr,io.r.en)
+    io.r.data := sram.read(io.r.addr)
     
     when(io.w.en) {
         sram.write(io.w.addr,io.w.data,io.w.mask.getOrElse(false.B))

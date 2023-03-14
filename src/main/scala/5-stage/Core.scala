@@ -114,23 +114,52 @@ class Core()(implicit val p: Parameters) extends MyModule{
     // ----------------soc part(temp)-------------------------
     val busCrossBar = Module(new BusCrossBar())
     busCrossBar.io <> DontCare
+
     busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
     ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+
+    busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
+    mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
+
 
     val rom = Module(new ROM())
     rom.io.clock := clock
     rom.io.reset := reset
 
-    rom.io.wen := busCrossBar.io.slaveFace.in(0).valid && isPut(busCrossBar.io.slaveFace.in(0).bits.opcode) 
+    val romReq = busCrossBar.io.slaveFace.in(0)
+    val romResp = busCrossBar.io.slaveFace.out(0)
+
+    rom.io.wen := romReq.valid && isPut(romReq.bits.opcode) 
     rom.io.wmask := "b1111".U
-    rom.io.wdata := busCrossBar.io.slaveFace.in(0).bits.data
-    rom.io.waddr := busCrossBar.io.slaveFace.in(0).bits.address
-    rom.io.raddr := busCrossBar.io.slaveFace.in(0).bits.address // read
-    busCrossBar.io.slaveFace.in(0).ready := true.B
-    busCrossBar.io.slaveFace.out(0).bits.data := rom.io.rdata
-    val mCounter = Counter(true.B,100)
-    busCrossBar.io.slaveFace.out(0).valid := true.B // mCounter._1 < 10.U// true.B
-    busCrossBar.io.slaveFace.out(0).bits.source := busCrossBar.io.slaveFace.in(0).bits.source
+    rom.io.wdata := romReq.bits.data
+    rom.io.waddr := romReq.bits.address
+    rom.io.raddr := romReq.bits.address // read
+    romReq.ready := true.B
+    romResp.bits.data := rom.io.rdata
+    val mCounter = Counter(true.B, 10)
+    romResp.valid := mCounter._1 < 7.U // true.B
+    romResp.bits.source := romReq.bits.source
+
+
+
+    val ram = Module(new ROM())
+    ram.io.clock := clock
+    ram.io.reset := reset
+
+    val ramReq = busCrossBar.io.slaveFace.in(1)
+    val ramResp = busCrossBar.io.slaveFace.out(1)
+    
+    ram.io.wen := ramReq.valid && isPut(ramReq.bits.opcode) 
+    ram.io.wmask := ramReq.bits.mask
+    ram.io.wdata := ramReq.bits.data
+    ram.io.waddr := ramReq.bits.address - memRamBegin.U
+    ram.io.raddr := ramReq.bits.address - memRamBegin.U 
+    ramReq.ready := true.B
+    ramResp.bits.data := ram.io.rdata
+    val mCounter2 = Counter(true.B,12) 
+    ramResp.valid := mCounter2._1 > 4.U // true.B
+    ramResp.bits.source := ramReq.bits.source
+    
 }
 
 object CoreGenRTL extends App {

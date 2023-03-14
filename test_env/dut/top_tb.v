@@ -85,7 +85,8 @@ task initMem;
   $display("[top_tb.v] init memory!\n");
   // $readmemh("../../src/main/resources/Imem.hex", core_inst.ife.instMem.mem);
   $readmemh("../../src/main/resources/Imem.hex", core_inst.rom.mem);
-  $readmemh("../../src/main/resources/Dmem.hex", core_inst.mem.lsu.ram.mem);
+  // $readmemh("../../src/main/resources/Dmem.hex", core_inst.mem.lsu.ram.mem);
+  $readmemh("../../src/main/resources/Dmem.hex", core_inst.ram.mem);
 endtask
 
 initial begin
@@ -94,7 +95,7 @@ initial begin
 end
 
 always @(posedge reset) begin
-  $display("[top_tb.v] load rom\n");
+  // $display("[top_tb.v] load rom\n");
   // $readmemh("../../src/main/resources/Imem.hex", core_inst.fetchStage.instMem.mem);
   // $readmemh("../../src/main/resources/Dmem.hex", core_inst.memoryStage.dataMem.mem);
   initMem();

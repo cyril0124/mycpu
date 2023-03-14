@@ -144,6 +144,9 @@ class BusXbar()(implicit val p: Parameters) extends MyModule {
 class BusCrossBar()(implicit val p: Parameters) extends MyModule {
     val io = IO(new BusXbarIO)
 
+    io.slaveFace.in <> io.masterFace.in
+    io.masterFace.out <> io.slaveFace.out
+
     def mappingRegion(address: UInt, start: UInt, end: UInt): Bool = {
         val valid = WireInit(false.B)
         when(address >= start && address < end) {
@@ -157,48 +160,48 @@ class BusCrossBar()(implicit val p: Parameters) extends MyModule {
     def mappingChose(address: UInt): UInt = {
         val choseOH = Wire(UInt(nrBusSlave.W))
         when(mappingRegion(address, memRomBegin.U, memRomEnd.U)) { // ROM
-            choseOH := UIntToOH(0.U)
+            choseOH := UIntToOH(0.U, nrBusSlave)
         }.elsewhen(mappingRegion(address, memRamBegin.U, memRamEnd.U)) { // RAM
-            choseOH := UIntToOH(1.U)
+            choseOH := UIntToOH(1.U, nrBusSlave)
         }.otherwise { // default
-            choseOH := UIntToOH(0.U)
+            choseOH := UIntToOH(0.U, nrBusSlave)
         }
         choseOH
     }
 
     def sourceChose(id: UInt): UInt = {
         val choseOH = Wire(UInt(nrBusMaster.W))
-        choseOH := UIntToOH(id)
+        choseOH := UIntToOH(id, nrBusMaster)
         choseOH
     }
     
     val mf = io.masterFace
     val sf = io.slaveFace
 
-    // master --> slave
-    val slaveArbs = Seq.fill(nrBusSlave)(Module(new Arbiter(new BusMasterBundle, nrBusMaster)))
-    for(i <- 0 until nrBusSlave) {
-        slaveArbs(i).io.in.zip(mf.in).foreach{ case (sa, mi) => 
-            val masterChose = mappingChose(mi.bits.address)(i)
-            sa.bits <> mi.bits
-            sa.valid := masterChose && mi.valid
-            mi.ready := masterChose && sa.ready
-        }
-        slaveArbs(i).io.out <> sf.in(i)
-    }
+    // // master --> slave
+    // val slaveArbs = Seq.fill(nrBusSlave)(Module(new Arbiter(new BusMasterBundle, nrBusMaster)))
+    // for(i <- 0 until nrBusSlave) {
+    //     slaveArbs(i).io.in.zip(mf.in).foreach{ case (sai, mfi) => 
+    //         val masterChose = mappingChose(mfi.bits.address)(i)
+    //         sai.bits <> mfi.bits
+    //         sai.valid := mfi.valid && masterChose 
+    //         mfi.ready := sai.ready && masterChose
+    //     }
+    //     slaveArbs(i).io.out <> sf.in(i)
+    // }
 
-    // master <-- slave
-    val masterArbs = Seq.fill(nrBusMaster)(Module(new Arbiter(new BusSlaveBundle, nrBusSlave)))
-    for(i <- 0 until nrBusMaster) {
-        masterArbs(i).io.in.zip(sf.out).foreach{ case (ma, so) => 
-            val slaveChose = sourceChose(so.bits.source)(i)
-            ma.bits <> so.bits
-            ma.valid := slaveChose && so.valid
-            so.ready := slaveChose && ma.ready
-        }
-        masterArbs(i).io.out <> mf.out(i)
-        // dontTouch(masterArbs(i).io.out)
-    }
+    // // master <-- slave
+    // val masterArbs = Seq.fill(nrBusMaster)(Module(new Arbiter(new BusSlaveBundle, nrBusSlave)))
+    // for(i <- 0 until nrBusMaster) {
+    //     masterArbs(i).io.in.zip(sf.out).foreach{ case (ma, so) => 
+    //         val slaveChose = sourceChose(so.bits.source)(i)
+    //         ma.bits <> so.bits
+    //         ma.valid := slaveChose && so.valid
+    //         so.ready := slaveChose && ma.ready
+    //     }
+    //     masterArbs(i).io.out <> mf.out(i)
+    //     // dontTouch(masterArbs(i).io.out)
+    // }
 
 }
 

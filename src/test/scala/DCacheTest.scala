@@ -10,7 +10,6 @@ import scala.util.Random.nextInt
 import scala.math
 import chisel3.util.Fill
 import chisel3.util.FillInterleaved
-import dataclass.data
 
 class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     behavior of "DCache"
@@ -125,22 +124,21 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
 
     // it should "test DataBank" in {
     //     test(new DCacheDataBank(UInt(64.W))).withAnnotations(annos) { c => 
-    //         def write(set: Int, way: Int, data: Int, memType: UInt): Unit = {
+    //         def write(set: Int, way: Int, data: Int): Unit = {
     //             c.io.r.en.poke(0.U)
     //             c.io.w.en.poke(1.U)
     //             c.io.w.set.poke(set.U)
     //             c.io.w.way.poke(way.U)
     //             c.io.w.data.poke(data.U)
-    //             c.io.w.memType.poke(memType)
+    //             c.io.w.mask.poke("b11111111".U)
     //             c.clock.step()
     //         }
 
-    //         def read(set: Int, way: Int, memType: UInt): UInt = {
+    //         def read(set: Int, way: Int): UInt = {
     //             c.io.r.en.poke(1.U)
     //             c.io.w.en.poke(0.U)
     //             c.io.r.set.poke(set.U)
     //             c.io.r.way.poke(way.U)
-    //             c.io.r.memType.poke(memType)
     //             c.clock.step()
     //             c.io.r.data.peek()
     //         }
@@ -150,33 +148,21 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //         val en = Seq.fill(testCaseNum)(nextInt(2))
     //         val set = Seq.fill(testCaseNum)(nextInt(64))
     //         val way = Seq.fill(testCaseNum)(nextInt(4))
-    //         val memType = (0 until testCaseNum).map{ i => 
-    //             val t = nextInt(3)  // 000: 8-bit  001: 16-bit  010: 32-bit  011: 64-bit
-    //             (t % 3) match {
-    //                 case 2 => 2  // 32-bit
-    //                 case 1 => 1  // 16-bit
-    //                 case 0 => 0  // 8-bit
-    //             }
-    //         }
-    //         val expectData = (0 until testCaseNum).map{ i => 
-    //             memType(i) match {
-    //                 case 2 => wdata(i)
-    //                 case 1 => wdata(i) & 0xFFFF
-    //                 case 0 => wdata(i) & 0xFF
-    //             }
-    //         }
 
-    //         var scoreboard: scala.collection.mutable.Map[(Int, Int),(Int, Int)] = scala.collection.mutable.Map() // (set, way), (data, memType)
+    //         var scoreboard: scala.collection.mutable.Map[(Int, Int), Int] = scala.collection.mutable.Map() // (set, way), data
 
     //         var i = 0
     //         while( i < testCaseNum ) {
     //             val en = nextInt(2)
     //             if(en == 1) {
-    //                 write(set(i), way(i), wdata(i), memType(i).U)
+    //                 println(s">>write: set=${set(i)} way=${way(i)} wdata=${wdata(i)}")
+    //                 write(set(i), way(i), wdata(i))
     //                 if(!scoreboard.contains((set(i), way(i))))
-    //                     scoreboard += ((set(i), way(i)) -> (expectData(i), memType(i)))
-    //                 else
-    //                     scoreboard((set(i), way(i))) = (expectData(i), memType(i))
+    //                     scoreboard += ((set(i), way(i)) -> wdata(i))
+    //                 else {
+    //                     println(s">>REPLACE write: set=${set(i)} way=${way(i)} wdata=${wdata(i)}")
+    //                     scoreboard((set(i), way(i))) = wdata(i)
+    //                 }
     //                 c.io.w.en.poke(0)
     //                 i = i + 1
     //             } else {
@@ -184,16 +170,17 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //                 c.clock.step()
     //             }
     //         }
-
+    //         println()
     //         i = 0;
     //         while( i < testCaseNum ) {
     //             val en = nextInt(2)
     //             if(en == 1) {
-    //                 read(set(i), way(i), scoreboard(set(i), way(i))._2.U)
-    //                 c.io.r.data.expect(scoreboard(set(i), way(i))._1)
+    //                 println(s">>read: set=${set(i)} way=${way(i)} expect=${scoreboard(set(i), way(i))}")
+    //                 read(set(i), way(i))
+    //                 c.io.r.data.expect(scoreboard(set(i), way(i)))
     //                 c.io.r.en.poke(0)
     //                 i = i + 1
-    //                 println(">>pass")
+    //                 println("PASS<<")
     //             } else {
     //                 c.io.r.en.poke(0)
     //                 c.clock.step()

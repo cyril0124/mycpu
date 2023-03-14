@@ -38,16 +38,25 @@ sealed class LsuStatusBundle()(implicit val p: Parameters) extends MyBundle {
     val loadUnalign = Bool()
 }
 
+
+class LsuReqBundle()(implicit val p: Parameters) extends MyBundle {
+    val addr = UInt(xlen.W)
+    val wdata = UInt(xlen.W)
+    val lsuOp = UInt(LSU_OP_WIDTH.W)
+    val hasTrap = Bool()
+}
+
+class LsuRespBundle()(implicit val p: Parameters) extends MyBundle {
+    val rdata = UInt(xlen.W)
+}
+
 class LsuIO()(implicit val p: Parameters) extends MyBundle {
-    val hasTrap = Input(Bool())
-    val addr = Input(UInt(xlen.W))
-    val wdata = Input(UInt(xlen.W))
-    val data = Output(UInt(xlen.W))
-    val dataValid = Output(Bool())
-    val lsuOp = Input(UInt(LSU_OP_WIDTH.W))
+    val req = Flipped(DecoupledIO(new LsuReqBundle))
+    val resp = DecoupledIO(new LsuRespBundle)
+    
     val excp = Output(new LsuStatusBundle)
     
-    // val ram = new TLMasterBusUL
+    val ram = new TLMasterBusUL
 }
 
 import LsuDecode._
@@ -56,53 +65,49 @@ import LsuDecode._
 class LSU()(implicit val p: Parameters) extends MyModule {
     val io = IO(new LsuIO)
 
-    val ram = Module(new ROM())
-    ram.io.clock := clock
-    ram.io.reset := reset
-
-    val ramRdData = Wire(UInt(xlen.W))
-    val signedReg = Reg(Bool())
-    val widthReg = Reg(UInt(LS_DATA_WIDTH.W))
-
-    val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
-        ListLookup(io.lsuOp, default, table)
-
-    val offserReg = Reg(UInt(blockOffsetBits.W))
-    val offset = io.addr(blockOffsetBits-1, 0)
+    // ---------------------stage0: Decode, Send Write data request & Send read data request---------------------
+    val busy = RegInit(false.B)
+    val s0_valid = Wire(Bool())
+    val s0_reqReg = RegEnable(io.req.bits, io.req.fire)
+    val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
+    val offset = s0_req.addr(blockOffsetBits-1, 0)
     dontTouch(offset)
     
-    when(en) {
-        offserReg := io.addr(blockOffsetBits-1, 0)
-        signedReg := signed
-        widthReg := width
-    }
+    io.req.ready := !busy
+
+    val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
+        ListLookup(s0_req.lsuOp, default, table)
+
+    s0_valid := en
 
     io.excp.storeUnalign := false.B
     io.excp.loadUnalign := false.B
 
     when(wen) {
         io.excp.storeUnalign := MuxLookup(width, false.B, Seq(
-                                    LS_DATA_HALF -> (io.addr(blockOffsetBits-1, 0) === 3.U),
-                                    LS_DATA_WORD -> (io.addr(blockOffsetBits-1, 0) =/= 0.U),
+                                    LS_DATA_HALF -> (s0_req.addr(blockOffsetBits-1, 0) === 3.U),
+                                    LS_DATA_WORD -> (s0_req.addr(blockOffsetBits-1, 0) =/= 0.U),
+                                    // TODO: consider xlen=64
+                                ))
+    }
+    when(load) {
+        io.excp.loadUnalign := MuxLookup(width, false.B, Seq(
+                                    LS_DATA_HALF -> (s0_req.addr(blockOffsetBits-1, 0) === 3.U),
+                                    LS_DATA_WORD -> (s0_req.addr(blockOffsetBits-1, 0) =/= 0.U),
                                     // TODO: consider xlen=64
                                 ))
     }
 
-    when(load) {
-        io.excp.loadUnalign := MuxLookup(width, false.B, Seq(
-                                    LS_DATA_HALF -> (io.addr(blockOffsetBits-1, 0) === 3.U),
-                                    LS_DATA_WORD -> (io.addr(blockOffsetBits-1, 0) =/= 0.U),
-                                    // TODO: consider xlen=64
-                                ))
-    }
-    
-    val ramOffset = "h2000".U
-    ram.io.wen := wen && !io.excp.storeUnalign
-    ram.io.waddr := io.addr - ramOffset
-    ram.io.wdata := io.wdata << (offset << 3)
-    ram.io.wmask := MuxLookup(width, "b1111".U, Seq(
-        LS_DATA_BYTE -> UIntToOH(io.addr(blockOffsetBits-1, 0)),
-        LS_DATA_HALF -> MuxLookup(io.addr(blockOffsetBits-1, 0), "b0011".U, Seq(
+    io.ram.req <> DontCare
+    io.ram.req.bits.corrupt := true.B
+    io.ram.req.valid := !io.excp.storeUnalign && en //io.req.valid // && !io.excp.storeUnalign // wen && !io.excp.storeUnalign
+    io.ram.req.bits.address := s0_req.addr // - ramOffset
+    io.ram.req.bits.data := s0_req.wdata << (offset << 3)
+    io.ram.req.bits.opcode := Mux(wen, BusReq.PutFullData, BusReq.Get)
+    io.ram.req.bits.source := BusMasterId.ID_RAM
+    io.ram.req.bits.mask := MuxLookup(width, "b1111".U, Seq(
+        LS_DATA_BYTE -> UIntToOH(s0_req.addr(blockOffsetBits-1, 0)),
+        LS_DATA_HALF -> MuxLookup(s0_req.addr(blockOffsetBits-1, 0), "b0011".U, Seq(
                             0.U -> "b0011".U,
                             1.U -> "b0110".U,
                             2.U -> "b1100".U,
@@ -112,43 +117,35 @@ class LSU()(implicit val p: Parameters) extends MyModule {
         // TODO: consider xlen=64
     ))
 
-    // io.ram.req <> DontCare
-    // io.ram.req.valid := wen && !io.excp.storeUnalign
-    // io.ram.req.bits.address := io.addr - ramOffset
-    // io.ram.req.bits.data := io.wdata << (offset << 3)
-    // io.ram.req.bits.opcode := BusReq.PutFullData
-    // io.ram.req.bits.mask := MuxLookup(width, "b1111".U, Seq(
-    //     LS_DATA_BYTE -> UIntToOH(io.addr(blockOffsetBits-1, 0)),
-    //     LS_DATA_HALF -> MuxLookup(io.addr(blockOffsetBits-1, 0), "b0011".U, Seq(
-    //                         0.U -> "b0011".U,
-    //                         1.U -> "b0110".U,
-    //                         2.U -> "b1100".U,
-    //                         // 3.U -> unalign addr
-    //                     )),
-    //     LS_DATA_WORD -> "b1111".U,
-    //     // TODO: consider xlen=64
-    // ))
+    // ---------------------stage1: Read back data---------------------
+    val s1_signed = Reg(Bool())
+    val s1_width  = Reg(UInt(LS_DATA_WIDTH.W))
+    val s1_offset = Reg(UInt(blockOffsetBits.W))
+    when(s0_valid) {
+        s1_signed := signed
+        s1_offset := offset
+        s1_width  := width
+    }
 
-    // io.ram.resp <> DontCare
-    // io.ram.resp.valid
+    val s1_respReg = RegEnable(io.ram.resp.bits, io.ram.resp.fire)
+    val s1_resp = Mux(io.ram.resp.fire, io.ram.resp.bits, s1_respReg)
+    io.ram.resp.bits <> DontCare
+    io.ram.resp.ready := true.B
 
-    
-    ram.io.raddr := io.addr - ramOffset
-    ramRdData := MuxLookup(offserReg, ram.io.rdata, Seq(
-                        0.U -> ram.io.rdata,
-                        1.U -> Cat(Fill(8, 0.U), ram.io.rdata(xlen-1, 8)),
-                        2.U -> Cat(Fill(16, 0.U), ram.io.rdata(xlen-1, 16)),
-                        3.U -> Cat(Fill(24, 0.U), ram.io.rdata(xlen-1, 24)),
-                        // TODO: consider xlen=64
-                    ))
+    val ramRdData = MuxLookup(s1_offset, s1_resp.data, Seq(
+                    0.U -> s1_resp.data,
+                    1.U -> Cat(Fill(8, 0.U), s1_resp.data(xlen-1, 8)),
+                    2.U -> Cat(Fill(16, 0.U), s1_resp.data(xlen-1, 16)),
+                    3.U -> Cat(Fill(24, 0.U), s1_resp.data(xlen-1, 24)),
+                    // TODO: consider xlen=64
+                ))
 
-    io.data := MuxLookup(widthReg, ramRdData, Seq(
-                            LS_DATA_BYTE -> Mux(signedReg, SignExt(ramRdData(7,0).asSInt, xlen), ZeroExt(ramRdData(7,0),xlen)),
-                            LS_DATA_HALF -> Mux(signedReg, SignExt(ramRdData(15,0).asSInt, xlen), ZeroExt(ramRdData(15,0),xlen)),
-                            LS_DATA_WORD -> Mux(signedReg, SignExt(ramRdData(31,0).asSInt, xlen), ZeroExt(ramRdData(31,0),xlen)),
+    io.resp.bits.rdata := MuxLookup(s1_width, ramRdData, Seq(
+                            LS_DATA_BYTE -> Mux(s1_signed, SignExt(ramRdData(7,0).asSInt, xlen), ZeroExt(ramRdData(7,0),xlen)),
+                            LS_DATA_HALF -> Mux(s1_signed, SignExt(ramRdData(15,0).asSInt, xlen), ZeroExt(ramRdData(15,0),xlen)),
+                            LS_DATA_WORD -> Mux(s1_signed, SignExt(ramRdData(31,0).asSInt, xlen), ZeroExt(ramRdData(31,0),xlen)),
                             // TODO: consider xlen=64 
                         ))
 
-    io.dataValid := true.B
-
+    io.resp.valid := io.ram.resp.valid// true.B
 }

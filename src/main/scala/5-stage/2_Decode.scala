@@ -71,10 +71,10 @@ class DecodeIO()(implicit val p: Parameters) extends MyBundle{
 class Decode()(implicit val p: Parameters) extends MyModule{
     val io = IO(new DecodeIO)
     
-    val stall = io.ctrl.stall | io.hazard.in.stall
-    val flush = io.ctrl.flush
+    val stall = io.ctrl.stall || io.hazard.in.stall || !io.out.ready
+    val flush = io.ctrl.flush 
 
-    io.in.ready := io.out.ready && ~stall
+    io.in.ready := !stall
 
     val decodeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
@@ -84,8 +84,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
 
-
-    when(flush) { stageReg := 0.U.asTypeOf(io.in.bits) }
+    when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
     val inst = stageReg.instState.inst
     val rs1 = InstField(inst, "rs1")
@@ -176,6 +175,5 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.hazard.out.rs1 := rs1
     io.hazard.out.rs2 := rs2
     
-
-    io.out.valid := io.out.ready && ~stall
+    io.out.valid := !stall
 }

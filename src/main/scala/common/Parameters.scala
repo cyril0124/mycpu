@@ -108,9 +108,9 @@ case class MyCpuParameters
 
     startAddr: Int = 0,
     memRomBegin: Int = 0x00000000,
-    memRomEnd: Int = 0x00001000,
-    memRamBegin: Int = 0x00001000,
-    memRamEnd: Int = 0x00002000,
+    memRomEnd: Int = 0x00002000,
+    memRamBegin: Int = 0x00002000,
+    memRamEnd: Int = 0x00004000,
 
     nrBusMaster: Int = 2,
     nrBusSlave: Int = 2,

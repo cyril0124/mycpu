@@ -38,7 +38,8 @@ class MemOut()(implicit val p: Parameters) extends MyBundle{
 class MemIO()(implicit val p: Parameters) extends MyBundle{
     val in = Flipped(DecoupledIO(new ExecuteOut))
     val out = DecoupledIO(new MemOut)
-
+    
+    val ram = new TLMasterBusUL
     val ramData = Output(UInt(xlen.W))
     val ramDataValid = Output(Bool())
 
@@ -53,10 +54,10 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
 class Mem()(implicit val p: Parameters) extends MyModule{
     val io = IO(new MemIO)
 
-    val stall = io.ctrl.stall && io.excp.valid
+    val stall = (io.ctrl.stall && io.excp.valid) || !io.out.ready
     val flush = io.ctrl.flush
 
-    io.in.ready := io.out.ready && !stall
+    io.in.ready := !stall
     val memoryLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(memoryLatch) {
@@ -65,7 +66,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
 
-    when(flush) { stageReg := 0.U.asTypeOf(io.in.bits) }
+    when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
 
     // exception handle
@@ -114,12 +115,15 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     val lsu = Module(new LSU())
     lsu.io <> DontCare
-    lsu.io.addr := stageReg.aluOut
-    lsu.io.wdata := stageReg.data2
-    lsu.io.hasTrap := hasTrap
-    lsu.io.lsuOp := stageReg.lsuOp
-    io.ramData := lsu.io.data
-    io.ramDataValid := lsu.io.dataValid
+    lsu.io.req.valid := !flush && !stall
+    lsu.io.req.bits.addr := stageReg.aluOut
+    lsu.io.req.bits.wdata := stageReg.data2
+    lsu.io.req.bits.hasTrap := hasTrap
+    lsu.io.req.bits.lsuOp := stageReg.lsuOp
+    io.ramDataValid := lsu.io.resp.valid
+    io.ramData := lsu.io.resp.bits.rdata
+
+    io.ram <> lsu.io.ram
 
     io.out.bits.resultSrc := stageReg.resultSrc
     io.out.bits.regWrEn := stageReg.regWrEn
@@ -133,7 +137,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     io.hazard.regWrEn := stageReg.regWrEn
     io.hazard.rdVal :=  stageReg.aluOut
 
-    io.out.valid := io.out.ready && !stall
+    io.out.valid := !stall
 }
 
 object MemoryGenRTL extends App {

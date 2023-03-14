@@ -91,7 +91,7 @@ class DCacheDataBank[T <: Data](gen: T,dcacheSets: Int = 64, dcacheWays: Int = 4
 
     // read chosen way one hot code
     val rWayOH = UIntToOH(io.r.way, dcacheWays)
-    val rdataWithMask = WireInit(0.U.asTypeOf(io.r.data))
+    // val rdataWithMask = WireInit(0.U.asTypeOf(io.r.data))
     val rdata = WireInit(0.U.asTypeOf(io.r.data))
     for( i <- 0 until dcacheWays){
         bankRam(i).io.r.en := rWayOH(i) & io.r.en
@@ -142,8 +142,7 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     val busy = RegInit(false.B)
     r.req.ready := ~busy
     w.req.ready := ~busy
-
-
+    
     // read info
     val rReqValidReg = RegEnable(r.req.fire, false.B, r.req.fire)
     val rReqValid = Mux(r.req.fire, r.req.fire, rReqValidReg)
@@ -270,7 +269,7 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     tagArray.io.w.data := tagWrData.asUInt
 
     // meta write
-    metaArray.io.w.en := wbCache || wbWrHit
+    metaArray.io.w.en := wbCache // || wbWrHit // TODO: pipelined
     metaArray.io.w.addr := Mux(isHit && ~wbCache, wSet, rwSet)
     metaArray.io.w.mask.get := choseWayOH
     val metaArrayWrData = Wire(new DCacheMeta)

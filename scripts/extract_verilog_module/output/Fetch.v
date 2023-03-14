@@ -23,32 +23,34 @@ module Fetch(
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;
 `endif // RANDOMIZE_REG_INIT
-  reg  romValidReg; // @[1_Fetch.scala 45:34]
-  reg [31:0] pcReg; // @[1_Fetch.scala 52:34]
-  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 55:33]
-  wire  commit = io_out_ready & io_in_start & romValidReg; // @[1_Fetch.scala 57:65]
-  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 80:37]
-  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 81:20]
-  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 80:18]
-  assign io_in_execute_ready = io_in_start; // @[1_Fetch.scala 42:40]
-  assign io_out_valid = commit & io_rom_resp_valid; // @[1_Fetch.scala 92:28]
-  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 55:33]
-  assign io_out_bits_instState_commit = io_out_ready & io_in_start & romValidReg; // @[1_Fetch.scala 57:65]
-  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 89:30]
-  assign io_out_bits_instState_inst = io_rom_resp_bits_data; // @[1_Fetch.scala 56:35 77:10]
-  assign io_rom_req_bits_address = commit ? pcNext : pcReg; // @[1_Fetch.scala 83:14]
+  reg  romValidReg; // @[1_Fetch.scala 39:34]
+  wire  stall = ~io_in_start | ~romValidReg; // @[1_Fetch.scala 41:47]
+  wire  _io_in_execute_ready_T = ~stall; // @[1_Fetch.scala 45:28]
+  reg [31:0] pcReg; // @[1_Fetch.scala 47:34]
+  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 50:33]
+  wire  commit = _io_in_execute_ready_T & io_out_ready; // @[1_Fetch.scala 52:34]
+  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 75:37]
+  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 76:20]
+  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 75:18]
+  assign io_in_execute_ready = ~stall; // @[1_Fetch.scala 45:28]
+  assign io_out_valid = ~stall; // @[1_Fetch.scala 86:21]
+  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 50:33]
+  assign io_out_bits_instState_commit = _io_in_execute_ready_T & io_out_ready; // @[1_Fetch.scala 52:34]
+  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 83:30]
+  assign io_out_bits_instState_inst = io_rom_resp_bits_data; // @[1_Fetch.scala 51:35 72:10]
+  assign io_rom_req_bits_address = commit ? pcNext : pcReg; // @[1_Fetch.scala 77:14]
   always @(posedge clock) begin
-    romValidReg <= io_rom_resp_valid; // @[1_Fetch.scala 45:34]
-    if (reset) begin // @[1_Fetch.scala 52:34]
-      pcReg <= 32'h0; // @[1_Fetch.scala 52:34]
-    end else if (commit & io_rom_resp_valid) begin // @[1_Fetch.scala 85:30]
-      if (io_excp_valid) begin // @[1_Fetch.scala 80:18]
-        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 80:37]
+    romValidReg <= io_rom_resp_valid; // @[1_Fetch.scala 39:34]
+    if (reset) begin // @[1_Fetch.scala 47:34]
+      pcReg <= 32'h0; // @[1_Fetch.scala 47:34]
+    end else if (commit) begin // @[1_Fetch.scala 77:14]
+      if (io_excp_valid) begin // @[1_Fetch.scala 75:18]
+        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 75:37]
           pcReg <= io_mepc;
         end else begin
           pcReg <= io_trapVec;
         end
-      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 81:20]
+      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 76:20]
         pcReg <= io_in_execute_bits_targetAddr;
       end else begin
         pcReg <= pcNext4;

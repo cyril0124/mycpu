@@ -33,7 +33,8 @@ always@(posedge clock) begin
                 mem[waddr[MEM_WIDTH + 1:2]][31:24] <= wdata[31:24];
         end
         else
-            rdata <= mem[raddr[MEM_WIDTH + 1:2]];
+            rdata <= mem[raddr[MEM_WIDTH + 1:2]]; // no change mode, when write enable, data output remains the last read data 
+                                                  // and it is unaffected by a write operation on the same port.
     end
 end
 

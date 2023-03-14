@@ -76,11 +76,11 @@ class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
 class Execute()(implicit val p: Parameters) extends MyModule{
     val io = IO(new ExecuteIO)
 
-    val stall = io.ctrl.stall
+    val stall = io.ctrl.stall || !io.out.fetch.ready || !io.out.memory.ready
     val flush = io.ctrl.flush
 
 
-    io.in.ready := io.out.memory.ready && io.out.fetch.ready && ~stall 
+    io.in.ready :=  !stall 
     val executeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(executeLatch) {
@@ -89,7 +89,7 @@ class Execute()(implicit val p: Parameters) extends MyModule{
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
 
-    when(flush) { stageReg := 0.U.asTypeOf(io.in.bits) }
+    when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
     val aluZero = Wire(Bool())
     val inst = stageReg.instState.inst
@@ -114,33 +114,38 @@ class Execute()(implicit val p: Parameters) extends MyModule{
                         ))
     alu.io.in2 := Mux(stageReg.aluIn2IsReg, hazardData2, stageReg.aluIn2)
     
+    // when stage stall, refill stageReg 
+    when(stageReg.aluIn1IsReg && io.hazard.in.aluSrc1 =/= "b00".U && stall) {
+        stageReg.aluIn1 := hazardData1
+    }
+    when(stageReg.aluIn2IsReg && io.hazard.in.aluSrc2 =/= "b00".U && stall) {
+        stageReg.aluIn2 := hazardData2
+    }
+    when(io.hazard.in.aluSrc2 =/= "b00".U && stall) {
+        stageReg.data2 := hazardData2
+    }
 
     alu.io.opSel := stageReg.aluOpSel
-    aluZero := alu.io.zero
+    aluZero      := alu.io.zero
 
     // output for fetch stage
-    io.out.fetch.bits.brTaken := (stageReg.isBranch && aluZero) || stageReg.isJump
-    io.out.fetch.bits.targetAddr := Mux(stageReg.pcAddReg, 
-                                        aluOut, 
-                                        Mux(stageReg.immSign, 
-                                            (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 
-                                            stageReg.imm + stageReg.instState.pc
+    io.out.fetch.bits.brTaken       := (stageReg.isBranch && aluZero) || stageReg.isJump
+    io.out.fetch.bits.targetAddr    := Mux(stageReg.pcAddReg, aluOut, 
+                                            Mux(stageReg.immSign, (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 
+                                                stageReg.imm + stageReg.instState.pc 
                                             )
                                         ) 
     
     // output for memory stage
-    io.out.memory.bits.aluOut := aluOut
-    io.out.memory.bits.resultSrc := stageReg.resultSrc
-    io.out.memory.bits.lsuOp := stageReg.lsuOp
-    io.out.memory.bits.regWrEn := stageReg.regWrEn
-    io.out.memory.bits.data2 := Mux(io.hazard.in.aluSrc2 === 0.U, stageReg.data2, 
-                                    Mux(io.hazard.in.aluSrc2 === "b01".U, io.hazard.in.rdValM, 
-                                    Mux(io.hazard.in.aluSrc2 === "b10".U, io.hazard.in.rdValW, stageReg.data2))) 
-    io.out.memory.bits.pcNext4 := stageReg.pcNext4
+    io.out.memory.bits.aluOut       := aluOut
+    io.out.memory.bits.resultSrc    := stageReg.resultSrc
+    io.out.memory.bits.lsuOp        := stageReg.lsuOp
+    io.out.memory.bits.regWrEn      := stageReg.regWrEn
+    io.out.memory.bits.data2        := Mux(io.hazard.in.aluSrc2 === 0.U, stageReg.data2, 
+                                        Mux(io.hazard.in.aluSrc2 === "b01".U, io.hazard.in.rdValM, 
+                                        Mux(io.hazard.in.aluSrc2 === "b10".U, io.hazard.in.rdValW, stageReg.data2))) 
+    io.out.memory.bits.pcNext4      := stageReg.pcNext4
 
-    when(flush){
-        io.out.memory.bits <> DontCare
-    }
 
 
     val csrAddr = InstField(inst, "csr_dest")
@@ -167,6 +172,6 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.out.memory.bits.instState <> stageReg.instState
 
 
-    io.out.memory.valid := io.out.memory.ready && ~stall 
-    io.out.fetch.valid := io.out.fetch.ready && ~stall 
+    io.out.memory.valid :=  !stall 
+    io.out.fetch.valid :=  !stall
 }

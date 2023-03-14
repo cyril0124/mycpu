@@ -38,12 +38,11 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
 
 class WriteBack()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
-
-    val stall = io.ctrl.stall 
+    
+    val stall = io.ctrl.stall || !io.ramDataValid
     val flush = io.ctrl.flush
-    val commit = ~stall
 
-    io.in.ready := ~stall && io.ramDataValid
+    io.in.ready := !stall
     val writebackLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(writebackLatch) {
@@ -52,26 +51,27 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
     
-    when(flush) { stageReg := 0.U.asTypeOf(io.in.bits) }
+    when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
     
+    val ramDataReg = RegEnable(io.ramData, io.ramDataValid)
 
     val rdVal = MuxLookup(stageReg.resultSrc, stageReg.aluOut, Seq(
                                 "b00".U -> stageReg.aluOut,
-                                "b01".U -> io.ramData, // stageReg.rdData,
+                                "b01".U -> io.ramData,
                                 "b10".U -> stageReg.pcNext4
                             ))
     io.regfile.regWrData := rdVal;
     val inst = stageReg.instState.inst
     io.regfile.rd := InstField(inst, "rd")
-    io.regfile.regWrEn := stageReg.regWrEn
-
+    io.regfile.regWrEn := stageReg.regWrEn && !stall
 
     io.csrWrite.addr := stageReg.csrAddr
     io.csrWrite.data := stageReg.csrWrData
     io.csrWrite.op   := Mux(stageReg.csrWrEn, stageReg.csrOp, CSR_R)
-    io.csrWrite.retired := stageReg.instState.commit && commit
-
+    io.csrWrite.retired := stageReg.instState.commit && !stall
+    
     io.instState <> stageReg.instState
+    io.instState.commit := stageReg.instState.commit && !stall
 
     // hazard control
     io.hazard.rd := InstField(inst, "rd")
