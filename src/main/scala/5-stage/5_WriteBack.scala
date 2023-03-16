@@ -39,7 +39,8 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
 class WriteBack()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
     
-    val stall = io.ctrl.stall || !io.ramDataValid
+    val wbRam = WireInit(false.B)
+    val stall = io.ctrl.stall || (!io.ramDataValid && wbRam)
     val flush = io.ctrl.flush
 
     io.in.ready := !stall
@@ -53,7 +54,7 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
     
-    val ramDataReg = RegEnable(io.ramData, io.ramDataValid)
+    wbRam := stageReg.resultSrc === "b01".U
 
     val rdVal = MuxLookup(stageReg.resultSrc, stageReg.aluOut, Seq(
                                 "b00".U -> stageReg.aluOut,

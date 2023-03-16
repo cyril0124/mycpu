@@ -45,6 +45,13 @@ module Core(
   reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
   reg [31:0] _RAND_5;
+  reg [31:0] _RAND_6;
+  reg [31:0] _RAND_7;
+  reg [31:0] _RAND_8;
+  reg [31:0] _RAND_9;
+  reg [31:0] _RAND_10;
+  reg [31:0] _RAND_11;
+  reg [31:0] _RAND_12;
 `endif // RANDOMIZE_REG_INIT
   wire  ife_clock; // @[Core.scala 37:21]
   wire  ife_reset; // @[Core.scala 37:21]
@@ -58,7 +65,10 @@ module Core(
   wire  ife_io_out_bits_instState_commit; // @[Core.scala 37:21]
   wire [31:0] ife_io_out_bits_instState_pc; // @[Core.scala 37:21]
   wire [31:0] ife_io_out_bits_instState_inst; // @[Core.scala 37:21]
+  wire  ife_io_rom_req_ready; // @[Core.scala 37:21]
+  wire  ife_io_rom_req_valid; // @[Core.scala 37:21]
   wire [31:0] ife_io_rom_req_bits_address; // @[Core.scala 37:21]
+  wire  ife_io_rom_resp_ready; // @[Core.scala 37:21]
   wire  ife_io_rom_resp_valid; // @[Core.scala 37:21]
   wire [31:0] ife_io_rom_resp_bits_data; // @[Core.scala 37:21]
   wire [31:0] ife_io_trapVec; // @[Core.scala 37:21]
@@ -191,6 +201,7 @@ module Core(
   wire  mem_io_out_bits_instState_commit; // @[Core.scala 55:21]
   wire [31:0] mem_io_out_bits_instState_pc; // @[Core.scala 55:21]
   wire [31:0] mem_io_out_bits_instState_inst; // @[Core.scala 55:21]
+  wire  mem_io_ram_req_ready; // @[Core.scala 55:21]
   wire  mem_io_ram_req_valid; // @[Core.scala 55:21]
   wire [2:0] mem_io_ram_req_bits_opcode; // @[Core.scala 55:21]
   wire [31:0] mem_io_ram_req_bits_address; // @[Core.scala 55:21]
@@ -324,52 +335,108 @@ module Core(
   wire  csrFile_io_busy; // @[Core.scala 99:25]
   wire [31:0] csrFile_io_mepc; // @[Core.scala 99:25]
   wire [31:0] csrFile_io_trapVec; // @[Core.scala 99:25]
-  wire [31:0] busCrossBar_io_masterFace_in_0_bits_address; // @[Core.scala 115:29]
-  wire  busCrossBar_io_masterFace_in_1_valid; // @[Core.scala 115:29]
-  wire [2:0] busCrossBar_io_masterFace_in_1_bits_opcode; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_masterFace_in_1_bits_address; // @[Core.scala 115:29]
-  wire [3:0] busCrossBar_io_masterFace_in_1_bits_mask; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_masterFace_in_1_bits_data; // @[Core.scala 115:29]
-  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 115:29]
-  wire  busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 115:29]
-  wire  busCrossBar_io_slaveFace_in_1_valid; // @[Core.scala 115:29]
-  wire [2:0] busCrossBar_io_slaveFace_in_1_bits_opcode; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_address; // @[Core.scala 115:29]
-  wire [3:0] busCrossBar_io_slaveFace_in_1_bits_mask; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_data; // @[Core.scala 115:29]
-  wire  busCrossBar_io_slaveFace_out_0_valid; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_slaveFace_out_0_bits_data; // @[Core.scala 115:29]
-  wire  busCrossBar_io_slaveFace_out_1_valid; // @[Core.scala 115:29]
-  wire [31:0] busCrossBar_io_slaveFace_out_1_bits_data; // @[Core.scala 115:29]
-  wire  rom_clock; // @[Core.scala 125:21]
-  wire  rom_reset; // @[Core.scala 125:21]
-  wire  rom_wen; // @[Core.scala 125:21]
-  wire [31:0] rom_waddr; // @[Core.scala 125:21]
-  wire [31:0] rom_wdata; // @[Core.scala 125:21]
-  wire [3:0] rom_wmask; // @[Core.scala 125:21]
-  wire [31:0] rom_raddr; // @[Core.scala 125:21]
-  wire [31:0] rom_rdata; // @[Core.scala 125:21]
-  wire  ram_clock; // @[Core.scala 145:21]
-  wire  ram_reset; // @[Core.scala 145:21]
-  wire  ram_wen; // @[Core.scala 145:21]
-  wire [31:0] ram_waddr; // @[Core.scala 145:21]
-  wire [31:0] ram_wdata; // @[Core.scala 145:21]
-  wire [3:0] ram_wmask; // @[Core.scala 145:21]
-  wire [31:0] ram_raddr; // @[Core.scala 145:21]
-  wire [31:0] ram_rdata; // @[Core.scala 145:21]
+  wire  busCrossBar_clock; // @[Core.scala 116:29]
+  wire  busCrossBar_reset; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_in_0_valid; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_masterFace_in_0_bits_address; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_in_1_valid; // @[Core.scala 116:29]
+  wire [2:0] busCrossBar_io_masterFace_in_1_bits_opcode; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_masterFace_in_1_bits_address; // @[Core.scala 116:29]
+  wire [3:0] busCrossBar_io_masterFace_in_1_bits_mask; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_masterFace_in_1_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_cs_0; // @[Core.scala 116:29]
+  wire  busCrossBar_io_masterFace_cs_1; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_in_0_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_in_0_valid; // @[Core.scala 116:29]
+  wire [2:0] busCrossBar_io_slaveFace_in_0_bits_opcode; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_in_1_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_in_1_valid; // @[Core.scala 116:29]
+  wire [2:0] busCrossBar_io_slaveFace_in_1_bits_opcode; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_address; // @[Core.scala 116:29]
+  wire [3:0] busCrossBar_io_slaveFace_in_1_bits_mask; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_out_0_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_out_0_valid; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_out_0_bits_data; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_out_1_ready; // @[Core.scala 116:29]
+  wire  busCrossBar_io_slaveFace_out_1_valid; // @[Core.scala 116:29]
+  wire [31:0] busCrossBar_io_slaveFace_out_1_bits_data; // @[Core.scala 116:29]
+  wire  rom_clock; // @[Core.scala 167:21]
+  wire  rom_reset; // @[Core.scala 167:21]
+  wire  rom_wen; // @[Core.scala 167:21]
+  wire [31:0] rom_waddr; // @[Core.scala 167:21]
+  wire [31:0] rom_wdata; // @[Core.scala 167:21]
+  wire [3:0] rom_wmask; // @[Core.scala 167:21]
+  wire [31:0] rom_raddr; // @[Core.scala 167:21]
+  wire [31:0] rom_rdata; // @[Core.scala 167:21]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_clock; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_reset; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_0; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_1; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_2; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_3; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_4; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_5; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_6; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_0_ready_prng_io_out_7; // @[PRNG.scala 91:22]
+  wire  ram_clock; // @[Core.scala 195:21]
+  wire  ram_reset; // @[Core.scala 195:21]
+  wire  ram_wen; // @[Core.scala 195:21]
+  wire [31:0] ram_waddr; // @[Core.scala 195:21]
+  wire [31:0] ram_wdata; // @[Core.scala 195:21]
+  wire [3:0] ram_wmask; // @[Core.scala 195:21]
+  wire [31:0] ram_raddr; // @[Core.scala 195:21]
+  wire [31:0] ram_rdata; // @[Core.scala 195:21]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_clock; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_reset; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_0; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_1; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_2; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_3; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_4; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_5; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_6; // @[PRNG.scala 91:22]
+  wire  busCrossBar_io_slaveFace_in_1_ready_prng_io_out_7; // @[PRNG.scala 91:22]
   reg  ife_io_in_start_REG; // @[Core.scala 38:31]
   reg  io_out_state_instState_REG_commit; // @[Core.scala 111:38]
   reg [31:0] io_out_state_instState_REG_pc; // @[Core.scala 111:38]
   reg [31:0] io_out_state_instState_REG_inst; // @[Core.scala 111:38]
-  reg [3:0] c_value; // @[Counter.scala 61:40]
-  wire  wrap_wrap = c_value == 4'h9; // @[Counter.scala 73:24]
-  wire [3:0] _wrap_value_T_1 = c_value + 4'h1; // @[Counter.scala 77:24]
-  reg [3:0] c_value_1; // @[Counter.scala 61:40]
-  wire  wrap_wrap_1 = c_value_1 == 4'hb; // @[Counter.scala 73:24]
-  wire [3:0] _wrap_value_T_3 = c_value_1 + 4'h1; // @[Counter.scala 77:24]
+  wire  _romReqReg_T = busCrossBar_io_slaveFace_in_0_ready & busCrossBar_io_slaveFace_in_0_valid; // @[Decoupled.scala 51:35]
+  reg [2:0] romReqReg_opcode; // @[Reg.scala 19:16]
+  reg [31:0] romReqReg_address; // @[Reg.scala 19:16]
+  reg [31:0] romReqReg_data; // @[Reg.scala 19:16]
+  wire [2:0] _GEN_0 = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_opcode : romReqReg_opcode; // @[Reg.scala 19:16 20:{18,22}]
+  reg  romBusy; // @[Reg.scala 35:20]
+  wire  _GEN_8 = _romReqReg_T | romBusy; // @[Reg.scala 36:18 35:20 36:22]
+  wire  _T = busCrossBar_io_slaveFace_out_0_ready & busCrossBar_io_slaveFace_out_0_valid; // @[Decoupled.scala 51:35]
+  wire [7:0] _busCrossBar_io_slaveFace_in_0_ready_T_1 = {busCrossBar_io_slaveFace_in_0_ready_prng_io_out_7,
+    busCrossBar_io_slaveFace_in_0_ready_prng_io_out_6,busCrossBar_io_slaveFace_in_0_ready_prng_io_out_5,
+    busCrossBar_io_slaveFace_in_0_ready_prng_io_out_4,busCrossBar_io_slaveFace_in_0_ready_prng_io_out_3,
+    busCrossBar_io_slaveFace_in_0_ready_prng_io_out_2,busCrossBar_io_slaveFace_in_0_ready_prng_io_out_1,
+    busCrossBar_io_slaveFace_in_0_ready_prng_io_out_0}; // @[PRNG.scala 95:17]
+  wire  _ramReqReg_T = busCrossBar_io_slaveFace_in_1_ready & busCrossBar_io_slaveFace_in_1_valid; // @[Decoupled.scala 51:35]
+  reg [2:0] ramReqReg_opcode; // @[Reg.scala 19:16]
+  reg [31:0] ramReqReg_address; // @[Reg.scala 19:16]
+  reg [3:0] ramReqReg_mask; // @[Reg.scala 19:16]
+  reg [31:0] ramReqReg_data; // @[Reg.scala 19:16]
+  wire [2:0] _GEN_10 = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_opcode : ramReqReg_opcode; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _GEN_14 = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_address : ramReqReg_address; // @[Reg.scala 19:16 20:{18,22}]
+  reg  ramBusy; // @[Reg.scala 35:20]
+  wire  _GEN_18 = _ramReqReg_T | ramBusy; // @[Reg.scala 36:18 35:20 36:22]
+  wire  _T_1 = busCrossBar_io_slaveFace_out_1_ready & busCrossBar_io_slaveFace_out_1_valid; // @[Decoupled.scala 51:35]
+  wire [7:0] _busCrossBar_io_slaveFace_in_1_ready_T_1 = {busCrossBar_io_slaveFace_in_1_ready_prng_io_out_7,
+    busCrossBar_io_slaveFace_in_1_ready_prng_io_out_6,busCrossBar_io_slaveFace_in_1_ready_prng_io_out_5,
+    busCrossBar_io_slaveFace_in_1_ready_prng_io_out_4,busCrossBar_io_slaveFace_in_1_ready_prng_io_out_3,
+    busCrossBar_io_slaveFace_in_1_ready_prng_io_out_2,busCrossBar_io_slaveFace_in_1_ready_prng_io_out_1,
+    busCrossBar_io_slaveFace_in_1_ready_prng_io_out_0}; // @[PRNG.scala 95:17]
   Fetch ife ( // @[Core.scala 37:21]
     .clock(ife_clock),
     .reset(ife_reset),
@@ -383,7 +450,10 @@ module Core(
     .io_out_bits_instState_commit(ife_io_out_bits_instState_commit),
     .io_out_bits_instState_pc(ife_io_out_bits_instState_pc),
     .io_out_bits_instState_inst(ife_io_out_bits_instState_inst),
+    .io_rom_req_ready(ife_io_rom_req_ready),
+    .io_rom_req_valid(ife_io_rom_req_valid),
     .io_rom_req_bits_address(ife_io_rom_req_bits_address),
+    .io_rom_resp_ready(ife_io_rom_resp_ready),
     .io_rom_resp_valid(ife_io_rom_resp_valid),
     .io_rom_resp_bits_data(ife_io_rom_resp_bits_data),
     .io_trapVec(ife_io_trapVec),
@@ -522,6 +592,7 @@ module Core(
     .io_out_bits_instState_commit(mem_io_out_bits_instState_commit),
     .io_out_bits_instState_pc(mem_io_out_bits_instState_pc),
     .io_out_bits_instState_inst(mem_io_out_bits_instState_inst),
+    .io_ram_req_ready(mem_io_ram_req_ready),
     .io_ram_req_valid(mem_io_ram_req_valid),
     .io_ram_req_bits_opcode(mem_io_ram_req_bits_opcode),
     .io_ram_req_bits_address(mem_io_ram_req_bits_address),
@@ -666,8 +737,13 @@ module Core(
     .io_mepc(csrFile_io_mepc),
     .io_trapVec(csrFile_io_trapVec)
   );
-  BusCrossBar busCrossBar ( // @[Core.scala 115:29]
+  TLXbar busCrossBar ( // @[Core.scala 116:29]
+    .clock(busCrossBar_clock),
+    .reset(busCrossBar_reset),
+    .io_masterFace_in_0_ready(busCrossBar_io_masterFace_in_0_ready),
+    .io_masterFace_in_0_valid(busCrossBar_io_masterFace_in_0_valid),
     .io_masterFace_in_0_bits_address(busCrossBar_io_masterFace_in_0_bits_address),
+    .io_masterFace_in_1_ready(busCrossBar_io_masterFace_in_1_ready),
     .io_masterFace_in_1_valid(busCrossBar_io_masterFace_in_1_valid),
     .io_masterFace_in_1_bits_opcode(busCrossBar_io_masterFace_in_1_bits_opcode),
     .io_masterFace_in_1_bits_address(busCrossBar_io_masterFace_in_1_bits_address),
@@ -677,18 +753,27 @@ module Core(
     .io_masterFace_out_0_bits_data(busCrossBar_io_masterFace_out_0_bits_data),
     .io_masterFace_out_1_valid(busCrossBar_io_masterFace_out_1_valid),
     .io_masterFace_out_1_bits_data(busCrossBar_io_masterFace_out_1_bits_data),
+    .io_masterFace_cs_0(busCrossBar_io_masterFace_cs_0),
+    .io_masterFace_cs_1(busCrossBar_io_masterFace_cs_1),
+    .io_slaveFace_in_0_ready(busCrossBar_io_slaveFace_in_0_ready),
+    .io_slaveFace_in_0_valid(busCrossBar_io_slaveFace_in_0_valid),
+    .io_slaveFace_in_0_bits_opcode(busCrossBar_io_slaveFace_in_0_bits_opcode),
     .io_slaveFace_in_0_bits_address(busCrossBar_io_slaveFace_in_0_bits_address),
+    .io_slaveFace_in_0_bits_data(busCrossBar_io_slaveFace_in_0_bits_data),
+    .io_slaveFace_in_1_ready(busCrossBar_io_slaveFace_in_1_ready),
     .io_slaveFace_in_1_valid(busCrossBar_io_slaveFace_in_1_valid),
     .io_slaveFace_in_1_bits_opcode(busCrossBar_io_slaveFace_in_1_bits_opcode),
     .io_slaveFace_in_1_bits_address(busCrossBar_io_slaveFace_in_1_bits_address),
     .io_slaveFace_in_1_bits_mask(busCrossBar_io_slaveFace_in_1_bits_mask),
     .io_slaveFace_in_1_bits_data(busCrossBar_io_slaveFace_in_1_bits_data),
+    .io_slaveFace_out_0_ready(busCrossBar_io_slaveFace_out_0_ready),
     .io_slaveFace_out_0_valid(busCrossBar_io_slaveFace_out_0_valid),
     .io_slaveFace_out_0_bits_data(busCrossBar_io_slaveFace_out_0_bits_data),
+    .io_slaveFace_out_1_ready(busCrossBar_io_slaveFace_out_1_ready),
     .io_slaveFace_out_1_valid(busCrossBar_io_slaveFace_out_1_valid),
     .io_slaveFace_out_1_bits_data(busCrossBar_io_slaveFace_out_1_bits_data)
   );
-  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) rom ( // @[Core.scala 125:21]
+  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) rom ( // @[Core.scala 167:21]
     .clock(rom_clock),
     .reset(rom_reset),
     .wen(rom_wen),
@@ -698,7 +783,19 @@ module Core(
     .raddr(rom_raddr),
     .rdata(rom_rdata)
   );
-  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) ram ( // @[Core.scala 145:21]
+  MaxPeriodFibonacciLFSR busCrossBar_io_slaveFace_in_0_ready_prng ( // @[PRNG.scala 91:22]
+    .clock(busCrossBar_io_slaveFace_in_0_ready_prng_clock),
+    .reset(busCrossBar_io_slaveFace_in_0_ready_prng_reset),
+    .io_out_0(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_0),
+    .io_out_1(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_1),
+    .io_out_2(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_2),
+    .io_out_3(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_3),
+    .io_out_4(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_4),
+    .io_out_5(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_5),
+    .io_out_6(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_6),
+    .io_out_7(busCrossBar_io_slaveFace_in_0_ready_prng_io_out_7)
+  );
+  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) ram ( // @[Core.scala 195:21]
     .clock(ram_clock),
     .reset(ram_reset),
     .wen(ram_wen),
@@ -707,6 +804,18 @@ module Core(
     .wmask(ram_wmask),
     .raddr(ram_raddr),
     .rdata(ram_rdata)
+  );
+  MaxPeriodFibonacciLFSR busCrossBar_io_slaveFace_in_1_ready_prng ( // @[PRNG.scala 91:22]
+    .clock(busCrossBar_io_slaveFace_in_1_ready_prng_clock),
+    .reset(busCrossBar_io_slaveFace_in_1_ready_prng_reset),
+    .io_out_0(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_0),
+    .io_out_1(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_1),
+    .io_out_2(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_2),
+    .io_out_3(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_3),
+    .io_out_4(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_4),
+    .io_out_5(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_5),
+    .io_out_6(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_6),
+    .io_out_7(busCrossBar_io_slaveFace_in_1_ready_prng_io_out_7)
   );
   assign io_out_state_intRegState_regState_0 = regFile_io_state_regState_0; // @[Core.scala 112:30]
   assign io_out_state_intRegState_regState_1 = regFile_io_state_regState_1; // @[Core.scala 112:30]
@@ -749,8 +858,9 @@ module Core(
   assign ife_io_in_execute_bits_brTaken = exe_io_out_fetch_bits_brTaken; // @[Core.scala 52:23]
   assign ife_io_in_execute_bits_targetAddr = exe_io_out_fetch_bits_targetAddr; // @[Core.scala 52:23]
   assign ife_io_out_ready = dec_io_in_ready; // @[Core.scala 46:15]
-  assign ife_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 119:21]
-  assign ife_io_rom_resp_bits_data = busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 119:21]
+  assign ife_io_rom_req_ready = busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 120:37]
+  assign ife_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 121:21]
+  assign ife_io_rom_resp_bits_data = busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 121:21]
   assign ife_io_trapVec = csrFile_io_trapVec; // @[Core.scala 106:13 33:23]
   assign ife_io_mepc = csrFile_io_mepc; // @[Core.scala 107:10 34:20]
   assign ife_io_excp_valid = mem_io_excp_valid; // @[Core.scala 58:17]
@@ -817,8 +927,9 @@ module Core(
   assign mem_io_in_bits_instState_pc = exe_io_out_memory_bits_instState_pc; // @[Core.scala 56:15]
   assign mem_io_in_bits_instState_inst = exe_io_out_memory_bits_instState_inst; // @[Core.scala 56:15]
   assign mem_io_out_ready = wb_io_in_ready; // @[Core.scala 62:14]
-  assign mem_io_ram_resp_valid = busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 122:21]
-  assign mem_io_ram_resp_bits_data = busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 122:21]
+  assign mem_io_ram_req_ready = busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 123:37]
+  assign mem_io_ram_resp_valid = busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 124:21]
+  assign mem_io_ram_resp_bits_data = busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 124:21]
   assign mem_io_ctrl_flush = pipelineCtrl_io_out_memory_flush; // @[Core.scala 74:17]
   assign mem_io_csrBusy = csrFile_io_busy; // @[Core.scala 104:20]
   assign mem_io_csrMode = csrFile_io_mode; // @[Core.scala 105:20]
@@ -873,48 +984,78 @@ module Core(
   assign csrFile_io_except_bits_excCause = mem_io_excp_bits_excCause; // @[Core.scala 101:23]
   assign csrFile_io_except_bits_excPc = mem_io_excp_bits_excPc; // @[Core.scala 101:23]
   assign csrFile_io_except_bits_excValue = 32'h0; // @[Core.scala 101:23]
-  assign busCrossBar_io_masterFace_in_0_bits_address = ife_io_rom_req_bits_address; // @[Core.scala 118:37]
-  assign busCrossBar_io_masterFace_in_1_valid = mem_io_ram_req_valid; // @[Core.scala 121:37]
-  assign busCrossBar_io_masterFace_in_1_bits_opcode = mem_io_ram_req_bits_opcode; // @[Core.scala 121:37]
-  assign busCrossBar_io_masterFace_in_1_bits_address = mem_io_ram_req_bits_address; // @[Core.scala 121:37]
-  assign busCrossBar_io_masterFace_in_1_bits_mask = mem_io_ram_req_bits_mask; // @[Core.scala 121:37]
-  assign busCrossBar_io_masterFace_in_1_bits_data = mem_io_ram_req_bits_data; // @[Core.scala 121:37]
-  assign busCrossBar_io_slaveFace_out_0_valid = c_value < 4'h7; // @[Core.scala 140:34]
-  assign busCrossBar_io_slaveFace_out_0_bits_data = rom_rdata; // @[Core.scala 138:23]
-  assign busCrossBar_io_slaveFace_out_1_valid = c_value_1 > 4'h4; // @[Core.scala 160:35]
-  assign busCrossBar_io_slaveFace_out_1_bits_data = ram_rdata; // @[Core.scala 158:23]
-  assign rom_clock = clock; // @[Core.scala 126:18]
-  assign rom_reset = reset; // @[Core.scala 127:18]
-  assign rom_wen = 1'h0; // @[Core.scala 132:32]
-  assign rom_waddr = busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 135:18]
-  assign rom_wdata = 32'h0; // @[Core.scala 134:18]
-  assign rom_wmask = 4'hf; // @[Core.scala 133:18]
-  assign rom_raddr = busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 136:18]
-  assign ram_clock = clock; // @[Core.scala 146:18]
-  assign ram_reset = reset; // @[Core.scala 147:18]
-  assign ram_wen = busCrossBar_io_slaveFace_in_1_valid & busCrossBar_io_slaveFace_in_1_bits_opcode[1]; // @[Core.scala 152:32]
-  assign ram_waddr = busCrossBar_io_slaveFace_in_1_bits_address - 32'h2000; // @[Core.scala 155:41]
-  assign ram_wdata = busCrossBar_io_slaveFace_in_1_bits_data; // @[Core.scala 154:18]
-  assign ram_wmask = busCrossBar_io_slaveFace_in_1_bits_mask; // @[Core.scala 153:18]
-  assign ram_raddr = busCrossBar_io_slaveFace_in_1_bits_address - 32'h2000; // @[Core.scala 156:41]
+  assign busCrossBar_clock = clock;
+  assign busCrossBar_reset = reset;
+  assign busCrossBar_io_masterFace_in_0_valid = ife_io_rom_req_valid; // @[Core.scala 120:37]
+  assign busCrossBar_io_masterFace_in_0_bits_address = ife_io_rom_req_bits_address; // @[Core.scala 120:37]
+  assign busCrossBar_io_masterFace_in_1_valid = mem_io_ram_req_valid; // @[Core.scala 123:37]
+  assign busCrossBar_io_masterFace_in_1_bits_opcode = mem_io_ram_req_bits_opcode; // @[Core.scala 123:37]
+  assign busCrossBar_io_masterFace_in_1_bits_address = mem_io_ram_req_bits_address; // @[Core.scala 123:37]
+  assign busCrossBar_io_masterFace_in_1_bits_mask = mem_io_ram_req_bits_mask; // @[Core.scala 123:37]
+  assign busCrossBar_io_masterFace_in_1_bits_data = mem_io_ram_req_bits_data; // @[Core.scala 123:37]
+  assign busCrossBar_io_slaveFace_in_0_ready = _busCrossBar_io_slaveFace_in_0_ready_T_1[5]; // @[Core.scala 193:28]
+  assign busCrossBar_io_slaveFace_in_1_ready = _busCrossBar_io_slaveFace_in_1_ready_T_1[0]; // @[Core.scala 219:28]
+  assign busCrossBar_io_slaveFace_out_0_valid = romBusy; // @[Core.scala 190:19]
+  assign busCrossBar_io_slaveFace_out_0_bits_data = rom_rdata; // @[Core.scala 189:23]
+  assign busCrossBar_io_slaveFace_out_1_valid = ramBusy; // @[Core.scala 216:19]
+  assign busCrossBar_io_slaveFace_out_1_bits_data = ram_rdata; // @[Core.scala 215:23]
+  assign rom_clock = clock; // @[Core.scala 168:18]
+  assign rom_reset = reset; // @[Core.scala 169:18]
+  assign rom_wen = _romReqReg_T & _GEN_0[1]; // @[Core.scala 183:33]
+  assign rom_waddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 175:24]
+  assign rom_wdata = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_data : romReqReg_data; // @[Core.scala 175:24]
+  assign rom_wmask = 4'hf; // @[Core.scala 184:18]
+  assign rom_raddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 175:24]
+  assign busCrossBar_io_slaveFace_in_0_ready_prng_clock = clock;
+  assign busCrossBar_io_slaveFace_in_0_ready_prng_reset = reset;
+  assign ram_clock = clock; // @[Core.scala 196:18]
+  assign ram_reset = reset; // @[Core.scala 197:18]
+  assign ram_wen = _ramReqReg_T & _GEN_10[1]; // @[Core.scala 209:31]
+  assign ram_waddr = _GEN_14 - 32'h2000; // @[Core.scala 212:39]
+  assign ram_wdata = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_data : ramReqReg_data; // @[Core.scala 203:24]
+  assign ram_wmask = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_mask : ramReqReg_mask; // @[Core.scala 203:24]
+  assign ram_raddr = _GEN_14 - 32'h2000; // @[Core.scala 213:39]
+  assign busCrossBar_io_slaveFace_in_1_ready_prng_clock = clock;
+  assign busCrossBar_io_slaveFace_in_1_ready_prng_reset = reset;
   always @(posedge clock) begin
     ife_io_in_start_REG <= io_in_start; // @[Core.scala 38:31]
     io_out_state_instState_REG_commit <= wb_io_instState_commit; // @[Core.scala 111:38]
     io_out_state_instState_REG_pc <= wb_io_instState_pc; // @[Core.scala 111:38]
     io_out_state_instState_REG_inst <= wb_io_instState_inst; // @[Core.scala 111:38]
-    if (reset) begin // @[Counter.scala 61:40]
-      c_value <= 4'h0; // @[Counter.scala 61:40]
-    end else if (wrap_wrap) begin // @[Counter.scala 87:20]
-      c_value <= 4'h0; // @[Counter.scala 87:28]
-    end else begin
-      c_value <= _wrap_value_T_1; // @[Counter.scala 77:15]
+    if (_romReqReg_T) begin // @[Reg.scala 20:18]
+      romReqReg_opcode <= busCrossBar_io_slaveFace_in_0_bits_opcode; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[Counter.scala 61:40]
-      c_value_1 <= 4'h0; // @[Counter.scala 61:40]
-    end else if (wrap_wrap_1) begin // @[Counter.scala 87:20]
-      c_value_1 <= 4'h0; // @[Counter.scala 87:28]
+    if (_romReqReg_T) begin // @[Reg.scala 20:18]
+      romReqReg_address <= busCrossBar_io_slaveFace_in_0_bits_address; // @[Reg.scala 20:22]
+    end
+    if (_romReqReg_T) begin // @[Reg.scala 20:18]
+      romReqReg_data <= busCrossBar_io_slaveFace_in_0_bits_data; // @[Reg.scala 20:22]
+    end
+    if (reset) begin // @[Reg.scala 35:20]
+      romBusy <= 1'h0; // @[Reg.scala 35:20]
+    end else if (_T) begin // @[Core.scala 178:24]
+      romBusy <= 1'h0; // @[Core.scala 179:17]
     end else begin
-      c_value_1 <= _wrap_value_T_3; // @[Counter.scala 77:15]
+      romBusy <= _GEN_8;
+    end
+    if (_ramReqReg_T) begin // @[Reg.scala 20:18]
+      ramReqReg_opcode <= busCrossBar_io_slaveFace_in_1_bits_opcode; // @[Reg.scala 20:22]
+    end
+    if (_ramReqReg_T) begin // @[Reg.scala 20:18]
+      ramReqReg_address <= busCrossBar_io_slaveFace_in_1_bits_address; // @[Reg.scala 20:22]
+    end
+    if (_ramReqReg_T) begin // @[Reg.scala 20:18]
+      ramReqReg_mask <= busCrossBar_io_slaveFace_in_1_bits_mask; // @[Reg.scala 20:22]
+    end
+    if (_ramReqReg_T) begin // @[Reg.scala 20:18]
+      ramReqReg_data <= busCrossBar_io_slaveFace_in_1_bits_data; // @[Reg.scala 20:22]
+    end
+    if (reset) begin // @[Reg.scala 35:20]
+      ramBusy <= 1'h0; // @[Reg.scala 35:20]
+    end else if (_T_1) begin // @[Core.scala 205:24]
+      ramBusy <= 1'h0; // @[Core.scala 206:17]
+    end else begin
+      ramBusy <= _GEN_18;
     end
   end
 // Register and memory initialization
@@ -962,9 +1103,23 @@ initial begin
   _RAND_3 = {1{`RANDOM}};
   io_out_state_instState_REG_inst = _RAND_3[31:0];
   _RAND_4 = {1{`RANDOM}};
-  c_value = _RAND_4[3:0];
+  romReqReg_opcode = _RAND_4[2:0];
   _RAND_5 = {1{`RANDOM}};
-  c_value_1 = _RAND_5[3:0];
+  romReqReg_address = _RAND_5[31:0];
+  _RAND_6 = {1{`RANDOM}};
+  romReqReg_data = _RAND_6[31:0];
+  _RAND_7 = {1{`RANDOM}};
+  romBusy = _RAND_7[0:0];
+  _RAND_8 = {1{`RANDOM}};
+  ramReqReg_opcode = _RAND_8[2:0];
+  _RAND_9 = {1{`RANDOM}};
+  ramReqReg_address = _RAND_9[31:0];
+  _RAND_10 = {1{`RANDOM}};
+  ramReqReg_mask = _RAND_10[3:0];
+  _RAND_11 = {1{`RANDOM}};
+  ramReqReg_data = _RAND_11[31:0];
+  _RAND_12 = {1{`RANDOM}};
+  ramBusy = _RAND_12[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

@@ -12,6 +12,7 @@ import mycpu.common.consts.ExceptCause._
 import mycpu.common.consts.ExceptType._
 import mycpu.common.consts.CSR._
 import mycpu.common.consts.CsrOp
+import mycpu.common.consts.LsuOp
 
 class MemHazardBundle()(implicit val p: Parameters) extends MyBundle{
     val rd = UInt(5.W)
@@ -20,19 +21,18 @@ class MemHazardBundle()(implicit val p: Parameters) extends MyBundle{
 }
 
 class MemOut()(implicit val p: Parameters) extends MyBundle{
-    val resultSrc = UInt(2.W)
-    val regWrEn = Bool()
-    val aluOut = UInt(xlen.W)
-    val pcNext4 = UInt(xlen.W)
-
+    val resultSrc    = UInt(2.W)
+    val regWrEn      = Bool()
+    val aluOut       = UInt(xlen.W)
+    val pcNext4      = UInt(xlen.W)
     
-    val csrOp = UInt(CsrOp.CSR_OP_WIDTH.W)
-    val csrWrEn = Bool()
-    val csrRdData = UInt(xlen.W)
-    val csrWrData = UInt(xlen.W)
-    val csrAddr = UInt(CSR_ADDR_WIDTH.W)
+    val csrOp        = UInt(CsrOp.CSR_OP_WIDTH.W)
+    val csrWrEn      = Bool()
+    val csrRdData    = UInt(xlen.W)
+    val csrWrData    = UInt(xlen.W)
+    val csrAddr      = UInt(CSR_ADDR_WIDTH.W)
 
-    val instState = new InstState
+    val instState    = new InstState
 }
 
 class MemIO()(implicit val p: Parameters) extends MyBundle{
@@ -54,7 +54,13 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
 class Mem()(implicit val p: Parameters) extends MyModule{
     val io = IO(new MemIO)
 
-    val stall = (io.ctrl.stall && io.excp.valid) || !io.out.ready
+    val hasTrap = WireInit(false.B)
+    val ramReady = WireInit(false.B)
+    val needRam = WireInit(false.B)
+    dontTouch(ramReady)
+    // dontTouch(needRam)
+    // val stall = (io.ctrl.stall && io.excp.valid) || !io.out.ready
+    val stall = io.ctrl.stall || !io.out.ready || (!ramReady && needRam)
     val flush = io.ctrl.flush
 
     io.in.ready := !stall
@@ -68,6 +74,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
+    needRam := stageReg.lsuOp =/= LsuOp.LSU_NOP && stageReg.lsuOp =/= LsuOp.LSU_FENC
 
     // exception handle
     val illgSret  = stageReg.excType === EXC_SRET && io.csrMode === CSR_MODE_U
@@ -81,7 +88,8 @@ class Mem()(implicit val p: Parameters) extends MyModule{
                     stageReg.excType === EXC_EBRK ||
                     stageReg.excType === EXC_SRET ||
                     stageReg.excType === EXC_MRET
-    val hasTrap = (instIllg || excOther) && stageReg.instState.inst =/= 0.U
+    // val hasTrap = (instIllg || excOther) && stageReg.instState.inst =/= 0.U
+    hasTrap := (instIllg || excOther) && stageReg.instState.inst =/= 0.U
                 
     val cause = MuxLookup(stageReg.excType, 0.U, Seq(
         EXC_ECALL ->    Mux(io.csrMode === CSR_MODE_U, EXC_U_ECALL,
@@ -90,17 +98,18 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     ))
     io.excp.bits.excCause := Mux(stageReg.csrWrEn & !stageReg.csrValid, 
                                 EXC_ILL_INST, cause)
-    io.excp.valid := !io.csrBusy && hasTrap
-    io.excp.bits.excPc := stageReg.instState.pc
-    io.excp.bits.excValue := DontCare
-    io.excp.bits.isMret := stageReg.excType === EXC_MRET
-    io.excp.bits.isSret := stageReg.excType === EXC_SRET
+    // io.excp.valid := !io.csrBusy && hasTrap 
+    io.excp.valid           := !io.csrBusy && hasTrap && !stall 
+    io.excp.bits.excPc      := stageReg.instState.pc
+    io.excp.bits.excValue   := DontCare
+    io.excp.bits.isMret     := stageReg.excType === EXC_MRET
+    io.excp.bits.isSret     := stageReg.excType === EXC_SRET
 
-    io.out.bits.csrOp := stageReg.csrOp
-    io.out.bits.csrWrEn := stageReg.csrWrEn
-    io.out.bits.csrRdData := stageReg.csrRdData
-    io.out.bits.csrWrData := stageReg.csrWrData
-    io.out.bits.csrAddr := stageReg.csrAddr
+    io.out.bits.csrOp       := stageReg.csrOp
+    io.out.bits.csrWrEn     := stageReg.csrWrEn
+    io.out.bits.csrRdData   := stageReg.csrRdData
+    io.out.bits.csrWrData   := stageReg.csrWrData
+    io.out.bits.csrAddr     := stageReg.csrAddr
 
 
     // data memory read
@@ -115,29 +124,31 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     val lsu = Module(new LSU())
     lsu.io <> DontCare
-    lsu.io.req.valid := !flush && !stall
-    lsu.io.req.bits.addr := stageReg.aluOut
-    lsu.io.req.bits.wdata := stageReg.data2
+    lsu.io.req.valid        := !flush // && !stall
+    lsu.io.req.bits.addr    := stageReg.aluOut
+    lsu.io.req.bits.wdata   := stageReg.data2
     lsu.io.req.bits.hasTrap := hasTrap
-    lsu.io.req.bits.lsuOp := stageReg.lsuOp
-    io.ramDataValid := lsu.io.resp.valid
-    io.ramData := lsu.io.resp.bits.rdata
+    lsu.io.req.bits.lsuOp   := stageReg.lsuOp
+    io.ramDataValid         := lsu.io.resp.valid
+    io.ramData              := lsu.io.resp.bits.rdata
 
     io.ram <> lsu.io.ram
+    ramReady := io.ram.req.ready
+    // needRam := io.ram.req.valid
 
-    io.out.bits.resultSrc := stageReg.resultSrc
-    io.out.bits.regWrEn := stageReg.regWrEn
-    io.out.bits.aluOut := stageReg.aluOut
-    io.out.bits.pcNext4 := stageReg.pcNext4
-    io.out.bits.instState <> stageReg.instState
+    io.out.bits.resultSrc   := stageReg.resultSrc
+    io.out.bits.regWrEn     := stageReg.regWrEn
+    io.out.bits.aluOut      := stageReg.aluOut
+    io.out.bits.pcNext4     := stageReg.pcNext4
+    io.out.bits.instState   <> stageReg.instState
 
     // hazard control
     val inst = stageReg.instState.inst
-    io.hazard.rd := InstField(inst, "rd")
+    io.hazard.rd      := InstField(inst, "rd")
     io.hazard.regWrEn := stageReg.regWrEn
-    io.hazard.rdVal :=  stageReg.aluOut
+    io.hazard.rdVal   :=  stageReg.aluOut
 
-    io.out.valid := !stall
+    io.out.valid      := !stall
 }
 
 object MemoryGenRTL extends App {

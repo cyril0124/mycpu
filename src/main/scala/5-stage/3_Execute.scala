@@ -166,12 +166,12 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     // and the subsequent instruction needs its(lw) result that is read from DataMemory.
     // we can judge by resultSrc. (resultSrc == "b00".U indicates that this is a load instructions)
     io.hazard.out.resultSrc := stageReg.resultSrc
-    io.hazard.out.rd := InstField(inst, "rd")
+    io.hazard.out.rd        := InstField(inst, "rd")
 
     // instruction state flow
     io.out.memory.bits.instState <> stageReg.instState
 
 
     io.out.memory.valid :=  !stall 
-    io.out.fetch.valid :=  !stall
+    io.out.fetch.valid  :=  !stall
 }

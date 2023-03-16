@@ -9,7 +9,7 @@ import mycpu.util._
 
 
 import mycpu.BusReq._
-import mycpu.BusMasterId._
+import mycpu.BusMaster._
 import dataclass.data
 
 
@@ -233,7 +233,7 @@ class DCache()(implicit val p: Parameters) extends MyModule {
         io.tlbus.req.bits.address := rwAddr
         io.tlbus.req.bits.opcode := Get
         io.tlbus.req.bits.size := (xlen / 8).U
-        io.tlbus.req.bits.source := ID_RAM
+        io.tlbus.req.bits.source := MASTER_1
         io.tlbus.req.bits.mask := "b1111".U
         io.tlbus.req.bits.corrupt := false.B
         when(io.tlbus.req.fire) {

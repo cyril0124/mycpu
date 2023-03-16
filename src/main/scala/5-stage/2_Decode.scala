@@ -86,11 +86,11 @@ class Decode()(implicit val p: Parameters) extends MyModule{
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
-    val inst = stageReg.instState.inst
-    val rs1 = InstField(inst, "rs1")
-    val rs2 = InstField(inst, "rs2")
-    val rd = InstField(inst,"rd")
-    val imm = Wire(UInt(xlen.W))
+    val inst      = stageReg.instState.inst
+    val rs1       = InstField(inst, "rs1")
+    val rs2       = InstField(inst, "rs2")
+    val rd        = InstField(inst,"rd")
+    val imm       = Wire(UInt(xlen.W))
     val rfRdData1 = WireInit(0.U(xlen.W))
     val rfRdData2 = WireInit(0.U(xlen.W))
     
@@ -132,10 +132,10 @@ class Decode()(implicit val p: Parameters) extends MyModule{
 
     
     // regfile read data
-    io.regfile.rs1 := rs1
-    io.regfile.rs2 := rs2
-    rfRdData1 := io.regfile.rdata1
-    rfRdData2 := io.regfile.rdata2
+    io.regfile.rs1  := rs1
+    io.regfile.rs2  := rs2
+    rfRdData1       := io.regfile.rdata1
+    rfRdData2       := io.regfile.rdata2
 
     val immGen = Module(new ImmGen())
     immGen.io.inst      := inst
@@ -169,7 +169,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.data2       := rfRdData2
     io.out.bits.imm         := imm
     io.out.bits.pcNext4     := stageReg.pcNext4
-    io.out.bits.instState <> stageReg.instState
+    io.out.bits.instState   <> stageReg.instState
 
     // hazard detection
     io.hazard.out.rs1 := rs1

@@ -8,6 +8,7 @@ import mycpu.common._
 import mycpu.util._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
+import BusMaster._
 
 object LsuDecode {
     // data width of load & store instructions
@@ -100,11 +101,11 @@ class LSU()(implicit val p: Parameters) extends MyModule {
 
     io.ram.req <> DontCare
     io.ram.req.bits.corrupt := true.B
-    io.ram.req.valid := !io.excp.storeUnalign && en //io.req.valid // && !io.excp.storeUnalign // wen && !io.excp.storeUnalign
-    io.ram.req.bits.address := s0_req.addr // - ramOffset
+    io.ram.req.valid := !io.excp.storeUnalign && s0_valid
+    io.ram.req.bits.address := s0_req.addr 
     io.ram.req.bits.data := s0_req.wdata << (offset << 3)
     io.ram.req.bits.opcode := Mux(wen, BusReq.PutFullData, BusReq.Get)
-    io.ram.req.bits.source := BusMasterId.ID_RAM
+    io.ram.req.bits.source := MASTER_1
     io.ram.req.bits.mask := MuxLookup(width, "b1111".U, Seq(
         LS_DATA_BYTE -> UIntToOH(s0_req.addr(blockOffsetBits-1, 0)),
         LS_DATA_HALF -> MuxLookup(s0_req.addr(blockOffsetBits-1, 0), "b0011".U, Seq(

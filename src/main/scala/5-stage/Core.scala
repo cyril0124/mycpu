@@ -8,8 +8,8 @@ import mycpu.common._
 import mycpu.util._
 
 import mycpu.BusReq._
-import mycpu.BusMasterId._
 import mycpu.csr.CsrFile
+import chisel3.util.random.LFSR
 
 class CoreState()(implicit val p: Parameters) extends MyBundle{
     val intRegState = new RegFileState
@@ -112,7 +112,9 @@ class Core()(implicit val p: Parameters) extends MyModule{
     io.out.state.intRegState <> regFile.io.state.getOrElse(DontCare)
 
     // ----------------soc part(temp)-------------------------
-    val busCrossBar = Module(new BusCrossBar())
+    // val busCrossBar = Module(new BusXbar_1())
+    val busCrossBar = Module(new TLXbar())
+//    val busCrossBar = Module(new BusCrossBar())
     busCrossBar.io <> DontCare
 
     busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
@@ -122,6 +124,46 @@ class Core()(implicit val p: Parameters) extends MyModule{
     mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
 
 
+    // val rom = Module(new ROM())
+    // rom.io.clock := clock
+    // rom.io.reset := reset
+
+    // val romReq = busCrossBar.io.slaveFace.in(0)
+    // val romResp = busCrossBar.io.slaveFace.out(0)
+
+    // rom.io.wen := romReq.valid && isPut(romReq.bits.opcode) // && busCrossBar.io.slaveFace.cs(0)
+    // rom.io.wmask := "b1111".U
+    // rom.io.wdata := romReq.bits.data
+    // rom.io.waddr := romReq.bits.address
+    // rom.io.raddr := romReq.bits.address // read
+    // romReq.ready := true.B
+    // romResp.bits.data := rom.io.rdata
+    // val mCounter = Counter(true.B, 10)
+    // romResp.valid := mCounter._1 < 2.U // true.B
+    // romResp.bits.source := 0.U // romReq.bits.source
+
+
+
+    // val ram = Module(new ROM())
+    // ram.io.clock := clock
+    // ram.io.reset := reset
+
+    // val ramReq = busCrossBar.io.slaveFace.in(1)
+    // val ramResp = busCrossBar.io.slaveFace.out(1)
+    
+    // ram.io.wen := ramReq.valid && isPut(ramReq.bits.opcode) // && busCrossBar.io.slaveFace.cs(1)
+    // ram.io.wmask := ramReq.bits.mask
+    // ram.io.wdata := ramReq.bits.data
+    // ram.io.waddr := ramReq.bits.address - memRamBegin.U
+    // ram.io.raddr := ramReq.bits.address - memRamBegin.U 
+    // ramReq.ready := true.B
+    // ramResp.bits.data := ram.io.rdata
+    // val mCounter2 = Counter(true.B,12) 
+    // ramResp.valid := mCounter2._1 > 5.U // true.B
+    // ramResp.bits.source := ramReq.bits.source // 1.U // ramReq.bits.source
+
+
+    // -------------------------------------------------------------
     val rom = Module(new ROM())
     rom.io.clock := clock
     rom.io.reset := reset
@@ -129,18 +171,25 @@ class Core()(implicit val p: Parameters) extends MyModule{
     val romReq = busCrossBar.io.slaveFace.in(0)
     val romResp = busCrossBar.io.slaveFace.out(0)
 
-    rom.io.wen := romReq.valid && isPut(romReq.bits.opcode) 
+    val romReqReg = RegEnable(romReq.bits, romReq.fire)
+    val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
+    val romBusy = RegEnable(true.B, false.B, romReq.fire)
+
+    when(romResp.fire) {
+        romBusy := false.B
+    }
+
+    rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
     rom.io.wmask := "b1111".U
-    rom.io.wdata := romReq.bits.data
-    rom.io.waddr := romReq.bits.address
-    rom.io.raddr := romReq.bits.address // read
-    romReq.ready := true.B
+    rom.io.wdata := romReqVal.data
+    rom.io.waddr := romReqVal.address
+    rom.io.raddr := romReqVal.address 
+    romReq.ready := !romBusy
     romResp.bits.data := rom.io.rdata
-    val mCounter = Counter(true.B, 10)
-    romResp.valid := mCounter._1 < 7.U // true.B
-    romResp.bits.source := romReq.bits.source
+    romResp.valid := romBusy 
+    romResp.bits.source := romReqVal.source
 
-
+    romReq.ready := LFSR(8)(5) // ramdom delay test
 
     val ram = Module(new ROM())
     ram.io.clock := clock
@@ -149,17 +198,25 @@ class Core()(implicit val p: Parameters) extends MyModule{
     val ramReq = busCrossBar.io.slaveFace.in(1)
     val ramResp = busCrossBar.io.slaveFace.out(1)
     
-    ram.io.wen := ramReq.valid && isPut(ramReq.bits.opcode) 
-    ram.io.wmask := ramReq.bits.mask
-    ram.io.wdata := ramReq.bits.data
-    ram.io.waddr := ramReq.bits.address - memRamBegin.U
-    ram.io.raddr := ramReq.bits.address - memRamBegin.U 
-    ramReq.ready := true.B
+    val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
+    val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
+    val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
+    when(ramResp.fire) {
+        ramBusy := false.B
+    }
+
+    ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
+    ram.io.wmask := ramReqVal.mask
+    ram.io.wdata := ramReqVal.data
+    ram.io.waddr := ramReqVal.address - memRamBegin.U
+    ram.io.raddr := ramReqVal.address - memRamBegin.U 
+    ramReq.ready := !ramBusy 
     ramResp.bits.data := ram.io.rdata
-    val mCounter2 = Counter(true.B,12) 
-    ramResp.valid := mCounter2._1 > 4.U // true.B
-    ramResp.bits.source := ramReq.bits.source
-    
+    ramResp.valid := ramBusy 
+    ramResp.bits.source := ramReqVal.source 
+
+    ramReq.ready := LFSR(8)(0) // ramdom delay test
+
 }
 
 object CoreGenRTL extends App {

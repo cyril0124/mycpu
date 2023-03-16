@@ -8,7 +8,7 @@ import mycpu.common._
 import mycpu.util._
 
 import mycpu.BusReq._
-import mycpu.BusMasterId._
+import mycpu.BusMaster._
 import mycpu.csr.ExceptionIO
 
 class FetchOut()(implicit val p: Parameters) extends MyBundle{
@@ -35,10 +35,10 @@ class FetchIO()(implicit val p: Parameters) extends MyBundle{
 class Fetch()(implicit val p: Parameters) extends MyModule{
     val io = IO(new FetchIO)
 
-    val romValid        = WireInit(true.B)
-    val romValidReg     = RegNext(io.rom.resp.valid)
 
-    val stall = io.ctrl.stall || !io.in.start || !romValidReg
+    val instValid = WireInit(false.B)
+
+    val stall = io.ctrl.stall || !io.in.start || !io.rom.req.ready || !instValid
     val flush = io.ctrl.flush
 
     // for pipeline stage, if one stage stall then all of the stage in front of the stall stage will stall too.
@@ -50,7 +50,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     val pcNext4         = pcReg + (ilen / 8).U
     val inst            = WireInit(0.U(ilen.W))
     val commit          = !stall && io.out.ready
-
+    
     // val instMem = Module(new ROM()) 
     // instMem.io <> DontCare
     // instMem.io.clock := clock
@@ -59,22 +59,28 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     // // instMem.io.raddr := pcReg 
     // inst := instMem.io.rdata
     
-    
+    val firstFire = RegEnable(false.B, true.B, io.rom.req.fire)
+    val preFetchInst = (firstFire && pc === resetPc.U) || (!firstFire && instValid)
+    dontTouch(preFetchInst)
+
     io.rom <> DontCare
     io.rom.req.bits <> DontCare
-    io.rom.req.valid := ~flush
+    io.rom.req.valid := ~flush && io.in.start && preFetchInst
     io.rom.req.bits.address := pc
-    // io.rom.req.bits.address := pcReg
     io.rom.req.bits.opcode := Get
-    io.rom.req.bits.source := ID_ROM
+    io.rom.req.bits.source := MASTER_0
     io.rom.resp.bits <> DontCare
-    io.rom.resp.ready := io.out.ready
-    inst := io.rom.resp.bits.data
-    romValid := io.rom.resp.valid
+    io.rom.resp.ready :=  true.B
+    inst := Mux(io.rom.resp.fire, io.rom.resp.bits.data, RegEnable(io.rom.resp.bits.data, io.rom.resp.fire))
+
+    val instValidReg     = RegEnable(true.B, io.rom.resp.fire)
+    when(io.rom.req.fire) { instValidReg := false.B}
+    instValid := Mux(io.rom.resp.fire, true.B, instValidReg)
 
     pcNext := Mux(io.excp.valid, Mux(io.excp.bits.isMret, io.mepc, io.trapVec),
                 Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4))
     pc := Mux(commit, pcNext, pcReg)
+    dontTouch(pc)
 
     when(commit) { pcReg := pcNext }
 
