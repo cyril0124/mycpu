@@ -1,11 +1,12 @@
 ### Project Specific stuff
 test_run_dir
 chisel_lib
-test_env/build
+test_env/build/*
 stack.info.*/
 ucli.key
 temp/
-ucli*
+*.key
+mill*
 ### XilinxISE template
 # intermediate build files
 *.bgn
