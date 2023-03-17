@@ -5,6 +5,7 @@ test_env/build
 stack.info.*/
 ucli.key
 temp/
+ucli*
 ### XilinxISE template
 # intermediate build files
 *.bgn

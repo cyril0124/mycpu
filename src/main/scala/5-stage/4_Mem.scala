@@ -40,8 +40,8 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
     val out = DecoupledIO(new MemOut)
     
     val ram = new TLMasterBusUL
-    val ramData = Output(UInt(xlen.W))
-    val ramDataValid = Output(Bool())
+    val lsuData = Output(UInt(xlen.W))
+    val lsuOK = Output(Bool())
 
     val hazard = Output(new MemHazardBundle)
     val ctrl = Input(new PipelineCtrlBundle)
@@ -58,8 +58,8 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     val ramReady = WireInit(false.B)
     val needRam = WireInit(false.B)
     dontTouch(ramReady)
-    // dontTouch(needRam)
-    // val stall = (io.ctrl.stall && io.excp.valid) || !io.out.ready
+    dontTouch(needRam)
+
     val stall = io.ctrl.stall || !io.out.ready || (!ramReady && needRam)
     val flush = io.ctrl.flush
 
@@ -84,21 +84,26 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     val instPage  = stageReg.excType === EXC_IPAGE
     val instIllg  = stageReg.excType === EXC_ILLEG ||
                     illgSret || illgMret || illgSpriv
-    val excOther = stageReg.excType === EXC_ECALL ||
+    val excOther  = stageReg.excType === EXC_ECALL ||
                     stageReg.excType === EXC_EBRK ||
                     stageReg.excType === EXC_SRET ||
                     stageReg.excType === EXC_MRET
-    // val hasTrap = (instIllg || excOther) && stageReg.instState.inst =/= 0.U
-    hasTrap := (instIllg || excOther) && stageReg.instState.inst =/= 0.U
+    hasTrap      := (instIllg || excOther) && stageReg.instState.inst =/= 0.U
                 
     val cause = MuxLookup(stageReg.excType, 0.U, Seq(
-        EXC_ECALL ->    Mux(io.csrMode === CSR_MODE_U, EXC_U_ECALL,
-                        Mux(io.csrMode === CSR_MODE_S, EXC_S_ECALL, EXC_M_ECALL)),
+        EXC_ECALL ->    Mux(io.csrMode === CSR_MODE_U, 
+                            EXC_U_ECALL,
+                            Mux(io.csrMode === CSR_MODE_S, 
+                                EXC_S_ECALL, 
+                                EXC_M_ECALL
+                            )
+                        ),
         EXC_EBRK  ->    EXC_BRK_POINT,
     ))
-    io.excp.bits.excCause := Mux(stageReg.csrWrEn & !stageReg.csrValid, 
-                                EXC_ILL_INST, cause)
-    // io.excp.valid := !io.csrBusy && hasTrap 
+    io.excp.bits.excCause   := Mux(stageReg.csrWrEn & !stageReg.csrValid, 
+                                    EXC_ILL_INST, 
+                                    cause
+                                )
     io.excp.valid           := !io.csrBusy && hasTrap && !stall 
     io.excp.bits.excPc      := stageReg.instState.pc
     io.excp.bits.excValue   := DontCare
@@ -124,17 +129,16 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     val lsu = Module(new LSU())
     lsu.io <> DontCare
-    lsu.io.req.valid        := !flush // && !stall
+    lsu.io.req.valid        := !flush
     lsu.io.req.bits.addr    := stageReg.aluOut
     lsu.io.req.bits.wdata   := stageReg.data2
     lsu.io.req.bits.hasTrap := hasTrap
     lsu.io.req.bits.lsuOp   := stageReg.lsuOp
-    io.ramDataValid         := lsu.io.resp.valid
-    io.ramData              := lsu.io.resp.bits.rdata
+    io.lsuOK                := lsu.io.resp.valid
+    io.lsuData              := lsu.io.resp.bits.rdata
 
     io.ram <> lsu.io.ram
     ramReady := io.ram.req.ready
-    // needRam := io.ram.req.valid
 
     io.out.bits.resultSrc   := stageReg.resultSrc
     io.out.bits.regWrEn     := stageReg.regWrEn
@@ -143,12 +147,12 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     io.out.bits.instState   <> stageReg.instState
 
     // hazard control
-    val inst = stageReg.instState.inst
-    io.hazard.rd      := InstField(inst, "rd")
-    io.hazard.regWrEn := stageReg.regWrEn
-    io.hazard.rdVal   :=  stageReg.aluOut
+    val inst                 = stageReg.instState.inst
+    io.hazard.rd            := InstField(inst, "rd")
+    io.hazard.regWrEn       := stageReg.regWrEn
+    io.hazard.rdVal         :=  stageReg.aluOut
 
-    io.out.valid      := !stall
+    io.out.valid            := !stall
 }
 
 object MemoryGenRTL extends App {

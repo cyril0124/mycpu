@@ -72,9 +72,10 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     val s0_reqReg = RegEnable(io.req.bits, io.req.fire)
     val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
     val offset = s0_req.addr(blockOffsetBits-1, 0)
-    dontTouch(offset)
+    val s1_ready  = RegInit(true.B)
     
     io.req.ready := !busy
+    busy := !s1_ready
 
     val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
         ListLookup(s0_req.lsuOp, default, table)
@@ -119,14 +120,19 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     ))
 
     // ---------------------stage1: Read back data---------------------
+    // val s1_ready  = RegInit(true.B)
     val s1_signed = Reg(Bool())
     val s1_width  = Reg(UInt(LS_DATA_WIDTH.W))
     val s1_offset = Reg(UInt(blockOffsetBits.W))
-    when(s0_valid) {
+    val s1_lsuOp  = Reg(UInt(LSU_OP_WIDTH.W))
+    when(s0_valid && s1_ready) {
         s1_signed := signed
         s1_offset := offset
         s1_width  := width
+        s1_lsuOp  := s0_req.lsuOp
+        s1_ready  := false.B
     }
+    when(!s0_valid) { s1_lsuOp := LSU_NOP }
 
     val s1_respReg = RegEnable(io.ram.resp.bits, io.ram.resp.fire)
     val s1_resp = Mux(io.ram.resp.fire, io.ram.resp.bits, s1_respReg)
@@ -140,6 +146,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
                     3.U -> Cat(Fill(24, 0.U), s1_resp.data(xlen-1, 24)),
                     // TODO: consider xlen=64
                 ))
+    dontTouch(ramRdData)
 
     io.resp.bits.rdata := MuxLookup(s1_width, ramRdData, Seq(
                             LS_DATA_BYTE -> Mux(s1_signed, SignExt(ramRdData(7,0).asSInt, xlen), ZeroExt(ramRdData(7,0),xlen)),
@@ -148,5 +155,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
                             // TODO: consider xlen=64 
                         ))
 
-    io.resp.valid := io.ram.resp.valid// true.B
+    // io.resp.valid := io.ram.resp.valid
+    io.resp.valid := (io.ram.resp.fire && s1_lsuOp =/= LSU_NOP && s1_lsuOp =/= LSU_FENC) || s1_lsuOp === LSU_NOP || s1_lsuOp === LSU_FENC
+    when(io.resp.valid) { s1_ready := true.B }
 }

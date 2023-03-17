@@ -16,97 +16,133 @@ module Queue(
   output [3:0]  io_deq_bits_mask,
   output [31:0] io_deq_bits_data
 );
+`ifdef RANDOMIZE_GARBAGE_ASSIGN
+  reg [31:0] _RAND_1;
+  reg [31:0] _RAND_3;
+  reg [31:0] _RAND_5;
+  reg [31:0] _RAND_7;
+  reg [31:0] _RAND_9;
+`endif // RANDOMIZE_GARBAGE_ASSIGN
 `ifdef RANDOMIZE_MEM_INIT
   reg [31:0] _RAND_0;
-  reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
-  reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
+  reg [31:0] _RAND_6;
+  reg [31:0] _RAND_8;
 `endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
-  reg [31:0] _RAND_5;
-  reg [31:0] _RAND_6;
-  reg [31:0] _RAND_7;
+  reg [31:0] _RAND_10;
+  reg [31:0] _RAND_11;
+  reg [31:0] _RAND_12;
 `endif // RANDOMIZE_REG_INIT
-  reg [2:0] ram_opcode [0:1]; // @[Decoupled.scala 273:95]
+  reg [2:0] ram_opcode [0:2]; // @[Decoupled.scala 273:95]
   wire  ram_opcode_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire  ram_opcode_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_opcode_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
   wire [2:0] ram_opcode_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
   wire [2:0] ram_opcode_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_opcode_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_opcode_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_opcode_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_opcode_MPORT_en; // @[Decoupled.scala 273:95]
-  reg  ram_source [0:1]; // @[Decoupled.scala 273:95]
+  reg  ram_source [0:2]; // @[Decoupled.scala 273:95]
   wire  ram_source_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire  ram_source_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_source_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_source_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
   wire  ram_source_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_source_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_source_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_source_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_source_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_address [0:1]; // @[Decoupled.scala 273:95]
+  reg [31:0] ram_address [0:2]; // @[Decoupled.scala 273:95]
   wire  ram_address_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire  ram_address_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_address_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
   wire [31:0] ram_address_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
   wire [31:0] ram_address_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_address_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_address_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_address_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_address_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [3:0] ram_mask [0:1]; // @[Decoupled.scala 273:95]
+  reg [3:0] ram_mask [0:2]; // @[Decoupled.scala 273:95]
   wire  ram_mask_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire  ram_mask_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_mask_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
   wire [3:0] ram_mask_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
   wire [3:0] ram_mask_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_mask_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_mask_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_mask_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_mask_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_data [0:1]; // @[Decoupled.scala 273:95]
+  reg [31:0] ram_data [0:2]; // @[Decoupled.scala 273:95]
   wire  ram_data_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire  ram_data_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_data_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
   wire [31:0] ram_data_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
   wire [31:0] ram_data_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_data_MPORT_addr; // @[Decoupled.scala 273:95]
+  wire [1:0] ram_data_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_data_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_data_MPORT_en; // @[Decoupled.scala 273:95]
-  reg  enq_ptr_value; // @[Counter.scala 61:40]
-  reg  deq_ptr_value; // @[Counter.scala 61:40]
+  reg [1:0] enq_ptr_value; // @[Counter.scala 61:40]
+  reg [1:0] deq_ptr_value; // @[Counter.scala 61:40]
   reg  maybe_full; // @[Decoupled.scala 276:27]
   wire  ptr_match = enq_ptr_value == deq_ptr_value; // @[Decoupled.scala 277:33]
   wire  empty = ptr_match & ~maybe_full; // @[Decoupled.scala 278:25]
   wire  full = ptr_match & maybe_full; // @[Decoupled.scala 279:24]
   wire  do_enq = io_enq_ready & io_enq_valid; // @[Decoupled.scala 51:35]
   wire  do_deq = io_deq_ready & io_deq_valid; // @[Decoupled.scala 51:35]
+  wire  wrap = enq_ptr_value == 2'h2; // @[Counter.scala 73:24]
+  wire [1:0] _value_T_1 = enq_ptr_value + 2'h1; // @[Counter.scala 77:24]
+  wire  wrap_1 = deq_ptr_value == 2'h2; // @[Counter.scala 73:24]
+  wire [1:0] _value_T_3 = deq_ptr_value + 2'h1; // @[Counter.scala 77:24]
   assign ram_opcode_io_deq_bits_MPORT_en = 1'h1;
   assign ram_opcode_io_deq_bits_MPORT_addr = deq_ptr_value;
+  `ifndef RANDOMIZE_GARBAGE_ASSIGN
   assign ram_opcode_io_deq_bits_MPORT_data = ram_opcode[ram_opcode_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `else
+  assign ram_opcode_io_deq_bits_MPORT_data = ram_opcode_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_1[2:0] :
+    ram_opcode[ram_opcode_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `endif // RANDOMIZE_GARBAGE_ASSIGN
   assign ram_opcode_MPORT_data = io_enq_bits_opcode;
   assign ram_opcode_MPORT_addr = enq_ptr_value;
   assign ram_opcode_MPORT_mask = 1'h1;
   assign ram_opcode_MPORT_en = io_enq_ready & io_enq_valid;
   assign ram_source_io_deq_bits_MPORT_en = 1'h1;
   assign ram_source_io_deq_bits_MPORT_addr = deq_ptr_value;
+  `ifndef RANDOMIZE_GARBAGE_ASSIGN
   assign ram_source_io_deq_bits_MPORT_data = ram_source[ram_source_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `else
+  assign ram_source_io_deq_bits_MPORT_data = ram_source_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_3[0:0] :
+    ram_source[ram_source_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `endif // RANDOMIZE_GARBAGE_ASSIGN
   assign ram_source_MPORT_data = io_enq_bits_source;
   assign ram_source_MPORT_addr = enq_ptr_value;
   assign ram_source_MPORT_mask = 1'h1;
   assign ram_source_MPORT_en = io_enq_ready & io_enq_valid;
   assign ram_address_io_deq_bits_MPORT_en = 1'h1;
   assign ram_address_io_deq_bits_MPORT_addr = deq_ptr_value;
+  `ifndef RANDOMIZE_GARBAGE_ASSIGN
   assign ram_address_io_deq_bits_MPORT_data = ram_address[ram_address_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `else
+  assign ram_address_io_deq_bits_MPORT_data = ram_address_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_5[31:0] :
+    ram_address[ram_address_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `endif // RANDOMIZE_GARBAGE_ASSIGN
   assign ram_address_MPORT_data = io_enq_bits_address;
   assign ram_address_MPORT_addr = enq_ptr_value;
   assign ram_address_MPORT_mask = 1'h1;
   assign ram_address_MPORT_en = io_enq_ready & io_enq_valid;
   assign ram_mask_io_deq_bits_MPORT_en = 1'h1;
   assign ram_mask_io_deq_bits_MPORT_addr = deq_ptr_value;
+  `ifndef RANDOMIZE_GARBAGE_ASSIGN
   assign ram_mask_io_deq_bits_MPORT_data = ram_mask[ram_mask_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `else
+  assign ram_mask_io_deq_bits_MPORT_data = ram_mask_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_7[3:0] :
+    ram_mask[ram_mask_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `endif // RANDOMIZE_GARBAGE_ASSIGN
   assign ram_mask_MPORT_data = io_enq_bits_mask;
   assign ram_mask_MPORT_addr = enq_ptr_value;
   assign ram_mask_MPORT_mask = 1'h1;
   assign ram_mask_MPORT_en = io_enq_ready & io_enq_valid;
   assign ram_data_io_deq_bits_MPORT_en = 1'h1;
   assign ram_data_io_deq_bits_MPORT_addr = deq_ptr_value;
+  `ifndef RANDOMIZE_GARBAGE_ASSIGN
   assign ram_data_io_deq_bits_MPORT_data = ram_data[ram_data_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `else
+  assign ram_data_io_deq_bits_MPORT_data = ram_data_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_9[31:0] :
+    ram_data[ram_data_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
+  `endif // RANDOMIZE_GARBAGE_ASSIGN
   assign ram_data_MPORT_data = io_enq_bits_data;
   assign ram_data_MPORT_addr = enq_ptr_value;
   assign ram_data_MPORT_mask = 1'h1;
@@ -135,14 +171,22 @@ module Queue(
       ram_data[ram_data_MPORT_addr] <= ram_data_MPORT_data; // @[Decoupled.scala 273:95]
     end
     if (reset) begin // @[Counter.scala 61:40]
-      enq_ptr_value <= 1'h0; // @[Counter.scala 61:40]
+      enq_ptr_value <= 2'h0; // @[Counter.scala 61:40]
     end else if (do_enq) begin // @[Decoupled.scala 286:16]
-      enq_ptr_value <= enq_ptr_value + 1'h1; // @[Counter.scala 77:15]
+      if (wrap) begin // @[Counter.scala 87:20]
+        enq_ptr_value <= 2'h0; // @[Counter.scala 87:28]
+      end else begin
+        enq_ptr_value <= _value_T_1; // @[Counter.scala 77:15]
+      end
     end
     if (reset) begin // @[Counter.scala 61:40]
-      deq_ptr_value <= 1'h0; // @[Counter.scala 61:40]
+      deq_ptr_value <= 2'h0; // @[Counter.scala 61:40]
     end else if (do_deq) begin // @[Decoupled.scala 290:16]
-      deq_ptr_value <= deq_ptr_value + 1'h1; // @[Counter.scala 77:15]
+      if (wrap_1) begin // @[Counter.scala 87:20]
+        deq_ptr_value <= 2'h0; // @[Counter.scala 87:28]
+      end else begin
+        deq_ptr_value <= _value_T_3; // @[Counter.scala 77:15]
+      end
     end
     if (reset) begin // @[Decoupled.scala 276:27]
       maybe_full <= 1'h0; // @[Decoupled.scala 276:27]
@@ -185,30 +229,37 @@ initial begin
         #0.002 begin end
       `endif
     `endif
+`ifdef RANDOMIZE_GARBAGE_ASSIGN
+  _RAND_1 = {1{`RANDOM}};
+  _RAND_3 = {1{`RANDOM}};
+  _RAND_5 = {1{`RANDOM}};
+  _RAND_7 = {1{`RANDOM}};
+  _RAND_9 = {1{`RANDOM}};
+`endif // RANDOMIZE_GARBAGE_ASSIGN
 `ifdef RANDOMIZE_MEM_INIT
   _RAND_0 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 2; initvar = initvar+1)
+  for (initvar = 0; initvar < 3; initvar = initvar+1)
     ram_opcode[initvar] = _RAND_0[2:0];
-  _RAND_1 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 2; initvar = initvar+1)
-    ram_source[initvar] = _RAND_1[0:0];
   _RAND_2 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 2; initvar = initvar+1)
-    ram_address[initvar] = _RAND_2[31:0];
-  _RAND_3 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 2; initvar = initvar+1)
-    ram_mask[initvar] = _RAND_3[3:0];
+  for (initvar = 0; initvar < 3; initvar = initvar+1)
+    ram_source[initvar] = _RAND_2[0:0];
   _RAND_4 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 2; initvar = initvar+1)
-    ram_data[initvar] = _RAND_4[31:0];
+  for (initvar = 0; initvar < 3; initvar = initvar+1)
+    ram_address[initvar] = _RAND_4[31:0];
+  _RAND_6 = {1{`RANDOM}};
+  for (initvar = 0; initvar < 3; initvar = initvar+1)
+    ram_mask[initvar] = _RAND_6[3:0];
+  _RAND_8 = {1{`RANDOM}};
+  for (initvar = 0; initvar < 3; initvar = initvar+1)
+    ram_data[initvar] = _RAND_8[31:0];
 `endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
-  _RAND_5 = {1{`RANDOM}};
-  enq_ptr_value = _RAND_5[0:0];
-  _RAND_6 = {1{`RANDOM}};
-  deq_ptr_value = _RAND_6[0:0];
-  _RAND_7 = {1{`RANDOM}};
-  maybe_full = _RAND_7[0:0];
+  _RAND_10 = {1{`RANDOM}};
+  enq_ptr_value = _RAND_10[1:0];
+  _RAND_11 = {1{`RANDOM}};
+  deq_ptr_value = _RAND_11[1:0];
+  _RAND_12 = {1{`RANDOM}};
+  maybe_full = _RAND_12[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

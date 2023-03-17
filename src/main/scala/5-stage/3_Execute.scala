@@ -95,24 +95,25 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     val inst = stageReg.instState.inst
 
     // alu 
-    val alu = Module(new ALU())
-    val aluOut = alu.io.out
+    val alu         = Module(new ALU())
+    val aluIn1      = Wire(UInt(xlen.W))
+    val aluOut      = alu.io.out
     val hazardData1 = WireInit(0.U(xlen.W))
-    hazardData1 := MuxLookup(io.hazard.in.aluSrc1, stageReg.aluIn1, Seq(
+    val hazardData2 = WireInit(0.U(xlen.W))
+
+    hazardData1     := MuxLookup(io.hazard.in.aluSrc1, stageReg.aluIn1, Seq(
                                 "b00".U -> stageReg.aluIn1, 
                                 "b01".U -> io.hazard.in.rdValM, 
                                 "b10".U -> io.hazard.in.rdValW)
-                            )
-    val aluIn1 = Mux(stageReg.aluIn1IsReg, hazardData1, stageReg.aluIn1)
-    // alu.io.in1 := Mux(stageReg.aluIn1IsReg, hazardData1, stageReg.aluIn1)
-    alu.io.in1 := aluIn1
-    val hazardData2 = WireInit(0.U(xlen.W))
-    hazardData2 := MuxLookup(io.hazard.in.aluSrc2, stageReg.aluIn2, Seq(
+                            )    
+    hazardData2     := MuxLookup(io.hazard.in.aluSrc2, stageReg.aluIn2, Seq(
                             "b00".U -> stageReg.aluIn2,
                             "b01".U -> io.hazard.in.rdValM,
                             "b10".U -> io.hazard.in.rdValW
                         ))
-    alu.io.in2 := Mux(stageReg.aluIn2IsReg, hazardData2, stageReg.aluIn2)
+    aluIn1          := Mux(stageReg.aluIn1IsReg, hazardData1, stageReg.aluIn1)
+    alu.io.in1      := aluIn1
+    alu.io.in2      := Mux(stageReg.aluIn2IsReg, hazardData2, stageReg.aluIn2)
     
     // when stage stall, refill stageReg 
     when(stageReg.aluIn1IsReg && io.hazard.in.aluSrc1 =/= "b00".U && stall) {
@@ -131,7 +132,8 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     // output for fetch stage
     io.out.fetch.bits.brTaken       := (stageReg.isBranch && aluZero) || stageReg.isJump
     io.out.fetch.bits.targetAddr    := Mux(stageReg.pcAddReg, aluOut, 
-                                            Mux(stageReg.immSign, (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 
+                                            Mux(stageReg.immSign, 
+                                                (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 
                                                 stageReg.imm + stageReg.instState.pc 
                                             )
                                         ) 
@@ -141,16 +143,23 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.out.memory.bits.resultSrc    := stageReg.resultSrc
     io.out.memory.bits.lsuOp        := stageReg.lsuOp
     io.out.memory.bits.regWrEn      := stageReg.regWrEn
-    io.out.memory.bits.data2        := Mux(io.hazard.in.aluSrc2 === 0.U, stageReg.data2, 
-                                        Mux(io.hazard.in.aluSrc2 === "b01".U, io.hazard.in.rdValM, 
-                                        Mux(io.hazard.in.aluSrc2 === "b10".U, io.hazard.in.rdValW, stageReg.data2))) 
+    io.out.memory.bits.data2        := Mux(io.hazard.in.aluSrc2 === 0.U, 
+                                            stageReg.data2, 
+                                            Mux(io.hazard.in.aluSrc2 === "b01".U, 
+                                                io.hazard.in.rdValM, 
+                                                Mux(io.hazard.in.aluSrc2 === "b10".U, 
+                                                    io.hazard.in.rdValW, 
+                                                    stageReg.data2
+                                                )
+                                            )
+                                        ) 
     io.out.memory.bits.pcNext4      := stageReg.pcNext4
 
 
 
-    val csrAddr = InstField(inst, "csr_dest")
-    io.csrRead.addr := csrAddr
-    io.csrRead.op   := stageReg.csrOp
+    val csrAddr                    = InstField(inst, "csr_dest")
+    io.csrRead.addr               := csrAddr
+    io.csrRead.op                 := stageReg.csrOp
     io.out.memory.bits.csrOp      := stageReg.csrOp
     io.out.memory.bits.csrWrEn    := stageReg.csrOp =/= CSR_NOP && io.csrRead.valid
     io.out.memory.bits.csrValid   := io.csrRead.valid
@@ -160,18 +169,18 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.out.memory.bits.excType    := stageReg.excType
 
     // hazard control
-    io.hazard.out.rs1 := InstField(inst, "rs1")
-    io.hazard.out.rs2 := InstField(inst, "rs2")
+    io.hazard.out.rs1             := InstField(inst, "rs1")
+    io.hazard.out.rs2             := InstField(inst, "rs2")
     // load hazard, which happens when the instruction in execute stage is load(lw), 
     // and the subsequent instruction needs its(lw) result that is read from DataMemory.
     // we can judge by resultSrc. (resultSrc == "b00".U indicates that this is a load instructions)
-    io.hazard.out.resultSrc := stageReg.resultSrc
-    io.hazard.out.rd        := InstField(inst, "rd")
+    io.hazard.out.resultSrc       := stageReg.resultSrc
+    io.hazard.out.rd              := InstField(inst, "rd")
 
     // instruction state flow
-    io.out.memory.bits.instState <> stageReg.instState
+    io.out.memory.bits.instState  <> stageReg.instState
 
 
-    io.out.memory.valid :=  !stall 
-    io.out.fetch.valid  :=  !stall
+    io.out.memory.valid           :=  !stall 
+    io.out.fetch.valid            :=  !stall
 }

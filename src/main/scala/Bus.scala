@@ -9,14 +9,18 @@ import mycpu.util._
 
 object BusMaster {
     val BUS_MASTER_WIDTH = 2
-    val MASTER_0 = 0.U(BUS_MASTER_WIDTH.W)
-    val MASTER_1 = 1.U(BUS_MASTER_WIDTH.W)
+    val BUS_MASTER_NUM = 2
+    val MASTER_0 = 0.U(BUS_MASTER_WIDTH.W) // from 1_Fetch
+    val MASTER_1 = 1.U(BUS_MASTER_WIDTH.W) // from 4_Mem
+
+    val MASTERS = Seq(MASTER_0, MASTER_1)
 }
 
 object BusSlave {
     val BUS_SLAVE_WIDTH = 2
     val SLAVE_ROM = 0.U(BUS_SLAVE_WIDTH.W)
     val SLAVE_RAM = 1.U(BUS_SLAVE_WIDTH.W)
+    val SLAVE_UART = 2.U(BUS_SLAVE_WIDTH.W)
 }
 
 object BusReq {
@@ -101,36 +105,39 @@ class TLBusAlloc[T <: Data](gen: T, nrOut: Int = 2)(implicit val p: Parameters) 
 }
 
 
-class TLBusArbiter(nrIn: Int = 2)(implicit val p: Parameters) extends MyModule {
+class TLBusArbiter(nrIn: Int = 2, policy: String = "priority")(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val reqs = Input(Vec(nrIn, Bool()))
         val grantOH = Output(UInt(nrIn.W))
     })
 
-    val owner = RegInit(MASTER_1)
+    val owner = RegInit(MASTER_0)
 
-    when(io.reqs(1)) {
-        owner := MASTER_1
-    }.otherwise{
-        owner := MASTER_0
+    if(policy == "priority") {
+        // println("[TLBusArbiter] Policy is PRIORITY!")
+        owner := Mux1H((0 until nrIn).reverse.map{ i => io.reqs(i) -> MASTERS(i)})
+    } else if( policy == "round robin") {
+        // println("[TLBusArbiter] Policy is ROUND ROBIN!")
+        switch(owner) {
+            is(MASTER_0) {
+                when(io.reqs(0)) { 
+                    owner := MASTER_0
+                }.elsewhen(io.reqs(1)) { 
+                    owner := MASTER_1
+                }
+            }
+            is(MASTER_1) {
+                when(io.reqs(1)) { 
+                    owner := MASTER_1
+                }.elsewhen(io.reqs(0)) { 
+                    owner := MASTER_0
+                }
+            }
+        }
+    } else {
+        assert(false, "[TLBusArbiter] Invalid policy!")
     }
-
-    // switch(owner) {
-    //     is(MASTER_0) {
-    //         when(io.reqs(1)) { 
-    //             owner := MASTER_1
-    //         }.elsewhen(io.reqs(0)) { 
-    //             owner := MASTER_0
-    //         }
-    //     }
-    //     is(MASTER_1) {
-    //         when(io.reqs(1)) { 
-    //             owner := "b10".U
-    //         }.elsewhen(io.reqs(1)) { 
-    //             owner := "b01".U
-    //         }
-    //     }
-    // }
+    
     io.grantOH := UIntToOH(owner)
 }
 
@@ -151,11 +158,11 @@ class TLAddrDecode(nrIn: Int)(implicit val p: Parameters) extends MyModule {
     }
 
     when(mappingRegion(io.addr, memRomBegin.U, memRomEnd.U)) { // ROM
-        io.choseOH := UIntToOH(SLAVE_ROM).asTypeOf(Vec(nrIn, Bool()))
+        io.choseOH := UIntToOH(SLAVE_ROM, nrIn).asTypeOf(Vec(nrIn, Bool()))
     }.elsewhen(mappingRegion(io.addr, memRamBegin.U, memRamEnd.U)) { // RAM
-        io.choseOH := UIntToOH(SLAVE_RAM).asTypeOf(Vec(nrIn, Bool()))
+        io.choseOH := UIntToOH(SLAVE_RAM, nrIn).asTypeOf(Vec(nrIn, Bool()))
     }.otherwise{ // default
-        io.choseOH := UIntToOH(SLAVE_ROM).asTypeOf(Vec(nrIn, Bool()))
+        io.choseOH := UIntToOH(SLAVE_ROM, nrIn).asTypeOf(Vec(nrIn, Bool()))
     }
 }
 
@@ -175,55 +182,48 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     reqMux.io.in.zip(mf.in).foreach{ case(ri, mfi) => ri <> mfi }
     reqMux.io.choseOH := reqArb.io.grantOH.asTypeOf(Vec(nrBusMaster, Bool()))
 
-    val buf = Module(new Queue(new BusMasterBundle, entries = 2))
+    val buf = Module(new Queue(new BusMasterBundle, entries = 3))
     buf.io.enq <> reqMux.io.out
-    mf.in.zip(reqMux.io.choseOH).foreach{ case(mfi, chose) => mfi.ready := buf.io.enq.ready && chose}
-    val bufSource = buf.io.deq.bits.source
+    mf.in.zip(reqMux.io.choseOH).foreach{ case(mfi, chose) => mfi.ready := buf.io.enq.ready && chose }
 
-    val lastSource = RegEnable(bufSource, buf.io.deq.fire)
+    val bufData = Mux(buf.io.deq.fire, buf.io.deq.bits, RegEnable(buf.io.deq.bits, buf.io.deq.fire)) 
+    val bufSource = bufData.source
+    val bufAddress = bufData.address
+    val bufValidReg = RegEnable(true.B, false.B, buf.io.deq.fire)
+    val bufValid = Mux(buf.io.deq.fire, true.B, bufValidReg)
+    val pendingMasterOH = UIntToOH(bufSource, nrBusMaster) // pending request's sourceID, the request is watting for ack
+    val pendingReq = RegInit(false.B)
     
-    dontTouch(lastSource)
+    val addrDec = Module(new TLAddrDecode(nrBusSlave))
+    val pendingSlaveOH = addrDec.io.choseOH
+    addrDec.io.addr := bufAddress
 
-    val addressDec = Module(new TLAddrDecode(nrBusSlave))
-    addressDec.io.addr := buf.io.deq.bits.address
-    
+    val slaveRecVec = sf.in.map{ sfi => sfi.fire }
+    val slaveRecv = Cat(pendingSlaveOH.zip(slaveRecVec).map{ case(p, sr) => p & sr }).orR
+    when(buf.io.deq.fire) { pendingReq := true.B }
+    when(slaveRecv) {  bufValidReg := false.B }
+
+    val masterRecvVec = Cat(mf.out.map{ mfo => mfo.fire }.reverse) // master face output is fired // ! NOTICE: use .reverse for the correct bit sequence
+    val pendingFree = (masterRecvVec & pendingMasterOH).orR
+    when(pendingFree){ pendingReq := false.B }
+
+    buf.io.deq.ready := !pendingReq
+
     sf.in.zipWithIndex.foreach{ case(si, i) => 
-        si.bits := buf.io.deq.bits
-        si.valid := buf.io.deq.valid && addressDec.io.choseOH(i)
+        si.bits  := bufData 
+        si.valid := bufValid && pendingSlaveOH(i)
     }
-    buf.io.deq.ready := Mux1H( (0 until nrBusSlave).map{ i => addressDec.io.choseOH(i) -> sf.in(i).ready } )
-
-    val reqAlloc = Module(new TLBusAlloc(new BusMasterBundle, nrBusSlave))
-    reqAlloc.io.in <> buf.io.deq
-    reqAlloc.io.out <> sf.in
-    reqAlloc.io.choseOH := addressDec.io.choseOH
     
-    def sourceChose(id: UInt): UInt = {
-        val choseOH = Wire(UInt(nrBusSlave.W))
-        choseOH := UIntToOH(id, nrBusSlave)
-        choseOH
-    }
-    val lastSlaveOH = RegEnable(addressDec.io.choseOH, buf.io.deq.fire)
     val slaveMux = Module(new TLBusMux(new BusSlaveBundle, nrBusSlave))
     slaveMux.io.in <> sf.out
-    // slaveMux.io.choseOH := addressDec.io.choseOH.asTypeOf(Vec(nrBusSlave, Bool()))
-    slaveMux.io.choseOH := lastSlaveOH
-    // val sourceChoseOH = sourceChose(bufSource).asBools
-    val sourceChoseOH = sourceChose(lastSource).asBools
+    slaveMux.io.choseOH := pendingSlaveOH
 
-    slaveMux.io.out.ready := false.B
     mf.out.zipWithIndex.foreach{ case(mo, i) => 
         mo.bits <> slaveMux.io.out.bits
-        when(sourceChoseOH(i)) {
-            mo.valid := slaveMux.io.out.valid
-            slaveMux.io.out.ready := mo.ready
-        }
+        mo.valid := slaveMux.io.out.valid && pendingMasterOH(i)
     }
-    mf.cs <> sourceChoseOH
+    slaveMux.io.out.ready := Mux1H(pendingMasterOH, mf.out.map{ mo => mo.ready})
 
-    mf.out(0).valid := sourceChoseOH(0) && slaveMux.io.out.valid
-    mf.out(1).valid := sourceChoseOH(1) && slaveMux.io.out.valid
-    dontTouch(mf.cs)
 }
 
 object TLXbarGenRTL extends App {

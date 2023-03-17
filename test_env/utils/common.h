@@ -17,9 +17,12 @@ extern std::string prj_dir;
 #define PRINT_RESET "\x1B[0m"
 #define PRINT_GREEN "\033[32;1m"
 
+extern void before_assert(void);
+
 #define m_assert(cond, info)                                                \
     do {                                                                    \
         if (!(cond)) {                                                      \
+        before_assert();                                                    \
         printf("\33[1;34m%s\n", info);                                      \
         printf("cycles: %ld\33[0m\n", cycles);                              \
         fflush(stdout);                                                     \

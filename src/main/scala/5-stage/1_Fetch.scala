@@ -37,7 +37,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
 
 
     val instValid = WireInit(false.B)
-
+    dontTouch(instValid)
     val stall = io.ctrl.stall || !io.in.start || !io.rom.req.ready || !instValid
     val flush = io.ctrl.flush
 
@@ -59,35 +59,56 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     // // instMem.io.raddr := pcReg 
     // inst := instMem.io.rdata
     
-    val firstFire = RegEnable(false.B, true.B, io.rom.req.fire)
-    val preFetchInst = (firstFire && pc === resetPc.U) || (!firstFire && instValid)
+    val instValidReg = RegEnable(true.B, io.rom.resp.fire)
+    when(io.rom.req.fire) { instValidReg := false.B}
+    instValid := Mux(io.rom.resp.fire, 
+                        true.B, 
+                        Mux(io.rom.req.ready, 
+                                false.B, 
+                                instValidReg
+                            )
+                    )
+
+    val firstFire    = RegEnable(false.B, true.B, io.rom.req.fire)
+    val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && Mux(io.rom.resp.fire, true.B, instValidReg && io.rom.req.ready))
     dontTouch(preFetchInst)
 
-    io.rom <> DontCare
-    io.rom.req.bits <> DontCare
-    io.rom.req.valid := ~flush && io.in.start && preFetchInst
+    val sendReq = RegEnable(true.B, false.B, io.rom.req.fire)
+    when(io.rom.resp.fire) { sendReq := false.B }
+    dontTouch(sendReq)
+
+    io.rom                  <> DontCare
+    io.rom.req.bits         <> DontCare
+    io.rom.req.valid        := ~flush && io.in.start && io.rom.req.ready && preFetchInst
     io.rom.req.bits.address := pc
-    io.rom.req.bits.opcode := Get
-    io.rom.req.bits.source := MASTER_0
-    io.rom.resp.bits <> DontCare
-    io.rom.resp.ready :=  true.B
-    inst := Mux(io.rom.resp.fire, io.rom.resp.bits.data, RegEnable(io.rom.resp.bits.data, io.rom.resp.fire))
+    io.rom.req.bits.opcode  := Get
+    io.rom.req.bits.source  := MASTER_0
+    io.rom.resp.bits        <> DontCare
+    io.rom.resp.ready       :=  true.B // always enable receive inst data
+    inst                    := Mux(io.rom.resp.fire, 
+                                    io.rom.resp.bits.data, 
+                                    RegEnable(io.rom.resp.bits.data, io.rom.resp.fire)
+                                )
 
-    val instValidReg     = RegEnable(true.B, io.rom.resp.fire)
-    when(io.rom.req.fire) { instValidReg := false.B}
-    instValid := Mux(io.rom.resp.fire, true.B, instValidReg)
+    pcNext := Mux(io.excp.valid, 
+                    Mux(io.excp.bits.isMret, 
+                            io.mepc, 
+                            io.trapVec
+                        ),
+                    Mux(io.in.execute.bits.brTaken, 
+                            io.in.execute.bits.targetAddr, 
+                            pcNext4
+                        )
+                )
+    
+    val updatePC = io.rom.req.fire && io.out.ready
+    pc     := Mux(updatePC, pcNext, pcReg)
+    when(updatePC) { pcReg := pcNext }
 
-    pcNext := Mux(io.excp.valid, Mux(io.excp.bits.isMret, io.mepc, io.trapVec),
-                Mux(io.in.execute.bits.brTaken, io.in.execute.bits.targetAddr, pcNext4))
-    pc := Mux(commit, pcNext, pcReg)
-    dontTouch(pc)
-
-    when(commit) { pcReg := pcNext }
-
-    io.out.bits.pcNext4 := pcNext4
+    io.out.bits.pcNext4          := pcNext4
     io.out.bits.instState.commit := commit
-    io.out.bits.instState.pc := pcReg
-    io.out.bits.instState.inst := inst
+    io.out.bits.instState.pc     := pcReg
+    io.out.bits.instState.inst   := inst
 
     io.out.valid := !stall
 }

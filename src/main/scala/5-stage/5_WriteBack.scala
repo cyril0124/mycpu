@@ -31,8 +31,8 @@ class WritebackIO()(implicit val p: Parameters) extends MyBundle{
     val regfile = Output(new WritebackOut)
     val csrWrite = Flipped(new CsrWrite)
 
-    val ramData = Input(UInt(xlen.W))
-    val ramDataValid = Input(Bool())
+    val lsuData = Input(UInt(xlen.W))
+    val lsuOK = Input(Bool())
 }
 
 
@@ -40,7 +40,8 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
     
     val wbRam = WireInit(false.B)
-    val stall = io.ctrl.stall || (!io.ramDataValid && wbRam)
+    // val stall = io.ctrl.stall || (!io.lsuOK && wbRam)
+    val stall = io.ctrl.stall || !io.lsuOK
     val flush = io.ctrl.flush
 
     io.in.ready := !stall
@@ -58,24 +59,24 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
 
     val rdVal = MuxLookup(stageReg.resultSrc, stageReg.aluOut, Seq(
                                 "b00".U -> stageReg.aluOut,
-                                "b01".U -> io.ramData,
+                                "b01".U -> io.lsuData,
                                 "b10".U -> stageReg.pcNext4
                             ))
     io.regfile.regWrData := rdVal;
-    val inst = stageReg.instState.inst
-    io.regfile.rd := InstField(inst, "rd")
-    io.regfile.regWrEn := stageReg.regWrEn && !stall
+    val inst              = stageReg.instState.inst
+    io.regfile.rd        := InstField(inst, "rd")
+    io.regfile.regWrEn   := stageReg.regWrEn 
 
-    io.csrWrite.addr := stageReg.csrAddr
-    io.csrWrite.data := stageReg.csrWrData
-    io.csrWrite.op   := Mux(stageReg.csrWrEn, stageReg.csrOp, CSR_R)
-    io.csrWrite.retired := stageReg.instState.commit && !stall
+    io.csrWrite.addr     := stageReg.csrAddr
+    io.csrWrite.data     := stageReg.csrWrData
+    io.csrWrite.op       := Mux(stageReg.csrWrEn, stageReg.csrOp, CSR_R)
+    io.csrWrite.retired  := stageReg.instState.commit && !stall
     
-    io.instState <> stageReg.instState
-    io.instState.commit := stageReg.instState.commit && !stall
+    io.instState         <> stageReg.instState
+    io.instState.commit  := stageReg.instState.commit && !stall
 
     // hazard control
-    io.hazard.rd := InstField(inst, "rd")
-    io.hazard.rdVal := rdVal; 
-    io.hazard.regWrEn := stageReg.regWrEn
+    io.hazard.rd         := InstField(inst, "rd")
+    io.hazard.rdVal      := rdVal; 
+    io.hazard.regWrEn    := stageReg.regWrEn
 }

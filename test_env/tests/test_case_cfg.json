@@ -1,7 +1,7 @@
 {
-    "test_case_num": 63,
+    "test_case_num": 62,
     "1": {
-        "name": "test2.bin",
+        "name": "test_sw.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },

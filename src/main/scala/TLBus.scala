@@ -15,12 +15,10 @@ class BusXbarIO()(implicit val p: Parameters) extends MyBundle{
     val masterFace = (new Bundle{
         val in = Flipped(Vec(nrBusMaster, Decoupled(new BusMasterBundle)))
         val out = Vec(nrBusMaster, Decoupled(new BusSlaveBundle))
-        val cs = Vec(nrBusMaster, Output(Bool()))
     })
     val slaveFace = (new Bundle{
         val in = Vec(nrBusSlave, Decoupled(new BusMasterBundle))
         val out = Flipped(Vec(nrBusSlave, Decoupled(new BusSlaveBundle)))
-        val cs = Vec(nrBusSlave, Output(Bool()))
     })
 }
 
@@ -93,62 +91,6 @@ class BusXbar()(implicit val p: Parameters) extends MyModule {
         out.bits <> sArbOut.bits
     }
 }
-
-
-class BusXbar_1()(implicit val p: Parameters) extends MyModule {
-    val io = IO(new BusXbarIO)
-    io <> DontCare
-
-    val mf = io.masterFace
-    val sf = io.slaveFace
-
-    val masterArb = Module(new TLBusArbiter(nrBusMaster))
-    masterArb.io.reqs.zip(mf.in).foreach{ case(mr, mi) => mr := mi.valid }
-    
-    val masterMux = Module(new TLBusMux(new BusMasterBundle, nrBusMaster))
-    masterMux.io.in <> mf.in
-    masterMux.io.choseOH <> masterArb.io.grantOH.asTypeOf(Vec(nrBusMaster, Bool()))
-
-    val buf = Module(new Queue(new BusMasterBundle, entries = 2))
-    val slaveValid = WireInit(false.B)
-    val bufSource = RegEnable(buf.io.deq.bits.source, RegNext(buf.io.deq.fire))
-    dontTouch(bufSource)
-    buf.io.enq <> masterMux.io.out
-
-    sf.in.foreach{ si => 
-        si.bits <> buf.io.deq.bits
-        si.valid := buf.io.deq.valid
-    }
-
-    val addrDecode = Module(new TLAddrDecode(nrBusSlave))
-    addrDecode.io.addr := buf.io.deq.bits.address
-    sf.cs <> addrDecode.io.choseOH.asTypeOf(Vec(nrBusSlave, Bool()))
-
-    buf.io.deq.ready := Mux1H((0 until nrBusSlave).map{ i => sf.cs(i) -> sf.in(i).ready} )
-    
-
-    def sourceChose(id: UInt): UInt = {
-        val choseOH = Wire(UInt(nrBusSlave.W))
-        choseOH := UIntToOH(id, nrBusSlave)
-        choseOH
-    }
-
-    val slaveMux = Module(new TLBusMux(new BusSlaveBundle, nrBusSlave))
-    slaveMux.io.in <> sf.out
-    slaveMux.io.choseOH := addrDecode.io.choseOH.asTypeOf(Vec(nrBusSlave, Bool())) // sourceChose(bufSource).asBools
-    val sourceChoseOH = sourceChose(bufSource).asBools
-    // mf.out.foreach{ mo => mo <> slaveMux.io.out }
-    slaveMux.io.out.ready := false.B
-    mf.out.zipWithIndex.foreach{ case(mo, i) => 
-        mo.bits <> slaveMux.io.out.bits
-        when(sourceChoseOH(i)) {
-            mo.valid := slaveMux.io.out.valid
-            slaveMux.io.out.ready := mo.ready
-        }
-    }
-    slaveValid := slaveMux.io.out.valid
-}
-
 
 
 class BusCrossBar()(implicit val p: Parameters) extends MyModule {

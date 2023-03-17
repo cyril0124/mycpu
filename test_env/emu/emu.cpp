@@ -2,6 +2,8 @@
 
 uint64_t cycles;
 
+uint64_t inst_num = 0;
+
 Emu::Emu(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
     cycles = 0;
@@ -104,9 +106,8 @@ void Emu::execute(uint64_t nr_cycles) {
 
         while(cycles < nr_cycles) {
             if(commit == 1) {
-                if(cycles == 1145) {
-                    printf("\n");
-                }
+                inst_num++;
+
                 engine->step();
                 cmp_err[0] = engine->compare_pc(pc);
                 cmp_err[1] = engine->compare_inst(inst);
@@ -200,3 +201,9 @@ void Emu::execute(uint64_t nr_cycles) {
     }
 }
 
+
+void before_assert(void) {
+    float ipc = (float)((float)inst_num/(float)cycles);
+    float cpi = 1 / ipc;
+    printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, cycles, ipc, cpi);
+}

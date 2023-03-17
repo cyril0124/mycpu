@@ -7,16 +7,16 @@ module TLBusArbiter(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
-  reg [1:0] owner; // @[Bus.scala 110:24]
+  reg [1:0] owner; // @[Bus.scala 114:24]
   wire [3:0] _io_grantOH_T = 4'h1 << owner; // @[OneHot.scala 57:35]
-  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 134:16]
+  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 141:16]
   always @(posedge clock) begin
-    if (reset) begin // @[Bus.scala 110:24]
-      owner <= 2'h1; // @[Bus.scala 110:24]
-    end else if (io_reqs_1) begin // @[Bus.scala 112:22]
-      owner <= 2'h1; // @[Bus.scala 113:15]
+    if (reset) begin // @[Bus.scala 114:24]
+      owner <= 2'h0; // @[Bus.scala 114:24]
+    end else if (io_reqs_1) begin // @[Mux.scala 27:73]
+      owner <= 2'h1;
     end else begin
-      owner <= 2'h0; // @[Bus.scala 115:15]
+      owner <= 2'h0;
     end
   end
 // Register and memory initialization
