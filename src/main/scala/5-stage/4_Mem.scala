@@ -130,6 +130,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     val lsu = Module(new LSU())
     lsu.io <> DontCare
     lsu.io.req.valid        := !flush
+    // lsu.io.req.valid        := !flush && !stall
     lsu.io.req.bits.addr    := stageReg.aluOut
     lsu.io.req.bits.wdata   := stageReg.data2
     lsu.io.req.bits.hasTrap := hasTrap

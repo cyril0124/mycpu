@@ -132,7 +132,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
         s1_lsuOp  := s0_req.lsuOp
         s1_ready  := false.B
     }
-    when(!s0_valid) { s1_lsuOp := LSU_NOP }
+    when(!s0_valid && io.ram.resp.fire) { s1_lsuOp := LSU_NOP }
 
     val s1_respReg = RegEnable(io.ram.resp.bits, io.ram.resp.fire)
     val s1_resp = Mux(io.ram.resp.fire, io.ram.resp.bits, s1_respReg)

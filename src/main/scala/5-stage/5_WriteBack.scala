@@ -40,7 +40,6 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
     
     val wbRam = WireInit(false.B)
-    // val stall = io.ctrl.stall || (!io.lsuOK && wbRam)
     val stall = io.ctrl.stall || !io.lsuOK
     val flush = io.ctrl.flush
 

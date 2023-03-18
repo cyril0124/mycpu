@@ -80,9 +80,9 @@ module LSU(
   reg [1:0] s1_offset; // @[LSU.scala 126:24]
   reg [4:0] s1_lsuOp; // @[LSU.scala 127:24]
   wire  _GEN_10 = en & s1_ready ? 1'h0 : s1_ready; // @[LSU.scala 128:32 133:19 75:28]
-  wire  _s1_respReg_T = io_ram_resp_ready & io_ram_resp_valid; // @[Decoupled.scala 51:35]
+  wire  _T_60 = io_ram_resp_ready & io_ram_resp_valid; // @[Decoupled.scala 51:35]
   reg [31:0] s1_respReg_data; // @[Reg.scala 19:16]
-  wire [31:0] _GEN_19 = _s1_respReg_T ? io_ram_resp_bits_data : s1_respReg_data; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _GEN_19 = _T_60 ? io_ram_resp_bits_data : s1_respReg_data; // @[Reg.scala 19:16 20:{18,22}]
   wire [31:0] _ramRdData_T_2 = {8'h0,_GEN_19[31:8]}; // @[Cat.scala 33:92]
   wire [31:0] _ramRdData_T_5 = {16'h0,_GEN_19[31:16]}; // @[Cat.scala 33:92]
   wire [31:0] _ramRdData_T_8 = {24'h0,_GEN_19[31:24]}; // @[Cat.scala 33:92]
@@ -119,7 +119,7 @@ module LSU(
   wire [31:0] _io_resp_bits_rdata_T_16 = 2'h1 == s1_width ? _io_resp_bits_rdata_T_7 : _io_resp_bits_rdata_T_14; // @[Mux.scala 81:58]
   wire  _GEN_20 = io_resp_valid | _GEN_10; // @[LSU.scala 160:{25,36}]
   assign io_req_ready = ~busy; // @[LSU.scala 77:21]
-  assign io_resp_valid = _s1_respReg_T & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 159:114]
+  assign io_resp_valid = _T_60 & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 159:114]
   assign io_resp_bits_rdata = 2'h2 == s1_width ? _io_resp_bits_rdata_T_12 : _io_resp_bits_rdata_T_16; // @[Mux.scala 81:58]
   assign io_excp_storeUnalign = wen & _io_excp_storeUnalign_T_7; // @[LSU.scala 88:15 85:26 89:30]
   assign io_ram_req_valid = ~io_excp_storeUnalign & en; // @[LSU.scala 105:47]
@@ -161,8 +161,8 @@ module LSU(
     if (en & s1_ready) begin // @[LSU.scala 128:32]
       s1_offset <= offset; // @[LSU.scala 130:19]
     end
-    if (~en) begin // @[LSU.scala 135:21]
-      s1_lsuOp <= 5'h0; // @[LSU.scala 135:32]
+    if (~en & _T_60) begin // @[LSU.scala 135:41]
+      s1_lsuOp <= 5'h0; // @[LSU.scala 135:52]
     end else if (en & s1_ready) begin // @[LSU.scala 128:32]
       if (_s0_reqReg_T) begin // @[Reg.scala 20:18]
         s1_lsuOp <= io_req_bits_lsuOp; // @[Reg.scala 20:22]
@@ -170,7 +170,7 @@ module LSU(
         s1_lsuOp <= s0_reqReg_lsuOp; // @[Reg.scala 19:16]
       end
     end
-    if (_s1_respReg_T) begin // @[Reg.scala 20:18]
+    if (_T_60) begin // @[Reg.scala 20:18]
       s1_respReg_data <= io_ram_resp_bits_data; // @[Reg.scala 20:22]
     end
   end

@@ -76,7 +76,8 @@ class ExecuteIO()(implicit val p: Parameters) extends MyBundle{
 class Execute()(implicit val p: Parameters) extends MyModule{
     val io = IO(new ExecuteIO)
 
-    val stall = io.ctrl.stall || !io.out.fetch.ready || !io.out.memory.ready
+    val needFetch = WireInit(false.B)
+    val stall = io.ctrl.stall || (!io.out.fetch.ready && needFetch) || !io.out.memory.ready
     val flush = io.ctrl.flush
 
 
@@ -136,7 +137,8 @@ class Execute()(implicit val p: Parameters) extends MyModule{
                                                 (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 
                                                 stageReg.imm + stageReg.instState.pc 
                                             )
-                                        ) 
+                                        )
+    needFetch := io.out.fetch.bits.brTaken
     
     // output for memory stage
     io.out.memory.bits.aluOut       := aluOut

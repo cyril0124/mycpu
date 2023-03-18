@@ -35,19 +35,25 @@ class FetchIO()(implicit val p: Parameters) extends MyBundle{
 class Fetch()(implicit val p: Parameters) extends MyModule{
     val io = IO(new FetchIO)
 
+    val pcReg           = RegInit(resetPc.U(xlen.W))
+    val pc              = Wire(UInt(xlen.W))
+    val pcNext          = Wire(UInt(xlen.W))
+    val pcNext4         = pcReg + (ilen / 8).U
 
     val instValid = WireInit(false.B)
+    val instValidReg = RegInit(false.B)
+
+    val branchStall = WireInit(false.B)
+    
     dontTouch(instValid)
-    val stall = io.ctrl.stall || !io.in.start || !io.rom.req.ready || !instValid
+    // val stall = io.ctrl.stall || !io.in.start || !io.rom.req.ready || !instValid || branchStall
+    val stall = io.ctrl.stall || !io.in.start || !io.rom.req.ready || !instValid 
     val flush = io.ctrl.flush
 
     // for pipeline stage, if one stage stall then all of the stage in front of the stall stage will stall too.
     io.in.execute.ready := !stall
 
-    val pcReg           = RegInit(resetPc.U(xlen.W))
-    val pc              = Wire(UInt(xlen.W))
-    val pcNext          = Wire(UInt(xlen.W))
-    val pcNext4         = pcReg + (ilen / 8).U
+
     val inst            = WireInit(0.U(ilen.W))
     val commit          = !stall && io.out.ready
     
@@ -58,24 +64,38 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     // instMem.io.raddr := pc 
     // // instMem.io.raddr := pcReg 
     // inst := instMem.io.rdata
+
+    // val instCounter = RegInit(0.U(2.W))
+    // when(io.rom.resp.fire) { instCounter := instCounter + 1.U }
+    // when(io.out.fire ) { instCounter := 0.U }
+    // val hasBranch = io.excp.valid || io.in.execute.bits.brTaken
+    // val hasBranchReg = RegEnable(true.B, false.B, hasBranch)
+    // val branchInstValid = RegEnable(true.B, false.B, instCounter === 1.U && io.rom.resp.fire)
+    // when(io.out.fire) { 
+    //     branchInstValid := false.B
+    //     hasBranchReg := false.B 
+    // }
+    // when(instCounter === 2.U) { hasBranchReg := false.B }
+    // val pcNextReg = RegInit(pcNext4)
+    // when(hasBranch) { pcNextReg := pcNext }.otherwise{ pcNextReg := pcNext4}
+    // val pcNext2 = Mux(hasBranch, pcNext, pcNextReg)
+    // branchStall := hasBranchReg && !branchInstValid
+    // MultiDontTouch(pcNext2, hasBranch, branchInstValid, hasBranchReg, branchStall)
     
-    val instValidReg = RegEnable(true.B, io.rom.resp.fire)
+    when(io.rom.resp.fire) { instValidReg := true.B}
     when(io.rom.req.fire) { instValidReg := false.B}
     instValid := Mux(io.rom.resp.fire, 
-                        true.B, 
-                        Mux(io.rom.req.ready, 
-                                false.B, 
-                                instValidReg
-                            )
-                    )
+                    true.B, 
+                    instValidReg
+                )
 
     val firstFire    = RegEnable(false.B, true.B, io.rom.req.fire)
-    val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && Mux(io.rom.resp.fire, true.B, instValidReg && io.rom.req.ready))
-    dontTouch(preFetchInst)
 
-    val sendReq = RegEnable(true.B, false.B, io.rom.req.fire)
-    when(io.rom.resp.fire) { sendReq := false.B }
-    dontTouch(sendReq)
+    // val branchFire = (!firstFire && hasBranch)
+    // dontTouch(branchFire)
+    val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && io.out.fire)
+    // val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && io.out.fire) || branchFire
+    dontTouch(preFetchInst)
 
     io.rom                  <> DontCare
     io.rom.req.bits         <> DontCare
@@ -89,7 +109,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
                                     io.rom.resp.bits.data, 
                                     RegEnable(io.rom.resp.bits.data, io.rom.resp.fire)
                                 )
-
+    
     pcNext := Mux(io.excp.valid, 
                     Mux(io.excp.bits.isMret, 
                             io.mepc, 
@@ -101,9 +121,14 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
                         )
                 )
     
-    val updatePC = io.rom.req.fire && io.out.ready
+    val updatePC = io.out.fire
+    // val updatePC = io.out.fire || hasBranch
     pc     := Mux(updatePC, pcNext, pcReg)
+    // pc     := Mux(updatePC, pcNext2, pcReg)
     when(updatePC) { pcReg := pcNext }
+    // when(updatePC) { pcReg := pcNext2 }
+    dontTouch(updatePC)
+
 
     io.out.bits.pcNext4          := pcNext4
     io.out.bits.instState.commit := commit

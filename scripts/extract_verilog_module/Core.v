@@ -27,66 +27,58 @@ module Fetch(
   reg [31:0] _RAND_1;
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
-  reg [31:0] _RAND_4;
 `endif // RANDOMIZE_REG_INIT
+  reg [31:0] pcReg; // @[1_Fetch.scala 38:34]
+  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 41:33]
+  reg  instValidReg; // @[1_Fetch.scala 44:31]
   wire  _instValid_T = io_rom_resp_ready & io_rom_resp_valid; // @[Decoupled.scala 51:35]
-  reg  instValidReg; // @[Reg.scala 19:16]
-  wire  _instValid_T_1 = io_rom_req_ready ? 1'h0 : instValidReg; // @[1_Fetch.scala 66:28]
-  wire  instValid = _instValid_T | _instValid_T_1; // @[1_Fetch.scala 64:21]
-  wire  stall = ~io_in_start | ~io_rom_req_ready | ~instValid; // @[1_Fetch.scala 41:68]
-  wire  _io_in_execute_ready_T = ~stall; // @[1_Fetch.scala 45:28]
-  reg [31:0] pcReg; // @[1_Fetch.scala 47:34]
-  wire [31:0] pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 50:33]
-  wire  _GEN_0 = _instValid_T | instValidReg; // @[Reg.scala 19:16 20:{18,22}]
-  wire  _T = io_rom_req_ready & io_rom_req_valid; // @[Decoupled.scala 51:35]
+  wire  _instValid_T_1 = _instValid_T | instValidReg; // @[1_Fetch.scala 87:21]
+  wire  instValid = _instValid_T | instValidReg; // @[1_Fetch.scala 87:21]
+  wire  stall = ~io_in_start | ~io_rom_req_ready | ~instValid; // @[1_Fetch.scala 50:68]
+  wire  _io_in_execute_ready_T = ~stall; // @[1_Fetch.scala 54:28]
+  wire  _T_1 = io_rom_req_ready & io_rom_req_valid; // @[Decoupled.scala 51:35]
   reg  firstFire; // @[Reg.scala 35:20]
-  wire  _GEN_2 = _T ? 1'h0 : firstFire; // @[Reg.scala 36:18 35:20 36:22]
-  wire  preFetchInst = firstFire & pcReg == 32'h0 | ~firstFire & (_instValid_T | instValidReg & io_rom_req_ready); // @[1_Fetch.scala 73:59]
-  reg  sendReq; // @[Reg.scala 35:20]
-  wire  _GEN_3 = _T | sendReq; // @[Reg.scala 36:18 35:20 36:22]
+  wire  _GEN_2 = _T_1 ? 1'h0 : firstFire; // @[Reg.scala 36:18 35:20 36:22]
+  wire  _preFetchInst_T_3 = io_out_ready & io_out_valid; // @[Decoupled.scala 51:35]
+  wire  preFetchInst = firstFire & pcReg == 32'h0 | ~firstFire & _preFetchInst_T_3; // @[1_Fetch.scala 96:59]
   reg [31:0] inst_r; // @[Reg.scala 19:16]
-  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 94:24]
-  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 98:24]
-  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 93:18]
-  wire  updatePC = _T & io_out_ready; // @[1_Fetch.scala 104:36]
-  assign io_in_execute_ready = ~stall; // @[1_Fetch.scala 45:28]
-  assign io_out_valid = ~stall; // @[1_Fetch.scala 113:21]
-  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 50:33]
-  assign io_out_bits_instState_commit = _io_in_execute_ready_T & io_out_ready; // @[1_Fetch.scala 52:34]
-  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 110:34]
-  assign io_out_bits_instState_inst = _instValid_T ? io_rom_resp_bits_data : inst_r; // @[1_Fetch.scala 88:35]
-  assign io_rom_req_valid = io_in_start & io_rom_req_ready & preFetchInst; // @[1_Fetch.scala 82:74]
-  assign io_rom_req_bits_address = updatePC ? pcNext : pcReg; // @[1_Fetch.scala 105:18]
-  assign io_rom_resp_ready = 1'h1; // @[1_Fetch.scala 87:29]
+  wire [31:0] _pcNext_T = io_excp_bits_isMret ? io_mepc : io_trapVec; // @[1_Fetch.scala 114:24]
+  wire [31:0] _pcNext_T_1 = io_in_execute_bits_brTaken ? io_in_execute_bits_targetAddr : pcNext4; // @[1_Fetch.scala 118:24]
+  wire [31:0] pcNext = io_excp_valid ? _pcNext_T : _pcNext_T_1; // @[1_Fetch.scala 113:18]
+  wire  updatePC = io_out_ready & io_out_valid; // @[Decoupled.scala 51:35]
+  assign io_in_execute_ready = ~stall; // @[1_Fetch.scala 54:28]
+  assign io_out_valid = ~stall; // @[1_Fetch.scala 138:21]
+  assign io_out_bits_pcNext4 = pcReg + 32'h4; // @[1_Fetch.scala 41:33]
+  assign io_out_bits_instState_commit = _io_in_execute_ready_T & io_out_ready; // @[1_Fetch.scala 58:34]
+  assign io_out_bits_instState_pc = pcReg; // @[1_Fetch.scala 135:34]
+  assign io_out_bits_instState_inst = _instValid_T ? io_rom_resp_bits_data : inst_r; // @[1_Fetch.scala 108:35]
+  assign io_rom_req_valid = io_in_start & io_rom_req_ready & preFetchInst; // @[1_Fetch.scala 102:74]
+  assign io_rom_req_bits_address = _preFetchInst_T_3 ? pcNext : pcReg; // @[1_Fetch.scala 126:18]
+  assign io_rom_resp_ready = 1'h1; // @[1_Fetch.scala 107:29]
   always @(posedge clock) begin
-    if (_T) begin // @[1_Fetch.scala 63:27]
-      instValidReg <= 1'h0; // @[1_Fetch.scala 63:42]
-    end else begin
-      instValidReg <= _GEN_0;
-    end
-    if (reset) begin // @[1_Fetch.scala 47:34]
-      pcReg <= 32'h0; // @[1_Fetch.scala 47:34]
-    end else if (updatePC) begin // @[1_Fetch.scala 105:18]
-      if (io_excp_valid) begin // @[1_Fetch.scala 93:18]
-        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 94:24]
+    if (reset) begin // @[1_Fetch.scala 38:34]
+      pcReg <= 32'h0; // @[1_Fetch.scala 38:34]
+    end else if (_preFetchInst_T_3) begin // @[1_Fetch.scala 126:18]
+      if (io_excp_valid) begin // @[1_Fetch.scala 113:18]
+        if (io_excp_bits_isMret) begin // @[1_Fetch.scala 114:24]
           pcReg <= io_mepc;
         end else begin
           pcReg <= io_trapVec;
         end
-      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 98:24]
+      end else if (io_in_execute_bits_brTaken) begin // @[1_Fetch.scala 118:24]
         pcReg <= io_in_execute_bits_targetAddr;
       end else begin
         pcReg <= pcNext4;
       end
     end
-    firstFire <= reset | _GEN_2; // @[Reg.scala 35:{20,20}]
-    if (reset) begin // @[Reg.scala 35:20]
-      sendReq <= 1'h0; // @[Reg.scala 35:20]
-    end else if (_instValid_T) begin // @[1_Fetch.scala 77:28]
-      sendReq <= 1'h0; // @[1_Fetch.scala 77:38]
+    if (reset) begin // @[1_Fetch.scala 44:31]
+      instValidReg <= 1'h0; // @[1_Fetch.scala 44:31]
+    end else if (_T_1) begin // @[1_Fetch.scala 86:27]
+      instValidReg <= 1'h0; // @[1_Fetch.scala 86:42]
     end else begin
-      sendReq <= _GEN_3;
+      instValidReg <= _instValid_T_1;
     end
+    firstFire <= reset | _GEN_2; // @[Reg.scala 35:{20,20}]
     if (_instValid_T) begin // @[Reg.scala 20:18]
       inst_r <= io_rom_resp_bits_data; // @[Reg.scala 20:22]
     end
@@ -128,15 +120,13 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  instValidReg = _RAND_0[0:0];
+  pcReg = _RAND_0[31:0];
   _RAND_1 = {1{`RANDOM}};
-  pcReg = _RAND_1[31:0];
+  instValidReg = _RAND_1[0:0];
   _RAND_2 = {1{`RANDOM}};
   firstFire = _RAND_2[0:0];
   _RAND_3 = {1{`RANDOM}};
-  sendReq = _RAND_3[0:0];
-  _RAND_4 = {1{`RANDOM}};
-  inst_r = _RAND_4[31:0];
+  inst_r = _RAND_3[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -1115,228 +1105,228 @@ module Execute(
   reg [31:0] _RAND_18;
   reg [31:0] _RAND_19;
 `endif // RANDOMIZE_REG_INIT
-  wire [31:0] alu_io_in1; // @[3_Execute.scala 98:29]
-  wire [31:0] alu_io_in2; // @[3_Execute.scala 98:29]
-  wire [3:0] alu_io_opSel; // @[3_Execute.scala 98:29]
-  wire [31:0] alu_io_out; // @[3_Execute.scala 98:29]
-  wire  alu_io_zero; // @[3_Execute.scala 98:29]
-  wire  stall = ~io_out_fetch_ready | ~io_out_memory_ready; // @[3_Execute.scala 79:54]
-  wire  _io_in_ready_T = ~stall; // @[3_Execute.scala 83:21]
+  wire [31:0] alu_io_in1; // @[3_Execute.scala 99:29]
+  wire [31:0] alu_io_in2; // @[3_Execute.scala 99:29]
+  wire [3:0] alu_io_opSel; // @[3_Execute.scala 99:29]
+  wire [31:0] alu_io_out; // @[3_Execute.scala 99:29]
+  wire  alu_io_zero; // @[3_Execute.scala 99:29]
+  wire  stall = ~io_out_fetch_ready & io_out_fetch_bits_brTaken | ~io_out_memory_ready; // @[3_Execute.scala 80:69]
+  wire  _io_in_ready_T = ~stall; // @[3_Execute.scala 84:21]
   wire  executeLatch = io_in_ready & io_in_valid; // @[Decoupled.scala 51:35]
-  reg  stageReg_isBranch; // @[3_Execute.scala 85:27]
-  reg  stageReg_isJump; // @[3_Execute.scala 85:27]
-  reg [1:0] stageReg_resultSrc; // @[3_Execute.scala 85:27]
-  reg [4:0] stageReg_lsuOp; // @[3_Execute.scala 85:27]
-  reg [3:0] stageReg_aluOpSel; // @[3_Execute.scala 85:27]
-  reg  stageReg_immSign; // @[3_Execute.scala 85:27]
-  reg  stageReg_regWrEn; // @[3_Execute.scala 85:27]
-  reg  stageReg_pcAddReg; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_pcNext4; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_aluIn1; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_aluIn2; // @[3_Execute.scala 85:27]
-  reg  stageReg_aluIn1IsReg; // @[3_Execute.scala 85:27]
-  reg  stageReg_aluIn2IsReg; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_imm; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_data2; // @[3_Execute.scala 85:27]
-  reg [3:0] stageReg_excType; // @[3_Execute.scala 85:27]
-  reg [2:0] stageReg_csrOp; // @[3_Execute.scala 85:27]
-  reg  stageReg_instState_commit; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_instState_pc; // @[3_Execute.scala 85:27]
-  reg [31:0] stageReg_instState_inst; // @[3_Execute.scala 85:27]
-  wire [31:0] _GEN_9 = _io_in_ready_T ? 32'h0 : stageReg_aluIn1; // @[3_Execute.scala 88:23 89:18 85:27]
-  wire [31:0] _GEN_10 = _io_in_ready_T ? 32'h0 : stageReg_aluIn2; // @[3_Execute.scala 88:23 89:18 85:27]
-  wire [31:0] _GEN_14 = _io_in_ready_T ? 32'h0 : stageReg_data2; // @[3_Execute.scala 88:23 89:18 85:27]
+  reg  stageReg_isBranch; // @[3_Execute.scala 86:27]
+  reg  stageReg_isJump; // @[3_Execute.scala 86:27]
+  reg [1:0] stageReg_resultSrc; // @[3_Execute.scala 86:27]
+  reg [4:0] stageReg_lsuOp; // @[3_Execute.scala 86:27]
+  reg [3:0] stageReg_aluOpSel; // @[3_Execute.scala 86:27]
+  reg  stageReg_immSign; // @[3_Execute.scala 86:27]
+  reg  stageReg_regWrEn; // @[3_Execute.scala 86:27]
+  reg  stageReg_pcAddReg; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_pcNext4; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_aluIn1; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_aluIn2; // @[3_Execute.scala 86:27]
+  reg  stageReg_aluIn1IsReg; // @[3_Execute.scala 86:27]
+  reg  stageReg_aluIn2IsReg; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_imm; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_data2; // @[3_Execute.scala 86:27]
+  reg [3:0] stageReg_excType; // @[3_Execute.scala 86:27]
+  reg [2:0] stageReg_csrOp; // @[3_Execute.scala 86:27]
+  reg  stageReg_instState_commit; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_instState_pc; // @[3_Execute.scala 86:27]
+  reg [31:0] stageReg_instState_inst; // @[3_Execute.scala 86:27]
+  wire [31:0] _GEN_9 = _io_in_ready_T ? 32'h0 : stageReg_aluIn1; // @[3_Execute.scala 89:23 90:18 86:27]
+  wire [31:0] _GEN_10 = _io_in_ready_T ? 32'h0 : stageReg_aluIn2; // @[3_Execute.scala 89:23 90:18 86:27]
+  wire [31:0] _GEN_14 = _io_in_ready_T ? 32'h0 : stageReg_data2; // @[3_Execute.scala 89:23 90:18 86:27]
   wire [31:0] _hazardData1_T_3 = 2'h1 == io_hazard_in_aluSrc1 ? io_hazard_in_rdValM : stageReg_aluIn1; // @[Mux.scala 81:58]
   wire [31:0] hazardData1 = 2'h2 == io_hazard_in_aluSrc1 ? io_hazard_in_rdValW : _hazardData1_T_3; // @[Mux.scala 81:58]
   wire [31:0] _hazardData2_T_3 = 2'h1 == io_hazard_in_aluSrc2 ? io_hazard_in_rdValM : stageReg_aluIn2; // @[Mux.scala 81:58]
   wire [31:0] hazardData2 = 2'h2 == io_hazard_in_aluSrc2 ? io_hazard_in_rdValW : _hazardData2_T_3; // @[Mux.scala 81:58]
-  wire  _T_6 = io_hazard_in_aluSrc2 != 2'h0; // @[3_Execute.scala 122:55]
-  wire  aluZero = alu_io_zero; // @[3_Execute.scala 130:18 94:23]
-  wire [31:0] _io_out_fetch_bits_targetAddr_T_5 = $signed(stageReg_imm) + $signed(stageReg_instState_pc); // @[3_Execute.scala 136:102]
-  wire [31:0] _io_out_fetch_bits_targetAddr_T_7 = stageReg_imm + stageReg_instState_pc; // @[3_Execute.scala 137:62]
+  wire  _T_6 = io_hazard_in_aluSrc2 != 2'h0; // @[3_Execute.scala 123:55]
+  wire  aluZero = alu_io_zero; // @[3_Execute.scala 131:18 95:23]
+  wire [31:0] _io_out_fetch_bits_targetAddr_T_5 = $signed(stageReg_imm) + $signed(stageReg_instState_pc); // @[3_Execute.scala 137:102]
+  wire [31:0] _io_out_fetch_bits_targetAddr_T_7 = stageReg_imm + stageReg_instState_pc; // @[3_Execute.scala 138:62]
   wire [31:0] _io_out_fetch_bits_targetAddr_T_8 = stageReg_immSign ? _io_out_fetch_bits_targetAddr_T_5 :
-    _io_out_fetch_bits_targetAddr_T_7; // @[3_Execute.scala 135:48]
-  wire [31:0] _io_out_memory_bits_data2_T_3 = io_hazard_in_aluSrc2 == 2'h2 ? io_hazard_in_rdValW : stageReg_data2; // @[3_Execute.scala 150:52]
+    _io_out_fetch_bits_targetAddr_T_7; // @[3_Execute.scala 136:48]
+  wire [31:0] _io_out_memory_bits_data2_T_3 = io_hazard_in_aluSrc2 == 2'h2 ? io_hazard_in_rdValW : stageReg_data2; // @[3_Execute.scala 152:52]
   wire [31:0] _io_out_memory_bits_data2_T_4 = io_hazard_in_aluSrc2 == 2'h1 ? io_hazard_in_rdValM :
-    _io_out_memory_bits_data2_T_3; // @[3_Execute.scala 148:48]
+    _io_out_memory_bits_data2_T_3; // @[3_Execute.scala 150:48]
   wire [11:0] csrAddr = stageReg_instState_inst[31:20]; // @[util.scala 47:36]
-  ALU alu ( // @[3_Execute.scala 98:29]
+  ALU alu ( // @[3_Execute.scala 99:29]
     .io_in1(alu_io_in1),
     .io_in2(alu_io_in2),
     .io_opSel(alu_io_opSel),
     .io_out(alu_io_out),
     .io_zero(alu_io_zero)
   );
-  assign io_in_ready = ~stall; // @[3_Execute.scala 83:21]
-  assign io_out_memory_valid = ~stall; // @[3_Execute.scala 184:39]
-  assign io_out_memory_bits_resultSrc = stageReg_resultSrc; // @[3_Execute.scala 143:37]
-  assign io_out_memory_bits_lsuOp = stageReg_lsuOp; // @[3_Execute.scala 144:37]
-  assign io_out_memory_bits_regWrEn = stageReg_regWrEn; // @[3_Execute.scala 145:37]
-  assign io_out_memory_bits_aluOut = alu_io_out; // @[3_Execute.scala 142:37]
-  assign io_out_memory_bits_data2 = io_hazard_in_aluSrc2 == 2'h0 ? stageReg_data2 : _io_out_memory_bits_data2_T_4; // @[3_Execute.scala 146:43]
-  assign io_out_memory_bits_pcNext4 = stageReg_pcNext4; // @[3_Execute.scala 156:37]
-  assign io_out_memory_bits_csrOp = stageReg_csrOp; // @[3_Execute.scala 163:35]
-  assign io_out_memory_bits_csrWrEn = stageReg_csrOp != 3'h0 & io_csrRead_valid; // @[3_Execute.scala 164:65]
-  assign io_out_memory_bits_csrValid = io_csrRead_valid; // @[3_Execute.scala 165:35]
-  assign io_out_memory_bits_csrWrData = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 114:27]
-  assign io_out_memory_bits_csrAddr = {{20'd0}, csrAddr}; // @[3_Execute.scala 168:35]
-  assign io_out_memory_bits_excType = stageReg_excType; // @[3_Execute.scala 169:35]
-  assign io_out_memory_bits_instState_commit = stageReg_instState_commit; // @[3_Execute.scala 181:35]
-  assign io_out_memory_bits_instState_pc = stageReg_instState_pc; // @[3_Execute.scala 181:35]
-  assign io_out_memory_bits_instState_inst = stageReg_instState_inst; // @[3_Execute.scala 181:35]
-  assign io_out_fetch_bits_brTaken = stageReg_isBranch & aluZero | stageReg_isJump; // @[3_Execute.scala 133:71]
-  assign io_out_fetch_bits_targetAddr = stageReg_pcAddReg ? alu_io_out : _io_out_fetch_bits_targetAddr_T_8; // @[3_Execute.scala 134:43]
+  assign io_in_ready = ~stall; // @[3_Execute.scala 84:21]
+  assign io_out_memory_valid = ~stall; // @[3_Execute.scala 186:39]
+  assign io_out_memory_bits_resultSrc = stageReg_resultSrc; // @[3_Execute.scala 145:37]
+  assign io_out_memory_bits_lsuOp = stageReg_lsuOp; // @[3_Execute.scala 146:37]
+  assign io_out_memory_bits_regWrEn = stageReg_regWrEn; // @[3_Execute.scala 147:37]
+  assign io_out_memory_bits_aluOut = alu_io_out; // @[3_Execute.scala 144:37]
+  assign io_out_memory_bits_data2 = io_hazard_in_aluSrc2 == 2'h0 ? stageReg_data2 : _io_out_memory_bits_data2_T_4; // @[3_Execute.scala 148:43]
+  assign io_out_memory_bits_pcNext4 = stageReg_pcNext4; // @[3_Execute.scala 158:37]
+  assign io_out_memory_bits_csrOp = stageReg_csrOp; // @[3_Execute.scala 165:35]
+  assign io_out_memory_bits_csrWrEn = stageReg_csrOp != 3'h0 & io_csrRead_valid; // @[3_Execute.scala 166:65]
+  assign io_out_memory_bits_csrValid = io_csrRead_valid; // @[3_Execute.scala 167:35]
+  assign io_out_memory_bits_csrWrData = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 115:27]
+  assign io_out_memory_bits_csrAddr = {{20'd0}, csrAddr}; // @[3_Execute.scala 170:35]
+  assign io_out_memory_bits_excType = stageReg_excType; // @[3_Execute.scala 171:35]
+  assign io_out_memory_bits_instState_commit = stageReg_instState_commit; // @[3_Execute.scala 183:35]
+  assign io_out_memory_bits_instState_pc = stageReg_instState_pc; // @[3_Execute.scala 183:35]
+  assign io_out_memory_bits_instState_inst = stageReg_instState_inst; // @[3_Execute.scala 183:35]
+  assign io_out_fetch_bits_brTaken = stageReg_isBranch & aluZero | stageReg_isJump; // @[3_Execute.scala 134:71]
+  assign io_out_fetch_bits_targetAddr = stageReg_pcAddReg ? alu_io_out : _io_out_fetch_bits_targetAddr_T_8; // @[3_Execute.scala 135:43]
   assign io_hazard_out_rs1 = stageReg_instState_inst[19:15]; // @[util.scala 41:31]
   assign io_hazard_out_rs2 = stageReg_instState_inst[24:20]; // @[util.scala 42:31]
-  assign io_hazard_out_resultSrc = stageReg_resultSrc; // @[3_Execute.scala 177:35]
+  assign io_hazard_out_resultSrc = stageReg_resultSrc; // @[3_Execute.scala 179:35]
   assign io_hazard_out_rd = stageReg_instState_inst[11:7]; // @[util.scala 40:31]
-  assign io_csrRead_op = stageReg_csrOp; // @[3_Execute.scala 162:35]
+  assign io_csrRead_op = stageReg_csrOp; // @[3_Execute.scala 164:35]
   assign io_csrRead_addr = stageReg_instState_inst[31:20]; // @[util.scala 47:36]
-  assign alu_io_in1 = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 114:27]
-  assign alu_io_in2 = stageReg_aluIn2IsReg ? hazardData2 : stageReg_aluIn2; // @[3_Execute.scala 116:27]
-  assign alu_io_opSel = stageReg_aluOpSel; // @[3_Execute.scala 129:18]
+  assign alu_io_in1 = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 115:27]
+  assign alu_io_in2 = stageReg_aluIn2IsReg ? hazardData2 : stageReg_aluIn2; // @[3_Execute.scala 117:27]
+  assign alu_io_opSel = stageReg_aluOpSel; // @[3_Execute.scala 130:18]
   always @(posedge clock) begin
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_isBranch <= io_in_bits_isBranch; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_isBranch <= io_in_bits_isBranch; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_isBranch <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_isJump <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_isJump <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_isJump <= io_in_bits_isJump; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_isJump <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_isJump <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_isJump <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_isJump <= io_in_bits_isJump; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_isJump <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_resultSrc <= io_in_bits_resultSrc; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_resultSrc <= io_in_bits_resultSrc; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_lsuOp <= io_in_bits_lsuOp; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_lsuOp <= io_in_bits_lsuOp; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_aluOpSel <= io_in_bits_aluOpSel; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_aluOpSel <= io_in_bits_aluOpSel; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_immSign <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_immSign <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_immSign <= io_in_bits_immSign; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_immSign <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_immSign <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_immSign <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_immSign <= io_in_bits_immSign; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_immSign <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_regWrEn <= io_in_bits_regWrEn; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_regWrEn <= io_in_bits_regWrEn; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_pcAddReg <= io_in_bits_pcAddReg; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_pcAddReg <= io_in_bits_pcAddReg; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (stageReg_aluIn1IsReg & io_hazard_in_aluSrc1 != 2'h0 & stall) begin // @[3_Execute.scala 119:77]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (stageReg_aluIn1IsReg & io_hazard_in_aluSrc1 != 2'h0 & stall) begin // @[3_Execute.scala 120:77]
       if (2'h2 == io_hazard_in_aluSrc1) begin // @[Mux.scala 81:58]
         stageReg_aluIn1 <= io_hazard_in_rdValW;
       end else if (2'h1 == io_hazard_in_aluSrc1) begin // @[Mux.scala 81:58]
         stageReg_aluIn1 <= io_hazard_in_rdValM;
       end
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_aluIn1 <= io_in_bits_aluIn1; // @[3_Execute.scala 87:18]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_aluIn1 <= io_in_bits_aluIn1; // @[3_Execute.scala 88:18]
     end else begin
       stageReg_aluIn1 <= _GEN_9;
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (stageReg_aluIn2IsReg & io_hazard_in_aluSrc2 != 2'h0 & stall) begin // @[3_Execute.scala 122:77]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (stageReg_aluIn2IsReg & io_hazard_in_aluSrc2 != 2'h0 & stall) begin // @[3_Execute.scala 123:77]
       if (2'h2 == io_hazard_in_aluSrc2) begin // @[Mux.scala 81:58]
         stageReg_aluIn2 <= io_hazard_in_rdValW;
       end else if (2'h1 == io_hazard_in_aluSrc2) begin // @[Mux.scala 81:58]
         stageReg_aluIn2 <= io_hazard_in_rdValM;
       end
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_aluIn2 <= io_in_bits_aluIn2; // @[3_Execute.scala 87:18]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_aluIn2 <= io_in_bits_aluIn2; // @[3_Execute.scala 88:18]
     end else begin
       stageReg_aluIn2 <= _GEN_10;
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_aluIn1IsReg <= io_in_bits_aluIn1IsReg; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_aluIn1IsReg <= io_in_bits_aluIn1IsReg; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_aluIn2IsReg <= io_in_bits_aluIn2IsReg; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_aluIn2IsReg <= io_in_bits_aluIn2IsReg; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_imm <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_imm <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_imm <= io_in_bits_imm; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_imm <= 32'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_imm <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_imm <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_imm <= io_in_bits_imm; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_imm <= 32'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_data2 <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (_T_6 & stall) begin // @[3_Execute.scala 125:53]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_data2 <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (_T_6 & stall) begin // @[3_Execute.scala 126:53]
       if (2'h2 == io_hazard_in_aluSrc2) begin // @[Mux.scala 81:58]
         stageReg_data2 <= io_hazard_in_rdValW;
       end else if (2'h1 == io_hazard_in_aluSrc2) begin // @[Mux.scala 81:58]
@@ -1344,57 +1334,57 @@ module Execute(
       end else begin
         stageReg_data2 <= stageReg_aluIn2;
       end
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_data2 <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_data2 <= io_in_bits_data2; // @[3_Execute.scala 87:18]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_data2 <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_data2 <= io_in_bits_data2; // @[3_Execute.scala 88:18]
     end else begin
       stageReg_data2 <= _GEN_14;
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_excType <= 4'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_excType <= 4'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_excType <= io_in_bits_excType; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_excType <= 4'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_excType <= 4'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_excType <= 4'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_excType <= io_in_bits_excType; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_excType <= 4'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_csrOp <= io_in_bits_csrOp; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_csrOp <= io_in_bits_csrOp; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_csrOp <= 3'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_instState_commit <= io_in_bits_instState_commit; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_instState_commit <= io_in_bits_instState_commit; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_instState_commit <= 1'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_instState_pc <= io_in_bits_instState_pc; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 90:18]
     end
-    if (reset) begin // @[3_Execute.scala 85:27]
-      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 85:27]
-    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 92:27]
-      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 92:38]
-    end else if (executeLatch) begin // @[3_Execute.scala 86:24]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[3_Execute.scala 87:18]
-    end else if (_io_in_ready_T) begin // @[3_Execute.scala 88:23]
-      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 89:18]
+    if (reset) begin // @[3_Execute.scala 86:27]
+      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 86:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[3_Execute.scala 93:27]
+      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 93:38]
+    end else if (executeLatch) begin // @[3_Execute.scala 87:24]
+      stageReg_instState_inst <= io_in_bits_instState_inst; // @[3_Execute.scala 88:18]
+    end else if (_io_in_ready_T) begin // @[3_Execute.scala 89:23]
+      stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 90:18]
     end
   end
 // Register and memory initialization
@@ -1563,9 +1553,9 @@ module LSU(
   reg [1:0] s1_offset; // @[LSU.scala 126:24]
   reg [4:0] s1_lsuOp; // @[LSU.scala 127:24]
   wire  _GEN_10 = en & s1_ready ? 1'h0 : s1_ready; // @[LSU.scala 128:32 133:19 75:28]
-  wire  _s1_respReg_T = io_ram_resp_ready & io_ram_resp_valid; // @[Decoupled.scala 51:35]
+  wire  _T_60 = io_ram_resp_ready & io_ram_resp_valid; // @[Decoupled.scala 51:35]
   reg [31:0] s1_respReg_data; // @[Reg.scala 19:16]
-  wire [31:0] _GEN_19 = _s1_respReg_T ? io_ram_resp_bits_data : s1_respReg_data; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _GEN_19 = _T_60 ? io_ram_resp_bits_data : s1_respReg_data; // @[Reg.scala 19:16 20:{18,22}]
   wire [31:0] _ramRdData_T_2 = {8'h0,_GEN_19[31:8]}; // @[Cat.scala 33:92]
   wire [31:0] _ramRdData_T_5 = {16'h0,_GEN_19[31:16]}; // @[Cat.scala 33:92]
   wire [31:0] _ramRdData_T_8 = {24'h0,_GEN_19[31:24]}; // @[Cat.scala 33:92]
@@ -1602,7 +1592,7 @@ module LSU(
   wire [31:0] _io_resp_bits_rdata_T_16 = 2'h1 == s1_width ? _io_resp_bits_rdata_T_7 : _io_resp_bits_rdata_T_14; // @[Mux.scala 81:58]
   wire  _GEN_20 = io_resp_valid | _GEN_10; // @[LSU.scala 160:{25,36}]
   assign io_req_ready = ~busy; // @[LSU.scala 77:21]
-  assign io_resp_valid = _s1_respReg_T & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 159:114]
+  assign io_resp_valid = _T_60 & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 159:114]
   assign io_resp_bits_rdata = 2'h2 == s1_width ? _io_resp_bits_rdata_T_12 : _io_resp_bits_rdata_T_16; // @[Mux.scala 81:58]
   assign io_excp_storeUnalign = wen & _io_excp_storeUnalign_T_7; // @[LSU.scala 88:15 85:26 89:30]
   assign io_ram_req_valid = ~io_excp_storeUnalign & en; // @[LSU.scala 105:47]
@@ -1644,8 +1634,8 @@ module LSU(
     if (en & s1_ready) begin // @[LSU.scala 128:32]
       s1_offset <= offset; // @[LSU.scala 130:19]
     end
-    if (~en) begin // @[LSU.scala 135:21]
-      s1_lsuOp <= 5'h0; // @[LSU.scala 135:32]
+    if (~en & _T_60) begin // @[LSU.scala 135:41]
+      s1_lsuOp <= 5'h0; // @[LSU.scala 135:52]
     end else if (en & s1_ready) begin // @[LSU.scala 128:32]
       if (_s0_reqReg_T) begin // @[Reg.scala 20:18]
         s1_lsuOp <= io_req_bits_lsuOp; // @[Reg.scala 20:22]
@@ -1653,7 +1643,7 @@ module LSU(
         s1_lsuOp <= s0_reqReg_lsuOp; // @[Reg.scala 19:16]
       end
     end
-    if (_s1_respReg_T) begin // @[Reg.scala 20:18]
+    if (_T_60) begin // @[Reg.scala 20:18]
       s1_respReg_data <= io_ram_resp_bits_data; // @[Reg.scala 20:22]
     end
   end
@@ -1811,7 +1801,7 @@ module Mem(
   wire  lsu_io_ram_resp_ready; // @[4_Mem.scala 130:21]
   wire  lsu_io_ram_resp_valid; // @[4_Mem.scala 130:21]
   wire [31:0] lsu_io_ram_resp_bits_data; // @[4_Mem.scala 130:21]
-  wire  ramReady = io_ram_req_ready; // @[4_Mem.scala 141:14 58:28]
+  wire  ramReady = io_ram_req_ready; // @[4_Mem.scala 142:14 58:28]
   reg [4:0] stageReg_lsuOp; // @[4_Mem.scala 68:27]
   wire  needRam = stageReg_lsuOp != 5'h0 & stageReg_lsuOp != 5'h14; // @[4_Mem.scala 77:49]
   wire  stall = ~io_out_ready | ~ramReady & needRam; // @[4_Mem.scala 63:48]
@@ -1869,28 +1859,28 @@ module Mem(
     .io_ram_resp_bits_data(lsu_io_ram_resp_bits_data)
   );
   assign io_in_ready = ~stall; // @[4_Mem.scala 66:20]
-  assign io_out_valid = ~stall; // @[4_Mem.scala 155:32]
-  assign io_out_bits_resultSrc = stageReg_resultSrc; // @[4_Mem.scala 143:29]
-  assign io_out_bits_regWrEn = stageReg_regWrEn; // @[4_Mem.scala 144:29]
-  assign io_out_bits_aluOut = stageReg_aluOut; // @[4_Mem.scala 145:29]
-  assign io_out_bits_pcNext4 = stageReg_pcNext4; // @[4_Mem.scala 146:29]
+  assign io_out_valid = ~stall; // @[4_Mem.scala 156:32]
+  assign io_out_bits_resultSrc = stageReg_resultSrc; // @[4_Mem.scala 144:29]
+  assign io_out_bits_regWrEn = stageReg_regWrEn; // @[4_Mem.scala 145:29]
+  assign io_out_bits_aluOut = stageReg_aluOut; // @[4_Mem.scala 146:29]
+  assign io_out_bits_pcNext4 = stageReg_pcNext4; // @[4_Mem.scala 147:29]
   assign io_out_bits_csrOp = stageReg_csrOp; // @[4_Mem.scala 113:29]
   assign io_out_bits_csrWrEn = stageReg_csrWrEn; // @[4_Mem.scala 114:29]
   assign io_out_bits_csrWrData = stageReg_csrWrData; // @[4_Mem.scala 116:29]
   assign io_out_bits_csrAddr = stageReg_csrAddr[11:0]; // @[4_Mem.scala 117:29]
-  assign io_out_bits_instState_commit = stageReg_instState_commit; // @[4_Mem.scala 147:29]
-  assign io_out_bits_instState_pc = stageReg_instState_pc; // @[4_Mem.scala 147:29]
-  assign io_out_bits_instState_inst = stageReg_instState_inst; // @[4_Mem.scala 147:29]
-  assign io_ram_req_valid = lsu_io_ram_req_valid; // @[4_Mem.scala 140:12]
-  assign io_ram_req_bits_opcode = lsu_io_ram_req_bits_opcode; // @[4_Mem.scala 140:12]
-  assign io_ram_req_bits_address = lsu_io_ram_req_bits_address; // @[4_Mem.scala 140:12]
-  assign io_ram_req_bits_mask = lsu_io_ram_req_bits_mask; // @[4_Mem.scala 140:12]
-  assign io_ram_req_bits_data = lsu_io_ram_req_bits_data; // @[4_Mem.scala 140:12]
-  assign io_lsuData = lsu_io_resp_bits_rdata; // @[4_Mem.scala 138:29]
-  assign io_lsuOK = lsu_io_resp_valid; // @[4_Mem.scala 137:29]
+  assign io_out_bits_instState_commit = stageReg_instState_commit; // @[4_Mem.scala 148:29]
+  assign io_out_bits_instState_pc = stageReg_instState_pc; // @[4_Mem.scala 148:29]
+  assign io_out_bits_instState_inst = stageReg_instState_inst; // @[4_Mem.scala 148:29]
+  assign io_ram_req_valid = lsu_io_ram_req_valid; // @[4_Mem.scala 141:12]
+  assign io_ram_req_bits_opcode = lsu_io_ram_req_bits_opcode; // @[4_Mem.scala 141:12]
+  assign io_ram_req_bits_address = lsu_io_ram_req_bits_address; // @[4_Mem.scala 141:12]
+  assign io_ram_req_bits_mask = lsu_io_ram_req_bits_mask; // @[4_Mem.scala 141:12]
+  assign io_ram_req_bits_data = lsu_io_ram_req_bits_data; // @[4_Mem.scala 141:12]
+  assign io_lsuData = lsu_io_resp_bits_rdata; // @[4_Mem.scala 139:29]
+  assign io_lsuOK = lsu_io_resp_valid; // @[4_Mem.scala 138:29]
   assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 40:31]
-  assign io_hazard_rdVal = stageReg_aluOut; // @[4_Mem.scala 153:29]
-  assign io_hazard_regWrEn = stageReg_regWrEn; // @[4_Mem.scala 152:29]
+  assign io_hazard_rdVal = stageReg_aluOut; // @[4_Mem.scala 154:29]
+  assign io_hazard_regWrEn = stageReg_regWrEn; // @[4_Mem.scala 153:29]
   assign io_excp_valid = ~io_csrBusy & hasTrap & _io_in_ready_T; // @[4_Mem.scala 107:55]
   assign io_excp_bits_isMret = stageReg_excType == 4'h4; // @[4_Mem.scala 110:49]
   assign io_excp_bits_isSret = stageReg_excType == 4'h3; // @[4_Mem.scala 111:49]
@@ -1899,11 +1889,11 @@ module Mem(
   assign lsu_clock = clock;
   assign lsu_reset = reset;
   assign lsu_io_req_valid = ~io_ctrl_flush; // @[4_Mem.scala 132:32]
-  assign lsu_io_req_bits_addr = stageReg_aluOut; // @[4_Mem.scala 133:29]
-  assign lsu_io_req_bits_wdata = stageReg_data2; // @[4_Mem.scala 134:29]
-  assign lsu_io_req_bits_lsuOp = stageReg_lsuOp; // @[4_Mem.scala 136:29]
-  assign lsu_io_ram_resp_valid = io_ram_resp_valid; // @[4_Mem.scala 140:12]
-  assign lsu_io_ram_resp_bits_data = io_ram_resp_bits_data; // @[4_Mem.scala 140:12]
+  assign lsu_io_req_bits_addr = stageReg_aluOut; // @[4_Mem.scala 134:29]
+  assign lsu_io_req_bits_wdata = stageReg_data2; // @[4_Mem.scala 135:29]
+  assign lsu_io_req_bits_lsuOp = stageReg_lsuOp; // @[4_Mem.scala 137:29]
+  assign lsu_io_ram_resp_valid = io_ram_resp_valid; // @[4_Mem.scala 141:12]
+  assign lsu_io_ram_resp_bits_data = io_ram_resp_bits_data; // @[4_Mem.scala 141:12]
   always @(posedge clock) begin
     if (reset) begin // @[4_Mem.scala 68:27]
       stageReg_lsuOp <= 5'h0; // @[4_Mem.scala 68:27]
@@ -2160,112 +2150,112 @@ module WriteBack(
   reg [31:0] _RAND_9;
   reg [31:0] _RAND_10;
 `endif // RANDOMIZE_REG_INIT
-  wire  stall = ~io_lsuOK; // @[5_WriteBack.scala 44:34]
-  wire  _io_in_ready_T = ~stall; // @[5_WriteBack.scala 47:20]
+  wire  stall = ~io_lsuOK; // @[5_WriteBack.scala 43:34]
+  wire  _io_in_ready_T = ~stall; // @[5_WriteBack.scala 46:20]
   wire  writebackLatch = io_in_ready & io_in_valid; // @[Decoupled.scala 51:35]
-  reg [1:0] stageReg_resultSrc; // @[5_WriteBack.scala 49:27]
-  reg  stageReg_regWrEn; // @[5_WriteBack.scala 49:27]
-  reg [31:0] stageReg_aluOut; // @[5_WriteBack.scala 49:27]
-  reg [31:0] stageReg_pcNext4; // @[5_WriteBack.scala 49:27]
-  reg [2:0] stageReg_csrOp; // @[5_WriteBack.scala 49:27]
-  reg  stageReg_csrWrEn; // @[5_WriteBack.scala 49:27]
-  reg [31:0] stageReg_csrWrData; // @[5_WriteBack.scala 49:27]
-  reg [11:0] stageReg_csrAddr; // @[5_WriteBack.scala 49:27]
-  reg  stageReg_instState_commit; // @[5_WriteBack.scala 49:27]
-  reg [31:0] stageReg_instState_pc; // @[5_WriteBack.scala 49:27]
-  reg [31:0] stageReg_instState_inst; // @[5_WriteBack.scala 49:27]
+  reg [1:0] stageReg_resultSrc; // @[5_WriteBack.scala 48:27]
+  reg  stageReg_regWrEn; // @[5_WriteBack.scala 48:27]
+  reg [31:0] stageReg_aluOut; // @[5_WriteBack.scala 48:27]
+  reg [31:0] stageReg_pcNext4; // @[5_WriteBack.scala 48:27]
+  reg [2:0] stageReg_csrOp; // @[5_WriteBack.scala 48:27]
+  reg  stageReg_csrWrEn; // @[5_WriteBack.scala 48:27]
+  reg [31:0] stageReg_csrWrData; // @[5_WriteBack.scala 48:27]
+  reg [11:0] stageReg_csrAddr; // @[5_WriteBack.scala 48:27]
+  reg  stageReg_instState_commit; // @[5_WriteBack.scala 48:27]
+  reg [31:0] stageReg_instState_pc; // @[5_WriteBack.scala 48:27]
+  reg [31:0] stageReg_instState_inst; // @[5_WriteBack.scala 48:27]
   wire [31:0] _rdVal_T_3 = 2'h1 == stageReg_resultSrc ? io_lsuData : stageReg_aluOut; // @[Mux.scala 81:58]
-  assign io_in_ready = ~stall; // @[5_WriteBack.scala 47:20]
-  assign io_instState_commit = stageReg_instState_commit & _io_in_ready_T; // @[5_WriteBack.scala 76:55]
-  assign io_instState_pc = stageReg_instState_pc; // @[5_WriteBack.scala 75:26]
-  assign io_instState_inst = stageReg_instState_inst; // @[5_WriteBack.scala 75:26]
+  assign io_in_ready = ~stall; // @[5_WriteBack.scala 46:20]
+  assign io_instState_commit = stageReg_instState_commit & _io_in_ready_T; // @[5_WriteBack.scala 75:55]
+  assign io_instState_pc = stageReg_instState_pc; // @[5_WriteBack.scala 74:26]
+  assign io_instState_inst = stageReg_instState_inst; // @[5_WriteBack.scala 74:26]
   assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 40:31]
   assign io_hazard_rdVal = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
-  assign io_hazard_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 81:26]
+  assign io_hazard_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 80:26]
   assign io_regfile_rd = stageReg_instState_inst[11:7]; // @[util.scala 40:31]
-  assign io_regfile_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 68:26]
+  assign io_regfile_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 67:26]
   assign io_regfile_regWrData = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
-  assign io_csrWrite_op = stageReg_csrWrEn ? stageReg_csrOp : 3'h1; // @[5_WriteBack.scala 72:32]
-  assign io_csrWrite_addr = stageReg_csrAddr; // @[5_WriteBack.scala 70:26]
-  assign io_csrWrite_data = stageReg_csrWrData; // @[5_WriteBack.scala 71:26]
-  assign io_csrWrite_retired = stageReg_instState_commit & _io_in_ready_T; // @[5_WriteBack.scala 73:55]
+  assign io_csrWrite_op = stageReg_csrWrEn ? stageReg_csrOp : 3'h1; // @[5_WriteBack.scala 71:32]
+  assign io_csrWrite_addr = stageReg_csrAddr; // @[5_WriteBack.scala 69:26]
+  assign io_csrWrite_data = stageReg_csrWrData; // @[5_WriteBack.scala 70:26]
+  assign io_csrWrite_retired = stageReg_instState_commit & _io_in_ready_T; // @[5_WriteBack.scala 72:55]
   always @(posedge clock) begin
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_resultSrc <= 2'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_resultSrc <= io_in_bits_resultSrc; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_resultSrc <= 2'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_resultSrc <= 2'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_resultSrc <= io_in_bits_resultSrc; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_resultSrc <= 2'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_regWrEn <= 1'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_regWrEn <= io_in_bits_regWrEn; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_regWrEn <= 1'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_regWrEn <= 1'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_regWrEn <= io_in_bits_regWrEn; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_regWrEn <= 1'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_aluOut <= 32'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_aluOut <= io_in_bits_aluOut; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_aluOut <= 32'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_aluOut <= 32'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_aluOut <= io_in_bits_aluOut; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_aluOut <= 32'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_pcNext4 <= 32'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_pcNext4 <= 32'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_pcNext4 <= 32'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_pcNext4 <= 32'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_csrOp <= 3'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrOp <= io_in_bits_csrOp; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_csrOp <= 3'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_csrOp <= 3'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_csrOp <= io_in_bits_csrOp; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_csrOp <= 3'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_csrWrEn <= 1'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrWrEn <= io_in_bits_csrWrEn; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_csrWrEn <= 1'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_csrWrEn <= 1'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_csrWrEn <= io_in_bits_csrWrEn; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_csrWrEn <= 1'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_csrWrData <= 32'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrWrData <= io_in_bits_csrWrData; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_csrWrData <= 32'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_csrWrData <= 32'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_csrWrData <= io_in_bits_csrWrData; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_csrWrData <= 32'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_csrAddr <= 12'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrAddr <= io_in_bits_csrAddr; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_csrAddr <= 12'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_csrAddr <= 12'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_csrAddr <= io_in_bits_csrAddr; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_csrAddr <= 12'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_instState_commit <= 1'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_instState_commit <= io_in_bits_instState_commit; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_instState_commit <= 1'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_instState_commit <= 1'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_instState_commit <= io_in_bits_instState_commit; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_instState_commit <= 1'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_instState_pc <= 32'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_instState_pc <= 32'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_instState_pc <= 32'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_instState_pc <= io_in_bits_instState_pc; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_instState_pc <= 32'h0; // @[5_WriteBack.scala 52:18]
     end
-    if (reset) begin // @[5_WriteBack.scala 49:27]
-      stageReg_instState_inst <= 32'h0; // @[5_WriteBack.scala 49:27]
-    end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[5_WriteBack.scala 51:18]
-    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 52:23]
-      stageReg_instState_inst <= 32'h0; // @[5_WriteBack.scala 53:18]
+    if (reset) begin // @[5_WriteBack.scala 48:27]
+      stageReg_instState_inst <= 32'h0; // @[5_WriteBack.scala 48:27]
+    end else if (writebackLatch) begin // @[5_WriteBack.scala 49:26]
+      stageReg_instState_inst <= io_in_bits_instState_inst; // @[5_WriteBack.scala 50:18]
+    end else if (_io_in_ready_T) begin // @[5_WriteBack.scala 51:23]
+      stageReg_instState_inst <= 32'h0; // @[5_WriteBack.scala 52:18]
     end
   end
 // Register and memory initialization
@@ -2342,7 +2332,7 @@ module PipelineCtrl(
   output  io_out_memory_flush
 );
   assign io_out_decode_flush = io_in_brTaken | io_in_excpValid; // @[PipelineCtrl.scala 35:38]
-  assign io_out_execute_flush = io_in_brTaken | io_in_excpValid; // @[PipelineCtrl.scala 36:40]
+  assign io_out_execute_flush = io_in_brTaken; // @[PipelineCtrl.scala 31:35]
   assign io_out_memory_flush = io_in_excpValid; // @[PipelineCtrl.scala 37:25]
 endmodule
 module HazardUnit(
@@ -3541,200 +3531,167 @@ module TLBusMux(
   assign io_out_bits_mask = io_choseOH_1 ? io_in_1_bits_mask : 4'h0; // @[Mux.scala 27:73]
   assign io_out_bits_data = io_choseOH_1 ? io_in_1_bits_data : 32'h0; // @[Mux.scala 27:73]
 endmodule
-module Queue(
+module PingPongBuf(
   input         clock,
   input         reset,
-  output        io_enq_ready,
-  input         io_enq_valid,
-  input  [2:0]  io_enq_bits_opcode,
-  input         io_enq_bits_source,
-  input  [31:0] io_enq_bits_address,
-  input  [3:0]  io_enq_bits_mask,
-  input  [31:0] io_enq_bits_data,
-  input         io_deq_ready,
-  output        io_deq_valid,
-  output [2:0]  io_deq_bits_opcode,
-  output        io_deq_bits_source,
-  output [31:0] io_deq_bits_address,
-  output [3:0]  io_deq_bits_mask,
-  output [31:0] io_deq_bits_data
+  output        io_in_ready,
+  input         io_in_valid,
+  input  [2:0]  io_in_bits_opcode,
+  input         io_in_bits_source,
+  input  [31:0] io_in_bits_address,
+  input  [3:0]  io_in_bits_mask,
+  input  [31:0] io_in_bits_data,
+  input         io_out_ready,
+  output        io_out_valid,
+  output [2:0]  io_out_bits_opcode,
+  output        io_out_bits_source,
+  output [31:0] io_out_bits_address,
+  output [3:0]  io_out_bits_mask,
+  output [31:0] io_out_bits_data
 );
-`ifdef RANDOMIZE_GARBAGE_ASSIGN
-  reg [31:0] _RAND_1;
-  reg [31:0] _RAND_3;
-  reg [31:0] _RAND_5;
-  reg [31:0] _RAND_7;
-  reg [31:0] _RAND_9;
-`endif // RANDOMIZE_GARBAGE_ASSIGN
-`ifdef RANDOMIZE_MEM_INIT
-  reg [31:0] _RAND_0;
-  reg [31:0] _RAND_2;
-  reg [31:0] _RAND_4;
-  reg [31:0] _RAND_6;
-  reg [31:0] _RAND_8;
-`endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
+  reg [31:0] _RAND_0;
+  reg [31:0] _RAND_1;
+  reg [31:0] _RAND_2;
+  reg [31:0] _RAND_3;
+  reg [31:0] _RAND_4;
+  reg [31:0] _RAND_5;
+  reg [31:0] _RAND_6;
+  reg [31:0] _RAND_7;
+  reg [31:0] _RAND_8;
+  reg [31:0] _RAND_9;
   reg [31:0] _RAND_10;
   reg [31:0] _RAND_11;
   reg [31:0] _RAND_12;
 `endif // RANDOMIZE_REG_INIT
-  reg [2:0] ram_opcode [0:2]; // @[Decoupled.scala 273:95]
-  wire  ram_opcode_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_opcode_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [2:0] ram_opcode_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [2:0] ram_opcode_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_opcode_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_opcode_MPORT_mask; // @[Decoupled.scala 273:95]
-  wire  ram_opcode_MPORT_en; // @[Decoupled.scala 273:95]
-  reg  ram_source [0:2]; // @[Decoupled.scala 273:95]
-  wire  ram_source_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_source_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_source_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire  ram_source_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_source_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_source_MPORT_mask; // @[Decoupled.scala 273:95]
-  wire  ram_source_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_address [0:2]; // @[Decoupled.scala 273:95]
-  wire  ram_address_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_address_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_address_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_address_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_address_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_address_MPORT_mask; // @[Decoupled.scala 273:95]
-  wire  ram_address_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [3:0] ram_mask [0:2]; // @[Decoupled.scala 273:95]
-  wire  ram_mask_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_mask_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [3:0] ram_mask_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [3:0] ram_mask_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_mask_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_mask_MPORT_mask; // @[Decoupled.scala 273:95]
-  wire  ram_mask_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_data [0:2]; // @[Decoupled.scala 273:95]
-  wire  ram_data_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_data_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_data_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_data_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [1:0] ram_data_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire  ram_data_MPORT_mask; // @[Decoupled.scala 273:95]
-  wire  ram_data_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [1:0] enq_ptr_value; // @[Counter.scala 61:40]
-  reg [1:0] deq_ptr_value; // @[Counter.scala 61:40]
-  reg  maybe_full; // @[Decoupled.scala 276:27]
-  wire  ptr_match = enq_ptr_value == deq_ptr_value; // @[Decoupled.scala 277:33]
-  wire  empty = ptr_match & ~maybe_full; // @[Decoupled.scala 278:25]
-  wire  full = ptr_match & maybe_full; // @[Decoupled.scala 279:24]
-  wire  do_enq = io_enq_ready & io_enq_valid; // @[Decoupled.scala 51:35]
-  wire  do_deq = io_deq_ready & io_deq_valid; // @[Decoupled.scala 51:35]
-  wire  wrap = enq_ptr_value == 2'h2; // @[Counter.scala 73:24]
-  wire [1:0] _value_T_1 = enq_ptr_value + 2'h1; // @[Counter.scala 77:24]
-  wire  wrap_1 = deq_ptr_value == 2'h2; // @[Counter.scala 73:24]
-  wire [1:0] _value_T_3 = deq_ptr_value + 2'h1; // @[Counter.scala 77:24]
-  assign ram_opcode_io_deq_bits_MPORT_en = 1'h1;
-  assign ram_opcode_io_deq_bits_MPORT_addr = deq_ptr_value;
-  `ifndef RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_opcode_io_deq_bits_MPORT_data = ram_opcode[ram_opcode_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `else
-  assign ram_opcode_io_deq_bits_MPORT_data = ram_opcode_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_1[2:0] :
-    ram_opcode[ram_opcode_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `endif // RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_opcode_MPORT_data = io_enq_bits_opcode;
-  assign ram_opcode_MPORT_addr = enq_ptr_value;
-  assign ram_opcode_MPORT_mask = 1'h1;
-  assign ram_opcode_MPORT_en = io_enq_ready & io_enq_valid;
-  assign ram_source_io_deq_bits_MPORT_en = 1'h1;
-  assign ram_source_io_deq_bits_MPORT_addr = deq_ptr_value;
-  `ifndef RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_source_io_deq_bits_MPORT_data = ram_source[ram_source_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `else
-  assign ram_source_io_deq_bits_MPORT_data = ram_source_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_3[0:0] :
-    ram_source[ram_source_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `endif // RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_source_MPORT_data = io_enq_bits_source;
-  assign ram_source_MPORT_addr = enq_ptr_value;
-  assign ram_source_MPORT_mask = 1'h1;
-  assign ram_source_MPORT_en = io_enq_ready & io_enq_valid;
-  assign ram_address_io_deq_bits_MPORT_en = 1'h1;
-  assign ram_address_io_deq_bits_MPORT_addr = deq_ptr_value;
-  `ifndef RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_address_io_deq_bits_MPORT_data = ram_address[ram_address_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `else
-  assign ram_address_io_deq_bits_MPORT_data = ram_address_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_5[31:0] :
-    ram_address[ram_address_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `endif // RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_address_MPORT_data = io_enq_bits_address;
-  assign ram_address_MPORT_addr = enq_ptr_value;
-  assign ram_address_MPORT_mask = 1'h1;
-  assign ram_address_MPORT_en = io_enq_ready & io_enq_valid;
-  assign ram_mask_io_deq_bits_MPORT_en = 1'h1;
-  assign ram_mask_io_deq_bits_MPORT_addr = deq_ptr_value;
-  `ifndef RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_mask_io_deq_bits_MPORT_data = ram_mask[ram_mask_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `else
-  assign ram_mask_io_deq_bits_MPORT_data = ram_mask_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_7[3:0] :
-    ram_mask[ram_mask_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `endif // RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_mask_MPORT_data = io_enq_bits_mask;
-  assign ram_mask_MPORT_addr = enq_ptr_value;
-  assign ram_mask_MPORT_mask = 1'h1;
-  assign ram_mask_MPORT_en = io_enq_ready & io_enq_valid;
-  assign ram_data_io_deq_bits_MPORT_en = 1'h1;
-  assign ram_data_io_deq_bits_MPORT_addr = deq_ptr_value;
-  `ifndef RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_data_io_deq_bits_MPORT_data = ram_data[ram_data_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `else
-  assign ram_data_io_deq_bits_MPORT_data = ram_data_io_deq_bits_MPORT_addr >= 2'h3 ? _RAND_9[31:0] :
-    ram_data[ram_data_io_deq_bits_MPORT_addr]; // @[Decoupled.scala 273:95]
-  `endif // RANDOMIZE_GARBAGE_ASSIGN
-  assign ram_data_MPORT_data = io_enq_bits_data;
-  assign ram_data_MPORT_addr = enq_ptr_value;
-  assign ram_data_MPORT_mask = 1'h1;
-  assign ram_data_MPORT_en = io_enq_ready & io_enq_valid;
-  assign io_enq_ready = ~full; // @[Decoupled.scala 303:19]
-  assign io_deq_valid = ~empty; // @[Decoupled.scala 302:19]
-  assign io_deq_bits_opcode = ram_opcode_io_deq_bits_MPORT_data; // @[Decoupled.scala 310:17]
-  assign io_deq_bits_source = ram_source_io_deq_bits_MPORT_data; // @[Decoupled.scala 310:17]
-  assign io_deq_bits_address = ram_address_io_deq_bits_MPORT_data; // @[Decoupled.scala 310:17]
-  assign io_deq_bits_mask = ram_mask_io_deq_bits_MPORT_data; // @[Decoupled.scala 310:17]
-  assign io_deq_bits_data = ram_data_io_deq_bits_MPORT_data; // @[Decoupled.scala 310:17]
+  reg  ptr; // @[Counter.scala 61:40]
+  wire  _ptr_wrap_value_T_1 = ptr + 1'h1; // @[Counter.scala 77:24]
+  reg [2:0] buf_0_opcode; // @[PingPongBuf.scala 21:22]
+  reg  buf_0_source; // @[PingPongBuf.scala 21:22]
+  reg [31:0] buf_0_address; // @[PingPongBuf.scala 21:22]
+  reg [3:0] buf_0_mask; // @[PingPongBuf.scala 21:22]
+  reg [31:0] buf_0_data; // @[PingPongBuf.scala 21:22]
+  reg [2:0] buf_1_opcode; // @[PingPongBuf.scala 21:22]
+  reg  buf_1_source; // @[PingPongBuf.scala 21:22]
+  reg [31:0] buf_1_address; // @[PingPongBuf.scala 21:22]
+  reg [3:0] buf_1_mask; // @[PingPongBuf.scala 21:22]
+  reg [31:0] buf_1_data; // @[PingPongBuf.scala 21:22]
+  reg  bufValid_0; // @[PingPongBuf.scala 22:27]
+  reg  bufValid_1; // @[PingPongBuf.scala 22:27]
+  wire  _T = ~ptr; // @[PingPongBuf.scala 24:14]
+  wire  _T_1 = io_in_ready & io_in_valid; // @[Decoupled.scala 51:35]
+  wire  _GEN_2 = _T_1 | bufValid_0; // @[PingPongBuf.scala 26:26 27:25 22:27]
+  wire  _GEN_11 = _T_1 | bufValid_1; // @[PingPongBuf.scala 32:26 33:25 22:27]
+  wire  _GEN_21 = ~ptr ? _GEN_2 : bufValid_0; // @[PingPongBuf.scala 24:23 22:27]
+  wire  _GEN_30 = ~ptr ? bufValid_1 : _GEN_11; // @[PingPongBuf.scala 24:23 22:27]
+  wire  _T_4 = io_out_ready & io_out_valid; // @[Decoupled.scala 51:35]
+  wire [2:0] _GEN_48 = _T_4 ? buf_0_opcode : buf_1_opcode; // @[PingPongBuf.scala 39:21 49:27 50:25]
+  wire  _GEN_51 = _T_4 ? buf_0_source : buf_1_source; // @[PingPongBuf.scala 39:21 49:27 50:25]
+  wire [31:0] _GEN_52 = _T_4 ? buf_0_address : buf_1_address; // @[PingPongBuf.scala 39:21 49:27 50:25]
+  wire [3:0] _GEN_53 = _T_4 ? buf_0_mask : buf_1_mask; // @[PingPongBuf.scala 39:21 49:27 50:25]
+  wire [31:0] _GEN_55 = _T_4 ? buf_0_data : buf_1_data; // @[PingPongBuf.scala 39:21 49:27 50:25]
+  assign io_in_ready = ~ptr ? ~bufValid_0 : ~bufValid_1; // @[PingPongBuf.scala 24:23 25:21 31:21]
+  assign io_out_valid = _T ? bufValid_1 : bufValid_0; // @[PingPongBuf.scala 41:23 42:22 48:22]
+  assign io_out_bits_opcode = _T ? buf_1_opcode : _GEN_48; // @[PingPongBuf.scala 41:23]
+  assign io_out_bits_source = _T ? buf_1_source : _GEN_51; // @[PingPongBuf.scala 41:23]
+  assign io_out_bits_address = _T ? buf_1_address : _GEN_52; // @[PingPongBuf.scala 41:23]
+  assign io_out_bits_mask = _T ? buf_1_mask : _GEN_53; // @[PingPongBuf.scala 41:23]
+  assign io_out_bits_data = _T ? buf_1_data : _GEN_55; // @[PingPongBuf.scala 41:23]
   always @(posedge clock) begin
-    if (ram_opcode_MPORT_en & ram_opcode_MPORT_mask) begin
-      ram_opcode[ram_opcode_MPORT_addr] <= ram_opcode_MPORT_data; // @[Decoupled.scala 273:95]
-    end
-    if (ram_source_MPORT_en & ram_source_MPORT_mask) begin
-      ram_source[ram_source_MPORT_addr] <= ram_source_MPORT_data; // @[Decoupled.scala 273:95]
-    end
-    if (ram_address_MPORT_en & ram_address_MPORT_mask) begin
-      ram_address[ram_address_MPORT_addr] <= ram_address_MPORT_data; // @[Decoupled.scala 273:95]
-    end
-    if (ram_mask_MPORT_en & ram_mask_MPORT_mask) begin
-      ram_mask[ram_mask_MPORT_addr] <= ram_mask_MPORT_data; // @[Decoupled.scala 273:95]
-    end
-    if (ram_data_MPORT_en & ram_data_MPORT_mask) begin
-      ram_data[ram_data_MPORT_addr] <= ram_data_MPORT_data; // @[Decoupled.scala 273:95]
-    end
     if (reset) begin // @[Counter.scala 61:40]
-      enq_ptr_value <= 2'h0; // @[Counter.scala 61:40]
-    end else if (do_enq) begin // @[Decoupled.scala 286:16]
-      if (wrap) begin // @[Counter.scala 87:20]
-        enq_ptr_value <= 2'h0; // @[Counter.scala 87:28]
-      end else begin
-        enq_ptr_value <= _value_T_1; // @[Counter.scala 77:15]
+      ptr <= 1'h0; // @[Counter.scala 61:40]
+    end else begin
+      ptr <= _ptr_wrap_value_T_1;
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_0_opcode <= 3'h0; // @[PingPongBuf.scala 21:22]
+    end else if (~ptr) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 26:26]
+        buf_0_opcode <= io_in_bits_opcode; // @[PingPongBuf.scala 28:20]
       end
     end
-    if (reset) begin // @[Counter.scala 61:40]
-      deq_ptr_value <= 2'h0; // @[Counter.scala 61:40]
-    end else if (do_deq) begin // @[Decoupled.scala 290:16]
-      if (wrap_1) begin // @[Counter.scala 87:20]
-        deq_ptr_value <= 2'h0; // @[Counter.scala 87:28]
-      end else begin
-        deq_ptr_value <= _value_T_3; // @[Counter.scala 77:15]
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_0_source <= 1'h0; // @[PingPongBuf.scala 21:22]
+    end else if (~ptr) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 26:26]
+        buf_0_source <= io_in_bits_source; // @[PingPongBuf.scala 28:20]
       end
     end
-    if (reset) begin // @[Decoupled.scala 276:27]
-      maybe_full <= 1'h0; // @[Decoupled.scala 276:27]
-    end else if (do_enq != do_deq) begin // @[Decoupled.scala 293:27]
-      maybe_full <= do_enq; // @[Decoupled.scala 294:16]
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_0_address <= 32'h0; // @[PingPongBuf.scala 21:22]
+    end else if (~ptr) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 26:26]
+        buf_0_address <= io_in_bits_address; // @[PingPongBuf.scala 28:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_0_mask <= 4'h0; // @[PingPongBuf.scala 21:22]
+    end else if (~ptr) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 26:26]
+        buf_0_mask <= io_in_bits_mask; // @[PingPongBuf.scala 28:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_0_data <= 32'h0; // @[PingPongBuf.scala 21:22]
+    end else if (~ptr) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 26:26]
+        buf_0_data <= io_in_bits_data; // @[PingPongBuf.scala 28:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_1_opcode <= 3'h0; // @[PingPongBuf.scala 21:22]
+    end else if (!(~ptr)) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 32:26]
+        buf_1_opcode <= io_in_bits_opcode; // @[PingPongBuf.scala 34:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_1_source <= 1'h0; // @[PingPongBuf.scala 21:22]
+    end else if (!(~ptr)) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 32:26]
+        buf_1_source <= io_in_bits_source; // @[PingPongBuf.scala 34:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_1_address <= 32'h0; // @[PingPongBuf.scala 21:22]
+    end else if (!(~ptr)) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 32:26]
+        buf_1_address <= io_in_bits_address; // @[PingPongBuf.scala 34:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_1_mask <= 4'h0; // @[PingPongBuf.scala 21:22]
+    end else if (!(~ptr)) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 32:26]
+        buf_1_mask <= io_in_bits_mask; // @[PingPongBuf.scala 34:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 21:22]
+      buf_1_data <= 32'h0; // @[PingPongBuf.scala 21:22]
+    end else if (!(~ptr)) begin // @[PingPongBuf.scala 24:23]
+      if (_T_1) begin // @[PingPongBuf.scala 32:26]
+        buf_1_data <= io_in_bits_data; // @[PingPongBuf.scala 34:20]
+      end
+    end
+    if (reset) begin // @[PingPongBuf.scala 22:27]
+      bufValid_0 <= 1'h0; // @[PingPongBuf.scala 22:27]
+    end else if (_T) begin // @[PingPongBuf.scala 41:23]
+      bufValid_0 <= _GEN_21;
+    end else if (_T_4) begin // @[PingPongBuf.scala 49:27]
+      bufValid_0 <= 1'h0; // @[PingPongBuf.scala 51:25]
+    end else begin
+      bufValid_0 <= _GEN_21;
+    end
+    if (reset) begin // @[PingPongBuf.scala 22:27]
+      bufValid_1 <= 1'h0; // @[PingPongBuf.scala 22:27]
+    end else if (_T) begin // @[PingPongBuf.scala 41:23]
+      if (_T_4) begin // @[PingPongBuf.scala 43:27]
+        bufValid_1 <= 1'h0; // @[PingPongBuf.scala 45:25]
+      end else begin
+        bufValid_1 <= _GEN_30;
+      end
+    end else begin
+      bufValid_1 <= _GEN_30;
     end
   end
 // Register and memory initialization
@@ -3772,37 +3729,33 @@ initial begin
         #0.002 begin end
       `endif
     `endif
-`ifdef RANDOMIZE_GARBAGE_ASSIGN
-  _RAND_1 = {1{`RANDOM}};
-  _RAND_3 = {1{`RANDOM}};
-  _RAND_5 = {1{`RANDOM}};
-  _RAND_7 = {1{`RANDOM}};
-  _RAND_9 = {1{`RANDOM}};
-`endif // RANDOMIZE_GARBAGE_ASSIGN
-`ifdef RANDOMIZE_MEM_INIT
-  _RAND_0 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 3; initvar = initvar+1)
-    ram_opcode[initvar] = _RAND_0[2:0];
-  _RAND_2 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 3; initvar = initvar+1)
-    ram_source[initvar] = _RAND_2[0:0];
-  _RAND_4 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 3; initvar = initvar+1)
-    ram_address[initvar] = _RAND_4[31:0];
-  _RAND_6 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 3; initvar = initvar+1)
-    ram_mask[initvar] = _RAND_6[3:0];
-  _RAND_8 = {1{`RANDOM}};
-  for (initvar = 0; initvar < 3; initvar = initvar+1)
-    ram_data[initvar] = _RAND_8[31:0];
-`endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
+  _RAND_0 = {1{`RANDOM}};
+  ptr = _RAND_0[0:0];
+  _RAND_1 = {1{`RANDOM}};
+  buf_0_opcode = _RAND_1[2:0];
+  _RAND_2 = {1{`RANDOM}};
+  buf_0_source = _RAND_2[0:0];
+  _RAND_3 = {1{`RANDOM}};
+  buf_0_address = _RAND_3[31:0];
+  _RAND_4 = {1{`RANDOM}};
+  buf_0_mask = _RAND_4[3:0];
+  _RAND_5 = {1{`RANDOM}};
+  buf_0_data = _RAND_5[31:0];
+  _RAND_6 = {1{`RANDOM}};
+  buf_1_opcode = _RAND_6[2:0];
+  _RAND_7 = {1{`RANDOM}};
+  buf_1_source = _RAND_7[0:0];
+  _RAND_8 = {1{`RANDOM}};
+  buf_1_address = _RAND_8[31:0];
+  _RAND_9 = {1{`RANDOM}};
+  buf_1_mask = _RAND_9[3:0];
   _RAND_10 = {1{`RANDOM}};
-  enq_ptr_value = _RAND_10[1:0];
+  buf_1_data = _RAND_10[31:0];
   _RAND_11 = {1{`RANDOM}};
-  deq_ptr_value = _RAND_11[1:0];
+  bufValid_0 = _RAND_11[0:0];
   _RAND_12 = {1{`RANDOM}};
-  maybe_full = _RAND_12[0:0];
+  bufValid_1 = _RAND_12[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -3842,7 +3795,7 @@ module TLBusMux_1(
   assign io_out_valid = io_choseOH_0 & io_in_0_valid | io_choseOH_1 & io_in_1_valid; // @[Mux.scala 27:73]
   assign io_out_bits_data = _io_out_bits_T | _io_out_bits_T_1; // @[Mux.scala 27:73]
 endmodule
-module TLXbar(
+module TLXbar_1(
   input         clock,
   input         reset,
   output        io_masterFace_in_0_ready,
@@ -3885,84 +3838,84 @@ module TLXbar(
   reg [31:0] _RAND_5;
   reg [31:0] _RAND_6;
 `endif // RANDOMIZE_REG_INIT
-  wire  reqArb_clock; // @[Bus.scala 178:24]
-  wire  reqArb_reset; // @[Bus.scala 178:24]
-  wire  reqArb_io_reqs_1; // @[Bus.scala 178:24]
-  wire [1:0] reqArb_io_grantOH; // @[Bus.scala 178:24]
-  wire  reqMux_io_in_0_valid; // @[Bus.scala 181:24]
-  wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 181:24]
-  wire  reqMux_io_in_1_valid; // @[Bus.scala 181:24]
-  wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 181:24]
-  wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 181:24]
-  wire [3:0] reqMux_io_in_1_bits_mask; // @[Bus.scala 181:24]
-  wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 181:24]
-  wire  reqMux_io_out_valid; // @[Bus.scala 181:24]
-  wire [2:0] reqMux_io_out_bits_opcode; // @[Bus.scala 181:24]
-  wire  reqMux_io_out_bits_source; // @[Bus.scala 181:24]
-  wire [31:0] reqMux_io_out_bits_address; // @[Bus.scala 181:24]
-  wire [3:0] reqMux_io_out_bits_mask; // @[Bus.scala 181:24]
-  wire [31:0] reqMux_io_out_bits_data; // @[Bus.scala 181:24]
-  wire  reqMux_io_choseOH_0; // @[Bus.scala 181:24]
-  wire  reqMux_io_choseOH_1; // @[Bus.scala 181:24]
-  wire  buf__clock; // @[Bus.scala 185:21]
-  wire  buf__reset; // @[Bus.scala 185:21]
-  wire  buf__io_enq_ready; // @[Bus.scala 185:21]
-  wire  buf__io_enq_valid; // @[Bus.scala 185:21]
-  wire [2:0] buf__io_enq_bits_opcode; // @[Bus.scala 185:21]
-  wire  buf__io_enq_bits_source; // @[Bus.scala 185:21]
-  wire [31:0] buf__io_enq_bits_address; // @[Bus.scala 185:21]
-  wire [3:0] buf__io_enq_bits_mask; // @[Bus.scala 185:21]
-  wire [31:0] buf__io_enq_bits_data; // @[Bus.scala 185:21]
-  wire  buf__io_deq_ready; // @[Bus.scala 185:21]
-  wire  buf__io_deq_valid; // @[Bus.scala 185:21]
-  wire [2:0] buf__io_deq_bits_opcode; // @[Bus.scala 185:21]
-  wire  buf__io_deq_bits_source; // @[Bus.scala 185:21]
-  wire [31:0] buf__io_deq_bits_address; // @[Bus.scala 185:21]
-  wire [3:0] buf__io_deq_bits_mask; // @[Bus.scala 185:21]
-  wire [31:0] buf__io_deq_bits_data; // @[Bus.scala 185:21]
-  wire [31:0] addrDec_io_addr; // @[Bus.scala 198:25]
-  wire  addrDec_io_choseOH_0; // @[Bus.scala 198:25]
-  wire  addrDec_io_choseOH_1; // @[Bus.scala 198:25]
-  wire  slaveMux_io_in_0_ready; // @[Bus.scala 232:26]
-  wire  slaveMux_io_in_0_valid; // @[Bus.scala 232:26]
-  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 232:26]
-  wire  slaveMux_io_in_1_ready; // @[Bus.scala 232:26]
-  wire  slaveMux_io_in_1_valid; // @[Bus.scala 232:26]
-  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 232:26]
-  wire  slaveMux_io_out_ready; // @[Bus.scala 232:26]
-  wire  slaveMux_io_out_valid; // @[Bus.scala 232:26]
-  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 232:26]
-  wire  slaveMux_io_choseOH_0; // @[Bus.scala 232:26]
-  wire  slaveMux_io_choseOH_1; // @[Bus.scala 232:26]
-  wire [1:0] _WIRE_1 = reqArb_io_grantOH; // @[Bus.scala 183:{52,52}]
-  wire  _bufData_T = buf__io_deq_ready & buf__io_deq_valid; // @[Decoupled.scala 51:35]
+  wire  reqArb_clock; // @[Bus.scala 237:24]
+  wire  reqArb_reset; // @[Bus.scala 237:24]
+  wire  reqArb_io_reqs_1; // @[Bus.scala 237:24]
+  wire [1:0] reqArb_io_grantOH; // @[Bus.scala 237:24]
+  wire  reqMux_io_in_0_valid; // @[Bus.scala 240:24]
+  wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 240:24]
+  wire  reqMux_io_in_1_valid; // @[Bus.scala 240:24]
+  wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 240:24]
+  wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 240:24]
+  wire [3:0] reqMux_io_in_1_bits_mask; // @[Bus.scala 240:24]
+  wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 240:24]
+  wire  reqMux_io_out_valid; // @[Bus.scala 240:24]
+  wire [2:0] reqMux_io_out_bits_opcode; // @[Bus.scala 240:24]
+  wire  reqMux_io_out_bits_source; // @[Bus.scala 240:24]
+  wire [31:0] reqMux_io_out_bits_address; // @[Bus.scala 240:24]
+  wire [3:0] reqMux_io_out_bits_mask; // @[Bus.scala 240:24]
+  wire [31:0] reqMux_io_out_bits_data; // @[Bus.scala 240:24]
+  wire  reqMux_io_choseOH_0; // @[Bus.scala 240:24]
+  wire  reqMux_io_choseOH_1; // @[Bus.scala 240:24]
+  wire  ppBuf_clock; // @[Bus.scala 244:23]
+  wire  ppBuf_reset; // @[Bus.scala 244:23]
+  wire  ppBuf_io_in_ready; // @[Bus.scala 244:23]
+  wire  ppBuf_io_in_valid; // @[Bus.scala 244:23]
+  wire [2:0] ppBuf_io_in_bits_opcode; // @[Bus.scala 244:23]
+  wire  ppBuf_io_in_bits_source; // @[Bus.scala 244:23]
+  wire [31:0] ppBuf_io_in_bits_address; // @[Bus.scala 244:23]
+  wire [3:0] ppBuf_io_in_bits_mask; // @[Bus.scala 244:23]
+  wire [31:0] ppBuf_io_in_bits_data; // @[Bus.scala 244:23]
+  wire  ppBuf_io_out_ready; // @[Bus.scala 244:23]
+  wire  ppBuf_io_out_valid; // @[Bus.scala 244:23]
+  wire [2:0] ppBuf_io_out_bits_opcode; // @[Bus.scala 244:23]
+  wire  ppBuf_io_out_bits_source; // @[Bus.scala 244:23]
+  wire [31:0] ppBuf_io_out_bits_address; // @[Bus.scala 244:23]
+  wire [3:0] ppBuf_io_out_bits_mask; // @[Bus.scala 244:23]
+  wire [31:0] ppBuf_io_out_bits_data; // @[Bus.scala 244:23]
+  wire [31:0] addrDec_io_addr; // @[Bus.scala 256:25]
+  wire  addrDec_io_choseOH_0; // @[Bus.scala 256:25]
+  wire  addrDec_io_choseOH_1; // @[Bus.scala 256:25]
+  wire  slaveMux_io_in_0_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_0_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_1_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_1_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_out_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_out_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_choseOH_0; // @[Bus.scala 276:26]
+  wire  slaveMux_io_choseOH_1; // @[Bus.scala 276:26]
+  wire [1:0] _WIRE_1 = reqArb_io_grantOH; // @[Bus.scala 242:{52,52}]
+  wire  _bufData_T = ppBuf_io_out_ready & ppBuf_io_out_valid; // @[Decoupled.scala 51:35]
   reg [2:0] bufData_r_opcode; // @[Reg.scala 19:16]
   reg  bufData_r_source; // @[Reg.scala 19:16]
   reg [31:0] bufData_r_address; // @[Reg.scala 19:16]
   reg [3:0] bufData_r_mask; // @[Reg.scala 19:16]
   reg [31:0] bufData_r_data; // @[Reg.scala 19:16]
-  wire  _GEN_3 = _bufData_T ? buf__io_deq_bits_source : bufData_r_source; // @[Reg.scala 19:16 20:{18,22}]
+  wire  _GEN_3 = _bufData_T ? ppBuf_io_out_bits_source : bufData_r_source; // @[Reg.scala 19:16 20:{18,22}]
   reg  bufValidReg; // @[Reg.scala 35:20]
   wire  _GEN_8 = _bufData_T | bufValidReg; // @[Reg.scala 36:18 35:20 36:22]
   wire [1:0] pendingMasterOH = 2'h1 << _GEN_3; // @[OneHot.scala 64:12]
-  reg  pendingReq; // @[Bus.scala 196:29]
+  reg  pendingReq; // @[Bus.scala 254:29]
   wire  slaveRecVec_0 = io_slaveFace_in_0_ready & io_slaveFace_in_0_valid; // @[Decoupled.scala 51:35]
   wire  slaveRecVec_1 = io_slaveFace_in_1_ready & io_slaveFace_in_1_valid; // @[Decoupled.scala 51:35]
-  wire  _slaveRecv_T = addrDec_io_choseOH_0 & slaveRecVec_0; // @[Bus.scala 208:79]
-  wire  _slaveRecv_T_1 = addrDec_io_choseOH_1 & slaveRecVec_1; // @[Bus.scala 208:79]
+  wire  _slaveRecv_T = addrDec_io_choseOH_0 & slaveRecVec_0; // @[Bus.scala 261:79]
+  wire  _slaveRecv_T_1 = addrDec_io_choseOH_1 & slaveRecVec_1; // @[Bus.scala 261:79]
   wire [1:0] _slaveRecv_T_2 = {_slaveRecv_T,_slaveRecv_T_1}; // @[Cat.scala 33:92]
-  wire  slaveRecv = |_slaveRecv_T_2; // @[Bus.scala 208:87]
-  wire  _GEN_9 = _bufData_T | pendingReq; // @[Bus.scala 209:27 196:29 209:40]
+  wire  slaveRecv = |_slaveRecv_T_2; // @[Bus.scala 261:87]
+  wire  _GEN_9 = _bufData_T | pendingReq; // @[Bus.scala 254:29 262:{29,42}]
   wire [1:0] masterRecvVec = {io_masterFace_out_1_valid,io_masterFace_out_0_valid}; // @[Cat.scala 33:92]
-  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 216:38]
-  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 216:57]
-  TLBusArbiter reqArb ( // @[Bus.scala 178:24]
+  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 266:38]
+  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 266:57]
+  TLBusArbiter reqArb ( // @[Bus.scala 237:24]
     .clock(reqArb_clock),
     .reset(reqArb_reset),
     .io_reqs_1(reqArb_io_reqs_1),
     .io_grantOH(reqArb_io_grantOH)
   );
-  TLBusMux reqMux ( // @[Bus.scala 181:24]
+  TLBusMux reqMux ( // @[Bus.scala 240:24]
     .io_in_0_valid(reqMux_io_in_0_valid),
     .io_in_0_bits_address(reqMux_io_in_0_bits_address),
     .io_in_1_valid(reqMux_io_in_1_valid),
@@ -3979,30 +3932,30 @@ module TLXbar(
     .io_choseOH_0(reqMux_io_choseOH_0),
     .io_choseOH_1(reqMux_io_choseOH_1)
   );
-  Queue buf_ ( // @[Bus.scala 185:21]
-    .clock(buf__clock),
-    .reset(buf__reset),
-    .io_enq_ready(buf__io_enq_ready),
-    .io_enq_valid(buf__io_enq_valid),
-    .io_enq_bits_opcode(buf__io_enq_bits_opcode),
-    .io_enq_bits_source(buf__io_enq_bits_source),
-    .io_enq_bits_address(buf__io_enq_bits_address),
-    .io_enq_bits_mask(buf__io_enq_bits_mask),
-    .io_enq_bits_data(buf__io_enq_bits_data),
-    .io_deq_ready(buf__io_deq_ready),
-    .io_deq_valid(buf__io_deq_valid),
-    .io_deq_bits_opcode(buf__io_deq_bits_opcode),
-    .io_deq_bits_source(buf__io_deq_bits_source),
-    .io_deq_bits_address(buf__io_deq_bits_address),
-    .io_deq_bits_mask(buf__io_deq_bits_mask),
-    .io_deq_bits_data(buf__io_deq_bits_data)
+  PingPongBuf ppBuf ( // @[Bus.scala 244:23]
+    .clock(ppBuf_clock),
+    .reset(ppBuf_reset),
+    .io_in_ready(ppBuf_io_in_ready),
+    .io_in_valid(ppBuf_io_in_valid),
+    .io_in_bits_opcode(ppBuf_io_in_bits_opcode),
+    .io_in_bits_source(ppBuf_io_in_bits_source),
+    .io_in_bits_address(ppBuf_io_in_bits_address),
+    .io_in_bits_mask(ppBuf_io_in_bits_mask),
+    .io_in_bits_data(ppBuf_io_in_bits_data),
+    .io_out_ready(ppBuf_io_out_ready),
+    .io_out_valid(ppBuf_io_out_valid),
+    .io_out_bits_opcode(ppBuf_io_out_bits_opcode),
+    .io_out_bits_source(ppBuf_io_out_bits_source),
+    .io_out_bits_address(ppBuf_io_out_bits_address),
+    .io_out_bits_mask(ppBuf_io_out_bits_mask),
+    .io_out_bits_data(ppBuf_io_out_bits_data)
   );
-  TLAddrDecode addrDec ( // @[Bus.scala 198:25]
+  TLAddrDecode addrDec ( // @[Bus.scala 256:25]
     .io_addr(addrDec_io_addr),
     .io_choseOH_0(addrDec_io_choseOH_0),
     .io_choseOH_1(addrDec_io_choseOH_1)
   );
-  TLBusMux_1 slaveMux ( // @[Bus.scala 232:26]
+  TLBusMux_1 slaveMux ( // @[Bus.scala 276:26]
     .io_in_0_ready(slaveMux_io_in_0_ready),
     .io_in_0_valid(slaveMux_io_in_0_valid),
     .io_in_0_bits_data(slaveMux_io_in_0_bits_data),
@@ -4015,79 +3968,79 @@ module TLXbar(
     .io_choseOH_0(slaveMux_io_choseOH_0),
     .io_choseOH_1(slaveMux_io_choseOH_1)
   );
-  assign io_masterFace_in_0_ready = buf__io_enq_ready & reqMux_io_choseOH_0; // @[Bus.scala 187:93]
-  assign io_masterFace_in_1_ready = buf__io_enq_ready & reqMux_io_choseOH_1; // @[Bus.scala 187:93]
-  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 238:43]
-  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 237:17]
-  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 238:43]
-  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 237:17]
-  assign io_slaveFace_in_0_valid = _GEN_8 & addrDec_io_choseOH_0; // @[Bus.scala 229:30]
-  assign io_slaveFace_in_0_bits_opcode = _bufData_T ? buf__io_deq_bits_opcode : bufData_r_opcode; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_0_bits_address = _bufData_T ? buf__io_deq_bits_address : bufData_r_address; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_0_bits_data = _bufData_T ? buf__io_deq_bits_data : bufData_r_data; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_1_valid = _GEN_8 & addrDec_io_choseOH_1; // @[Bus.scala 229:30]
-  assign io_slaveFace_in_1_bits_opcode = _bufData_T ? buf__io_deq_bits_opcode : bufData_r_opcode; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_1_bits_address = _bufData_T ? buf__io_deq_bits_address : bufData_r_address; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_1_bits_mask = _bufData_T ? buf__io_deq_bits_mask : bufData_r_mask; // @[Bus.scala 190:22]
-  assign io_slaveFace_in_1_bits_data = _bufData_T ? buf__io_deq_bits_data : bufData_r_data; // @[Bus.scala 190:22]
-  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 233:20]
-  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 233:20]
+  assign io_masterFace_in_0_ready = ppBuf_io_in_ready & reqMux_io_choseOH_0; // @[Bus.scala 246:94]
+  assign io_masterFace_in_1_ready = ppBuf_io_in_ready & reqMux_io_choseOH_1; // @[Bus.scala 246:94]
+  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 282:43]
+  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
+  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 282:43]
+  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
+  assign io_slaveFace_in_0_valid = _GEN_8 & addrDec_io_choseOH_0; // @[Bus.scala 273:30]
+  assign io_slaveFace_in_0_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_0_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_0_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_1_valid = _GEN_8 & addrDec_io_choseOH_1; // @[Bus.scala 273:30]
+  assign io_slaveFace_in_1_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_1_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_1_bits_mask = _bufData_T ? ppBuf_io_out_bits_mask : bufData_r_mask; // @[Bus.scala 248:22]
+  assign io_slaveFace_in_1_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
+  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 277:20]
+  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 277:20]
   assign reqArb_clock = clock;
   assign reqArb_reset = reset;
-  assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 179:58]
-  assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 182:58]
-  assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 182:58]
-  assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 182:58]
-  assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 182:58]
-  assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 182:58]
-  assign reqMux_io_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[Bus.scala 182:58]
-  assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 182:58]
-  assign reqMux_io_choseOH_0 = _WIRE_1[0]; // @[Bus.scala 183:52]
-  assign reqMux_io_choseOH_1 = _WIRE_1[1]; // @[Bus.scala 183:52]
-  assign buf__clock = clock;
-  assign buf__reset = reset;
-  assign buf__io_enq_valid = reqMux_io_out_valid; // @[Bus.scala 186:16]
-  assign buf__io_enq_bits_opcode = reqMux_io_out_bits_opcode; // @[Bus.scala 186:16]
-  assign buf__io_enq_bits_source = reqMux_io_out_bits_source; // @[Bus.scala 186:16]
-  assign buf__io_enq_bits_address = reqMux_io_out_bits_address; // @[Bus.scala 186:16]
-  assign buf__io_enq_bits_mask = reqMux_io_out_bits_mask; // @[Bus.scala 186:16]
-  assign buf__io_enq_bits_data = reqMux_io_out_bits_data; // @[Bus.scala 186:16]
-  assign buf__io_deq_ready = ~pendingReq; // @[Bus.scala 224:25]
-  assign addrDec_io_addr = _bufData_T ? buf__io_deq_bits_address : bufData_r_address; // @[Bus.scala 190:22]
-  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 233:20]
-  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 233:20]
-  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 233:20]
-  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 233:20]
+  assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 238:58]
+  assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 241:58]
+  assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 241:58]
+  assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 241:58]
+  assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 241:58]
+  assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 241:58]
+  assign reqMux_io_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[Bus.scala 241:58]
+  assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 241:58]
+  assign reqMux_io_choseOH_0 = _WIRE_1[0]; // @[Bus.scala 242:52]
+  assign reqMux_io_choseOH_1 = _WIRE_1[1]; // @[Bus.scala 242:52]
+  assign ppBuf_clock = clock;
+  assign ppBuf_reset = reset;
+  assign ppBuf_io_in_valid = reqMux_io_out_valid; // @[Bus.scala 245:17]
+  assign ppBuf_io_in_bits_opcode = reqMux_io_out_bits_opcode; // @[Bus.scala 245:17]
+  assign ppBuf_io_in_bits_source = reqMux_io_out_bits_source; // @[Bus.scala 245:17]
+  assign ppBuf_io_in_bits_address = reqMux_io_out_bits_address; // @[Bus.scala 245:17]
+  assign ppBuf_io_in_bits_mask = reqMux_io_out_bits_mask; // @[Bus.scala 245:17]
+  assign ppBuf_io_in_bits_data = reqMux_io_out_bits_data; // @[Bus.scala 245:17]
+  assign ppBuf_io_out_ready = ~pendingReq; // @[Bus.scala 269:27]
+  assign addrDec_io_addr = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
+  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 277:20]
   assign slaveMux_io_out_ready = pendingMasterOH[0] | pendingMasterOH[1]; // @[Mux.scala 27:73]
-  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 234:25]
-  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 234:25]
+  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 278:25]
+  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 278:25]
   always @(posedge clock) begin
     if (_bufData_T) begin // @[Reg.scala 20:18]
-      bufData_r_opcode <= buf__io_deq_bits_opcode; // @[Reg.scala 20:22]
+      bufData_r_opcode <= ppBuf_io_out_bits_opcode; // @[Reg.scala 20:22]
     end
     if (_bufData_T) begin // @[Reg.scala 20:18]
-      bufData_r_source <= buf__io_deq_bits_source; // @[Reg.scala 20:22]
+      bufData_r_source <= ppBuf_io_out_bits_source; // @[Reg.scala 20:22]
     end
     if (_bufData_T) begin // @[Reg.scala 20:18]
-      bufData_r_address <= buf__io_deq_bits_address; // @[Reg.scala 20:22]
+      bufData_r_address <= ppBuf_io_out_bits_address; // @[Reg.scala 20:22]
     end
     if (_bufData_T) begin // @[Reg.scala 20:18]
-      bufData_r_mask <= buf__io_deq_bits_mask; // @[Reg.scala 20:22]
+      bufData_r_mask <= ppBuf_io_out_bits_mask; // @[Reg.scala 20:22]
     end
     if (_bufData_T) begin // @[Reg.scala 20:18]
-      bufData_r_data <= buf__io_deq_bits_data; // @[Reg.scala 20:22]
+      bufData_r_data <= ppBuf_io_out_bits_data; // @[Reg.scala 20:22]
     end
     if (reset) begin // @[Reg.scala 35:20]
       bufValidReg <= 1'h0; // @[Reg.scala 35:20]
-    end else if (slaveRecv) begin // @[Bus.scala 210:21]
-      bufValidReg <= 1'h0; // @[Bus.scala 212:21]
+    end else if (slaveRecv) begin // @[Bus.scala 263:21]
+      bufValidReg <= 1'h0; // @[Bus.scala 263:36]
     end else begin
       bufValidReg <= _GEN_8;
     end
-    if (reset) begin // @[Bus.scala 196:29]
-      pendingReq <= 1'h0; // @[Bus.scala 196:29]
-    end else if (pendingFree) begin // @[Bus.scala 217:22]
-      pendingReq <= 1'h0; // @[Bus.scala 217:35]
+    if (reset) begin // @[Bus.scala 254:29]
+      pendingReq <= 1'h0; // @[Bus.scala 254:29]
+    end else if (pendingFree) begin // @[Bus.scala 267:22]
+      pendingReq <= 1'h0; // @[Bus.scala 267:35]
     end else begin
       pendingReq <= _GEN_9;
     end
@@ -4487,54 +4440,54 @@ module Core(
   wire  csrFile_io_busy; // @[Core.scala 99:25]
   wire [31:0] csrFile_io_mepc; // @[Core.scala 99:25]
   wire [31:0] csrFile_io_trapVec; // @[Core.scala 99:25]
-  wire  busCrossBar_clock; // @[Core.scala 166:29]
-  wire  busCrossBar_reset; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_in_0_valid; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_masterFace_in_0_bits_address; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_in_1_valid; // @[Core.scala 166:29]
-  wire [2:0] busCrossBar_io_masterFace_in_1_bits_opcode; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_masterFace_in_1_bits_address; // @[Core.scala 166:29]
-  wire [3:0] busCrossBar_io_masterFace_in_1_bits_mask; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_masterFace_in_1_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_in_0_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_in_0_valid; // @[Core.scala 166:29]
-  wire [2:0] busCrossBar_io_slaveFace_in_0_bits_opcode; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_in_1_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_in_1_valid; // @[Core.scala 166:29]
-  wire [2:0] busCrossBar_io_slaveFace_in_1_bits_opcode; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_address; // @[Core.scala 166:29]
-  wire [3:0] busCrossBar_io_slaveFace_in_1_bits_mask; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_out_0_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_out_0_valid; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_out_0_bits_data; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_out_1_ready; // @[Core.scala 166:29]
-  wire  busCrossBar_io_slaveFace_out_1_valid; // @[Core.scala 166:29]
-  wire [31:0] busCrossBar_io_slaveFace_out_1_bits_data; // @[Core.scala 166:29]
-  wire  rom_clock; // @[Core.scala 175:21]
-  wire  rom_reset; // @[Core.scala 175:21]
-  wire  rom_wen; // @[Core.scala 175:21]
-  wire [31:0] rom_waddr; // @[Core.scala 175:21]
-  wire [31:0] rom_wdata; // @[Core.scala 175:21]
-  wire [3:0] rom_wmask; // @[Core.scala 175:21]
-  wire [31:0] rom_raddr; // @[Core.scala 175:21]
-  wire [31:0] rom_rdata; // @[Core.scala 175:21]
-  wire  ram_clock; // @[Core.scala 206:21]
-  wire  ram_reset; // @[Core.scala 206:21]
-  wire  ram_wen; // @[Core.scala 206:21]
-  wire [31:0] ram_waddr; // @[Core.scala 206:21]
-  wire [31:0] ram_wdata; // @[Core.scala 206:21]
-  wire [3:0] ram_wmask; // @[Core.scala 206:21]
-  wire [31:0] ram_raddr; // @[Core.scala 206:21]
-  wire [31:0] ram_rdata; // @[Core.scala 206:21]
+  wire  busCrossBar_clock; // @[Core.scala 167:29]
+  wire  busCrossBar_reset; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_in_0_valid; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_masterFace_in_0_bits_address; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_in_1_valid; // @[Core.scala 167:29]
+  wire [2:0] busCrossBar_io_masterFace_in_1_bits_opcode; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_masterFace_in_1_bits_address; // @[Core.scala 167:29]
+  wire [3:0] busCrossBar_io_masterFace_in_1_bits_mask; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_masterFace_in_1_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_in_0_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_in_0_valid; // @[Core.scala 167:29]
+  wire [2:0] busCrossBar_io_slaveFace_in_0_bits_opcode; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_address; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_0_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_in_1_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_in_1_valid; // @[Core.scala 167:29]
+  wire [2:0] busCrossBar_io_slaveFace_in_1_bits_opcode; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_address; // @[Core.scala 167:29]
+  wire [3:0] busCrossBar_io_slaveFace_in_1_bits_mask; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_in_1_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_out_0_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_out_0_valid; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_out_0_bits_data; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_out_1_ready; // @[Core.scala 167:29]
+  wire  busCrossBar_io_slaveFace_out_1_valid; // @[Core.scala 167:29]
+  wire [31:0] busCrossBar_io_slaveFace_out_1_bits_data; // @[Core.scala 167:29]
+  wire  rom_clock; // @[Core.scala 176:21]
+  wire  rom_reset; // @[Core.scala 176:21]
+  wire  rom_wen; // @[Core.scala 176:21]
+  wire [31:0] rom_waddr; // @[Core.scala 176:21]
+  wire [31:0] rom_wdata; // @[Core.scala 176:21]
+  wire [3:0] rom_wmask; // @[Core.scala 176:21]
+  wire [31:0] rom_raddr; // @[Core.scala 176:21]
+  wire [31:0] rom_rdata; // @[Core.scala 176:21]
+  wire  ram_clock; // @[Core.scala 207:21]
+  wire  ram_reset; // @[Core.scala 207:21]
+  wire  ram_wen; // @[Core.scala 207:21]
+  wire [31:0] ram_waddr; // @[Core.scala 207:21]
+  wire [31:0] ram_wdata; // @[Core.scala 207:21]
+  wire [3:0] ram_wmask; // @[Core.scala 207:21]
+  wire [31:0] ram_raddr; // @[Core.scala 207:21]
+  wire [31:0] ram_rdata; // @[Core.scala 207:21]
   reg  ife_io_in_start_REG; // @[Core.scala 38:31]
   reg  io_out_state_instState_REG_commit; // @[Core.scala 111:38]
   reg [31:0] io_out_state_instState_REG_pc; // @[Core.scala 111:38]
@@ -4857,7 +4810,7 @@ module Core(
     .io_mepc(csrFile_io_mepc),
     .io_trapVec(csrFile_io_trapVec)
   );
-  TLXbar busCrossBar ( // @[Core.scala 166:29]
+  TLXbar_1 busCrossBar ( // @[Core.scala 167:29]
     .clock(busCrossBar_clock),
     .reset(busCrossBar_reset),
     .io_masterFace_in_0_ready(busCrossBar_io_masterFace_in_0_ready),
@@ -4891,7 +4844,7 @@ module Core(
     .io_slaveFace_out_1_valid(busCrossBar_io_slaveFace_out_1_valid),
     .io_slaveFace_out_1_bits_data(busCrossBar_io_slaveFace_out_1_bits_data)
   );
-  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) rom ( // @[Core.scala 175:21]
+  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) rom ( // @[Core.scala 176:21]
     .clock(rom_clock),
     .reset(rom_reset),
     .wen(rom_wen),
@@ -4901,7 +4854,7 @@ module Core(
     .raddr(rom_raddr),
     .rdata(rom_rdata)
   );
-  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) ram ( // @[Core.scala 206:21]
+  ROM #(.XLEN(32), .BLOCK_BYTES(4), .MEM_SIZE(1024), .MEM_WIDTH(10)) ram ( // @[Core.scala 207:21]
     .clock(ram_clock),
     .reset(ram_reset),
     .wen(ram_wen),
@@ -4952,9 +4905,9 @@ module Core(
   assign ife_io_in_execute_bits_brTaken = exe_io_out_fetch_bits_brTaken; // @[Core.scala 52:23]
   assign ife_io_in_execute_bits_targetAddr = exe_io_out_fetch_bits_targetAddr; // @[Core.scala 52:23]
   assign ife_io_out_ready = dec_io_in_ready; // @[Core.scala 46:15]
-  assign ife_io_rom_req_ready = busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 169:37]
-  assign ife_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 170:21]
-  assign ife_io_rom_resp_bits_data = busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 170:21]
+  assign ife_io_rom_req_ready = busCrossBar_io_masterFace_in_0_ready; // @[Core.scala 170:37]
+  assign ife_io_rom_resp_valid = busCrossBar_io_masterFace_out_0_valid; // @[Core.scala 171:21]
+  assign ife_io_rom_resp_bits_data = busCrossBar_io_masterFace_out_0_bits_data; // @[Core.scala 171:21]
   assign ife_io_trapVec = csrFile_io_trapVec; // @[Core.scala 106:13 33:23]
   assign ife_io_mepc = csrFile_io_mepc; // @[Core.scala 107:10 34:20]
   assign ife_io_excp_valid = mem_io_excp_valid; // @[Core.scala 58:17]
@@ -5021,9 +4974,9 @@ module Core(
   assign mem_io_in_bits_instState_pc = exe_io_out_memory_bits_instState_pc; // @[Core.scala 56:15]
   assign mem_io_in_bits_instState_inst = exe_io_out_memory_bits_instState_inst; // @[Core.scala 56:15]
   assign mem_io_out_ready = wb_io_in_ready; // @[Core.scala 62:14]
-  assign mem_io_ram_req_ready = busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 172:37]
-  assign mem_io_ram_resp_valid = busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 173:21]
-  assign mem_io_ram_resp_bits_data = busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 173:21]
+  assign mem_io_ram_req_ready = busCrossBar_io_masterFace_in_1_ready; // @[Core.scala 173:37]
+  assign mem_io_ram_resp_valid = busCrossBar_io_masterFace_out_1_valid; // @[Core.scala 174:21]
+  assign mem_io_ram_resp_bits_data = busCrossBar_io_masterFace_out_1_bits_data; // @[Core.scala 174:21]
   assign mem_io_ctrl_flush = pipelineCtrl_io_out_memory_flush; // @[Core.scala 74:17]
   assign mem_io_csrBusy = csrFile_io_busy; // @[Core.scala 104:20]
   assign mem_io_csrMode = csrFile_io_mode; // @[Core.scala 105:20]
@@ -5080,33 +5033,33 @@ module Core(
   assign csrFile_io_except_bits_excValue = 32'h0; // @[Core.scala 101:23]
   assign busCrossBar_clock = clock;
   assign busCrossBar_reset = reset;
-  assign busCrossBar_io_masterFace_in_0_valid = ife_io_rom_req_valid; // @[Core.scala 169:37]
-  assign busCrossBar_io_masterFace_in_0_bits_address = ife_io_rom_req_bits_address; // @[Core.scala 169:37]
-  assign busCrossBar_io_masterFace_in_1_valid = mem_io_ram_req_valid; // @[Core.scala 172:37]
-  assign busCrossBar_io_masterFace_in_1_bits_opcode = mem_io_ram_req_bits_opcode; // @[Core.scala 172:37]
-  assign busCrossBar_io_masterFace_in_1_bits_address = mem_io_ram_req_bits_address; // @[Core.scala 172:37]
-  assign busCrossBar_io_masterFace_in_1_bits_mask = mem_io_ram_req_bits_mask; // @[Core.scala 172:37]
-  assign busCrossBar_io_masterFace_in_1_bits_data = mem_io_ram_req_bits_data; // @[Core.scala 172:37]
-  assign busCrossBar_io_slaveFace_in_0_ready = ~romBusy; // @[Core.scala 195:21]
-  assign busCrossBar_io_slaveFace_in_1_ready = ~ramBusy; // @[Core.scala 225:21]
-  assign busCrossBar_io_slaveFace_out_0_valid = romBusy; // @[Core.scala 197:19]
-  assign busCrossBar_io_slaveFace_out_0_bits_data = rom_rdata; // @[Core.scala 196:23]
-  assign busCrossBar_io_slaveFace_out_1_valid = ramBusy; // @[Core.scala 227:19]
-  assign busCrossBar_io_slaveFace_out_1_bits_data = ram_rdata; // @[Core.scala 226:23]
-  assign rom_clock = clock; // @[Core.scala 176:18]
-  assign rom_reset = reset; // @[Core.scala 177:18]
-  assign rom_wen = _romReqReg_T & _GEN_0[1]; // @[Core.scala 190:33]
-  assign rom_waddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 183:24]
-  assign rom_wdata = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_data : romReqReg_data; // @[Core.scala 183:24]
-  assign rom_wmask = 4'hf; // @[Core.scala 191:18]
-  assign rom_raddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 183:24]
-  assign ram_clock = clock; // @[Core.scala 207:18]
-  assign ram_reset = reset; // @[Core.scala 208:18]
-  assign ram_wen = _ramReqReg_T & _GEN_10[1]; // @[Core.scala 220:31]
-  assign ram_waddr = _GEN_14 - 32'h2000; // @[Core.scala 223:39]
-  assign ram_wdata = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_data : ramReqReg_data; // @[Core.scala 214:24]
-  assign ram_wmask = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_mask : ramReqReg_mask; // @[Core.scala 214:24]
-  assign ram_raddr = _GEN_14 - 32'h2000; // @[Core.scala 224:39]
+  assign busCrossBar_io_masterFace_in_0_valid = ife_io_rom_req_valid; // @[Core.scala 170:37]
+  assign busCrossBar_io_masterFace_in_0_bits_address = ife_io_rom_req_bits_address; // @[Core.scala 170:37]
+  assign busCrossBar_io_masterFace_in_1_valid = mem_io_ram_req_valid; // @[Core.scala 173:37]
+  assign busCrossBar_io_masterFace_in_1_bits_opcode = mem_io_ram_req_bits_opcode; // @[Core.scala 173:37]
+  assign busCrossBar_io_masterFace_in_1_bits_address = mem_io_ram_req_bits_address; // @[Core.scala 173:37]
+  assign busCrossBar_io_masterFace_in_1_bits_mask = mem_io_ram_req_bits_mask; // @[Core.scala 173:37]
+  assign busCrossBar_io_masterFace_in_1_bits_data = mem_io_ram_req_bits_data; // @[Core.scala 173:37]
+  assign busCrossBar_io_slaveFace_in_0_ready = ~romBusy; // @[Core.scala 196:21]
+  assign busCrossBar_io_slaveFace_in_1_ready = ~ramBusy; // @[Core.scala 226:21]
+  assign busCrossBar_io_slaveFace_out_0_valid = romBusy; // @[Core.scala 198:19]
+  assign busCrossBar_io_slaveFace_out_0_bits_data = rom_rdata; // @[Core.scala 197:23]
+  assign busCrossBar_io_slaveFace_out_1_valid = ramBusy; // @[Core.scala 228:19]
+  assign busCrossBar_io_slaveFace_out_1_bits_data = ram_rdata; // @[Core.scala 227:23]
+  assign rom_clock = clock; // @[Core.scala 177:18]
+  assign rom_reset = reset; // @[Core.scala 178:18]
+  assign rom_wen = _romReqReg_T & _GEN_0[1]; // @[Core.scala 191:33]
+  assign rom_waddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 184:24]
+  assign rom_wdata = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_data : romReqReg_data; // @[Core.scala 184:24]
+  assign rom_wmask = 4'hf; // @[Core.scala 192:18]
+  assign rom_raddr = _romReqReg_T ? busCrossBar_io_slaveFace_in_0_bits_address : romReqReg_address; // @[Core.scala 184:24]
+  assign ram_clock = clock; // @[Core.scala 208:18]
+  assign ram_reset = reset; // @[Core.scala 209:18]
+  assign ram_wen = _ramReqReg_T & _GEN_10[1]; // @[Core.scala 221:31]
+  assign ram_waddr = _GEN_14 - 32'h2000; // @[Core.scala 224:39]
+  assign ram_wdata = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_data : ramReqReg_data; // @[Core.scala 215:24]
+  assign ram_wmask = _ramReqReg_T ? busCrossBar_io_slaveFace_in_1_bits_mask : ramReqReg_mask; // @[Core.scala 215:24]
+  assign ram_raddr = _GEN_14 - 32'h2000; // @[Core.scala 225:39]
   always @(posedge clock) begin
     ife_io_in_start_REG <= io_in_start; // @[Core.scala 38:31]
     io_out_state_instState_REG_commit <= wb_io_instState_commit; // @[Core.scala 111:38]
@@ -5123,8 +5076,8 @@ module Core(
     end
     if (reset) begin // @[Reg.scala 35:20]
       romBusy <= 1'h0; // @[Reg.scala 35:20]
-    end else if (_T) begin // @[Core.scala 186:24]
-      romBusy <= 1'h0; // @[Core.scala 187:17]
+    end else if (_T) begin // @[Core.scala 187:24]
+      romBusy <= 1'h0; // @[Core.scala 188:17]
     end else begin
       romBusy <= _GEN_8;
     end
@@ -5142,8 +5095,8 @@ module Core(
     end
     if (reset) begin // @[Reg.scala 35:20]
       ramBusy <= 1'h0; // @[Reg.scala 35:20]
-    end else if (_T_1) begin // @[Core.scala 216:24]
-      ramBusy <= 1'h0; // @[Core.scala 217:17]
+    end else if (_T_1) begin // @[Core.scala 217:24]
+      ramBusy <= 1'h0; // @[Core.scala 218:17]
     end else begin
       ramBusy <= _GEN_18;
     end

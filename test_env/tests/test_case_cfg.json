@@ -6,7 +6,7 @@
         "err_code": 42
     },
     "2": {
-        "name": "rv32ui-p-lb.bin",
+        "name": "rv32ui-p-sw.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/rv32ui-p",
         "err_code": 42
     },

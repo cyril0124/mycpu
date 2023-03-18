@@ -166,7 +166,6 @@ class TLAddrDecode(nrIn: Int)(implicit val p: Parameters) extends MyModule {
     }
 }
 
-
 class TLXbar()(implicit val p: Parameters) extends MyModule{
     val io = IO(new BusXbarIO)
     io <> DontCare
@@ -208,6 +207,66 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     when(pendingFree){ pendingReq := false.B }
 
     buf.io.deq.ready := !pendingReq
+
+    sf.in.zipWithIndex.foreach{ case(si, i) => 
+        si.bits  := bufData 
+        si.valid := bufValid && pendingSlaveOH(i)
+    }
+    
+    val slaveMux = Module(new TLBusMux(new BusSlaveBundle, nrBusSlave))
+    slaveMux.io.in <> sf.out
+    slaveMux.io.choseOH := pendingSlaveOH
+
+    mf.out.zipWithIndex.foreach{ case(mo, i) => 
+        mo.bits <> slaveMux.io.out.bits
+        mo.valid := slaveMux.io.out.valid && pendingMasterOH(i)
+    }
+    slaveMux.io.out.ready := Mux1H(pendingMasterOH, mf.out.map{ mo => mo.ready})
+
+}
+
+// TLXbar with PingPongBuf
+class TLXbar_1()(implicit val p: Parameters) extends MyModule{
+    val io = IO(new BusXbarIO)
+    io <> DontCare
+
+    val mf = io.masterFace
+    val sf = io.slaveFace
+
+    // Bus request arb
+    val reqArb = Module(new TLBusArbiter(nrBusMaster))
+    mf.in.zip(reqArb.io.reqs).foreach{ case(mfi, r) => r := mfi.valid }
+
+    val reqMux = Module(new TLBusMux(new BusMasterBundle, nrBusMaster))
+    reqMux.io.in.zip(mf.in).foreach{ case(ri, mfi) => ri <> mfi }
+    reqMux.io.choseOH := reqArb.io.grantOH.asTypeOf(Vec(nrBusMaster, Bool()))
+
+    val ppBuf = Module(new PingPongBuf(new BusMasterBundle))
+    ppBuf.io.in <> reqMux.io.out
+    mf.in.zip(reqMux.io.choseOH).foreach{ case(mfi, chose) => mfi.ready := ppBuf.io.in.ready && chose }
+
+    val bufData = Mux(ppBuf.io.out.fire, ppBuf.io.out.bits, RegEnable(ppBuf.io.out.bits, ppBuf.io.out.fire)) 
+    val bufSource = bufData.source
+    val bufAddress = bufData.address
+    val bufValidReg = RegEnable(true.B, false.B, ppBuf.io.out.fire)
+    val bufValid = Mux(ppBuf.io.out.fire, true.B, bufValidReg)
+    val pendingMasterOH = UIntToOH(bufSource, nrBusMaster) // pending request's sourceID, the request is watting for ack
+    val pendingReq = RegInit(false.B)
+    
+    val addrDec = Module(new TLAddrDecode(nrBusSlave))
+    val pendingSlaveOH = addrDec.io.choseOH
+    addrDec.io.addr := bufAddress
+
+    val slaveRecVec = sf.in.map{ sfi => sfi.fire }
+    val slaveRecv = Cat(pendingSlaveOH.zip(slaveRecVec).map{ case(p, sr) => p & sr }).orR
+    when(ppBuf.io.out.fire) { pendingReq := true.B }
+    when(slaveRecv) {  bufValidReg := false.B }
+
+    val masterRecvVec = Cat(mf.out.map{ mfo => mfo.fire }.reverse) // master face output is fired // ! NOTICE: use .reverse for the correct bit sequence
+    val pendingFree = (masterRecvVec & pendingMasterOH).orR
+    when(pendingFree){ pendingReq := false.B }
+
+    ppBuf.io.out.ready := !pendingReq
 
     sf.in.zipWithIndex.foreach{ case(si, i) => 
         si.bits  := bufData 

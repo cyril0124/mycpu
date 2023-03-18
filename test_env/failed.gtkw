@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Fri Mar 17 07:59:26 2023
+[*] Sat Mar 18 06:33:52 2023
 [*]
-[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-17@15:57:44_0.vcd"
-[dumpfile_mtime] "Fri Mar 17 07:57:44 2023"
-[dumpfile_size] 98236
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-18@14:31:28_0.vcd"
+[dumpfile_mtime] "Sat Mar 18 06:31:29 2023"
+[dumpfile_size] 1474728
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 3806
-[size] 1920 1009
+[timestart] 0
+[size] 2560 1369
 [pos] 8 31
-*-9.000000 5496 18990 19390 10790 9590 5790 6790 -1 6990 2306390 2307789 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-10.000000 790 88390 88790 89990 89190 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -25,7 +25,7 @@
 [sst_width] 333
 [signals_width] 486
 [sst_expanded] 1
-[sst_vpaned_height] 508
+[sst_vpaned_height] 725
 @800200
 -ife
 @28
@@ -37,7 +37,6 @@ TOP.top_tb.core_inst.ife.io_out_bits_instState_commit
 @22
 TOP.top_tb.core_inst.ife.io_out_bits_instState_inst[31:0]
 TOP.top_tb.core_inst.ife.io_out_bits_instState_pc[31:0]
-TOP.top_tb.core_inst.ife.pcReg[31:0]
 @200
 -
 @22
@@ -50,8 +49,16 @@ TOP.top_tb.core_inst.ife.io_in_execute_bits_targetAddr[31:0]
 @200
 -
 @28
-TOP.top_tb.core_inst.ife.sendReq
+TOP.top_tb.core_inst.ife.hasBranch
+TOP.top_tb.core_inst.ife.hasBranchReg
+@22
+TOP.top_tb.core_inst.ife.pcNext2[31:0]
+@28
+TOP.top_tb.core_inst.ife.branchInstValid
+TOP.top_tb.core_inst.ife.branchStall
+TOP.top_tb.core_inst.ife.branchFire
 @200
+-
 -
 @28
 TOP.top_tb.core_inst.ife.preFetchInst
@@ -64,9 +71,6 @@ TOP.top_tb.core_inst.ife.firstFire
 -
 @28
 TOP.top_tb.core_inst.ife.instValid
-@200
--
-@28
 TOP.top_tb.core_inst.ife.instValidReg
 @200
 -
@@ -85,25 +89,31 @@ TOP.top_tb.core_inst.ife.io_mepc[31:0]
 TOP.top_tb.core_inst.ife.io_in_start
 @200
 -
--
 @22
-TOP.top_tb.core_inst.ife.io_in_execute_bits_targetAddr[31:0]
-@200
--
-@22
-TOP.top_tb.core_inst.ife.pcReg[31:0]
 TOP.top_tb.core_inst.ife.pcNext[31:0]
+TOP.top_tb.core_inst.ife.pcReg[31:0]
+@28
+TOP.top_tb.core_inst.ife.preFetchInst
 @200
 -
 @22
+TOP.top_tb.core_inst.ife.pcNext4[31:0]
+TOP.top_tb.core_inst.ife.pcNext2[31:0]
 TOP.top_tb.core_inst.ife.io_rom_req_bits_address[31:0]
-TOP.top_tb.core_inst.ife.io_rom_resp_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.ife.io_rom_req_ready
+TOP.top_tb.core_inst.ife.io_rom_req_valid
 @200
 -
+@22
+TOP.top_tb.core_inst.ife.io_rom_resp_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.ife.io_rom_resp_ready
+TOP.top_tb.core_inst.ife.io_rom_resp_valid
+@200
 -
 @28
-TOP.top_tb.core_inst.ife.io_rom_req_valid
-TOP.top_tb.core_inst.ife.io_rom_resp_ready
+TOP.top_tb.core_inst.ife.updatePC
 @200
 -
 @28
@@ -138,6 +148,7 @@ TOP.top_tb.core_inst.dec.io_regfile_rdata2[31:0]
 @28
 TOP.top_tb.core_inst.dec.io_ctrl_flush
 TOP.top_tb.core_inst.dec.stall
+TOP.top_tb.core_inst.dec.io_hazard_in_stall
 @200
 -
 @28
@@ -177,7 +188,12 @@ TOP.top_tb.core_inst.exe.stageReg_instState_pc[31:0]
 @200
 -
 @28
+TOP.top_tb.core_inst.exe.io_out_fetch_ready
 TOP.top_tb.core_inst.exe.stall
+@200
+-
+@28
+TOP.top_tb.core_inst.exe.io_ctrl_flush
 @200
 -
 @22
@@ -293,8 +309,8 @@ TOP.top_tb.core_inst.mem.lsu.io_ram_req_bits_opcode[2:0]
 @22
 TOP.top_tb.core_inst.mem.lsu.io_ram_req_bits_data[31:0]
 @28
+[color] 2
 TOP.top_tb.core_inst.mem.lsu.io_ram_req_valid
-TOP.top_tb.core_inst.mem.io_ram_req_ready
 @200
 -
 @28
@@ -308,7 +324,6 @@ TOP.top_tb.core_inst.mem.lsu.s0_reqReg_lsuOp[4:0]
 -
 @28
 TOP.top_tb.core_inst.mem.lsu.io_ram_resp_ready
-TOP.top_tb.core_inst.mem.lsu.io_ram_resp_valid
 @22
 [color] 2
 TOP.top_tb.core_inst.mem.lsu.io_ram_resp_bits_data[31:0]
@@ -318,6 +333,16 @@ TOP.top_tb.core_inst.mem.lsu.s1_respReg_data[31:0]
 TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
 @200
 -
+-
+@28
+TOP.top_tb.core_inst.mem.lsu.s1_ready
+TOP.top_tb.core_inst.mem.lsu.en
+@22
+TOP.top_tb.core_inst.mem.lsu.s1_lsuOp[4:0]
+@28
+TOP.top_tb.core_inst.mem.lsu.io_ram_resp_ready
+TOP.top_tb.core_inst.mem.lsu.io_resp_valid
+@200
 -
 @28
 TOP.top_tb.core_inst.mem.lsu.s1_offset[1:0]
@@ -387,6 +412,7 @@ TOP.top_tb.core_inst.wb.clock
 -
 @22
 TOP.top_tb.core_inst.wb.stageReg_instState_inst[31:0]
+TOP.top_tb.core_inst.wb.stageReg_instState_pc[31:0]
 @28
 TOP.top_tb.core_inst.wb.io_in_valid
 TOP.top_tb.core_inst.wb.writebackLatch
@@ -394,8 +420,11 @@ TOP.top_tb.core_inst.wb.writebackLatch
 -
 @28
 TOP.top_tb.core_inst.wb.stall
+TOP.top_tb.core_inst.wb.io_lsuOK
 @200
 -
+@22
+TOP.top_tb.core_inst.wb.io_lsuData[31:0]
 @28
 TOP.top_tb.core_inst.wb.stageReg_resultSrc[1:0]
 @22
@@ -453,6 +482,9 @@ TOP.top_tb.core_inst.csrFile.mepc_data[31:0]
 @22
 [color] 2
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_0_bits_address[31:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_0_ready
+TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_0_valid
 @200
 -
 @22
@@ -461,28 +493,88 @@ TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_1_bits_data[31:0]
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_1_bits_mask[3:0]
 @28
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_1_bits_opcode[2:0]
-[color] 3
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_1_ready
 [color] 3
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_in_1_valid
 @200
 -
+-
+-
+-
+-
 @22
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_out_0_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.io_masterFace_out_0_valid
 @200
 -
 @22
 [color] 3
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_out_1_bits_data[31:0]
 @28
-[color] 3
 TOP.top_tb.core_inst.busCrossBar.io_masterFace_out_1_valid
 @200
 -
 -
+@22
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_0_address[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_0_data[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_0_mask[3:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_0_opcode[2:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_0_source
+TOP.top_tb.core_inst.busCrossBar.ppBuf.bufValid_0
+@200
+-
+@22
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_1_address[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_1_data[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_1_mask[3:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_1_opcode[2:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf.buf_1_source
+TOP.top_tb.core_inst.busCrossBar.ppBuf.bufValid_1
+@200
+-
+@28
+TOP.top_tb.core_inst.busCrossBar.ppBuf.ptr
+>-10
+[color] 2
+TOP.top_tb.core_inst.busCrossBar.clock
+@200
+>0
+-
+@22
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_bits_address[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_bits_data[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_bits_mask[3:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_bits_opcode[2:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_bits_source
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_ready
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_in_valid
+@200
+-
+@22
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_bits_address[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_bits_data[31:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_bits_mask[3:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_bits_opcode[2:0]
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_bits_source
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_ready
+TOP.top_tb.core_inst.busCrossBar.ppBuf_io_out_valid
+@200
+-
+@29
+TOP.top_tb.core_inst.busCrossBar.pendingReq
+@200
 -
 @22
 TOP.top_tb.core_inst.busCrossBar.io_slaveFace_in_0_bits_address[31:0]
+@28
+TOP.top_tb.core_inst.busCrossBar.io_slaveFace_in_0_ready
+TOP.top_tb.core_inst.busCrossBar.io_slaveFace_in_0_valid
 @200
 -
 -
@@ -514,8 +606,6 @@ TOP.top_tb.core_inst.busCrossBar.io_slaveFace_out_0_bits_data[31:0]
 -
 @22
 TOP.top_tb.core_inst.busCrossBar.io_slaveFace_out_1_bits_data[31:0]
-@28
-TOP.top_tb.core_inst.busCrossBar.io_slaveFace_out_1_valid
 @200
 -
 -
@@ -524,9 +614,6 @@ TOP.top_tb.core_inst.busCrossBar.io_slaveFace_out_1_valid
 @200
 -
 -
-@28
-TOP.top_tb.core_inst.busCrossBar_io_slaveFace_out_1_valid
-@200
 -
 @800200
 -ram
@@ -549,10 +636,6 @@ TOP.top_tb.core_inst.busCrossBar_io_slaveFace_in_1_ready
 TOP.top_tb.core_inst.busCrossBar_io_slaveFace_in_1_valid
 @200
 -
-@29
-[color] 2
-TOP.top_tb.core_inst.busCrossBar_io_slaveFace_out_1_valid
-@200
 -
 -
 @22
@@ -582,12 +665,21 @@ TOP.top_tb.core_inst.clock
 -
 @22
 TOP.top_tb.core_inst.busCrossBar_io_slaveFace_in_0_bits_address[31:0]
+@28
+TOP.top_tb.core_inst.busCrossBar_io_slaveFace_in_0_ready
+TOP.top_tb.core_inst.busCrossBar_io_slaveFace_in_0_valid
 @200
+-
 -
 @22
 TOP.top_tb.core_inst.busCrossBar_io_slaveFace_out_0_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.busCrossBar_io_slaveFace_out_0_valid
 @200
 -
+@28
+TOP.top_tb.core_inst.romBusy
+@200
 -
 @22
 TOP.top_tb.core_inst.rom.raddr[31:0]
