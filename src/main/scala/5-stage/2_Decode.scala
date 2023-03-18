@@ -78,11 +78,17 @@ class Decode()(implicit val p: Parameters) extends MyModule{
 
     val decodeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
+    // when(decodeLatch) {
+    //     stageReg := io.in.bits
+    // }.elsewhen(~stall){
+    //     stageReg := 0.U.asTypeOf(io.in.bits)
+    // }
     when(decodeLatch) {
         stageReg := io.in.bits
-    }.elsewhen(~stall){
+    }.elsewhen(io.out.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
+
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
@@ -130,7 +136,6 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     ctrlUnit.io.in.start := true.B
     ctrlUnit.io.in.inst := inst
 
-    
     // regfile read data
     io.regfile.rs1  := rs1
     io.regfile.rs2  := rs2

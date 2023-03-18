@@ -84,11 +84,18 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     io.in.ready :=  !stall 
     val executeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
+    // when(executeLatch) {
+    //     stageReg := io.in.bits
+    // }.elsewhen(!stall){
+    //     stageReg := 0.U.asTypeOf(io.in.bits)
+    // }
     when(executeLatch) {
         stageReg := io.in.bits
-    }.elsewhen(!stall){
+    }.elsewhen(io.out.memory.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
+
+
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 

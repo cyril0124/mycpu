@@ -60,15 +60,23 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     dontTouch(ramReady)
     dontTouch(needRam)
 
-    val stall = io.ctrl.stall || !io.out.ready || (!ramReady && needRam)
+    val lsuReady = WireInit(true.B)
+
+    
+    val stall = io.ctrl.stall || (!ramReady && needRam) || !lsuReady || !io.out.ready
     val flush = io.ctrl.flush
 
     io.in.ready := !stall
     val memoryLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
+    // when(memoryLatch) {
+    //     stageReg := io.in.bits
+    // }.elsewhen(!stall){
+    //     stageReg := 0.U.asTypeOf(io.in.bits)
+    // }
     when(memoryLatch) {
         stageReg := io.in.bits
-    }.elsewhen(!stall){
+    }.elsewhen(io.out.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
 
@@ -129,12 +137,12 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     val lsu = Module(new LSU())
     lsu.io <> DontCare
-    lsu.io.req.valid        := !flush
-    // lsu.io.req.valid        := !flush && !stall
-    lsu.io.req.bits.addr    := stageReg.aluOut
-    lsu.io.req.bits.wdata   := stageReg.data2
-    lsu.io.req.bits.hasTrap := hasTrap
-    lsu.io.req.bits.lsuOp   := stageReg.lsuOp
+    lsuReady := lsu.io.req.ready
+    lsu.io.req.valid        := io.in.valid
+    lsu.io.req.bits.addr    := io.in.bits.aluOut
+    lsu.io.req.bits.wdata   := io.in.bits.data2
+    lsu.io.req.bits.hasTrap := hasTrap // ! NOT use 
+    lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
     io.lsuOK                := lsu.io.resp.valid
     io.lsuData              := lsu.io.resp.bits.rdata
 

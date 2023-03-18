@@ -39,7 +39,6 @@ module TLXbar_1(
   reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
   reg [31:0] _RAND_5;
-  reg [31:0] _RAND_6;
 `endif // RANDOMIZE_REG_INIT
   wire  reqArb_clock; // @[Bus.scala 237:24]
   wire  reqArb_reset; // @[Bus.scala 237:24]
@@ -76,20 +75,20 @@ module TLXbar_1(
   wire [31:0] ppBuf_io_out_bits_address; // @[Bus.scala 244:23]
   wire [3:0] ppBuf_io_out_bits_mask; // @[Bus.scala 244:23]
   wire [31:0] ppBuf_io_out_bits_data; // @[Bus.scala 244:23]
-  wire [31:0] addrDec_io_addr; // @[Bus.scala 256:25]
-  wire  addrDec_io_choseOH_0; // @[Bus.scala 256:25]
-  wire  addrDec_io_choseOH_1; // @[Bus.scala 256:25]
-  wire  slaveMux_io_in_0_ready; // @[Bus.scala 276:26]
-  wire  slaveMux_io_in_0_valid; // @[Bus.scala 276:26]
-  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 276:26]
-  wire  slaveMux_io_in_1_ready; // @[Bus.scala 276:26]
-  wire  slaveMux_io_in_1_valid; // @[Bus.scala 276:26]
-  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 276:26]
-  wire  slaveMux_io_out_ready; // @[Bus.scala 276:26]
-  wire  slaveMux_io_out_valid; // @[Bus.scala 276:26]
-  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 276:26]
-  wire  slaveMux_io_choseOH_0; // @[Bus.scala 276:26]
-  wire  slaveMux_io_choseOH_1; // @[Bus.scala 276:26]
+  wire [31:0] addrDec_io_addr; // @[Bus.scala 254:25]
+  wire  addrDec_io_choseOH_0; // @[Bus.scala 254:25]
+  wire  addrDec_io_choseOH_1; // @[Bus.scala 254:25]
+  wire  slaveMux_io_in_0_ready; // @[Bus.scala 273:26]
+  wire  slaveMux_io_in_0_valid; // @[Bus.scala 273:26]
+  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 273:26]
+  wire  slaveMux_io_in_1_ready; // @[Bus.scala 273:26]
+  wire  slaveMux_io_in_1_valid; // @[Bus.scala 273:26]
+  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 273:26]
+  wire  slaveMux_io_out_ready; // @[Bus.scala 273:26]
+  wire  slaveMux_io_out_valid; // @[Bus.scala 273:26]
+  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 273:26]
+  wire  slaveMux_io_choseOH_0; // @[Bus.scala 273:26]
+  wire  slaveMux_io_choseOH_1; // @[Bus.scala 273:26]
   wire [1:0] _WIRE_1 = reqArb_io_grantOH; // @[Bus.scala 242:{52,52}]
   wire  _bufData_T = ppBuf_io_out_ready & ppBuf_io_out_valid; // @[Decoupled.scala 51:35]
   reg [2:0] bufData_r_opcode; // @[Reg.scala 19:16]
@@ -98,20 +97,12 @@ module TLXbar_1(
   reg [3:0] bufData_r_mask; // @[Reg.scala 19:16]
   reg [31:0] bufData_r_data; // @[Reg.scala 19:16]
   wire  _GEN_3 = _bufData_T ? ppBuf_io_out_bits_source : bufData_r_source; // @[Reg.scala 19:16 20:{18,22}]
-  reg  bufValidReg; // @[Reg.scala 35:20]
-  wire  _GEN_8 = _bufData_T | bufValidReg; // @[Reg.scala 36:18 35:20 36:22]
   wire [1:0] pendingMasterOH = 2'h1 << _GEN_3; // @[OneHot.scala 64:12]
-  reg  pendingReq; // @[Bus.scala 254:29]
-  wire  slaveRecVec_0 = io_slaveFace_in_0_ready & io_slaveFace_in_0_valid; // @[Decoupled.scala 51:35]
-  wire  slaveRecVec_1 = io_slaveFace_in_1_ready & io_slaveFace_in_1_valid; // @[Decoupled.scala 51:35]
-  wire  _slaveRecv_T = addrDec_io_choseOH_0 & slaveRecVec_0; // @[Bus.scala 261:79]
-  wire  _slaveRecv_T_1 = addrDec_io_choseOH_1 & slaveRecVec_1; // @[Bus.scala 261:79]
-  wire [1:0] _slaveRecv_T_2 = {_slaveRecv_T,_slaveRecv_T_1}; // @[Cat.scala 33:92]
-  wire  slaveRecv = |_slaveRecv_T_2; // @[Bus.scala 261:87]
-  wire  _GEN_9 = _bufData_T | pendingReq; // @[Bus.scala 254:29 262:{29,42}]
+  reg  pendingReq; // @[Bus.scala 252:29]
+  wire  _GEN_8 = _bufData_T | pendingReq; // @[Bus.scala 252:29 260:{29,42}]
   wire [1:0] masterRecvVec = {io_masterFace_out_1_valid,io_masterFace_out_0_valid}; // @[Cat.scala 33:92]
-  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 266:38]
-  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 266:57]
+  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 263:38]
+  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 263:57]
   TLBusArbiter reqArb ( // @[Bus.scala 237:24]
     .clock(reqArb_clock),
     .reset(reqArb_reset),
@@ -153,12 +144,12 @@ module TLXbar_1(
     .io_out_bits_mask(ppBuf_io_out_bits_mask),
     .io_out_bits_data(ppBuf_io_out_bits_data)
   );
-  TLAddrDecode addrDec ( // @[Bus.scala 256:25]
+  TLAddrDecode addrDec ( // @[Bus.scala 254:25]
     .io_addr(addrDec_io_addr),
     .io_choseOH_0(addrDec_io_choseOH_0),
     .io_choseOH_1(addrDec_io_choseOH_1)
   );
-  TLBusMux_1 slaveMux ( // @[Bus.scala 276:26]
+  TLBusMux_1 slaveMux ( // @[Bus.scala 273:26]
     .io_in_0_ready(slaveMux_io_in_0_ready),
     .io_in_0_valid(slaveMux_io_in_0_valid),
     .io_in_0_bits_data(slaveMux_io_in_0_bits_data),
@@ -173,21 +164,21 @@ module TLXbar_1(
   );
   assign io_masterFace_in_0_ready = ppBuf_io_in_ready & reqMux_io_choseOH_0; // @[Bus.scala 246:94]
   assign io_masterFace_in_1_ready = ppBuf_io_in_ready & reqMux_io_choseOH_1; // @[Bus.scala 246:94]
-  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 282:43]
-  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
-  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 282:43]
-  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
-  assign io_slaveFace_in_0_valid = _GEN_8 & addrDec_io_choseOH_0; // @[Bus.scala 273:30]
+  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 279:43]
+  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 278:17]
+  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 279:43]
+  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 278:17]
+  assign io_slaveFace_in_0_valid = addrDec_io_choseOH_0; // @[Bus.scala 270:18]
   assign io_slaveFace_in_0_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
   assign io_slaveFace_in_0_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
   assign io_slaveFace_in_0_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_1_valid = _GEN_8 & addrDec_io_choseOH_1; // @[Bus.scala 273:30]
+  assign io_slaveFace_in_1_valid = addrDec_io_choseOH_1; // @[Bus.scala 270:18]
   assign io_slaveFace_in_1_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
   assign io_slaveFace_in_1_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
   assign io_slaveFace_in_1_bits_mask = _bufData_T ? ppBuf_io_out_bits_mask : bufData_r_mask; // @[Bus.scala 248:22]
   assign io_slaveFace_in_1_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
-  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 277:20]
-  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 277:20]
+  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 274:20]
+  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 274:20]
   assign reqArb_clock = clock;
   assign reqArb_reset = reset;
   assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 238:58]
@@ -208,15 +199,15 @@ module TLXbar_1(
   assign ppBuf_io_in_bits_address = reqMux_io_out_bits_address; // @[Bus.scala 245:17]
   assign ppBuf_io_in_bits_mask = reqMux_io_out_bits_mask; // @[Bus.scala 245:17]
   assign ppBuf_io_in_bits_data = reqMux_io_out_bits_data; // @[Bus.scala 245:17]
-  assign ppBuf_io_out_ready = ~pendingReq; // @[Bus.scala 269:27]
+  assign ppBuf_io_out_ready = ~pendingReq; // @[Bus.scala 266:27]
   assign addrDec_io_addr = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
-  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 277:20]
-  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 277:20]
-  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 277:20]
-  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 274:20]
+  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 274:20]
+  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 274:20]
+  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 274:20]
   assign slaveMux_io_out_ready = pendingMasterOH[0] | pendingMasterOH[1]; // @[Mux.scala 27:73]
-  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 278:25]
-  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 278:25]
+  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 275:25]
+  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 275:25]
   always @(posedge clock) begin
     if (_bufData_T) begin // @[Reg.scala 20:18]
       bufData_r_opcode <= ppBuf_io_out_bits_opcode; // @[Reg.scala 20:22]
@@ -233,19 +224,12 @@ module TLXbar_1(
     if (_bufData_T) begin // @[Reg.scala 20:18]
       bufData_r_data <= ppBuf_io_out_bits_data; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[Reg.scala 35:20]
-      bufValidReg <= 1'h0; // @[Reg.scala 35:20]
-    end else if (slaveRecv) begin // @[Bus.scala 263:21]
-      bufValidReg <= 1'h0; // @[Bus.scala 263:36]
+    if (reset) begin // @[Bus.scala 252:29]
+      pendingReq <= 1'h0; // @[Bus.scala 252:29]
+    end else if (pendingFree) begin // @[Bus.scala 264:22]
+      pendingReq <= 1'h0; // @[Bus.scala 264:35]
     end else begin
-      bufValidReg <= _GEN_8;
-    end
-    if (reset) begin // @[Bus.scala 254:29]
-      pendingReq <= 1'h0; // @[Bus.scala 254:29]
-    end else if (pendingFree) begin // @[Bus.scala 267:22]
-      pendingReq <= 1'h0; // @[Bus.scala 267:35]
-    end else begin
-      pendingReq <= _GEN_9;
+      pendingReq <= _GEN_8;
     end
   end
 // Register and memory initialization
@@ -295,9 +279,7 @@ initial begin
   _RAND_4 = {1{`RANDOM}};
   bufData_r_data = _RAND_4[31:0];
   _RAND_5 = {1{`RANDOM}};
-  bufValidReg = _RAND_5[0:0];
-  _RAND_6 = {1{`RANDOM}};
-  pendingReq = _RAND_6[0:0];
+  pendingReq = _RAND_5[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

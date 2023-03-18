@@ -163,6 +163,8 @@ void Emu::execute(uint64_t nr_cycles) {
                 printf(PRINT_RED "case terminate...\n\n" PRINT_RESET);
                 printf(PRINT_GREEN "PASS ! test_case_name: %s\n" PRINT_RESET, bin_file.c_str());
                 dut_ptr->io_in_start = 0;
+                dut_ptr->io_in_start = 0;
+                dut_ptr->io_in_start = 0;
                 break;
             }
 

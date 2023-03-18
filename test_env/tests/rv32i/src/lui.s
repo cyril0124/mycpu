@@ -5,10 +5,14 @@ main:
   #-------------------------------------------------------------
 
 test_2:
+ addi x0, 0
  lui x1, 0x00000
  li x29, 0x00000000
  li gp, 2
  bne x1, x29, fail
+ addi x1, x1, 0xfffffefa
+ sb x1, 0xcc(x0)
+ lh gp, 0xcc(x0)
 
 
 test_3:

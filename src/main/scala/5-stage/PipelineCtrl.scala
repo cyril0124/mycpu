@@ -33,7 +33,7 @@ class PipelineCtrl()(implicit val p: Parameters) extends MyModule{
 
 
     io.out.decode.flush := brIsTaken || excpValid
-    io.out.execute.flush := brIsTaken //|| excpValid
+    io.out.execute.flush := brIsTaken || excpValid
     io.out.memory.flush := excpValid 
 
 }

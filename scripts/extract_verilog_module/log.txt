@@ -1,91 +1,91 @@
 [1] find module => Fetch in line 1
-Fetch done! in line 137
+Fetch done! in line 174
 
-[2] find module => Decoder in line 138
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_115   ) in line [ 204    ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_444   ) in line [ 493    ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_478   ) in line [ 513    ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_502   ) in line [ 525    ]
-	find submodule => module_name:( (_decodeSigs_T_11   )  inst_name:( |                   ) in line [ 632    ]
-Decoder done! in line 637
+[2] find module => Decoder in line 175
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_115   ) in line [ 241    ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_444   ) in line [ 530    ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_478   ) in line [ 550    ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_502   ) in line [ 562    ]
+	find submodule => module_name:( (_decodeSigs_T_11   )  inst_name:( |                   ) in line [ 669    ]
+Decoder done! in line 674
 
-[3] find module => CtrlUnit in line 638
-	find submodule => module_name:( Decoder             )  inst_name:( decoder             ) in line [ 668    ]
-CtrlUnit done! in line 696
+[3] find module => CtrlUnit in line 675
+	find submodule => module_name:( Decoder             )  inst_name:( decoder             ) in line [ 705    ]
+CtrlUnit done! in line 733
 
-[4] find module => ImmGen in line 697
-ImmGen done! in line 750
+[4] find module => ImmGen in line 734
+ImmGen done! in line 787
 
-[5] find module => Decode in line 751
-	find submodule => module_name:( CtrlUnit            )  inst_name:( ctrlUnit            ) in line [ 839    ]
-	find submodule => module_name:( ImmGen              )  inst_name:( immGen              ) in line [ 855    ]
-Decode done! in line 980
+[5] find module => Decode in line 788
+	find submodule => module_name:( CtrlUnit            )  inst_name:( ctrlUnit            ) in line [ 877    ]
+	find submodule => module_name:( ImmGen              )  inst_name:( immGen              ) in line [ 893    ]
+Decode done! in line 1018
 
-[6] find module => ALU in line 981
-ALU done! in line 1027
+[6] find module => ALU in line 1019
+ALU done! in line 1065
 
-[7] find module => Execute in line 1028
-	find submodule => module_name:( ALU                 )  inst_name:( alu                 ) in line [ 1153   ]
-Execute done! in line 1473
+[7] find module => Execute in line 1066
+	find submodule => module_name:( ALU                 )  inst_name:( alu                 ) in line [ 1192   ]
+Execute done! in line 1512
 
-[8] find module => LSU in line 1474
-LSU done! in line 1713
+[8] find module => LSU in line 1513
+LSU done! in line 1762
 
-[9] find module => Mem in line 1714
-	find submodule => module_name:( LSU                 )  inst_name:( lsu                 ) in line [ 1841   ]
-Mem done! in line 2107
+[9] find module => Mem in line 1763
+	find submodule => module_name:( LSU                 )  inst_name:( lsu                 ) in line [ 1891   ]
+Mem done! in line 2148
 
-[10] find module => WriteBack in line 2108
-WriteBack done! in line 2326
+[10] find module => WriteBack in line 2149
+WriteBack done! in line 2367
 
-[11] find module => PipelineCtrl in line 2327
-PipelineCtrl done! in line 2337
+[11] find module => PipelineCtrl in line 2368
+PipelineCtrl done! in line 2378
 
-[12] find module => HazardUnit in line 2338
-HazardUnit done! in line 2371
+[12] find module => HazardUnit in line 2379
+HazardUnit done! in line 2412
 
-[13] find module => RegFile in line 2372
-RegFile done! in line 3032
+[13] find module => RegFile in line 2413
+RegFile done! in line 3073
 
-[14] find module => CsrFile in line 3033
-	find submodule => module_name:( |                   )  inst_name:( (_T_29              ) in line [ 3133   ]
-CsrFile done! in line 3438
+[14] find module => CsrFile in line 3074
+	find submodule => module_name:( |                   )  inst_name:( (_T_29              ) in line [ 3174   ]
+CsrFile done! in line 3479
 
-[15] find module => TLBusArbiter in line 3439
-TLBusArbiter done! in line 3505
+[15] find module => TLBusArbiter in line 3480
+TLBusArbiter done! in line 3546
 
-[16] find module => TLBusMux in line 3506
-TLBusMux done! in line 3533
+[16] find module => TLBusMux in line 3547
+TLBusMux done! in line 3574
 
-[17] find module => PingPongBuf in line 3534
-PingPongBuf done! in line 3766
+[17] find module => PingPongBuf in line 3575
+PingPongBuf done! in line 3817
 
-[18] find module => TLAddrDecode in line 3767
-TLAddrDecode done! in line 3777
+[18] find module => TLAddrDecode in line 3818
+TLAddrDecode done! in line 3828
 
-[19] find module => TLBusMux_1 in line 3778
-TLBusMux_1 done! in line 3797
+[19] find module => TLBusMux_1 in line 3829
+TLBusMux_1 done! in line 3848
 
-[20] find module => TLXbar_1 in line 3798
-	find submodule => module_name:( TLBusArbiter        )  inst_name:( reqArb              ) in line [ 3912   ]
-	find submodule => module_name:( TLBusMux            )  inst_name:( reqMux              ) in line [ 3918   ]
-	find submodule => module_name:( PingPongBuf         )  inst_name:( ppBuf               ) in line [ 3935   ]
-	find submodule => module_name:( TLAddrDecode        )  inst_name:( addrDec             ) in line [ 3953   ]
-	find submodule => module_name:( TLBusMux_1          )  inst_name:( slaveMux            ) in line [ 3958   ]
-TLXbar_1 done! in line 4105
+[20] find module => TLXbar_1 in line 3849
+	find submodule => module_name:( TLBusArbiter        )  inst_name:( reqArb              ) in line [ 3954   ]
+	find submodule => module_name:( TLBusMux            )  inst_name:( reqMux              ) in line [ 3960   ]
+	find submodule => module_name:( PingPongBuf         )  inst_name:( ppBuf               ) in line [ 3977   ]
+	find submodule => module_name:( TLAddrDecode        )  inst_name:( addrDec             ) in line [ 3995   ]
+	find submodule => module_name:( TLBusMux_1          )  inst_name:( slaveMux            ) in line [ 4000   ]
+TLXbar_1 done! in line 4138
 
-[21] find module => Core in line 4106
-	find submodule => module_name:( Fetch               )  inst_name:( ife                 ) in line [ 4513   ]
-	find submodule => module_name:( Decode              )  inst_name:( dec                 ) in line [ 4537   ]
-	find submodule => module_name:( Execute             )  inst_name:( exe                 ) in line [ 4577   ]
-	find submodule => module_name:( Mem                 )  inst_name:( mem                 ) in line [ 4635   ]
-	find submodule => module_name:( WriteBack           )  inst_name:( wb                  ) in line [ 4690   ]
-	find submodule => module_name:( PipelineCtrl        )  inst_name:( pipelineCtrl        ) in line [ 4722   ]
-	find submodule => module_name:( HazardUnit          )  inst_name:( hazardU             ) in line [ 4729   ]
-	find submodule => module_name:( RegFile             )  inst_name:( regFile             ) in line [ 4748   ]
-	find submodule => module_name:( CsrFile             )  inst_name:( csrFile             ) in line [ 4791   ]
-	find submodule => module_name:( TLXbar_1            )  inst_name:( busCrossBar         ) in line [ 4813   ]
-	find submodule => module_name:( ROM                 )  inst_name:( #(.XLEN(32)         ) in line [ 4847   ]
-	find submodule => module_name:( ROM                 )  inst_name:( #(.XLEN(32)         ) in line [ 4857   ]
-Core done! in line 5173
+[21] find module => Core in line 4139
+	find submodule => module_name:( Fetch               )  inst_name:( ife                 ) in line [ 4546   ]
+	find submodule => module_name:( Decode              )  inst_name:( dec                 ) in line [ 4570   ]
+	find submodule => module_name:( Execute             )  inst_name:( exe                 ) in line [ 4610   ]
+	find submodule => module_name:( Mem                 )  inst_name:( mem                 ) in line [ 4668   ]
+	find submodule => module_name:( WriteBack           )  inst_name:( wb                  ) in line [ 4723   ]
+	find submodule => module_name:( PipelineCtrl        )  inst_name:( pipelineCtrl        ) in line [ 4755   ]
+	find submodule => module_name:( HazardUnit          )  inst_name:( hazardU             ) in line [ 4762   ]
+	find submodule => module_name:( RegFile             )  inst_name:( regFile             ) in line [ 4781   ]
+	find submodule => module_name:( CsrFile             )  inst_name:( csrFile             ) in line [ 4824   ]
+	find submodule => module_name:( TLXbar_1            )  inst_name:( busCrossBar         ) in line [ 4846   ]
+	find submodule => module_name:( ROM                 )  inst_name:( #(.XLEN(32)         ) in line [ 4880   ]
+	find submodule => module_name:( ROM                 )  inst_name:( #(.XLEN(32)         ) in line [ 4890   ]
+Core done! in line 5206
 

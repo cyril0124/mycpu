@@ -113,6 +113,7 @@ class Core()(implicit val p: Parameters) extends MyModule{
 
     // ----------------soc part(temp)-------------------------
     val testCase = 1
+
 if( testCase == 0 ) {
     
     val busCrossBar = Module(new BusCrossBar())

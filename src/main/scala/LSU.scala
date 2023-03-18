@@ -69,18 +69,27 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     // ---------------------stage0: Decode, Send Write data request & Send read data request---------------------
     val busy = RegInit(false.B)
     val s0_valid = Wire(Bool())
+    val s0_en = Wire(Bool())
     val s0_reqReg = RegEnable(io.req.bits, io.req.fire)
     val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
     val offset = s0_req.addr(blockOffsetBits-1, 0)
     val s1_ready  = RegInit(true.B)
     
     io.req.ready := !busy
-    busy := !s1_ready
+
+    when(io.req.fire) {
+        busy := true.B
+    }
+    
+    when( (io.ram.req.fire && s0_en && s1_ready) || !s0_en ) {
+        busy := false.B
+    }
 
     val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
         ListLookup(s0_req.lsuOp, default, table)
 
-    s0_valid := en
+    s0_en := en
+    dontTouch(s0_en)
 
     io.excp.storeUnalign := false.B
     io.excp.loadUnalign := false.B
@@ -102,7 +111,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
 
     io.ram.req <> DontCare
     io.ram.req.bits.corrupt := true.B
-    io.ram.req.valid := !io.excp.storeUnalign && s0_valid
+    io.ram.req.valid := !io.excp.storeUnalign && s0_en && s1_ready
     io.ram.req.bits.address := s0_req.addr 
     io.ram.req.bits.data := s0_req.wdata << (offset << 3)
     io.ram.req.bits.opcode := Mux(wen, BusReq.PutFullData, BusReq.Get)
@@ -119,19 +128,23 @@ class LSU()(implicit val p: Parameters) extends MyModule {
         // TODO: consider xlen=64
     ))
 
+    s0_valid := io.ram.req.fire
+    dontTouch(s0_valid)
+
     // ---------------------stage1: Read back data---------------------
-    // val s1_ready  = RegInit(true.B)
+    val s1_latch  = s0_valid && s1_ready
     val s1_signed = Reg(Bool())
     val s1_width  = Reg(UInt(LS_DATA_WIDTH.W))
     val s1_offset = Reg(UInt(blockOffsetBits.W))
-    val s1_lsuOp  = Reg(UInt(LSU_OP_WIDTH.W))
-    when(s0_valid && s1_ready) {
+    val s1_lsuOp  = RegInit(LSU_NOP)
+    when(s1_latch) {
         s1_signed := signed
         s1_offset := offset
         s1_width  := width
         s1_lsuOp  := s0_req.lsuOp
         s1_ready  := false.B
     }
+    dontTouch(s1_latch)
     when(!s0_valid && io.ram.resp.fire) { s1_lsuOp := LSU_NOP }
 
     val s1_respReg = RegEnable(io.ram.resp.bits, io.ram.resp.fire)
@@ -155,7 +168,6 @@ class LSU()(implicit val p: Parameters) extends MyModule {
                             // TODO: consider xlen=64 
                         ))
 
-    // io.resp.valid := io.ram.resp.valid
     io.resp.valid := (io.ram.resp.fire && s1_lsuOp =/= LSU_NOP && s1_lsuOp =/= LSU_FENC) || s1_lsuOp === LSU_NOP || s1_lsuOp === LSU_FENC
-    when(io.resp.valid) { s1_ready := true.B }
+    when(io.ram.resp.fire) { s1_ready := true.B }
 }

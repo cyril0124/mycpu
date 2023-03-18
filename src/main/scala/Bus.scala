@@ -245,11 +245,9 @@ class TLXbar_1()(implicit val p: Parameters) extends MyModule{
     ppBuf.io.in <> reqMux.io.out
     mf.in.zip(reqMux.io.choseOH).foreach{ case(mfi, chose) => mfi.ready := ppBuf.io.in.ready && chose }
 
-    val bufData = Mux(ppBuf.io.out.fire, ppBuf.io.out.bits, RegEnable(ppBuf.io.out.bits, ppBuf.io.out.fire)) 
+    val bufData = Mux(ppBuf.io.out.fire, ppBuf.io.out.bits, RegEnable(ppBuf.io.out.bits, ppBuf.io.out.fire))
     val bufSource = bufData.source
     val bufAddress = bufData.address
-    val bufValidReg = RegEnable(true.B, false.B, ppBuf.io.out.fire)
-    val bufValid = Mux(ppBuf.io.out.fire, true.B, bufValidReg)
     val pendingMasterOH = UIntToOH(bufSource, nrBusMaster) // pending request's sourceID, the request is watting for ack
     val pendingReq = RegInit(false.B)
     
@@ -260,7 +258,6 @@ class TLXbar_1()(implicit val p: Parameters) extends MyModule{
     val slaveRecVec = sf.in.map{ sfi => sfi.fire }
     val slaveRecv = Cat(pendingSlaveOH.zip(slaveRecVec).map{ case(p, sr) => p & sr }).orR
     when(ppBuf.io.out.fire) { pendingReq := true.B }
-    when(slaveRecv) {  bufValidReg := false.B }
 
     val masterRecvVec = Cat(mf.out.map{ mfo => mfo.fire }.reverse) // master face output is fired // ! NOTICE: use .reverse for the correct bit sequence
     val pendingFree = (masterRecvVec & pendingMasterOH).orR
@@ -270,7 +267,7 @@ class TLXbar_1()(implicit val p: Parameters) extends MyModule{
 
     sf.in.zipWithIndex.foreach{ case(si, i) => 
         si.bits  := bufData 
-        si.valid := bufValid && pendingSlaveOH(i)
+        si.valid := pendingSlaveOH(i)
     }
     
     val slaveMux = Module(new TLBusMux(new BusSlaveBundle, nrBusSlave))

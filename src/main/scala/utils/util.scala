@@ -4,6 +4,15 @@ import chisel3._
 import chisel3.util._
 import mycpu.common._
 
+
+object RSLatch {
+    def apply(set: Bool, reset: Bool): Bool = {
+        val rs = RegEnable(true.B, false.B, set)
+        when(reset) { rs := false.B }
+        rs
+    }
+}
+
 object SignExt {
     def apply(data:SInt, width:Int):UInt = {
         val dataWidth = data.getWidth
