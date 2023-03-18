@@ -10,15 +10,15 @@ default: rtl
 
 rtl:
 	@echo mod is $(mod)
-	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)GenRTL -dt $(BUILD_DIR) --output-file ${mod}.v
+	mill -j 16 $(mill_mod).runMain ${PACKAGE}.$(mod)GenRTL -dt $(BUILD_DIR) --output-file ${mod}.v
 
 tests:
-	mill -j 8 ${mill_mod}.test.testOnly ${PACKAGE}.${mod}Test | tee "${BUILD_DIR}/${mod}Test.log"
+	mill -j 16 ${mill_mod}.test.testOnly ${PACKAGE}.${mod}Test | tee "${BUILD_DIR}/${mod}Test.log"
 	cp ${BUILD_DIR}/${mod}Test.log ${PRJ_DIR}/temp
 	cp ${shell find ${PRJ_DIR}/test_run_dir -name "${mod}.vcd"} ${PRJ_DIR}/temp
 
 raw_test:
-	mill -j 8 $(mill_mod).runMain ${PACKAGE}.$(mod)RawTest -dt $(BUILD_DIR) --output-file ${mod}.v 
+	mill -j 16 $(mill_mod).runMain ${PACKAGE}.$(mod)RawTest -dt $(BUILD_DIR) --output-file ${mod}.v 
 
 print_verilog: 
 	@echo

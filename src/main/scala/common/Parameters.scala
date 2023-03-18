@@ -24,12 +24,39 @@ trait HasMyCpuParameters {
 
       // DCache Configuration
     val dcacheWays = myCpuParams.dcacheWays
-    val dcacheSets = myCpuParams.dcacheSets
-    val dcacheBlockBytes = myCpuParams.dcacheBlockBytes
     val dcacheWayBits = log2Ceil(myCpuParams.dcacheWays)
+
+    val dcacheSets = myCpuParams.dcacheSets
     val dcacheSetBits = log2Ceil(myCpuParams.dcacheSets)
-    val dcacheBlockOffsetBits = log2Ceil(dcacheBlockBytes)
-    val dcacheTagBits = xlen - dcacheSetBits - dcacheBlockOffsetBits
+
+    val dcacheBlockSize = 2
+    val dcacheBlockBits = log2Ceil(dcacheBlockSize)
+
+    val dcacheBlockBytes = myCpuParams.xlen / 8
+    val dcacheByteOffsetBits = log2Ceil(dcacheBlockBytes)
+
+    val dcacheBanks = myCpuParams.dcacheBanks
+    val dcacheBankBits = 0//log2Ceil(dcacheBanks)
+
+    val dcacheTagBits = xlen - dcacheSetBits - dcacheBankBits - dcacheBlockBits - dcacheByteOffsetBits
+    
+    
+    // | Tag | Set | Bank | Block | Byte |
+    def addrToDCacheTag(addr: UInt): UInt = {
+      addr(xlen - 1, dcacheSetBits + dcacheBankBits + dcacheBlockBits + dcacheByteOffsetBits)
+    }
+
+    def addrToDCacheSet(addr: UInt): UInt = {
+      addr(dcacheSetBits + dcacheByteOffsetBits + dcacheBlockBits + dcacheBankBits - 1, dcacheByteOffsetBits + dcacheBlockBits + dcacheBankBits)
+    }
+
+    // def addrToDCacheBankOH(addr: UInt): UInt = {
+    //   UIntToOH(addr(dcacheBankBits + dcacheByteOffsetBits + dcacheBlockBits - 1, dcacheByteOffsetBits + dcacheBlockBits))
+    // }
+
+    def addrToDCacheBlockOH(addr: UInt): UInt = {
+      UIntToOH(addr(dcacheBlockBits + dcacheByteOffsetBits - 1, dcacheByteOffsetBits))
+    }
 
 
     // TODO:
@@ -97,7 +124,8 @@ case class MyCpuParameters
     // DCache Configuration
     dcacheWays: Int = 4,
     dcacheSets: Int = 64,
-    dcacheBlockBytes: Int = 8,
+    // dcacheBlockBytes: Int = 8,
+    dcacheBanks: Int = 2,
 
     // Memory Map Configuration
     textStart: Int = 0x100,

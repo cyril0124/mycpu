@@ -162,7 +162,7 @@ if( testCase == 0 ) {
     ramResp.valid := true.B
     ramResp.bits.source := ramReqVal.source
 
-} else {
+} else if(testCase == 1) {
     // -------------------------------------------------------------
     // val busCrossBar = Module(new TLXbar())
     val busCrossBar = Module(new TLXbar_1()) // with PingPongBuf
@@ -233,6 +233,66 @@ if( testCase == 0 ) {
 
     // val mCounter1 = Counter(true.B, 30)
     // ramReq.ready := mCounter1._1 > 25.U
+} else if (testCase == 2) {
+    val busCrossBar = Module(new TLXbar_1()) // with PingPongBuf
+    busCrossBar.io <> DontCare
+
+    busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
+    ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+
+    busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
+    mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
+
+    val rom = Module(new ROM())
+    rom.io.clock := clock
+    rom.io.reset := reset
+
+    val romReq = busCrossBar.io.slaveFace.in(0)
+    val romResp = busCrossBar.io.slaveFace.out(0)
+
+    val romReqReg = RegEnable(romReq.bits, romReq.fire)
+    val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
+    val romBusy = RegEnable(true.B, false.B, romReq.fire)
+
+    when(romResp.fire) {
+        romBusy := false.B
+    }
+
+    rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
+    rom.io.wmask := "b1111".U
+    rom.io.wdata := romReqVal.data
+    rom.io.waddr := romReqVal.address
+    rom.io.raddr := romReqVal.address 
+    romReq.ready := !romBusy
+    romResp.bits.data := rom.io.rdata
+    romResp.valid := romBusy 
+    romResp.bits.source := romReqVal.source
+
+
+
+    val ram = Module(new ROM())
+    ram.io.clock := clock
+    ram.io.reset := reset
+
+    val ramReq = busCrossBar.io.slaveFace.in(1)
+    val ramResp = busCrossBar.io.slaveFace.out(1)
+    
+    val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
+    val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
+    val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
+    when(ramResp.fire) {
+        ramBusy := false.B
+    }
+
+    ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
+    ram.io.wmask := ramReqVal.mask
+    ram.io.wdata := ramReqVal.data
+    ram.io.waddr := ramReqVal.address - memRamBegin.U
+    ram.io.raddr := ramReqVal.address - memRamBegin.U 
+    ramReq.ready := !ramBusy 
+    ramResp.bits.data := ram.io.rdata
+    ramResp.valid := ramBusy 
+    ramResp.bits.source := ramReqVal.source 
 }
 }
 

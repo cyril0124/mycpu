@@ -37,6 +37,13 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
     val wen = io.en & io.rw
     val ren = io.en & !io.rw
 
+    // for VCS simulator
+    // withReset(reset) {
+    //     (0 until depth).foreach{
+    //         i => ram(i.U) := 0.U.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
+    //     }
+    // }
+
     // read: rdata will keep stable until the next read enable.
     // withReset(reset) {
     //     io.rdata := DontCare
@@ -204,8 +211,10 @@ class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, si
     // println(s"width = ${width}")
     val sram = SRAM(width, depth, maskSegments, singlePort)
 
-    // io.r.data := sram.read(io.r.addr,io.r.en)
-    io.r.data := sram.read(io.r.addr)
+    io.r.data := sram.read(io.r.addr,io.r.en)
+    // val rdData = RegEnable(sram.read(io.r.addr), io.r.en)
+    // io.r.data := rdData//sram.read(io.r.addr)
+    // io.r.data := Mux(io.r.en, sram.read(io.r.addr), rdData)
     
     when(io.w.en) {
         sram.write(io.w.addr,io.w.data,io.w.mask.getOrElse(false.B))

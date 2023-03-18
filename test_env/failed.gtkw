@@ -1,15 +1,13 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Mar 18 14:54:41 2023
+[*] Sat Mar 18 15:34:03 2023
 [*]
-[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-18@22:52:32_0.vcd"
-[dumpfile_mtime] "Sat Mar 18 14:52:32 2023"
-[dumpfile_size] 5478490
+[dumpfile] "(null)"
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 594206
+[timestart] 1233
 [size] 1920 1009
-[pos] 0 23
-*-9.000000 595390 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] 8 31
+*-9.000000 2610 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -96,6 +94,9 @@ TOP.top_tb.core_inst.ife.preFetchInst
 @22
 TOP.top_tb.core_inst.ife.io_rom_req_bits_address[31:0]
 @28
+>-20
+TOP.top_tb.core_inst.ife.io_rom_req_ready
+>0
 TOP.top_tb.core_inst.ife.io_rom_req_valid
 @200
 -
@@ -139,7 +140,7 @@ TOP.top_tb.core_inst.dec.stageReg_instState_inst[31:0]
 TOP.top_tb.core_inst.dec.stageReg_instState_pc[31:0]
 @200
 -
-@23
+@22
 TOP.top_tb.core_inst.dec.ctrlUnit_io_in_inst[31:0]
 @200
 -

@@ -3486,12 +3486,12 @@ module TLBusArbiter(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
-  reg [1:0] owner; // @[Bus.scala 114:24]
+  reg [1:0] owner; // @[Bus.scala 117:24]
   wire [3:0] _io_grantOH_T = 4'h1 << owner; // @[OneHot.scala 57:35]
-  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 141:16]
+  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 144:16]
   always @(posedge clock) begin
-    if (reset) begin // @[Bus.scala 114:24]
-      owner <= 2'h0; // @[Bus.scala 114:24]
+    if (reset) begin // @[Bus.scala 117:24]
+      owner <= 2'h0; // @[Bus.scala 117:24]
     end else if (io_reqs_1) begin // @[Mux.scala 27:73]
       owner <= 2'h1;
     end else begin
@@ -3820,11 +3820,11 @@ module TLAddrDecode(
   output        io_choseOH_0,
   output        io_choseOH_1
 );
-  wire  valid = io_addr < 32'h2000; // @[Bus.scala 152:42]
-  wire  valid_1 = io_addr >= 32'h2000 & io_addr < 32'h4000; // @[Bus.scala 152:31]
-  wire  _GEN_2 = valid_1 ? 1'h0 : 1'h1; // @[Bus.scala 162:68 163:20 165:20]
-  assign io_choseOH_0 = valid | _GEN_2; // @[Bus.scala 160:62 161:20]
-  assign io_choseOH_1 = valid ? 1'h0 : valid_1; // @[Bus.scala 160:62 161:20]
+  wire  valid = io_addr < 32'h2000; // @[Bus.scala 155:42]
+  wire  valid_1 = io_addr >= 32'h2000 & io_addr < 32'h4000; // @[Bus.scala 155:31]
+  wire  _GEN_2 = valid_1 ? 1'h0 : 1'h1; // @[Bus.scala 165:68 166:20 168:20]
+  assign io_choseOH_0 = valid | _GEN_2; // @[Bus.scala 163:62 164:20]
+  assign io_choseOH_1 = valid ? 1'h0 : valid_1; // @[Bus.scala 163:62 164:20]
 endmodule
 module TLBusMux_1(
   output        io_in_0_ready,
@@ -3841,8 +3841,8 @@ module TLBusMux_1(
 );
   wire [31:0] _io_out_bits_T = io_choseOH_0 ? io_in_0_bits_data : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _io_out_bits_T_1 = io_choseOH_1 ? io_in_1_bits_data : 32'h0; // @[Mux.scala 27:73]
-  assign io_in_0_ready = io_out_ready; // @[Bus.scala 84:35]
-  assign io_in_1_ready = io_out_ready; // @[Bus.scala 84:35]
+  assign io_in_0_ready = io_out_ready; // @[Bus.scala 87:35]
+  assign io_in_1_ready = io_out_ready; // @[Bus.scala 87:35]
   assign io_out_valid = io_choseOH_0 & io_in_0_valid | io_choseOH_1 & io_in_1_valid; // @[Mux.scala 27:73]
   assign io_out_bits_data = _io_out_bits_T | _io_out_bits_T_1; // @[Mux.scala 27:73]
 endmodule
@@ -3888,56 +3888,56 @@ module TLXbar_1(
   reg [31:0] _RAND_4;
   reg [31:0] _RAND_5;
 `endif // RANDOMIZE_REG_INIT
-  wire  reqArb_clock; // @[Bus.scala 237:24]
-  wire  reqArb_reset; // @[Bus.scala 237:24]
-  wire  reqArb_io_reqs_1; // @[Bus.scala 237:24]
-  wire [1:0] reqArb_io_grantOH; // @[Bus.scala 237:24]
-  wire  reqMux_io_in_0_valid; // @[Bus.scala 240:24]
-  wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 240:24]
-  wire  reqMux_io_in_1_valid; // @[Bus.scala 240:24]
-  wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 240:24]
-  wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 240:24]
-  wire [3:0] reqMux_io_in_1_bits_mask; // @[Bus.scala 240:24]
-  wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 240:24]
-  wire  reqMux_io_out_valid; // @[Bus.scala 240:24]
-  wire [2:0] reqMux_io_out_bits_opcode; // @[Bus.scala 240:24]
-  wire  reqMux_io_out_bits_source; // @[Bus.scala 240:24]
-  wire [31:0] reqMux_io_out_bits_address; // @[Bus.scala 240:24]
-  wire [3:0] reqMux_io_out_bits_mask; // @[Bus.scala 240:24]
-  wire [31:0] reqMux_io_out_bits_data; // @[Bus.scala 240:24]
-  wire  reqMux_io_choseOH_0; // @[Bus.scala 240:24]
-  wire  reqMux_io_choseOH_1; // @[Bus.scala 240:24]
-  wire  ppBuf_clock; // @[Bus.scala 244:23]
-  wire  ppBuf_reset; // @[Bus.scala 244:23]
-  wire  ppBuf_io_in_ready; // @[Bus.scala 244:23]
-  wire  ppBuf_io_in_valid; // @[Bus.scala 244:23]
-  wire [2:0] ppBuf_io_in_bits_opcode; // @[Bus.scala 244:23]
-  wire  ppBuf_io_in_bits_source; // @[Bus.scala 244:23]
-  wire [31:0] ppBuf_io_in_bits_address; // @[Bus.scala 244:23]
-  wire [3:0] ppBuf_io_in_bits_mask; // @[Bus.scala 244:23]
-  wire [31:0] ppBuf_io_in_bits_data; // @[Bus.scala 244:23]
-  wire  ppBuf_io_out_ready; // @[Bus.scala 244:23]
-  wire  ppBuf_io_out_valid; // @[Bus.scala 244:23]
-  wire [2:0] ppBuf_io_out_bits_opcode; // @[Bus.scala 244:23]
-  wire  ppBuf_io_out_bits_source; // @[Bus.scala 244:23]
-  wire [31:0] ppBuf_io_out_bits_address; // @[Bus.scala 244:23]
-  wire [3:0] ppBuf_io_out_bits_mask; // @[Bus.scala 244:23]
-  wire [31:0] ppBuf_io_out_bits_data; // @[Bus.scala 244:23]
-  wire [31:0] addrDec_io_addr; // @[Bus.scala 254:25]
-  wire  addrDec_io_choseOH_0; // @[Bus.scala 254:25]
-  wire  addrDec_io_choseOH_1; // @[Bus.scala 254:25]
-  wire  slaveMux_io_in_0_ready; // @[Bus.scala 273:26]
-  wire  slaveMux_io_in_0_valid; // @[Bus.scala 273:26]
-  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 273:26]
-  wire  slaveMux_io_in_1_ready; // @[Bus.scala 273:26]
-  wire  slaveMux_io_in_1_valid; // @[Bus.scala 273:26]
-  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 273:26]
-  wire  slaveMux_io_out_ready; // @[Bus.scala 273:26]
-  wire  slaveMux_io_out_valid; // @[Bus.scala 273:26]
-  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 273:26]
-  wire  slaveMux_io_choseOH_0; // @[Bus.scala 273:26]
-  wire  slaveMux_io_choseOH_1; // @[Bus.scala 273:26]
-  wire [1:0] _WIRE_1 = reqArb_io_grantOH; // @[Bus.scala 242:{52,52}]
+  wire  reqArb_clock; // @[Bus.scala 240:24]
+  wire  reqArb_reset; // @[Bus.scala 240:24]
+  wire  reqArb_io_reqs_1; // @[Bus.scala 240:24]
+  wire [1:0] reqArb_io_grantOH; // @[Bus.scala 240:24]
+  wire  reqMux_io_in_0_valid; // @[Bus.scala 243:24]
+  wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 243:24]
+  wire  reqMux_io_in_1_valid; // @[Bus.scala 243:24]
+  wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 243:24]
+  wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 243:24]
+  wire [3:0] reqMux_io_in_1_bits_mask; // @[Bus.scala 243:24]
+  wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 243:24]
+  wire  reqMux_io_out_valid; // @[Bus.scala 243:24]
+  wire [2:0] reqMux_io_out_bits_opcode; // @[Bus.scala 243:24]
+  wire  reqMux_io_out_bits_source; // @[Bus.scala 243:24]
+  wire [31:0] reqMux_io_out_bits_address; // @[Bus.scala 243:24]
+  wire [3:0] reqMux_io_out_bits_mask; // @[Bus.scala 243:24]
+  wire [31:0] reqMux_io_out_bits_data; // @[Bus.scala 243:24]
+  wire  reqMux_io_choseOH_0; // @[Bus.scala 243:24]
+  wire  reqMux_io_choseOH_1; // @[Bus.scala 243:24]
+  wire  ppBuf_clock; // @[Bus.scala 247:23]
+  wire  ppBuf_reset; // @[Bus.scala 247:23]
+  wire  ppBuf_io_in_ready; // @[Bus.scala 247:23]
+  wire  ppBuf_io_in_valid; // @[Bus.scala 247:23]
+  wire [2:0] ppBuf_io_in_bits_opcode; // @[Bus.scala 247:23]
+  wire  ppBuf_io_in_bits_source; // @[Bus.scala 247:23]
+  wire [31:0] ppBuf_io_in_bits_address; // @[Bus.scala 247:23]
+  wire [3:0] ppBuf_io_in_bits_mask; // @[Bus.scala 247:23]
+  wire [31:0] ppBuf_io_in_bits_data; // @[Bus.scala 247:23]
+  wire  ppBuf_io_out_ready; // @[Bus.scala 247:23]
+  wire  ppBuf_io_out_valid; // @[Bus.scala 247:23]
+  wire [2:0] ppBuf_io_out_bits_opcode; // @[Bus.scala 247:23]
+  wire  ppBuf_io_out_bits_source; // @[Bus.scala 247:23]
+  wire [31:0] ppBuf_io_out_bits_address; // @[Bus.scala 247:23]
+  wire [3:0] ppBuf_io_out_bits_mask; // @[Bus.scala 247:23]
+  wire [31:0] ppBuf_io_out_bits_data; // @[Bus.scala 247:23]
+  wire [31:0] addrDec_io_addr; // @[Bus.scala 257:25]
+  wire  addrDec_io_choseOH_0; // @[Bus.scala 257:25]
+  wire  addrDec_io_choseOH_1; // @[Bus.scala 257:25]
+  wire  slaveMux_io_in_0_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_0_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_in_0_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_1_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_in_1_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_in_1_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_out_ready; // @[Bus.scala 276:26]
+  wire  slaveMux_io_out_valid; // @[Bus.scala 276:26]
+  wire [31:0] slaveMux_io_out_bits_data; // @[Bus.scala 276:26]
+  wire  slaveMux_io_choseOH_0; // @[Bus.scala 276:26]
+  wire  slaveMux_io_choseOH_1; // @[Bus.scala 276:26]
+  wire [1:0] _WIRE_1 = reqArb_io_grantOH; // @[Bus.scala 245:{52,52}]
   wire  _bufData_T = ppBuf_io_out_ready & ppBuf_io_out_valid; // @[Decoupled.scala 51:35]
   reg [2:0] bufData_r_opcode; // @[Reg.scala 19:16]
   reg  bufData_r_source; // @[Reg.scala 19:16]
@@ -3946,18 +3946,18 @@ module TLXbar_1(
   reg [31:0] bufData_r_data; // @[Reg.scala 19:16]
   wire  _GEN_3 = _bufData_T ? ppBuf_io_out_bits_source : bufData_r_source; // @[Reg.scala 19:16 20:{18,22}]
   wire [1:0] pendingMasterOH = 2'h1 << _GEN_3; // @[OneHot.scala 64:12]
-  reg  pendingReq; // @[Bus.scala 252:29]
-  wire  _GEN_8 = _bufData_T | pendingReq; // @[Bus.scala 252:29 260:{29,42}]
+  reg  pendingReq; // @[Bus.scala 255:29]
+  wire  _GEN_8 = _bufData_T | pendingReq; // @[Bus.scala 255:29 263:{29,42}]
   wire [1:0] masterRecvVec = {io_masterFace_out_1_valid,io_masterFace_out_0_valid}; // @[Cat.scala 33:92]
-  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 263:38]
-  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 263:57]
-  TLBusArbiter reqArb ( // @[Bus.scala 237:24]
+  wire [1:0] _pendingFree_T = masterRecvVec & pendingMasterOH; // @[Bus.scala 266:38]
+  wire  pendingFree = |_pendingFree_T; // @[Bus.scala 266:57]
+  TLBusArbiter reqArb ( // @[Bus.scala 240:24]
     .clock(reqArb_clock),
     .reset(reqArb_reset),
     .io_reqs_1(reqArb_io_reqs_1),
     .io_grantOH(reqArb_io_grantOH)
   );
-  TLBusMux reqMux ( // @[Bus.scala 240:24]
+  TLBusMux reqMux ( // @[Bus.scala 243:24]
     .io_in_0_valid(reqMux_io_in_0_valid),
     .io_in_0_bits_address(reqMux_io_in_0_bits_address),
     .io_in_1_valid(reqMux_io_in_1_valid),
@@ -3974,7 +3974,7 @@ module TLXbar_1(
     .io_choseOH_0(reqMux_io_choseOH_0),
     .io_choseOH_1(reqMux_io_choseOH_1)
   );
-  PingPongBuf ppBuf ( // @[Bus.scala 244:23]
+  PingPongBuf ppBuf ( // @[Bus.scala 247:23]
     .clock(ppBuf_clock),
     .reset(ppBuf_reset),
     .io_in_ready(ppBuf_io_in_ready),
@@ -3992,12 +3992,12 @@ module TLXbar_1(
     .io_out_bits_mask(ppBuf_io_out_bits_mask),
     .io_out_bits_data(ppBuf_io_out_bits_data)
   );
-  TLAddrDecode addrDec ( // @[Bus.scala 254:25]
+  TLAddrDecode addrDec ( // @[Bus.scala 257:25]
     .io_addr(addrDec_io_addr),
     .io_choseOH_0(addrDec_io_choseOH_0),
     .io_choseOH_1(addrDec_io_choseOH_1)
   );
-  TLBusMux_1 slaveMux ( // @[Bus.scala 273:26]
+  TLBusMux_1 slaveMux ( // @[Bus.scala 276:26]
     .io_in_0_ready(slaveMux_io_in_0_ready),
     .io_in_0_valid(slaveMux_io_in_0_valid),
     .io_in_0_bits_data(slaveMux_io_in_0_bits_data),
@@ -4010,52 +4010,52 @@ module TLXbar_1(
     .io_choseOH_0(slaveMux_io_choseOH_0),
     .io_choseOH_1(slaveMux_io_choseOH_1)
   );
-  assign io_masterFace_in_0_ready = ppBuf_io_in_ready & reqMux_io_choseOH_0; // @[Bus.scala 246:94]
-  assign io_masterFace_in_1_ready = ppBuf_io_in_ready & reqMux_io_choseOH_1; // @[Bus.scala 246:94]
-  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 279:43]
-  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 278:17]
-  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 279:43]
-  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 278:17]
-  assign io_slaveFace_in_0_valid = addrDec_io_choseOH_0; // @[Bus.scala 270:18]
-  assign io_slaveFace_in_0_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_0_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_0_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_1_valid = addrDec_io_choseOH_1; // @[Bus.scala 270:18]
-  assign io_slaveFace_in_1_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_1_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_1_bits_mask = _bufData_T ? ppBuf_io_out_bits_mask : bufData_r_mask; // @[Bus.scala 248:22]
-  assign io_slaveFace_in_1_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 248:22]
-  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 274:20]
-  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 274:20]
+  assign io_masterFace_in_0_ready = ppBuf_io_in_ready & reqMux_io_choseOH_0; // @[Bus.scala 249:94]
+  assign io_masterFace_in_1_ready = ppBuf_io_in_ready & reqMux_io_choseOH_1; // @[Bus.scala 249:94]
+  assign io_masterFace_out_0_valid = slaveMux_io_out_valid & pendingMasterOH[0]; // @[Bus.scala 282:43]
+  assign io_masterFace_out_0_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
+  assign io_masterFace_out_1_valid = slaveMux_io_out_valid & pendingMasterOH[1]; // @[Bus.scala 282:43]
+  assign io_masterFace_out_1_bits_data = slaveMux_io_out_bits_data; // @[Bus.scala 281:17]
+  assign io_slaveFace_in_0_valid = addrDec_io_choseOH_0; // @[Bus.scala 273:18]
+  assign io_slaveFace_in_0_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_0_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_0_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_1_valid = addrDec_io_choseOH_1; // @[Bus.scala 273:18]
+  assign io_slaveFace_in_1_bits_opcode = _bufData_T ? ppBuf_io_out_bits_opcode : bufData_r_opcode; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_1_bits_address = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_1_bits_mask = _bufData_T ? ppBuf_io_out_bits_mask : bufData_r_mask; // @[Bus.scala 251:22]
+  assign io_slaveFace_in_1_bits_data = _bufData_T ? ppBuf_io_out_bits_data : bufData_r_data; // @[Bus.scala 251:22]
+  assign io_slaveFace_out_0_ready = slaveMux_io_in_0_ready; // @[Bus.scala 277:20]
+  assign io_slaveFace_out_1_ready = slaveMux_io_in_1_ready; // @[Bus.scala 277:20]
   assign reqArb_clock = clock;
   assign reqArb_reset = reset;
-  assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 238:58]
-  assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 241:58]
-  assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 241:58]
-  assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 241:58]
-  assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 241:58]
-  assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 241:58]
-  assign reqMux_io_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[Bus.scala 241:58]
-  assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 241:58]
-  assign reqMux_io_choseOH_0 = _WIRE_1[0]; // @[Bus.scala 242:52]
-  assign reqMux_io_choseOH_1 = _WIRE_1[1]; // @[Bus.scala 242:52]
+  assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 241:58]
+  assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 244:58]
+  assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 244:58]
+  assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 244:58]
+  assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 244:58]
+  assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 244:58]
+  assign reqMux_io_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[Bus.scala 244:58]
+  assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 244:58]
+  assign reqMux_io_choseOH_0 = _WIRE_1[0]; // @[Bus.scala 245:52]
+  assign reqMux_io_choseOH_1 = _WIRE_1[1]; // @[Bus.scala 245:52]
   assign ppBuf_clock = clock;
   assign ppBuf_reset = reset;
-  assign ppBuf_io_in_valid = reqMux_io_out_valid; // @[Bus.scala 245:17]
-  assign ppBuf_io_in_bits_opcode = reqMux_io_out_bits_opcode; // @[Bus.scala 245:17]
-  assign ppBuf_io_in_bits_source = reqMux_io_out_bits_source; // @[Bus.scala 245:17]
-  assign ppBuf_io_in_bits_address = reqMux_io_out_bits_address; // @[Bus.scala 245:17]
-  assign ppBuf_io_in_bits_mask = reqMux_io_out_bits_mask; // @[Bus.scala 245:17]
-  assign ppBuf_io_in_bits_data = reqMux_io_out_bits_data; // @[Bus.scala 245:17]
-  assign ppBuf_io_out_ready = ~pendingReq; // @[Bus.scala 266:27]
-  assign addrDec_io_addr = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 248:22]
-  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 274:20]
-  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 274:20]
-  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 274:20]
-  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 274:20]
+  assign ppBuf_io_in_valid = reqMux_io_out_valid; // @[Bus.scala 248:17]
+  assign ppBuf_io_in_bits_opcode = reqMux_io_out_bits_opcode; // @[Bus.scala 248:17]
+  assign ppBuf_io_in_bits_source = reqMux_io_out_bits_source; // @[Bus.scala 248:17]
+  assign ppBuf_io_in_bits_address = reqMux_io_out_bits_address; // @[Bus.scala 248:17]
+  assign ppBuf_io_in_bits_mask = reqMux_io_out_bits_mask; // @[Bus.scala 248:17]
+  assign ppBuf_io_in_bits_data = reqMux_io_out_bits_data; // @[Bus.scala 248:17]
+  assign ppBuf_io_out_ready = ~pendingReq; // @[Bus.scala 269:27]
+  assign addrDec_io_addr = _bufData_T ? ppBuf_io_out_bits_address : bufData_r_address; // @[Bus.scala 251:22]
+  assign slaveMux_io_in_0_valid = io_slaveFace_out_0_valid; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_0_bits_data = io_slaveFace_out_0_bits_data; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_1_valid = io_slaveFace_out_1_valid; // @[Bus.scala 277:20]
+  assign slaveMux_io_in_1_bits_data = io_slaveFace_out_1_bits_data; // @[Bus.scala 277:20]
   assign slaveMux_io_out_ready = pendingMasterOH[0] | pendingMasterOH[1]; // @[Mux.scala 27:73]
-  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 275:25]
-  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 275:25]
+  assign slaveMux_io_choseOH_0 = addrDec_io_choseOH_0; // @[Bus.scala 278:25]
+  assign slaveMux_io_choseOH_1 = addrDec_io_choseOH_1; // @[Bus.scala 278:25]
   always @(posedge clock) begin
     if (_bufData_T) begin // @[Reg.scala 20:18]
       bufData_r_opcode <= ppBuf_io_out_bits_opcode; // @[Reg.scala 20:22]
@@ -4072,10 +4072,10 @@ module TLXbar_1(
     if (_bufData_T) begin // @[Reg.scala 20:18]
       bufData_r_data <= ppBuf_io_out_bits_data; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[Bus.scala 252:29]
-      pendingReq <= 1'h0; // @[Bus.scala 252:29]
-    end else if (pendingFree) begin // @[Bus.scala 264:22]
-      pendingReq <= 1'h0; // @[Bus.scala 264:35]
+    if (reset) begin // @[Bus.scala 255:29]
+      pendingReq <= 1'h0; // @[Bus.scala 255:29]
+    end else if (pendingFree) begin // @[Bus.scala 267:22]
+      pendingReq <= 1'h0; // @[Bus.scala 267:35]
     end else begin
       pendingReq <= _GEN_8;
     end

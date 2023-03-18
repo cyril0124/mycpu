@@ -28,6 +28,9 @@ object BusReq {
     def PutFullData = 2.U
     def PutPartialData = 3.U
 
+    def AccessAck = 0.U
+    def AccessAckData = 1.U 
+
     def isPut(req: UInt): Bool = {
         req(1).asBool
     }
@@ -191,6 +194,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     val bufValidReg = RegEnable(true.B, false.B, buf.io.deq.fire)
     val bufValid = Mux(buf.io.deq.fire, true.B, bufValidReg)
     val pendingMasterOH = UIntToOH(bufSource, nrBusMaster) // pending request's sourceID, the request is watting for ack
+    // val pendingBeat = bufData.
     val pendingReq = RegInit(false.B)
     
     val addrDec = Module(new TLAddrDecode(nrBusSlave))
