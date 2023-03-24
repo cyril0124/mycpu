@@ -116,6 +116,7 @@ class LSU()(implicit val p: Parameters) extends MyModule {
     io.ram.req.bits.data := s0_req.wdata << (offset << 3)
     io.ram.req.bits.opcode := Mux(wen, BusReq.PutFullData, BusReq.Get)
     io.ram.req.bits.source := MASTER_1
+    io.ram.req.bits.size := (xlen / 8).U
     io.ram.req.bits.mask := MuxLookup(width, "b1111".U, Seq(
         LS_DATA_BYTE -> UIntToOH(s0_req.addr(blockOffsetBits-1, 0)),
         LS_DATA_HALF -> MuxLookup(s0_req.addr(blockOffsetBits-1, 0), "b0011".U, Seq(

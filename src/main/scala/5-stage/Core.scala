@@ -164,8 +164,7 @@ if( testCase == 0 ) {
 
 } else if(testCase == 1) {
     // -------------------------------------------------------------
-    // val busCrossBar = Module(new TLXbar())
-    val busCrossBar = Module(new TLXbar_1()) // with PingPongBuf
+    val busCrossBar = Module(new TLXbar())
     busCrossBar.io <> DontCare
 
     busCrossBar.io.masterFace.in(0) <> ife.io.rom.req

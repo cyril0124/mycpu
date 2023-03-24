@@ -93,7 +93,7 @@ trait HasMyCpuParameters {
     // Bus Configuration
     val nrBusMaster = myCpuParams.nrBusMaster
     val nrBusSlave = myCpuParams.nrBusSlave
-    val busBeatSize = myCpuParams.xlen
+    val busBeatSize = myCpuParams.xlen / 8
     val busMaskWidth = myCpuParams.xlen / 8
 
     val simulation = myCpuParams.simulation

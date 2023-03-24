@@ -32,7 +32,7 @@
     {name: 'valid->', wave: '010.......'},
     {name: 'ready<-', wave: '1.01......'},
     {name: 's0_isHit', wave: '0.10......'},
-    {name: 'resp', wave:'0.10......'},
+    {name: 'resp', wave:'0..10.....'},
   ],
   {},
   ['write miss(not dirty)', 

@@ -188,6 +188,7 @@ class Fetch()(implicit val p: Parameters) extends MyModule{
     io.rom.req.valid        := ~flush && io.in.start && io.rom.req.ready && preFetchInst
     io.rom.req.bits.address := pc
     io.rom.req.bits.opcode  := Get
+    io.rom.req.bits.size    := (ilen / 8).U
     io.rom.req.bits.source  := MASTER_0
     io.rom.resp.bits        <> DontCare
     io.rom.resp.ready       :=  true.B // always enable receive inst data

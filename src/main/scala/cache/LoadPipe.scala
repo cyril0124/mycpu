@@ -97,14 +97,15 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
                                     blockAddr
                                 )
     s0_tlbusReq.bits.data := Mux(loadMissDirty, Mux1H(s0_beatOH, s0_rdBlockData), 0.U)
-    s0_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockBytes).U
+    s0_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s0_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s0_tlbusReq.bits.corrupt := false.B
 
     
-    val s0_valid =  loadHit && io.load.resp.fire && io.load.resp.bits.stageID === 0.U ||
+    val s0_valid =  s0_reqValidReg && 
+                    (loadHit && io.load.resp.fire && io.load.resp.bits.stageID === 0.U ||
                     loadMissClean && s0_tlbusReq.fire ||
-                    loadMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck // watting for PutFullData resp
+                    loadMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
 
     // --------------------------------------------------------------------------------
     // stage 1
@@ -136,7 +137,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     s1_tlbusReq.bits.opcode := Get
     val s1_blockAddr = Cat(s1_rAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
     s1_tlbusReq.bits.address := s1_blockAddr
-    s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockBytes).U
+    s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s1_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s1_tlbusReq.bits.corrupt := false.B
 
@@ -175,11 +176,8 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     io.dir.write.req.bits.way := s1_chosenWayOH
     val metaArrayWrData = Wire(new DCacheMeta)
     metaArrayWrData.valid := Mux(s1_refillFire, true.B, false.B)
-    metaArrayWrData.dirty := false.B //true.B 
-    val metaWrData = WireInit(VecInit.tabulate(dcacheWays)(_ => 0.U((new DCacheMeta).getWidth.W)))
-    for(i <- 0 until dcacheWays) { metaWrData(i) := Mux(s1_chosenWayOH(i), metaArrayWrData.asUInt, 0.U) }
-    io.dir.write.req.bits.meta := metaWrData
-
+    metaArrayWrData.dirty := false.B
+    io.dir.write.req.bits.meta := metaArrayWrData.asUInt
 
     // output data when all beats of data has already refilled
     val s1_loadResp = Wire(chiselTypeOf(io.load.resp))

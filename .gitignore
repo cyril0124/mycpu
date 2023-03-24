@@ -7,6 +7,7 @@ ucli.key
 temp/
 *.key
 mill*
+scripts/extract_verilog_module/output/*
 ### XilinxISE template
 # intermediate build files
 *.bgn

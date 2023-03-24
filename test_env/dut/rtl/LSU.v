@@ -80,12 +80,12 @@ module LSU(
   wire [3:0] _io_ram_req_bits_mask_T_10 = 2'h0 == width ? _io_ram_req_bits_mask_T_1 : 4'hf; // @[Mux.scala 81:58]
   wire [3:0] _io_ram_req_bits_mask_T_12 = 2'h1 == width ? _io_ram_req_bits_mask_T_8 : _io_ram_req_bits_mask_T_10; // @[Mux.scala 81:58]
   wire  s0_valid = io_ram_req_ready & io_ram_req_valid; // @[Decoupled.scala 51:35]
-  wire  s1_latch = s0_valid & s1_ready; // @[LSU.scala 135:30]
-  reg  s1_signed; // @[LSU.scala 136:24]
-  reg [1:0] s1_width; // @[LSU.scala 137:24]
-  reg [1:0] s1_offset; // @[LSU.scala 138:24]
-  reg [4:0] s1_lsuOp; // @[LSU.scala 139:28]
-  wire  _GEN_12 = s1_latch ? 1'h0 : s1_ready; // @[LSU.scala 140:20 145:19 76:28]
+  wire  s1_latch = s0_valid & s1_ready; // @[LSU.scala 136:30]
+  reg  s1_signed; // @[LSU.scala 137:24]
+  reg [1:0] s1_width; // @[LSU.scala 138:24]
+  reg [1:0] s1_offset; // @[LSU.scala 139:24]
+  reg [4:0] s1_lsuOp; // @[LSU.scala 140:28]
+  wire  _GEN_12 = s1_latch ? 1'h0 : s1_ready; // @[LSU.scala 141:20 146:19 76:28]
   wire  _T_65 = io_ram_resp_ready & io_ram_resp_valid; // @[Decoupled.scala 51:35]
   reg [31:0] s1_respReg_data; // @[Reg.scala 19:16]
   wire [31:0] _GEN_21 = _T_65 ? io_ram_resp_bits_data : s1_respReg_data; // @[Reg.scala 19:16 20:{18,22}]
@@ -95,7 +95,7 @@ module LSU(
   wire [31:0] _ramRdData_T_10 = 2'h1 == s1_offset ? _ramRdData_T_2 : _GEN_21; // @[Mux.scala 81:58]
   wire [31:0] _ramRdData_T_12 = 2'h2 == s1_offset ? _ramRdData_T_5 : _ramRdData_T_10; // @[Mux.scala 81:58]
   wire [31:0] ramRdData = 2'h3 == s1_offset ? _ramRdData_T_8 : _ramRdData_T_12; // @[Mux.scala 81:58]
-  wire [7:0] _io_resp_bits_rdata_T_1 = ramRdData[7:0]; // @[LSU.scala 165:83]
+  wire [7:0] _io_resp_bits_rdata_T_1 = ramRdData[7:0]; // @[LSU.scala 166:83]
   wire  io_resp_bits_rdata_signBit = _io_resp_bits_rdata_T_1[7]; // @[util.scala 20:27]
   wire [5:0] io_resp_bits_rdata_out_lo_lo = {io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,
     io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit}; // @[Cat.scala 33:92]
@@ -107,8 +107,8 @@ module LSU(
     ,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_out_lo_lo,
     io_resp_bits_rdata_out_lo,_io_resp_bits_rdata_out_T_1}; // @[Cat.scala 33:92]
   wire [31:0] io_resp_bits_rdata_out_1 = {{24'd0}, ramRdData[7:0]}; // @[util.scala 40:36]
-  wire [31:0] _io_resp_bits_rdata_T_3 = s1_signed ? io_resp_bits_rdata_out : io_resp_bits_rdata_out_1; // @[LSU.scala 165:48]
-  wire [15:0] _io_resp_bits_rdata_T_5 = ramRdData[15:0]; // @[LSU.scala 166:84]
+  wire [31:0] _io_resp_bits_rdata_T_3 = s1_signed ? io_resp_bits_rdata_out : io_resp_bits_rdata_out_1; // @[LSU.scala 166:48]
+  wire [15:0] _io_resp_bits_rdata_T_5 = ramRdData[15:0]; // @[LSU.scala 167:84]
   wire  io_resp_bits_rdata_signBit_1 = _io_resp_bits_rdata_T_5[15]; // @[util.scala 20:27]
   wire [7:0] io_resp_bits_rdata_out_lo_1 = {io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
@@ -118,14 +118,14 @@ module LSU(
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_out_lo_1,_io_resp_bits_rdata_out_T_3}; // @[Cat.scala 33:92]
   wire [31:0] io_resp_bits_rdata_out_3 = {{16'd0}, ramRdData[15:0]}; // @[util.scala 40:36]
-  wire [31:0] _io_resp_bits_rdata_T_7 = s1_signed ? io_resp_bits_rdata_out_2 : io_resp_bits_rdata_out_3; // @[LSU.scala 166:48]
+  wire [31:0] _io_resp_bits_rdata_T_7 = s1_signed ? io_resp_bits_rdata_out_2 : io_resp_bits_rdata_out_3; // @[LSU.scala 167:48]
   wire [31:0] _io_resp_bits_rdata_T_10 = 2'h3 == s1_offset ? _ramRdData_T_8 : _ramRdData_T_12; // @[util.scala 22:18]
-  wire [31:0] _io_resp_bits_rdata_T_12 = s1_signed ? _io_resp_bits_rdata_T_10 : ramRdData; // @[LSU.scala 167:48]
+  wire [31:0] _io_resp_bits_rdata_T_12 = s1_signed ? _io_resp_bits_rdata_T_10 : ramRdData; // @[LSU.scala 168:48]
   wire [31:0] _io_resp_bits_rdata_T_14 = 2'h0 == s1_width ? _io_resp_bits_rdata_T_3 : ramRdData; // @[Mux.scala 81:58]
   wire [31:0] _io_resp_bits_rdata_T_16 = 2'h1 == s1_width ? _io_resp_bits_rdata_T_7 : _io_resp_bits_rdata_T_14; // @[Mux.scala 81:58]
-  wire  _GEN_22 = _T_65 | _GEN_12; // @[LSU.scala 172:{28,39}]
+  wire  _GEN_22 = _T_65 | _GEN_12; // @[LSU.scala 173:{28,39}]
   assign io_req_ready = ~busy; // @[LSU.scala 78:21]
-  assign io_resp_valid = _T_65 & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 171:114]
+  assign io_resp_valid = _T_65 & s1_lsuOp != 5'h0 & s1_lsuOp != 5'h14 | s1_lsuOp == 5'h0 | s1_lsuOp == 5'h14; // @[LSU.scala 172:114]
   assign io_resp_bits_rdata = 2'h2 == s1_width ? _io_resp_bits_rdata_T_12 : _io_resp_bits_rdata_T_16; // @[Mux.scala 81:58]
   assign io_excp_storeUnalign = wen & _io_excp_storeUnalign_T_7; // @[LSU.scala 97:15 94:26 98:30]
   assign io_ram_req_valid = ~io_excp_storeUnalign & s0_en & s1_ready; // @[LSU.scala 114:56]
@@ -133,7 +133,7 @@ module LSU(
   assign io_ram_req_bits_address = _s0_reqReg_T ? io_req_bits_addr : s0_reqReg_addr; // @[LSU.scala 74:21]
   assign io_ram_req_bits_mask = 2'h2 == width ? 4'hf : _io_ram_req_bits_mask_T_12; // @[Mux.scala 81:58]
   assign io_ram_req_bits_data = _io_ram_req_bits_data_T_1[31:0]; // @[LSU.scala 116:26]
-  assign io_ram_resp_ready = 1'h1; // @[LSU.scala 153:23]
+  assign io_ram_resp_ready = 1'h1; // @[LSU.scala 154:23]
   always @(posedge clock) begin
     if (reset) begin // @[LSU.scala 70:23]
       busy <= 1'h0; // @[LSU.scala 70:23]
@@ -152,10 +152,10 @@ module LSU(
       s0_reqReg_lsuOp <= io_req_bits_lsuOp; // @[Reg.scala 20:22]
     end
     s1_ready <= reset | _GEN_22; // @[LSU.scala 76:{28,28}]
-    if (s1_latch) begin // @[LSU.scala 140:20]
-      s1_signed <= signed_; // @[LSU.scala 141:19]
+    if (s1_latch) begin // @[LSU.scala 141:20]
+      s1_signed <= signed_; // @[LSU.scala 142:19]
     end
-    if (s1_latch) begin // @[LSU.scala 140:20]
+    if (s1_latch) begin // @[LSU.scala 141:20]
       if (_T_7) begin // @[Lookup.scala 34:39]
         s1_width <= 2'h0;
       end else if (_T_9) begin // @[Lookup.scala 34:39]
@@ -166,14 +166,14 @@ module LSU(
         s1_width <= _T_53;
       end
     end
-    if (s1_latch) begin // @[LSU.scala 140:20]
-      s1_offset <= offset; // @[LSU.scala 142:19]
+    if (s1_latch) begin // @[LSU.scala 141:20]
+      s1_offset <= offset; // @[LSU.scala 143:19]
     end
-    if (reset) begin // @[LSU.scala 139:28]
-      s1_lsuOp <= 5'h0; // @[LSU.scala 139:28]
-    end else if (~s0_valid & _T_65) begin // @[LSU.scala 148:41]
-      s1_lsuOp <= 5'h0; // @[LSU.scala 148:52]
-    end else if (s1_latch) begin // @[LSU.scala 140:20]
+    if (reset) begin // @[LSU.scala 140:28]
+      s1_lsuOp <= 5'h0; // @[LSU.scala 140:28]
+    end else if (~s0_valid & _T_65) begin // @[LSU.scala 149:41]
+      s1_lsuOp <= 5'h0; // @[LSU.scala 149:52]
+    end else if (s1_latch) begin // @[LSU.scala 141:20]
       if (_s0_reqReg_T) begin // @[Reg.scala 20:18]
         s1_lsuOp <= io_req_bits_lsuOp; // @[Reg.scala 20:22]
       end else begin

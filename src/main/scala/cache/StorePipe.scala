@@ -18,7 +18,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
         val dataBank = Flipped(new DataBankArrayIO) 
         val tlbus = new TLMasterBusUL
     })
-    io <> DontCare
+    // io <> DontCare
 
 
     // accept store request 
@@ -45,7 +45,6 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     }
 
     io.store.req.ready := s0_ready && !s0_reqValidReg
-
 
     // read directory
     io.dir.read.req.valid := s0_reqValid
@@ -93,14 +92,15 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
                                     blockAddr
                                 )
     s0_tlbusReq.bits.data := Mux(storeMissDirty, Mux1H(s0_beatOH, s0_rdBlockData), 0.U)
-    s0_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockBytes).U
+    s0_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s0_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s0_tlbusReq.bits.corrupt := false.B
 
     
-    val s0_valid =  storeHit && s0_reqValidReg || // storeHit && io.dataBank.write.req.fire && io.dir.write.req.fire ||
+    val s0_valid =  s0_reqValidReg && 
+                    (storeHit ||
                     storeMissClean && s0_tlbusReq.fire ||
-                    storeMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck // watting for PutFullData resp
+                    storeMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
 
 
     // --------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s1_tlbusReq.bits.opcode := Get
     val s1_blockAddr = Cat(s1_wAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
     s1_tlbusReq.bits.address := s1_blockAddr
-    s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockBytes).U
+    s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s1_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s1_tlbusReq.bits.corrupt := false.B
 
@@ -177,9 +177,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     val s1_metaArrayWrData = Wire(new DCacheMeta)
     s1_metaArrayWrData.valid := s1_storeHit || s1_writeRefill 
     s1_metaArrayWrData.dirty := s1_storeHit
-    val s1_metaWrData = WireInit(VecInit.tabulate(dcacheWays)(_ => 0.U((new DCacheMeta).getWidth.W)))
-    for(i <- 0 until dcacheWays) { s1_metaWrData(i) := Mux(s1_chosenWayOH(i), s1_metaArrayWrData.asUInt, 0.U) }
-    s1_dirWrReq.bits.meta := s1_metaWrData
+    s1_dirWrReq.bits.meta := s1_metaArrayWrData.asUInt
 
     // write databank (refill) (store miss clean) (store miss dirty)
     val s1_dataBankWrReq = Wire(chiselTypeOf(io.dataBank.write.req))
@@ -236,9 +234,10 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     val s2_metaArrayWrData = Wire(new DCacheMeta)
     s2_metaArrayWrData.valid := true.B
     s2_metaArrayWrData.dirty := true.B 
-    val s2_metaWrData = WireInit(VecInit.tabulate(dcacheWays)(_ => 0.U((new DCacheMeta).getWidth.W)))
-    for(i <- 0 until dcacheWays) { s2_metaWrData(i) := Mux(s2_chosenWayOH(i), s2_metaArrayWrData.asUInt, 0.U) }
-    s2_dirWrReq.bits.meta := s2_metaWrData
+    // val s2_metaWrData = WireInit(VecInit.tabulate(dcacheWays)(_ => 0.U((new DCacheMeta).getWidth.W)))
+    // for(i <- 0 until dcacheWays) { s2_metaWrData(i) := Mux(s2_chosenWayOH(i), s2_metaArrayWrData.asUInt, 0.U) }
+    // s2_dirWrReq.bits.meta := s2_metaWrData
+    s2_dirWrReq.bits.meta := s2_metaArrayWrData.asUInt
 
     // write databank (store miss clean) (store miss dirty)
     val s2_dataBankWrReq = Wire(chiselTypeOf(io.dataBank.write.req))
