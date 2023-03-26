@@ -102,7 +102,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     s0_tlbusReq.bits.corrupt := false.B
 
     
-    val s0_valid =  s0_reqValidReg && 
+    val s0_valid =  s0_reqValidReg && io.dir.read.resp.fire &&
                     (loadHit && io.load.resp.fire && io.load.resp.bits.stageID === 0.U ||
                     loadMissClean && s0_tlbusReq.fire ||
                     loadMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
@@ -179,11 +179,14 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     metaArrayWrData.dirty := false.B
     io.dir.write.req.bits.meta := metaArrayWrData.asUInt
 
+    val s1_refillLastFireHoldReg = RegEnable(true.B, false.B, s1_refillFire && s1_lastBeat)
+    val s1_refillLastFireHold = Mux(s1_refillFire && s1_lastBeat, true.B, s1_refillLastFireHoldReg)
     // output data when all beats of data has already refilled
     val s1_loadResp = Wire(chiselTypeOf(io.load.resp))
     dontTouch(s1_loadResp)
     s1_loadResp := 0.U.asTypeOf(io.load.resp)
-    s1_loadResp.valid := s1_refillFire && s1_lastBeat && (s1_loadMissClean || s1_loadMissDirty)
+    // s1_loadResp.valid := s1_refillFire && s1_lastBeat && (s1_loadMissClean || s1_loadMissDirty)
+    s1_loadResp.valid := s1_refillLastFireHold && (s1_loadMissClean || s1_loadMissDirty)
     s1_loadResp.bits.data := s1_readRespData
     s1_loadResp.bits.stageID := 1.U
 
@@ -200,6 +203,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
         s1_loadHit := false.B
         s1_loadMissClean := false.B
         s1_loadMissDirty := false.B
+        s1_refillLastFireHoldReg := false.B
     }
 
 

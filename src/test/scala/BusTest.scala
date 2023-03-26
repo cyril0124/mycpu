@@ -6,10 +6,93 @@ import org.chipsalliance.cde.config._
 import mycpu.common._
 
 import org.scalatest.flatspec.AnyFlatSpec
+import chisel3.util.RegEnable
+import chisel3.util.random.LFSR
+import chisel3.util.Counter
+import chisel3.util.log2Ceil
 
-
+/*
+    ICache  DCache
+    |       |
+    xxxxxxxxxxxxxxxxxxxxxxxxxx--> xbar
+        |       |
+        ROM     RAM
+*/
 class DCacheWithBus()(implicit val p: Parameters) extends MyModule {
+    val io = IO(new Bundle{
+        val read = new CacheReadBus
+        val write = new CacheWriteBus
+
+        val read2 = new CacheReadBus // icache
+    })
+
+    val dcache = Module(new DCache)
+    val icache = Module(new ICache)
+    val xbar = Module(new TLXbar)
+    val rom = Module(new SingleROM)
+    val ram = Module(new SingleRAM)
+
+    xbar.io <> DontCare
+    rom.io <> DontCare
+    ram.io <> DontCare 
+
+    dcache.io.read <> io.read
+    dcache.io.write <> io.write
+    dcache.io.tlbus.req <> xbar.io.masterFace.in(1)
+    dcache.io.tlbus.resp <> xbar.io.masterFace.out(1)
+
+    io.read2 <> DontCare
+    icache.io.write <> DontCare
+    icache.io.read <> io.read2
+    icache.io.tlbus.req <> xbar.io.masterFace.in(0)
+    icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
+
+    rom.io.req <> xbar.io.slaveFace.in(0)
+    rom.io.resp <> xbar.io.slaveFace.out(0)
+
+    ram.io.req <> xbar.io.slaveFace.in(1)
+    ram.io.resp <> xbar.io.slaveFace.out(1)
+
+    // val romReq = xbar.io.slaveFace.in(0)
+    // val romResp = xbar.io.slaveFace.out(0)
+    // // rom.io.clock := clock
+    // // rom.io.reset := reset
+
+    // val romBusy = RegInit(false.B)
+    // when(romReq.fire) {
+    //     romBusy := true.B
+    // }
+    // romReq.ready := !romBusy
     
+    // val romReqValReg = RegEnable(romReq.bits, romReq.fire)
+    // val romReqVal = Mux(romReq.fire, romReq.bits, romReqValReg)
+    // val reqSize = romReqVal.size >> log2Ceil(busBeatSize)
+    // val beatCounter = Counter((0 until 10), romBusy && romResp.fire, romReq.fire)
+    // val beatCount = beatCounter._1
+
+    // // rom.io.raddr := romReqVal.address - memRamBegin.U
+    // val lfsr = LFSR(32)
+    // romResp.bits.data := lfsr + romReqVal.address
+    // romResp.valid := romBusy
+    // romResp.bits.opcode := Mux(romReqVal.opcode === BusReq.Get, BusReq.AccessAckData, BusReq.AccessAck)
+
+    // when(romResp.fire && beatCount === reqSize - 1.U) {
+    //     romBusy := false.B
+    // }
+
+}
+
+
+/*
+    LSU---->DCache
+            |
+    xxxxxxxxxxxxxxxxxxxxxxxxxx--> xbar
+        |       |
+        ROM     RAM
+*/
+class LSUWithBus()(implicit val p: Parameters) extends MyModule {
+
+
 }
 
 
@@ -150,5 +233,81 @@ class BusTest extends AnyFlatSpec with ChiselScalatestTester {
         }
     }
 
+    it should "test Dcache with Bus" in { 
+        test(new DCacheWithBus()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
+            def init(): Unit = {
+                c.io.write.resp.ready.poke(1)
+                c.io.read.resp.ready.poke(1)
+                c.io.read2.resp.ready.poke(1)
+            }
 
+            def read(addr: Int): Unit = { // read dcache
+                c.io.read.req.valid.poke(1)
+                c.io.read.req.bits.addr.poke(addr)
+                c.clock.step()
+                c.io.read.req.valid.poke(0)
+            }
+
+            def read2(addr: Int): Unit = { // read icache
+                c.io.read2.req.valid.poke(1)
+                c.io.read2.req.bits.addr.poke(addr)
+                c.clock.step()
+                c.io.read2.req.valid.poke(0)
+            }
+
+            def write(addr: Int, data: Int, mask: UInt): Unit = { // write dcache
+                c.io.write.req.valid.poke(1)
+                c.io.write.req.bits.addr.poke(addr)
+                c.io.write.req.bits.data.poke(data)
+                c.io.write.req.bits.mask.poke(mask)
+                c.clock.step()
+                c.io.write.req.valid.poke(0)
+            }
+
+            init()
+            c.clock.step(10)
+
+            val cacheMissPenalty = 5
+
+            // test dcache read
+            read(0)
+            c.clock.step(cacheMissPenalty)
+
+            read(8)
+            c.clock.step(cacheMissPenalty)
+
+            read(0)
+            c.clock.step()
+
+            read(12)
+            c.clock.step()
+
+
+            // test icache read
+            read2(0x2000)
+            c.clock.step(cacheMissPenalty)
+
+            read2(0x2000 + 4)
+            c.clock.step()
+
+            read2(0)
+            c.clock.step(cacheMissPenalty)
+
+            c.clock.step(10)
+
+
+            // test dcache write with mask
+            write(0, 0x1234, "b1110".U)
+            c.clock.step(2)
+
+            read(0)
+            c.clock.step()
+            
+
+
+
+            c.clock.step(100)
+            
+        }
+    }
 }

@@ -9,7 +9,7 @@ module TLBusArbiter(
 `endif // RANDOMIZE_REG_INIT
   reg [1:0] owner; // @[Bus.scala 120:24]
   wire [3:0] _io_grantOH_T = 4'h1 << owner; // @[OneHot.scala 57:35]
-  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 147:16]
+  assign io_grantOH = _io_grantOH_T[1:0]; // @[Bus.scala 148:16]
   always @(posedge clock) begin
     if (reset) begin // @[Bus.scala 120:24]
       owner <= 2'h0; // @[Bus.scala 120:24]

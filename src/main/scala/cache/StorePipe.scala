@@ -97,7 +97,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s0_tlbusReq.bits.corrupt := false.B
 
     
-    val s0_valid =  s0_reqValidReg && 
+    val s0_valid =  s0_reqValidReg && io.dir.read.resp.fire &&
                     (storeHit ||
                     storeMissClean && s0_tlbusReq.fire ||
                     storeMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp

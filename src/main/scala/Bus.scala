@@ -118,6 +118,7 @@ class TLBusArbiter(nrIn: Int = 2, policy: String = "priority")(implicit val p: P
     })
 
     val owner = RegInit(MASTER_0)
+    // val owner = WireInit(MASTER_0)
 
     if(policy == "priority") {
         // println("[TLBusArbiter] Policy is PRIORITY!")
@@ -176,7 +177,7 @@ class TLAddrDecode(nrIn: Int)(implicit val p: Parameters) extends MyModule {
 
 class TLXbar()(implicit val p: Parameters) extends MyModule{
     val io = IO(new BusXbarIO)
-
+    io <> DontCare
     val mf = io.masterFace
     val sf = io.slaveFace
 
@@ -280,6 +281,19 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
         s2_reqValid := false.B
         s2_beatCounter.reset()
     }
+
+
+
+    // Bus status output
+    val idle = RegInit(true.B)
+    dontTouch(idle)
+    when(s1_latch || s2_latch) {
+        idle := false.B
+    }.elsewhen(s2_valid) {
+        idle := true.B
+    }
+
+    io.status.idle := idle
 
 }
 

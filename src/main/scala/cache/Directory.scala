@@ -100,10 +100,10 @@ class DCacheDirectory()(implicit val p: Parameters) extends MyModule {
     assert(PopCount(choseWayOH) === 1.U, "Error chosenWay has multiple valid bit!")
 
     // directory read result
-    io.read.resp.valid := true.B
-    io.read.resp.bits.isDirtyWay := isDirtyWay
-    io.read.resp.bits.chosenWay := choseWayOH
-    io.read.resp.bits.hit := isHit
+    io.read.resp.valid := RegNext(io.read.req.fire) // true.B
+    io.read.resp.bits.isDirtyWay := Mux(io.read.req.fire, isDirtyWay, RegEnable(isDirtyWay, RegNext(io.read.req.fire))) // isDirtyWay
+    io.read.resp.bits.chosenWay := Mux(io.read.req.fire, choseWayOH, RegEnable(choseWayOH, RegNext(io.read.req.fire))) // choseWayOH
+    io.read.resp.bits.hit := Mux(io.read.req.fire, isHit, RegEnable(isHit, RegNext(io.read.req.fire))) // isHit
     
     // directory write operation
     tagArray.io.w.en := io.write.req.fire

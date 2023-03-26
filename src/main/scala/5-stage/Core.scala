@@ -292,7 +292,11 @@ if( testCase == 0 ) {
     ramResp.bits.data := ram.io.rdata
     ramResp.valid := ramBusy 
     ramResp.bits.source := ramReqVal.source 
+} else if( testCase == 3) {
+    
 }
+
+
 }
 
 object CoreGenRTL extends App {

@@ -20,6 +20,10 @@ class BusXbarIO()(implicit val p: Parameters) extends MyBundle{
         val in = Vec(nrBusSlave, Decoupled(new BusMasterBundle))
         val out = Flipped(Vec(nrBusSlave, Decoupled(new BusSlaveBundle)))
     })
+
+    val status = (new Bundle{
+        val idle = Output(Bool())
+    })
 }
 
 /*        (slave resp)    (master req)

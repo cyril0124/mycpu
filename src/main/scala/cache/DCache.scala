@@ -192,6 +192,8 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     dirWriteReqArb.io.in(0) <> storePipe.io.dir.write.req
     dirWriteReqArb.io.in(1) <> loadPipe.io.dir.write.req
     directory.io.write.req <> dirWriteReqArb.io.out
+
+    io.tlbus.req.bits.source := MASTER_1
 }
 
 
