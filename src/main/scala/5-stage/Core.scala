@@ -293,7 +293,21 @@ if( testCase == 0 ) {
     ramResp.valid := ramBusy 
     ramResp.bits.source := ramReqVal.source 
 } else if( testCase == 3) {
-    
+    // val xbar = Module(new TLXbar)
+    // val rom = Module(new SingleROM)
+    // val ram = Module(new SingleRAM)
+
+    // // Master
+    // mem.io.tlbus.req <> xbar.io.masterFace.in(1)
+    // mem.io.tlbus.req <> xbar.io.masterFace.out(1)
+
+
+    // // Slave
+    // rom.io.req <> xbar.io.slaveFace.in(0)
+    // rom.io.resp <> xbar.io.slaveFace.out(0)
+
+    // ram.io.req <> xbar.io.slaveFace.in(1)
+    // ram.io.resp <> xbar.io.slaveFace.out(1)
 }
 
 

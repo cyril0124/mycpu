@@ -16,7 +16,7 @@ import scala.tools.cmd.Meta
 
 class CacheReadReq()(implicit val p: Parameters) extends MyBundle{
     val addr = UInt(xlen.W)
-    val memType = UInt(3.W)
+    // val memType = UInt(3.W)
 }
 
 class CacheReadResp()(implicit val p: Parameters) extends MyBundle{

@@ -49,21 +49,24 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
 
     val csrBusy = Input(Bool())
     val csrMode = Input(UInt(CSR_MODE_WIDTH.W))
+
+    // val tlbus = new TLMasterBusUL
 }
 
 class Mem()(implicit val p: Parameters) extends MyModule{
     val io = IO(new MemIO)
 
     val hasTrap = WireInit(false.B)
-    val ramReady = WireInit(false.B)
-    val needRam = WireInit(false.B)
-    dontTouch(ramReady)
-    dontTouch(needRam)
+    // val ramReady = WireInit(false.B)
+    // val needRam = WireInit(false.B)
+    // dontTouch(ramReady)
+    // dontTouch(needRam)
 
     val lsuReady = WireInit(true.B)
 
     
-    val stall = io.ctrl.stall || (!ramReady && needRam) || !lsuReady || !io.out.ready
+    // val stall = io.ctrl.stall || (!ramReady && needRam) || !lsuReady || !io.out.ready
+    val stall = io.ctrl.stall || !lsuReady || !io.out.ready
     val flush = io.ctrl.flush
 
     io.in.ready := !stall
@@ -82,7 +85,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
-    needRam := stageReg.lsuOp =/= LsuOp.LSU_NOP && stageReg.lsuOp =/= LsuOp.LSU_FENC
+    // needRam := stageReg.lsuOp =/= LsuOp.LSU_NOP && stageReg.lsuOp =/= LsuOp.LSU_FENC
 
     // exception handle
     val illgSret  = stageReg.excType === EXC_SRET && io.csrMode === CSR_MODE_U
@@ -145,9 +148,27 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
     io.lsuOK                := lsu.io.resp.valid
     io.lsuData              := lsu.io.resp.bits.rdata
-
+    
     io.ram <> lsu.io.ram
-    ramReady := io.ram.req.ready
+    // ramReady := io.ram.req.ready
+
+    // val lsu = Module(new LSU_1())
+    // lsu.io <> DontCare
+    // lsuReady := lsu.io.req.ready
+    // lsu.io.req.valid        := io.in.valid
+    // lsu.io.req.bits.addr    := io.in.bits.aluOut
+    // lsu.io.req.bits.wdata   := io.in.bits.data2
+    // lsu.io.req.bits.hasTrap := hasTrap // ! NOT use 
+    // lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
+    // io.lsuOK                := lsu.io.resp.valid
+    // io.lsuData              := lsu.io.resp.bits.rdata
+
+    // val dcache = Module(new DCache)
+    // lsu.io.cache.read <> dcache.io.read
+    // lsu.io.cache.write <> dcache.io.write
+    // dcache.io.tlbus <> io.tlbus
+
+
 
     io.out.bits.resultSrc   := stageReg.resultSrc
     io.out.bits.regWrEn     := stageReg.regWrEn

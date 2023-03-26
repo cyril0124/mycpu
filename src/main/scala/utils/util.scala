@@ -5,6 +5,14 @@ import chisel3.util._
 import mycpu.common._
 
 
+object Hold{
+    def apply[T <: Data](data: T, en: Bool, reset: Bool): T = {
+        val holdReg = RegEnable(data, en)
+        when(reset) { holdReg := 0.U.asTypeOf(chiselTypeOf(data))}
+        Mux(en, data, holdReg)
+    }
+}
+
 object RSLatch {
     def apply(set: Bool, reset: Bool): Bool = {
         val rs = RegEnable(true.B, false.B, set)

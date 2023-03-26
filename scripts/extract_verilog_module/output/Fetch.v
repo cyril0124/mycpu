@@ -83,8 +83,8 @@ module Fetch(
     end
     if (reset) begin // @[Reg.scala 35:20]
       hasBranch_rs <= 1'h0; // @[Reg.scala 35:20]
-    end else if (_hasBranch_T) begin // @[util.scala 11:21]
-      hasBranch_rs <= 1'h0; // @[util.scala 11:26]
+    end else if (_hasBranch_T) begin // @[util.scala 19:21]
+      hasBranch_rs <= 1'h0; // @[util.scala 19:26]
     end else begin
       hasBranch_rs <= _GEN_0;
     end
@@ -103,8 +103,8 @@ module Fetch(
     end
     if (reset) begin // @[Reg.scala 35:20]
       instValid_rs <= 1'h0; // @[Reg.scala 35:20]
-    end else if (_instValid_T_2) begin // @[util.scala 11:21]
-      instValid_rs <= 1'h0; // @[util.scala 11:26]
+    end else if (_instValid_T_2) begin // @[util.scala 19:21]
+      instValid_rs <= 1'h0; // @[util.scala 19:26]
     end else begin
       instValid_rs <= instValid;
     end

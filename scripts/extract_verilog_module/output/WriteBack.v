@@ -43,10 +43,11 @@ module WriteBack(
   reg [31:0] _RAND_9;
   reg [31:0] _RAND_10;
 `endif // RANDOMIZE_REG_INIT
-  wire  stall = ~io_lsuOK; // @[5_WriteBack.scala 43:34]
+  reg [1:0] stageReg_resultSrc; // @[5_WriteBack.scala 48:27]
+  wire  wbRam = stageReg_resultSrc == 2'h1; // @[5_WriteBack.scala 57:33]
+  wire  stall = ~io_lsuOK & wbRam; // @[5_WriteBack.scala 43:45]
   wire  _io_in_ready_T = ~stall; // @[5_WriteBack.scala 46:20]
   wire  writebackLatch = io_in_ready & io_in_valid; // @[Decoupled.scala 51:35]
-  reg [1:0] stageReg_resultSrc; // @[5_WriteBack.scala 48:27]
   reg  stageReg_regWrEn; // @[5_WriteBack.scala 48:27]
   reg [31:0] stageReg_aluOut; // @[5_WriteBack.scala 48:27]
   reg [31:0] stageReg_pcNext4; // @[5_WriteBack.scala 48:27]
@@ -62,10 +63,10 @@ module WriteBack(
   assign io_instState_commit = stageReg_instState_commit & _io_in_ready_T; // @[5_WriteBack.scala 75:55]
   assign io_instState_pc = stageReg_instState_pc; // @[5_WriteBack.scala 74:26]
   assign io_instState_inst = stageReg_instState_inst; // @[5_WriteBack.scala 74:26]
-  assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 49:31]
+  assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]
   assign io_hazard_rdVal = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
   assign io_hazard_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 80:26]
-  assign io_regfile_rd = stageReg_instState_inst[11:7]; // @[util.scala 49:31]
+  assign io_regfile_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]
   assign io_regfile_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 67:26]
   assign io_regfile_regWrData = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
   assign io_csrWrite_op = stageReg_csrWrEn ? stageReg_csrOp : 3'h1; // @[5_WriteBack.scala 71:32]

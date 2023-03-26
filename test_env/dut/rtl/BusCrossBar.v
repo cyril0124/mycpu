@@ -17,12 +17,12 @@ module BusCrossBar(
   input  [31:0] io_slaveFace_out_0_bits_data,
   input  [31:0] io_slaveFace_out_1_bits_data
 );
-  assign io_masterFace_out_0_bits_data = io_slaveFace_out_0_bits_data; // @[TLBus.scala 101:23]
-  assign io_masterFace_out_1_bits_data = io_slaveFace_out_1_bits_data; // @[TLBus.scala 101:23]
-  assign io_slaveFace_in_0_bits_address = io_masterFace_in_0_bits_address; // @[TLBus.scala 100:21]
-  assign io_slaveFace_in_1_valid = io_masterFace_in_1_valid; // @[TLBus.scala 100:21]
-  assign io_slaveFace_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[TLBus.scala 100:21]
-  assign io_slaveFace_in_1_bits_address = io_masterFace_in_1_bits_address; // @[TLBus.scala 100:21]
-  assign io_slaveFace_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[TLBus.scala 100:21]
-  assign io_slaveFace_in_1_bits_data = io_masterFace_in_1_bits_data; // @[TLBus.scala 100:21]
+  assign io_masterFace_out_0_bits_data = io_slaveFace_out_0_bits_data; // @[TLBus.scala 105:23]
+  assign io_masterFace_out_1_bits_data = io_slaveFace_out_1_bits_data; // @[TLBus.scala 105:23]
+  assign io_slaveFace_in_0_bits_address = io_masterFace_in_0_bits_address; // @[TLBus.scala 104:21]
+  assign io_slaveFace_in_1_valid = io_masterFace_in_1_valid; // @[TLBus.scala 104:21]
+  assign io_slaveFace_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[TLBus.scala 104:21]
+  assign io_slaveFace_in_1_bits_address = io_masterFace_in_1_bits_address; // @[TLBus.scala 104:21]
+  assign io_slaveFace_in_1_bits_mask = io_masterFace_in_1_bits_mask; // @[TLBus.scala 104:21]
+  assign io_slaveFace_in_1_bits_data = io_masterFace_in_1_bits_data; // @[TLBus.scala 104:21]
 endmodule
