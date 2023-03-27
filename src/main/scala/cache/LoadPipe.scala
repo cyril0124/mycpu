@@ -179,28 +179,14 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     metaArrayWrData.dirty := false.B
     io.dir.write.req.bits.meta := metaArrayWrData.asUInt
 
-
-    // def Hold[T <: Data](data: T, en: Bool, reset: Bool): T = {
-    //     val holdReg = RegEnable(data, en)
-    //     when(reset) { holdReg := 0.U.asTypeOf(chiselTypeOf(data))}
-    //     Mux(en, data, holdReg)
-    // }
-
-    // val s1_refillLastFireHoldReg = RegEnable(true.B, false.B, s1_refillFire && s1_lastBeat)
-    // val s1_refillLastFireHold = Mux(s1_refillFire && s1_lastBeat, true.B, s1_refillLastFireHoldReg)
-    // when(s1_latch) { s1_refillLastFireHoldReg := false.B } // make sure this Reg will not be influenced by StorePipe (StorePipe will also do refill data)
-    
     // output data when all beats of data has already refilled
     val s1_loadResp = Wire(chiselTypeOf(io.load.resp))
     dontTouch(s1_loadResp)
     s1_loadResp := 0.U.asTypeOf(io.load.resp)
-    // s1_loadResp.valid := s1_refillFire && s1_lastBeat && (s1_loadMissClean || s1_loadMissDirty)
-    // s1_loadResp.valid := s1_refillLastFireHold && (s1_loadMissClean || s1_loadMissDirty)
     s1_loadResp.valid := Hold(true.B, s1_refillFire && s1_lastBeat, s1_latch || s1_valid) && (s1_loadMissClean || s1_loadMissDirty)
     s1_loadResp.bits.data := s1_readRespData
     s1_loadResp.bits.stageID := 1.U
-
-
+    
     s1_valid := s1_loadMissClean && io.load.resp.fire && io.load.resp.bits.stageID === 1.U  ||
                 s1_loadMissDirty && io.load.resp.fire && io.load.resp.bits.stageID === 1.U ||
                 s1_loadHit

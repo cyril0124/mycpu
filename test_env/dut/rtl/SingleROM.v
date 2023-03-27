@@ -4,7 +4,7 @@ module SingleROM(
   output        io_req_ready,
   input         io_req_valid,
   input  [2:0]  io_req_bits_opcode,
-  input  [3:0]  io_req_bits_size,
+  input  [31:0] io_req_bits_size,
   input  [31:0] io_req_bits_address,
   input  [31:0] io_req_bits_data,
   input         io_resp_ready,
@@ -39,21 +39,21 @@ module SingleROM(
   reg [16:0] mem_rdata_1_addr_pipe_0;
   wire  _req_T = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   reg [2:0] req_r_opcode; // @[Reg.scala 19:16]
-  reg [3:0] req_r_size; // @[Reg.scala 19:16]
+  reg [31:0] req_r_size; // @[Reg.scala 19:16]
   reg [31:0] req_r_address; // @[Reg.scala 19:16]
   reg [31:0] req_r_data; // @[Reg.scala 19:16]
   wire [2:0] _GEN_0 = _req_T ? io_req_bits_opcode : req_r_opcode; // @[Reg.scala 19:16 20:{18,22}]
-  wire [3:0] _GEN_2 = _req_T ? io_req_bits_size : req_r_size; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _GEN_2 = _req_T ? io_req_bits_size : req_r_size; // @[Reg.scala 19:16 20:{18,22}]
   wire [31:0] _GEN_4 = _req_T ? io_req_bits_address : req_r_address; // @[Reg.scala 19:16 20:{18,22}]
-  wire [1:0] reqBeatSize = _GEN_2[3:2]; // @[SingleROM.scala 15:32]
+  wire [29:0] reqBeatSize = _GEN_2[31:2]; // @[SingleROM.scala 15:32]
   reg  busy; // @[SingleROM.scala 16:23]
   wire  _GEN_8 = _req_T | busy; // @[SingleROM.scala 20:23 21:14 16:23]
   wire  _ren_T = _GEN_0 == 3'h4; // @[SingleROM.scala 27:26]
   wire  ren = _GEN_0 == 3'h4 & _GEN_8; // @[SingleROM.scala 27:41]
   wire  _wen_T_1 = _GEN_0 == 3'h2; // @[SingleROM.scala 28:41]
   reg [3:0] beatCounter_value; // @[Counter.scala 61:40]
-  wire [3:0] _GEN_24 = {{2'd0}, reqBeatSize}; // @[SingleROM.scala 31:38]
-  wire  lastBeat = beatCounter_value == _GEN_24; // @[SingleROM.scala 31:38]
+  wire [29:0] _GEN_24 = {{26'd0}, beatCounter_value}; // @[SingleROM.scala 31:38]
+  wire  lastBeat = _GEN_24 == reqBeatSize; // @[SingleROM.scala 31:38]
   wire  _T_6 = io_resp_ready & io_resp_valid; // @[Decoupled.scala 51:35]
   wire  wrap = beatCounter_value == 4'h9; // @[Counter.scala 73:24]
   wire [3:0] _value_T_1 = beatCounter_value + 4'h1; // @[Counter.scala 77:24]
@@ -164,7 +164,7 @@ initial begin
   _RAND_3 = {1{`RANDOM}};
   req_r_opcode = _RAND_3[2:0];
   _RAND_4 = {1{`RANDOM}};
-  req_r_size = _RAND_4[3:0];
+  req_r_size = _RAND_4[31:0];
   _RAND_5 = {1{`RANDOM}};
   req_r_address = _RAND_5[31:0];
   _RAND_6 = {1{`RANDOM}};

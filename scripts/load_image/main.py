@@ -7,27 +7,32 @@ def main():
     argv_len = len(sys.argv)
     if(argv_len != 2):
         # read dissassembly file and generate hex code of instruction
-        assert "Usage: python3 main.py <elf file>\n"
+        assert "Usage: python3 main.py <elf file> <mode: -s(single memory(ROM)) -m(seperate ROM & RAM)>\n"
 
     # read image and parse segment table
     image = sys.argv[1]
+    try:
+        mode = sys.argv[2]
+    except:
+        mode = "-s" 
     cmd = "readelf -S " + image + " > table.txt"
     os.system(cmd)
     text_start = 0
     text_end = 0
     data_start = 0
-    with open("table.txt", 'r') as f:
-        for line in f:
-            line_content = re.split(r'[;,\s\[\]]\s*', line.lower())
-            for val in line_content:
-                if ".text" in val:
-                    text_start = int(line_content[5], 16)
-                    print(".text start address: " + str(text_start) + " 0x" + line_content[5])
-                    text_end = int(line_content[7], 16)
-                    print(".text end address: " + str(text_end) + " 0x" + line_content[7])
-                if ".data" in val:
-                    data_start = int(line_content[5], 16)
-                    print(".data start address: " + str(data_start) + " 0x" + line_content[5])
+    if mode == '-m':
+        with open("table.txt", 'r') as f:
+            for line in f:
+                line_content = re.split(r'[;,\s\[\]]\s*', line.lower())
+                for val in line_content:
+                    if ".text" in val:
+                        text_start = int(line_content[5], 16)
+                        print(".text start address: " + str(text_start) + " 0x" + line_content[5])
+                        text_end = int(line_content[7], 16)
+                        print(".text end address: " + str(text_end) + " 0x" + line_content[7])
+                    if ".data" in val:
+                        data_start = int(line_content[5], 16)
+                        print(".data start address: " + str(data_start) + " 0x" + line_content[5])
 
     # parse binary file from elf file
     bin_file = image + ".bin"
@@ -65,12 +70,13 @@ def main():
                 array.append(b2)
                 array.append(b1)
                 array.append(b0)
-                if addr >= text_start:
+                if mode == '-m':
+                    if addr < text_end and addr >= text_start:
+                        wt.write(bytearray(array).hex() + '\n')
+                    elif addr >= data_start:
+                        wd.write(bytearray(array).hex() + '\n')
+                elif mode == '-s':
                     wt.write(bytearray(array).hex() + '\n')
-                # if addr < text_end and addr >= text_start:
-                #     wt.write(bytearray(array).hex() + '\n')
-                # elif addr >= data_start:
-                #     wd.write(bytearray(array).hex() + '\n')
             addr = addr + 1
     wt.close()
     wd.close()

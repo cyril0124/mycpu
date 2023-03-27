@@ -46,7 +46,7 @@ import BusReq._
 class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatSize.W) //UInt(log2Ceil(busBeatSize / 8).W)
+    val size = UInt(busBeatWidth.W) //UInt(log2Ceil(busBeatSize / 8).W)
     val source = UInt(log2Ceil(nrBusMaster).W)
     val address = UInt(xlen.W)
     val mask = UInt(busBeatSize.W) // UInt((busBeatSize / 8).W)
@@ -59,7 +59,7 @@ class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
 class BusSlaveBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatSize.W) // UInt(log2Ceil(busBeatSize / 8).W)
+    val size = UInt(busBeatWidth.W) // UInt(log2Ceil(busBeatSize / 8).W)
     val source = UInt(log2Ceil(nrBusMaster).W)
     val sink = UInt(log2Ceil(nrBusSlave).W)
     val denied = Bool()

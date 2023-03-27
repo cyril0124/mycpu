@@ -29,7 +29,7 @@ trait HasMyCpuParameters {
     val dcacheSets = myCpuParams.dcacheSets
     val dcacheSetBits = log2Ceil(myCpuParams.dcacheSets)
 
-    val dcacheBlockSize = 2
+    val dcacheBlockSize = myCpuParams.dcacheBlockSize
     val dcacheBlockBits = log2Ceil(dcacheBlockSize)
 
     val dcacheBlockBytes = myCpuParams.xlen / 8
@@ -94,6 +94,7 @@ trait HasMyCpuParameters {
     val nrBusMaster = myCpuParams.nrBusMaster
     val nrBusSlave = myCpuParams.nrBusSlave
     val busBeatSize = myCpuParams.xlen / 8
+    val busBeatWidth = myCpuParams.xlen
     val busMaskWidth = myCpuParams.xlen / 8
 
     val simulation = myCpuParams.simulation
@@ -123,8 +124,9 @@ case class MyCpuParameters
 
     // DCache Configuration
     dcacheWays: Int = 4,
-    dcacheSets: Int = 64,
+    dcacheSets: Int = 256,
     // dcacheBlockBytes: Int = 8,
+    dcacheBlockSize: Int = 4,
     dcacheBanks: Int = 2,
 
     // Memory Map Configuration

@@ -1,13 +1,13 @@
 module Arbiter_8(
   input        io_in_0_valid,
-  input  [5:0] io_in_0_bits_set,
-  input  [1:0] io_in_0_bits_blockSelOH,
+  input  [7:0] io_in_0_bits_set,
+  input  [3:0] io_in_0_bits_blockSelOH,
   input        io_in_1_valid,
-  input  [5:0] io_in_1_bits_set,
-  input  [1:0] io_in_1_bits_blockSelOH,
+  input  [7:0] io_in_1_bits_set,
+  input  [3:0] io_in_1_bits_blockSelOH,
   output       io_out_valid,
-  output [5:0] io_out_bits_set,
-  output [1:0] io_out_bits_blockSelOH
+  output [7:0] io_out_bits_set,
+  output [3:0] io_out_bits_blockSelOH
 );
   wire  grant_1 = ~io_in_0_valid; // @[Arbiter.scala 45:78]
   assign io_out_valid = ~grant_1 | io_in_1_valid; // @[Arbiter.scala 147:31]

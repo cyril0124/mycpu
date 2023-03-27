@@ -1,9 +1,10 @@
-module DCacheDirectory(
+module DCacheDirectory_1(
   input         clock,
   input         reset,
   output        io_read_req_ready,
   input         io_read_req_valid,
   input  [31:0] io_read_req_bits_addr,
+  output        io_read_resp_valid,
   output        io_read_resp_bits_hit,
   output [3:0]  io_read_resp_bits_chosenWay,
   output        io_read_resp_bits_isDirtyWay,
@@ -23,28 +24,29 @@ module DCacheDirectory(
   reg [31:0] _RAND_6;
   reg [31:0] _RAND_7;
   reg [31:0] _RAND_8;
+  reg [31:0] _RAND_9;
 `endif // RANDOMIZE_REG_INIT
   wire  tagArray_clock; // @[Directory.scala 66:26]
   wire  tagArray_reset; // @[Directory.scala 66:26]
-  wire [6:0] tagArray_io_r_addr; // @[Directory.scala 66:26]
+  wire [7:0] tagArray_io_r_addr; // @[Directory.scala 66:26]
   wire [79:0] tagArray_io_r_data; // @[Directory.scala 66:26]
   wire  tagArray_io_w_en; // @[Directory.scala 66:26]
-  wire [6:0] tagArray_io_w_addr; // @[Directory.scala 66:26]
+  wire [7:0] tagArray_io_w_addr; // @[Directory.scala 66:26]
   wire [79:0] tagArray_io_w_data; // @[Directory.scala 66:26]
   wire [3:0] tagArray_io_w_mask; // @[Directory.scala 66:26]
   wire  tagValidArray_clock; // @[Directory.scala 67:31]
   wire  tagValidArray_reset; // @[Directory.scala 67:31]
-  wire [6:0] tagValidArray_io_r_addr; // @[Directory.scala 67:31]
+  wire [7:0] tagValidArray_io_r_addr; // @[Directory.scala 67:31]
   wire [3:0] tagValidArray_io_r_data; // @[Directory.scala 67:31]
   wire  tagValidArray_io_w_en; // @[Directory.scala 67:31]
-  wire [6:0] tagValidArray_io_w_addr; // @[Directory.scala 67:31]
+  wire [7:0] tagValidArray_io_w_addr; // @[Directory.scala 67:31]
   wire [3:0] tagValidArray_io_w_mask; // @[Directory.scala 67:31]
   wire  metaArray_clock; // @[Directory.scala 68:27]
   wire  metaArray_reset; // @[Directory.scala 68:27]
-  wire [6:0] metaArray_io_r_addr; // @[Directory.scala 68:27]
+  wire [7:0] metaArray_io_r_addr; // @[Directory.scala 68:27]
   wire [7:0] metaArray_io_r_data; // @[Directory.scala 68:27]
   wire  metaArray_io_w_en; // @[Directory.scala 68:27]
-  wire [6:0] metaArray_io_w_addr; // @[Directory.scala 68:27]
+  wire [7:0] metaArray_io_w_addr; // @[Directory.scala 68:27]
   wire [7:0] metaArray_io_w_data; // @[Directory.scala 68:27]
   wire [3:0] metaArray_io_w_mask; // @[Directory.scala 68:27]
   wire  replaceWay_lfsr_prng_clock; // @[PRNG.scala 91:22]
@@ -60,12 +62,12 @@ module DCacheDirectory(
   wire  _rAddr_T = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] rAddr_r; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = _rAddr_T ? io_read_req_bits_addr : rAddr_r; // @[Reg.scala 19:16 20:{18,22}]
-  wire [6:0] rSet = _GEN_0[11:5]; // @[Parameters.scala 50:11]
+  wire [7:0] rSet = _GEN_0[11:4]; // @[Parameters.scala 50:11]
   wire [19:0] rTag = _GEN_0[31:12]; // @[Parameters.scala 46:11]
   wire  _wAddr_T = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] wAddr_r; // @[Reg.scala 19:16]
   wire [31:0] wAddr = _wAddr_T ? io_write_req_bits_addr : wAddr_r; // @[Directory.scala 52:20]
-  wire [6:0] wSet = wAddr[11:5]; // @[Parameters.scala 50:11]
+  wire [7:0] wSet = wAddr[11:4]; // @[Parameters.scala 50:11]
   wire [19:0] wTag = wAddr[31:12]; // @[Parameters.scala 46:11]
   wire [1:0] _T_4 = io_write_req_bits_way[0] + io_write_req_bits_way[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_6 = io_write_req_bits_way[2] + io_write_req_bits_way[3]; // @[Bitwise.scala 51:90]
@@ -126,6 +128,7 @@ module DCacheDirectory(
   wire [1:0] _T_44 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_46 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_48 = _T_44 + _T_46; // @[Bitwise.scala 51:90]
+  reg  io_read_resp_valid_REG; // @[Directory.scala 109:34]
   reg  io_read_resp_bits_isDirtyWay_REG; // @[Directory.scala 111:100]
   reg  io_read_resp_bits_isDirtyWay_r; // @[Reg.scala 19:16]
   reg  io_read_resp_bits_chosenWay_REG; // @[Directory.scala 112:99]
@@ -134,7 +137,7 @@ module DCacheDirectory(
   reg  io_read_resp_bits_hit_r; // @[Reg.scala 19:16]
   wire [39:0] _tagArray_io_w_data_T = {wTag,wTag}; // @[Cat.scala 33:92]
   wire [3:0] _metaArray_io_w_data_T = {io_write_req_bits_meta,io_write_req_bits_meta}; // @[Cat.scala 33:92]
-  SRAMTemplate_32 tagArray ( // @[Directory.scala 66:26]
+  SRAMTemplate_51 tagArray ( // @[Directory.scala 66:26]
     .clock(tagArray_clock),
     .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
@@ -144,7 +147,7 @@ module DCacheDirectory(
     .io_w_data(tagArray_io_w_data),
     .io_w_mask(tagArray_io_w_mask)
   );
-  SRAMTemplate_33 tagValidArray ( // @[Directory.scala 67:31]
+  SRAMTemplate_52 tagValidArray ( // @[Directory.scala 67:31]
     .clock(tagValidArray_clock),
     .reset(tagValidArray_reset),
     .io_r_addr(tagValidArray_io_r_addr),
@@ -153,7 +156,7 @@ module DCacheDirectory(
     .io_w_addr(tagValidArray_io_w_addr),
     .io_w_mask(tagValidArray_io_w_mask)
   );
-  SRAMTemplate_34 metaArray ( // @[Directory.scala 68:27]
+  SRAMTemplate_53 metaArray ( // @[Directory.scala 68:27]
     .clock(metaArray_clock),
     .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),
@@ -176,6 +179,7 @@ module DCacheDirectory(
     .io_out_7(replaceWay_lfsr_prng_io_out_7)
   );
   assign io_read_req_ready = 1'h1; // @[Directory.scala 70:23]
+  assign io_read_resp_valid = io_read_resp_valid_REG; // @[Directory.scala 109:24]
   assign io_read_resp_bits_hit = _rAddr_T ? isHit : io_read_resp_bits_hit_r; // @[Directory.scala 113:33]
   assign io_read_resp_bits_chosenWay = _rAddr_T ? choseWayOH : io_read_resp_bits_chosenWay_r; // @[Directory.scala 112:39]
   assign io_read_resp_bits_isDirtyWay = _rAddr_T ? isDirtyWay : io_read_resp_bits_isDirtyWay_r; // @[Directory.scala 111:40]
@@ -212,6 +216,7 @@ module DCacheDirectory(
     if (_replaceWayReg_T) begin // @[Reg.scala 20:18]
       replaceWayReg <= replaceWay; // @[Reg.scala 20:22]
     end
+    io_read_resp_valid_REG <= io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
     io_read_resp_bits_isDirtyWay_REG <= io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
     if (io_read_resp_bits_isDirtyWay_REG) begin // @[Reg.scala 20:18]
       io_read_resp_bits_isDirtyWay_r <= isDirtyWay; // @[Reg.scala 20:22]
@@ -326,17 +331,19 @@ initial begin
   _RAND_2 = {1{`RANDOM}};
   replaceWayReg = _RAND_2[3:0];
   _RAND_3 = {1{`RANDOM}};
-  io_read_resp_bits_isDirtyWay_REG = _RAND_3[0:0];
+  io_read_resp_valid_REG = _RAND_3[0:0];
   _RAND_4 = {1{`RANDOM}};
-  io_read_resp_bits_isDirtyWay_r = _RAND_4[0:0];
+  io_read_resp_bits_isDirtyWay_REG = _RAND_4[0:0];
   _RAND_5 = {1{`RANDOM}};
-  io_read_resp_bits_chosenWay_REG = _RAND_5[0:0];
+  io_read_resp_bits_isDirtyWay_r = _RAND_5[0:0];
   _RAND_6 = {1{`RANDOM}};
-  io_read_resp_bits_chosenWay_r = _RAND_6[3:0];
+  io_read_resp_bits_chosenWay_REG = _RAND_6[0:0];
   _RAND_7 = {1{`RANDOM}};
-  io_read_resp_bits_hit_REG = _RAND_7[0:0];
+  io_read_resp_bits_chosenWay_r = _RAND_7[3:0];
   _RAND_8 = {1{`RANDOM}};
-  io_read_resp_bits_hit_r = _RAND_8[0:0];
+  io_read_resp_bits_hit_REG = _RAND_8[0:0];
+  _RAND_9 = {1{`RANDOM}};
+  io_read_resp_bits_hit_r = _RAND_9[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

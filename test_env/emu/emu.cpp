@@ -65,6 +65,7 @@ void Emu::execute(uint64_t nr_cycles) {
         // parse disassemble file
         // std::string command = std::string("python3 ") + scripts + " " + dir + "/" + bin_name + ".dump" + " " + scripts_dir + bin_name + ".out";
         // system(command.c_str());
+
         std::string command = std::string("python3 ") + scripts + " " + dir + "/" + bin_name; //+ ".dump" + " " + scripts_dir + bin_name + ".out";
         system(command.c_str());
 

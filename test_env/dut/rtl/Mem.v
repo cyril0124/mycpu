@@ -35,6 +35,7 @@ module Mem(
   input         io_tlbus_req_ready,
   output        io_tlbus_req_valid,
   output [2:0]  io_tlbus_req_bits_opcode,
+  output [31:0] io_tlbus_req_bits_size,
   output [31:0] io_tlbus_req_bits_address,
   output [31:0] io_tlbus_req_bits_data,
   input         io_tlbus_resp_valid,
@@ -108,6 +109,7 @@ module Mem(
   wire  dcache_io_tlbus_req_ready; // @[4_Mem.scala 165:24]
   wire  dcache_io_tlbus_req_valid; // @[4_Mem.scala 165:24]
   wire [2:0] dcache_io_tlbus_req_bits_opcode; // @[4_Mem.scala 165:24]
+  wire [31:0] dcache_io_tlbus_req_bits_size; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_req_bits_address; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 165:24]
   wire  dcache_io_tlbus_resp_ready; // @[4_Mem.scala 165:24]
@@ -195,6 +197,7 @@ module Mem(
     .io_tlbus_req_ready(dcache_io_tlbus_req_ready),
     .io_tlbus_req_valid(dcache_io_tlbus_req_valid),
     .io_tlbus_req_bits_opcode(dcache_io_tlbus_req_bits_opcode),
+    .io_tlbus_req_bits_size(dcache_io_tlbus_req_bits_size),
     .io_tlbus_req_bits_address(dcache_io_tlbus_req_bits_address),
     .io_tlbus_req_bits_data(dcache_io_tlbus_req_bits_data),
     .io_tlbus_resp_ready(dcache_io_tlbus_resp_ready),
@@ -219,6 +222,7 @@ module Mem(
   assign io_lsuOK = lsu_io_resp_valid; // @[4_Mem.scala 162:29]
   assign io_tlbus_req_valid = dcache_io_tlbus_req_valid; // @[4_Mem.scala 168:21]
   assign io_tlbus_req_bits_opcode = dcache_io_tlbus_req_bits_opcode; // @[4_Mem.scala 168:21]
+  assign io_tlbus_req_bits_size = dcache_io_tlbus_req_bits_size; // @[4_Mem.scala 168:21]
   assign io_tlbus_req_bits_address = dcache_io_tlbus_req_bits_address; // @[4_Mem.scala 168:21]
   assign io_tlbus_req_bits_data = dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 168:21]
   assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]

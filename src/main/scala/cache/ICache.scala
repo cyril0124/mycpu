@@ -17,6 +17,7 @@ import scala.tools.cmd.Meta
 class ICache()(implicit val p: Parameters) extends MyModule {
     val io = IO(new DCacheIO)
     io.write <> DontCare
+    io <> DontCare
 
     val cacheSize = dcacheSets * dcacheWays * dcacheBanks *dcacheBlockBytes
     val setBits = log2Ceil(dcacheSets)
@@ -29,7 +30,8 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     println(s" setBits: ${dcacheSetBits}")
     println(s" tagBits: ${dcacheTagBits}")
 
-    val loadPipe = Module(new LoadPipe)
+    val loadPipe = Module(new LoadPipe_1)
+    // val loadPipe = Module(new LoadPipe)
 
     val dataBankArray = Module(new DataBankArray)
     val directory = Module(new DCacheDirectory)

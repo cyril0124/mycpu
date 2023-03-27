@@ -200,6 +200,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
             simulation = true,
             dcacheSets =  128,
             dcacheWays = 4,
+            dcacheBlockSize = 2,
         )
     })
     it should "test read miss and read hit" in {

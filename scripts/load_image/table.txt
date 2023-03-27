@@ -1,15 +1,31 @@
-There are 8 section headers, starting at offset 0x3578:
+There are 24 section headers, starting at offset 0xfe50:
 
 Section Headers:
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .text.init        PROGBITS        00000000 001000 0006bc 00  AX  0   0 64
+  [ 1] .text.init        PROGBITS        00000000 001000 000204 00  AX  0   0  4
   [ 2] .tohost           PROGBITS        00001000 002000 000048 00  WA  0   0 64
-  [ 3] .data             PROGBITS        00002000 003000 000030 00  WA  0   0 16
-  [ 4] .riscv.attributes RISCV_ATTRIBUTE 00000000 003030 000032 00      0   0  1
-  [ 5] .symtab           SYMTAB          00000000 003064 000350 10      6  47  4
-  [ 6] .strtab           STRTAB          00000000 0033b4 00017d 00      0   0  1
-  [ 7] .shstrtab         STRTAB          00000000 003531 000046 00      0   0  1
+  [ 3] .text             PROGBITS        00002000 003000 001e34 00  AX  0   0  4
+  [ 4] .text.startup     PROGBITS        00003e34 004e34 0000a0 00  AX  0   0  4
+  [ 5] .rodata.str1.4    PROGBITS        00003ed4 004ed4 00003d 01 AMS  0   0  4
+  [ 6] .rodata           PROGBITS        00003f14 004f14 000258 00   A  0   0  4
+  [ 7] .eh_frame         PROGBITS        0000416c 00516c 000104 00   A  0   0  4
+  [ 8] .data             PROGBITS        00004270 005270 004000 00  WA  0   0  4
+  [ 9] .sbss             NOBITS          00008270 009270 000010 00  WA  0   0  4
+  [10] .tbss             NOBITS          00008280 009270 000044 00 WAT  0   0 64
+  [11] .comment          PROGBITS        00000000 009270 00001b 01  MS  0   0  1
+  [12] .riscv.attributes RISCV_ATTRIBUTE 00000000 00928b 000020 00      0   0  1
+  [13] .debug_info       PROGBITS        00000000 0092ab 001daa 00      0   0  1
+  [14] .debug_abbrev     PROGBITS        00000000 00b055 000638 00      0   0  1
+  [15] .debug_loclists   PROGBITS        00000000 00b68d 001cae 00      0   0  1
+  [16] .debug_aranges    PROGBITS        00000000 00d340 0000b8 00      0   0  8
+  [17] .debug_rnglists   PROGBITS        00000000 00d3f8 0002ea 00      0   0  1
+  [18] .debug_line       PROGBITS        00000000 00d6e2 001976 00      0   0  1
+  [19] .debug_str        PROGBITS        00000000 00f058 000410 01  MS  0   0  1
+  [20] .debug_line_str   PROGBITS        00000000 00f468 00015e 01  MS  0   0  1
+  [21] .symtab           SYMTAB          00000000 00f5c8 000590 10     22  48  4
+  [22] .strtab           STRTAB          00000000 00fb58 0001f5 00      0   0  1
+  [23] .shstrtab         STRTAB          00000000 00fd4d 000100 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),

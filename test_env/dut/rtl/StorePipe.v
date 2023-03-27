@@ -19,20 +19,23 @@ module StorePipe(
   output [3:0]   io_dir_write_req_bits_way,
   output [1:0]   io_dir_write_req_bits_meta,
   output         io_dataBank_read_req_valid,
-  output [5:0]   io_dataBank_read_req_bits_set,
-  output [1:0]   io_dataBank_read_req_bits_blockSelOH,
+  output [7:0]   io_dataBank_read_req_bits_set,
+  output [3:0]   io_dataBank_read_req_bits_blockSelOH,
   input  [127:0] io_dataBank_read_resp_bits_blockData_0,
   input  [127:0] io_dataBank_read_resp_bits_blockData_1,
+  input  [127:0] io_dataBank_read_resp_bits_blockData_2,
+  input  [127:0] io_dataBank_read_resp_bits_blockData_3,
   input          io_dataBank_write_req_ready,
   output         io_dataBank_write_req_valid,
   output [31:0]  io_dataBank_write_req_bits_data,
-  output [5:0]   io_dataBank_write_req_bits_set,
-  output [1:0]   io_dataBank_write_req_bits_blockSelOH,
+  output [7:0]   io_dataBank_write_req_bits_set,
+  output [3:0]   io_dataBank_write_req_bits_blockSelOH,
   output [3:0]   io_dataBank_write_req_bits_way,
   output [3:0]   io_dataBank_write_req_bits_mask,
   input          io_tlbus_req_ready,
   output         io_tlbus_req_valid,
   output [2:0]   io_tlbus_req_bits_opcode,
+  output [31:0]  io_tlbus_req_bits_size,
   output [31:0]  io_tlbus_req_bits_address,
   output [31:0]  io_tlbus_req_bits_data,
   output         io_tlbus_resp_ready,
@@ -67,15 +70,18 @@ module StorePipe(
 `endif // RANDOMIZE_REG_INIT
   wire  tlbusReqArb_io_in_0_ready; // @[StorePipe.scala 246:29]
   wire  tlbusReqArb_io_in_0_valid; // @[StorePipe.scala 246:29]
+  wire [31:0] tlbusReqArb_io_in_0_bits_size; // @[StorePipe.scala 246:29]
   wire [31:0] tlbusReqArb_io_in_0_bits_address; // @[StorePipe.scala 246:29]
   wire  tlbusReqArb_io_in_1_ready; // @[StorePipe.scala 246:29]
   wire  tlbusReqArb_io_in_1_valid; // @[StorePipe.scala 246:29]
   wire [2:0] tlbusReqArb_io_in_1_bits_opcode; // @[StorePipe.scala 246:29]
+  wire [31:0] tlbusReqArb_io_in_1_bits_size; // @[StorePipe.scala 246:29]
   wire [31:0] tlbusReqArb_io_in_1_bits_address; // @[StorePipe.scala 246:29]
   wire [31:0] tlbusReqArb_io_in_1_bits_data; // @[StorePipe.scala 246:29]
   wire  tlbusReqArb_io_out_ready; // @[StorePipe.scala 246:29]
   wire  tlbusReqArb_io_out_valid; // @[StorePipe.scala 246:29]
   wire [2:0] tlbusReqArb_io_out_bits_opcode; // @[StorePipe.scala 246:29]
+  wire [31:0] tlbusReqArb_io_out_bits_size; // @[StorePipe.scala 246:29]
   wire [31:0] tlbusReqArb_io_out_bits_address; // @[StorePipe.scala 246:29]
   wire [31:0] tlbusReqArb_io_out_bits_data; // @[StorePipe.scala 246:29]
   wire  storeRespArb_io_in_0_valid; // @[StorePipe.scala 251:30]
@@ -85,21 +91,21 @@ module StorePipe(
   wire  dataBankWrReqArb_io_in_0_ready; // @[StorePipe.scala 256:34]
   wire  dataBankWrReqArb_io_in_0_valid; // @[StorePipe.scala 256:34]
   wire [31:0] dataBankWrReqArb_io_in_0_bits_data; // @[StorePipe.scala 256:34]
-  wire [5:0] dataBankWrReqArb_io_in_0_bits_set; // @[StorePipe.scala 256:34]
-  wire [1:0] dataBankWrReqArb_io_in_0_bits_blockSelOH; // @[StorePipe.scala 256:34]
+  wire [7:0] dataBankWrReqArb_io_in_0_bits_set; // @[StorePipe.scala 256:34]
+  wire [3:0] dataBankWrReqArb_io_in_0_bits_blockSelOH; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_in_0_bits_way; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_in_0_bits_mask; // @[StorePipe.scala 256:34]
   wire  dataBankWrReqArb_io_in_1_valid; // @[StorePipe.scala 256:34]
   wire [31:0] dataBankWrReqArb_io_in_1_bits_data; // @[StorePipe.scala 256:34]
-  wire [5:0] dataBankWrReqArb_io_in_1_bits_set; // @[StorePipe.scala 256:34]
-  wire [1:0] dataBankWrReqArb_io_in_1_bits_blockSelOH; // @[StorePipe.scala 256:34]
+  wire [7:0] dataBankWrReqArb_io_in_1_bits_set; // @[StorePipe.scala 256:34]
+  wire [3:0] dataBankWrReqArb_io_in_1_bits_blockSelOH; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_in_1_bits_way; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_in_1_bits_mask; // @[StorePipe.scala 256:34]
   wire  dataBankWrReqArb_io_out_ready; // @[StorePipe.scala 256:34]
   wire  dataBankWrReqArb_io_out_valid; // @[StorePipe.scala 256:34]
   wire [31:0] dataBankWrReqArb_io_out_bits_data; // @[StorePipe.scala 256:34]
-  wire [5:0] dataBankWrReqArb_io_out_bits_set; // @[StorePipe.scala 256:34]
-  wire [1:0] dataBankWrReqArb_io_out_bits_blockSelOH; // @[StorePipe.scala 256:34]
+  wire [7:0] dataBankWrReqArb_io_out_bits_set; // @[StorePipe.scala 256:34]
+  wire [3:0] dataBankWrReqArb_io_out_bits_blockSelOH; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_out_bits_way; // @[StorePipe.scala 256:34]
   wire [3:0] dataBankWrReqArb_io_out_bits_mask; // @[StorePipe.scala 256:34]
   wire  dirWrReqArb_io_in_0_ready; // @[StorePipe.scala 261:29]
@@ -143,8 +149,9 @@ module StorePipe(
   reg  s1_storeMissDirty_r; // @[Reg.scala 19:16]
   wire  s1_storeMissDirty = s1_storeMissDirty_r & s1_full; // @[StorePipe.scala 124:65]
   wire  s1_refillFire = io_tlbus_resp_bits_opcode == 3'h1 & _s0_valid_T_4; // @[StorePipe.scala 154:67]
-  reg  s1_beatCounter_value; // @[Counter.scala 61:40]
-  wire  _s1_valid_T_4 = (s1_storeMissClean | s1_storeMissDirty) & s1_refillFire & s1_beatCounter_value; // @[StorePipe.scala 192:79]
+  reg [1:0] s1_beatCounter_value; // @[Counter.scala 61:40]
+  wire  s1_lastBeat = s1_beatCounter_value == 2'h3; // @[StorePipe.scala 157:44]
+  wire  _s1_valid_T_4 = (s1_storeMissClean | s1_storeMissDirty) & s1_refillFire & s1_lastBeat; // @[StorePipe.scala 192:79]
   wire  s1_valid = s1_storeHit & _s1_valid_T | _s1_valid_T_4; // @[StorePipe.scala 191:50]
   reg  s2_full; // @[StorePipe.scala 199:26]
   reg  s2_storeHit_r; // @[Reg.scala 19:16]
@@ -173,23 +180,29 @@ module StorePipe(
   wire [31:0] _GEN_0 = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
   wire  _GEN_3 = s0_full & s0_fire ? 1'h0 : s0_full; // @[StorePipe.scala 34:26 45:{35,45}]
   wire  _GEN_4 = s0_latch | _GEN_3; // @[StorePipe.scala 44:{20,30}]
-  reg  s0_beatCounter_value; // @[Counter.scala 61:40]
-  wire [1:0] s0_beatOH = 2'h1 << s0_beatCounter_value; // @[OneHot.scala 57:35]
-  wire  _s0_putAllBeat_T_1 = s0_beatCounter_value & _s0_valid_T_1; // @[StorePipe.scala 77:64]
+  reg [1:0] s0_beatCounter_value; // @[Counter.scala 61:40]
+  wire [3:0] s0_beatOH = 4'h1 << s0_beatCounter_value; // @[OneHot.scala 57:35]
+  wire  s0_lastBeat = s0_beatCounter_value == 2'h3; // @[StorePipe.scala 76:44]
+  wire  _s0_putAllBeat_T_1 = s0_lastBeat & _s0_valid_T_1; // @[StorePipe.scala 77:64]
   wire  _GEN_5 = _s0_putAllBeat_T_1 | s0_putAllBeat; // @[Reg.scala 36:18 35:20 36:22]
   wire [2:0] s0_tlbusReq_bits_opcode = storeMissClean ? 3'h4 : 3'h2; // @[StorePipe.scala 90:35]
-  wire [31:0] blockAddr = {_GEN_0[31:3],3'h0}; // @[Cat.scala 33:92]
-  wire [2:0] _s0_tlbusReq_bits_address_T = {s0_beatCounter_value, 2'h0}; // @[StorePipe.scala 93:71]
-  wire [31:0] _GEN_34 = {{29'd0}, _s0_tlbusReq_bits_address_T}; // @[StorePipe.scala 93:47]
-  wire [31:0] _s0_tlbusReq_bits_address_T_2 = blockAddr + _GEN_34; // @[StorePipe.scala 93:47]
-  wire [127:0] _s0_tlbusReq_bits_data_T_2 = s0_beatOH[0] ? io_dataBank_read_resp_bits_blockData_0 : 128'h0; // @[Mux.scala 27:73]
-  wire [127:0] _s0_tlbusReq_bits_data_T_3 = s0_beatOH[1] ? io_dataBank_read_resp_bits_blockData_1 : 128'h0; // @[Mux.scala 27:73]
-  wire [127:0] _s0_tlbusReq_bits_data_T_4 = _s0_tlbusReq_bits_data_T_2 | _s0_tlbusReq_bits_data_T_3; // @[Mux.scala 27:73]
-  wire [127:0] _s0_tlbusReq_bits_data_T_5 = storeMissDirty ? _s0_tlbusReq_bits_data_T_4 : 128'h0; // @[StorePipe.scala 96:33]
+  wire [1:0] _value_T_1 = s0_beatCounter_value + 2'h1; // @[Counter.scala 77:24]
+  wire [31:0] blockAddr = {_GEN_0[31:4],4'h0}; // @[Cat.scala 33:92]
+  wire [3:0] _s0_tlbusReq_bits_address_T = {s0_beatCounter_value, 2'h0}; // @[StorePipe.scala 93:71]
+  wire [31:0] _GEN_38 = {{28'd0}, _s0_tlbusReq_bits_address_T}; // @[StorePipe.scala 93:47]
+  wire [31:0] _s0_tlbusReq_bits_address_T_2 = blockAddr + _GEN_38; // @[StorePipe.scala 93:47]
+  wire [127:0] _s0_tlbusReq_bits_data_T_4 = s0_beatOH[0] ? io_dataBank_read_resp_bits_blockData_0 : 128'h0; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_5 = s0_beatOH[1] ? io_dataBank_read_resp_bits_blockData_1 : 128'h0; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_6 = s0_beatOH[2] ? io_dataBank_read_resp_bits_blockData_2 : 128'h0; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_7 = s0_beatOH[3] ? io_dataBank_read_resp_bits_blockData_3 : 128'h0; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_8 = _s0_tlbusReq_bits_data_T_4 | _s0_tlbusReq_bits_data_T_5; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_9 = _s0_tlbusReq_bits_data_T_8 | _s0_tlbusReq_bits_data_T_6; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_10 = _s0_tlbusReq_bits_data_T_9 | _s0_tlbusReq_bits_data_T_7; // @[Mux.scala 27:73]
+  wire [127:0] _s0_tlbusReq_bits_data_T_11 = storeMissDirty ? _s0_tlbusReq_bits_data_T_10 : 128'h0; // @[StorePipe.scala 96:33]
   reg [31:0] s1_reqReg_addr; // @[Reg.scala 19:16]
   reg [31:0] s1_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s1_reqReg_mask; // @[Reg.scala 19:16]
-  wire [1:0] s1_dataBlockSelOH = 2'h1 << s1_reqReg_addr[2]; // @[OneHot.scala 57:35]
+  wire [3:0] s1_dataBlockSelOH = 4'h1 << s1_reqReg_addr[3:2]; // @[OneHot.scala 57:35]
   reg [3:0] s1_chosenWayOH; // @[Reg.scala 19:16]
   wire  _GEN_16 = s1_full & s1_fire ? 1'h0 : s1_full; // @[StorePipe.scala 114:26 128:{35,45}]
   wire  _GEN_17 = s0_fire | _GEN_16; // @[StorePipe.scala 127:{20,30}]
@@ -198,14 +211,15 @@ module StorePipe(
   wire  s1_tlbusReq_valid = s1_storeMissDirty & ~s1_sendGet; // @[StorePipe.scala 141:44]
   wire  _s1_sendGet_T = s1_tlbusReq_ready & s1_tlbusReq_valid; // @[Decoupled.scala 51:35]
   wire  _GEN_18 = _s1_sendGet_T | s1_sendGet; // @[Reg.scala 36:18 35:20 36:22]
-  wire [1:0] s1_beatOH = 2'h1 << s1_beatCounter_value; // @[OneHot.scala 57:35]
+  wire [3:0] s1_beatOH = 4'h1 << s1_beatCounter_value; // @[OneHot.scala 57:35]
+  wire [1:0] _value_T_3 = s1_beatCounter_value + 2'h1; // @[Counter.scala 77:24]
   wire  s1_writeRefill = s1_refillFire & (s1_storeMissClean | s1_storeMissDirty & s1_sendGet); // @[StorePipe.scala 172:40]
   wire  s1_dirWrReq_valid = s1_storeHit | s1_writeRefill; // @[StorePipe.scala 174:38]
   reg [31:0] s2_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s2_reqReg_mask; // @[Reg.scala 19:16]
   reg [3:0] s2_chosenWayOH; // @[Reg.scala 19:16]
-  wire  _GEN_32 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe.scala 199:26 213:{35,45}]
-  wire  _GEN_33 = s1_fire | _GEN_32; // @[StorePipe.scala 212:{20,30}]
+  wire  _GEN_36 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe.scala 199:26 213:{35,45}]
+  wire  _GEN_37 = s1_fire | _GEN_36; // @[StorePipe.scala 212:{20,30}]
   wire  s1_storeResp_bits_status = 1'h0; // @[StorePipe.scala 133:{33,33}]
   wire [1:0] s1_storeResp_bits_stageID = 2'h1; // @[StorePipe.scala 131:28 135:31]
   wire  s2_storeResp_bits_status = 1'h0; // @[StorePipe.scala 218:{33,33}]
@@ -213,15 +227,18 @@ module StorePipe(
   Arbiter_1 tlbusReqArb ( // @[StorePipe.scala 246:29]
     .io_in_0_ready(tlbusReqArb_io_in_0_ready),
     .io_in_0_valid(tlbusReqArb_io_in_0_valid),
+    .io_in_0_bits_size(tlbusReqArb_io_in_0_bits_size),
     .io_in_0_bits_address(tlbusReqArb_io_in_0_bits_address),
     .io_in_1_ready(tlbusReqArb_io_in_1_ready),
     .io_in_1_valid(tlbusReqArb_io_in_1_valid),
     .io_in_1_bits_opcode(tlbusReqArb_io_in_1_bits_opcode),
+    .io_in_1_bits_size(tlbusReqArb_io_in_1_bits_size),
     .io_in_1_bits_address(tlbusReqArb_io_in_1_bits_address),
     .io_in_1_bits_data(tlbusReqArb_io_in_1_bits_data),
     .io_out_ready(tlbusReqArb_io_out_ready),
     .io_out_valid(tlbusReqArb_io_out_valid),
     .io_out_bits_opcode(tlbusReqArb_io_out_bits_opcode),
+    .io_out_bits_size(tlbusReqArb_io_out_bits_size),
     .io_out_bits_address(tlbusReqArb_io_out_bits_address),
     .io_out_bits_data(tlbusReqArb_io_out_bits_data)
   );
@@ -278,8 +295,8 @@ module StorePipe(
   assign io_dir_write_req_bits_way = dirWrReqArb_io_out_bits_way; // @[StorePipe.scala 264:22]
   assign io_dir_write_req_bits_meta = dirWrReqArb_io_out_bits_meta; // @[StorePipe.scala 264:22]
   assign io_dataBank_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 51:44]
-  assign io_dataBank_read_req_bits_set = _GEN_0[8:3]; // @[Parameters.scala 50:11]
-  assign io_dataBank_read_req_bits_blockSelOH = 2'h1 << _GEN_0[2]; // @[OneHot.scala 57:35]
+  assign io_dataBank_read_req_bits_set = _GEN_0[11:4]; // @[Parameters.scala 50:11]
+  assign io_dataBank_read_req_bits_blockSelOH = 4'h1 << _GEN_0[3:2]; // @[OneHot.scala 57:35]
   assign io_dataBank_write_req_valid = dataBankWrReqArb_io_out_valid; // @[StorePipe.scala 259:27]
   assign io_dataBank_write_req_bits_data = dataBankWrReqArb_io_out_bits_data; // @[StorePipe.scala 259:27]
   assign io_dataBank_write_req_bits_set = dataBankWrReqArb_io_out_bits_set; // @[StorePipe.scala 259:27]
@@ -288,27 +305,30 @@ module StorePipe(
   assign io_dataBank_write_req_bits_mask = dataBankWrReqArb_io_out_bits_mask; // @[StorePipe.scala 259:27]
   assign io_tlbus_req_valid = tlbusReqArb_io_out_valid; // @[StorePipe.scala 249:18]
   assign io_tlbus_req_bits_opcode = tlbusReqArb_io_out_bits_opcode; // @[StorePipe.scala 249:18]
+  assign io_tlbus_req_bits_size = tlbusReqArb_io_out_bits_size; // @[StorePipe.scala 249:18]
   assign io_tlbus_req_bits_address = tlbusReqArb_io_out_bits_address; // @[StorePipe.scala 249:18]
   assign io_tlbus_req_bits_data = tlbusReqArb_io_out_bits_data; // @[StorePipe.scala 249:18]
   assign io_tlbus_resp_ready = 1'h1; // @[StorePipe.scala 152:25]
   assign tlbusReqArb_io_in_0_valid = s1_storeMissDirty & ~s1_sendGet; // @[StorePipe.scala 141:44]
-  assign tlbusReqArb_io_in_0_bits_address = {s1_reqReg_addr[31:3],3'h0}; // @[Cat.scala 33:92]
+  assign tlbusReqArb_io_in_0_bits_size = 32'h10; // @[StorePipe.scala 139:27 146:27]
+  assign tlbusReqArb_io_in_0_bits_address = {s1_reqReg_addr[31:4],4'h0}; // @[Cat.scala 33:92]
   assign tlbusReqArb_io_in_1_valid = s0_full & (storeMissClean & ~s0_putAllBeat | storeMissDirty & ~s0_putAllBeat); // @[StorePipe.scala 88:34]
   assign tlbusReqArb_io_in_1_bits_opcode = storeMissClean ? 3'h4 : 3'h2; // @[StorePipe.scala 90:35]
+  assign tlbusReqArb_io_in_1_bits_size = 32'h10; // @[StorePipe.scala 72:27 97:27]
   assign tlbusReqArb_io_in_1_bits_address = storeMissDirty ? _s0_tlbusReq_bits_address_T_2 : blockAddr; // @[StorePipe.scala 92:36]
-  assign tlbusReqArb_io_in_1_bits_data = _s0_tlbusReq_bits_data_T_5[31:0]; // @[StorePipe.scala 72:27 96:27]
+  assign tlbusReqArb_io_in_1_bits_data = _s0_tlbusReq_bits_data_T_11[31:0]; // @[StorePipe.scala 72:27 96:27]
   assign tlbusReqArb_io_out_ready = io_tlbus_req_ready; // @[StorePipe.scala 249:18]
   assign storeRespArb_io_in_0_valid = _s2_dataBankWrReq_valid_T; // @[StorePipe.scala 252:27]
   assign storeRespArb_io_in_1_valid = s1_storeResp_valid; // @[StorePipe.scala 253:27]
   assign dataBankWrReqArb_io_in_0_valid = s2_storeMissClean | s2_storeMissDirty; // @[StorePipe.scala 235:49]
   assign dataBankWrReqArb_io_in_0_bits_data = s2_reqReg_data; // @[StorePipe.scala 234:32 240:32]
-  assign dataBankWrReqArb_io_in_0_bits_set = s1_reqReg_addr[8:3]; // @[Parameters.scala 50:11]
-  assign dataBankWrReqArb_io_in_0_bits_blockSelOH = 2'h1 << s1_reqReg_addr[2]; // @[OneHot.scala 57:35]
+  assign dataBankWrReqArb_io_in_0_bits_set = s1_reqReg_addr[11:4]; // @[Parameters.scala 50:11]
+  assign dataBankWrReqArb_io_in_0_bits_blockSelOH = 4'h1 << s1_reqReg_addr[3:2]; // @[OneHot.scala 57:35]
   assign dataBankWrReqArb_io_in_0_bits_way = s2_chosenWayOH; // @[StorePipe.scala 234:32 238:31]
   assign dataBankWrReqArb_io_in_0_bits_mask = s2_reqReg_mask; // @[StorePipe.scala 234:32 239:32]
   assign dataBankWrReqArb_io_in_1_valid = s1_storeHit | s1_writeRefill; // @[StorePipe.scala 184:43]
   assign dataBankWrReqArb_io_in_1_bits_data = s1_writeRefill ? io_tlbus_resp_bits_data : s1_reqReg_data; // @[StorePipe.scala 189:38]
-  assign dataBankWrReqArb_io_in_1_bits_set = s1_reqReg_addr[8:3]; // @[Parameters.scala 50:11]
+  assign dataBankWrReqArb_io_in_1_bits_set = s1_reqReg_addr[11:4]; // @[Parameters.scala 50:11]
   assign dataBankWrReqArb_io_in_1_bits_blockSelOH = s1_writeRefill ? s1_beatOH : s1_dataBlockSelOH; // @[StorePipe.scala 185:44]
   assign dataBankWrReqArb_io_in_1_bits_way = s1_chosenWayOH; // @[StorePipe.scala 183:32 187:31]
   assign dataBankWrReqArb_io_in_1_bits_mask = s1_writeRefill ? 4'hf : s1_reqReg_mask; // @[StorePipe.scala 188:38]
@@ -350,16 +370,16 @@ module StorePipe(
       s1_storeMissDirty_r <= storeMissDirty; // @[Reg.scala 20:22]
     end
     if (reset) begin // @[Counter.scala 61:40]
-      s1_beatCounter_value <= 1'h0; // @[Counter.scala 61:40]
-    end else if (~s1_beatCounter_value & s1_refillFire) begin // @[StorePipe.scala 158:41]
-      s1_beatCounter_value <= s1_beatCounter_value + 1'h1; // @[Counter.scala 77:15]
+      s1_beatCounter_value <= 2'h0; // @[Counter.scala 61:40]
+    end else if (~s1_lastBeat & s1_refillFire) begin // @[StorePipe.scala 158:41]
+      s1_beatCounter_value <= _value_T_3; // @[Counter.scala 77:15]
     end else if (s0_fire) begin // @[StorePipe.scala 160:26]
-      s1_beatCounter_value <= 1'h0; // @[Counter.scala 98:11]
+      s1_beatCounter_value <= 2'h0; // @[Counter.scala 98:11]
     end
     if (reset) begin // @[StorePipe.scala 199:26]
       s2_full <= 1'h0; // @[StorePipe.scala 199:26]
     end else begin
-      s2_full <= _GEN_33;
+      s2_full <= _GEN_37;
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_storeHit_r <= s1_storeHit; // @[Reg.scala 20:22]
@@ -380,11 +400,11 @@ module StorePipe(
       s0_reqReg_mask <= io_store_req_bits_mask; // @[Reg.scala 20:22]
     end
     if (reset) begin // @[Counter.scala 61:40]
-      s0_beatCounter_value <= 1'h0; // @[Counter.scala 61:40]
+      s0_beatCounter_value <= 2'h0; // @[Counter.scala 61:40]
     end else if (_s0_valid_T_1 & s0_tlbusReq_bits_opcode == 3'h2) begin // @[StorePipe.scala 78:71]
-      s0_beatCounter_value <= s0_beatCounter_value + 1'h1; // @[Counter.scala 77:15]
+      s0_beatCounter_value <= _value_T_1; // @[Counter.scala 77:15]
     end else if (_s0_valid_T_4 & _s0_valid_T_6) begin // @[StorePipe.scala 80:79]
-      s0_beatCounter_value <= 1'h0; // @[Counter.scala 98:11]
+      s0_beatCounter_value <= 2'h0; // @[Counter.scala 98:11]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_reqReg_addr <= s0_reqReg_addr; // @[Reg.scala 20:22]
@@ -462,7 +482,7 @@ initial begin
   _RAND_5 = {1{`RANDOM}};
   s1_storeMissDirty_r = _RAND_5[0:0];
   _RAND_6 = {1{`RANDOM}};
-  s1_beatCounter_value = _RAND_6[0:0];
+  s1_beatCounter_value = _RAND_6[1:0];
   _RAND_7 = {1{`RANDOM}};
   s2_full = _RAND_7[0:0];
   _RAND_8 = {1{`RANDOM}};
@@ -478,7 +498,7 @@ initial begin
   _RAND_13 = {1{`RANDOM}};
   s0_reqReg_mask = _RAND_13[3:0];
   _RAND_14 = {1{`RANDOM}};
-  s0_beatCounter_value = _RAND_14[0:0];
+  s0_beatCounter_value = _RAND_14[1:0];
   _RAND_15 = {1{`RANDOM}};
   s1_reqReg_addr = _RAND_15[31:0];
   _RAND_16 = {1{`RANDOM}};

@@ -55,6 +55,12 @@ class DCacheDirectory()(implicit val p: Parameters) extends MyModule {
     val wWay = w.req.bits.way
     val wMeta = w.req.bits.meta
 
+    dontTouch(rSet)
+    dontTouch(rTag)
+    dontTouch(wSet)
+    dontTouch(wTag)
+    dontTouch(wWay)
+
     assert(PopCount(wWay) < 2.U, cf"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}")
 
     val tagArray = Module(new SRAMTemplate(dcacheTagBits * dcacheWays, dcacheSets, dcacheWays))

@@ -1,7 +1,7 @@
 {
-    "test_case_num": 62,
+    "test_case_num": 1,
     "1": {
-        "name": "rv32ui-p-lbu.bin",
+        "name": "rv32ui-p-lb.bin",
         "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/rv32ui-p",
         "err_code": 42
     },

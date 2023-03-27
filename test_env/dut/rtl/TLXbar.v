@@ -4,11 +4,13 @@ module TLXbar(
   output        io_masterFace_in_0_ready,
   input         io_masterFace_in_0_valid,
   input  [2:0]  io_masterFace_in_0_bits_opcode,
+  input  [31:0] io_masterFace_in_0_bits_size,
   input  [31:0] io_masterFace_in_0_bits_address,
   input  [31:0] io_masterFace_in_0_bits_data,
   output        io_masterFace_in_1_ready,
   input         io_masterFace_in_1_valid,
   input  [2:0]  io_masterFace_in_1_bits_opcode,
+  input  [31:0] io_masterFace_in_1_bits_size,
   input  [31:0] io_masterFace_in_1_bits_address,
   input  [31:0] io_masterFace_in_1_bits_data,
   output        io_masterFace_out_0_valid,
@@ -20,7 +22,7 @@ module TLXbar(
   input         io_slaveFace_in_0_ready,
   output        io_slaveFace_in_0_valid,
   output [2:0]  io_slaveFace_in_0_bits_opcode,
-  output [3:0]  io_slaveFace_in_0_bits_size,
+  output [31:0] io_slaveFace_in_0_bits_size,
   output [31:0] io_slaveFace_in_0_bits_address,
   output [31:0] io_slaveFace_in_0_bits_data,
   output        io_slaveFace_out_0_ready,
@@ -53,17 +55,19 @@ module TLXbar(
   wire  reqMux_io_in_0_ready; // @[Bus.scala 194:24]
   wire  reqMux_io_in_0_valid; // @[Bus.scala 194:24]
   wire [2:0] reqMux_io_in_0_bits_opcode; // @[Bus.scala 194:24]
+  wire [31:0] reqMux_io_in_0_bits_size; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_0_bits_data; // @[Bus.scala 194:24]
   wire  reqMux_io_in_1_ready; // @[Bus.scala 194:24]
   wire  reqMux_io_in_1_valid; // @[Bus.scala 194:24]
   wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 194:24]
+  wire [31:0] reqMux_io_in_1_bits_size; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 194:24]
   wire  reqMux_io_out_ready; // @[Bus.scala 194:24]
   wire  reqMux_io_out_valid; // @[Bus.scala 194:24]
   wire [2:0] reqMux_io_out_bits_opcode; // @[Bus.scala 194:24]
-  wire [3:0] reqMux_io_out_bits_size; // @[Bus.scala 194:24]
+  wire [31:0] reqMux_io_out_bits_size; // @[Bus.scala 194:24]
   wire  reqMux_io_out_bits_source; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_out_bits_address; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_out_bits_data; // @[Bus.scala 194:24]
@@ -74,14 +78,14 @@ module TLXbar(
   wire  buf__io_enq_ready; // @[Bus.scala 200:21]
   wire  buf__io_enq_valid; // @[Bus.scala 200:21]
   wire [2:0] buf__io_enq_bits_opcode; // @[Bus.scala 200:21]
-  wire [3:0] buf__io_enq_bits_size; // @[Bus.scala 200:21]
+  wire [31:0] buf__io_enq_bits_size; // @[Bus.scala 200:21]
   wire  buf__io_enq_bits_source; // @[Bus.scala 200:21]
   wire [31:0] buf__io_enq_bits_address; // @[Bus.scala 200:21]
   wire [31:0] buf__io_enq_bits_data; // @[Bus.scala 200:21]
   wire  buf__io_deq_ready; // @[Bus.scala 200:21]
   wire  buf__io_deq_valid; // @[Bus.scala 200:21]
   wire [2:0] buf__io_deq_bits_opcode; // @[Bus.scala 200:21]
-  wire [3:0] buf__io_deq_bits_size; // @[Bus.scala 200:21]
+  wire [31:0] buf__io_deq_bits_size; // @[Bus.scala 200:21]
   wire  buf__io_deq_bits_source; // @[Bus.scala 200:21]
   wire [31:0] buf__io_deq_bits_address; // @[Bus.scala 200:21]
   wire [31:0] buf__io_deq_bits_data; // @[Bus.scala 200:21]
@@ -101,11 +105,11 @@ module TLXbar(
   reg  s1_full; // @[Bus.scala 207:26]
   wire  s1_latch = buf__io_deq_ready & buf__io_deq_valid; // @[Decoupled.scala 51:35]
   reg [2:0] s1_req_opcode; // @[Reg.scala 19:16]
-  reg [3:0] s1_req_size; // @[Reg.scala 19:16]
+  reg [31:0] s1_req_size; // @[Reg.scala 19:16]
   reg  s1_req_source; // @[Reg.scala 19:16]
   reg [31:0] s1_req_address; // @[Reg.scala 19:16]
   reg [31:0] s1_req_data; // @[Reg.scala 19:16]
-  wire [1:0] s1_beatSize = s1_req_size[3:2]; // @[Bus.scala 213:35]
+  wire [29:0] s1_beatSize = s1_req_size[31:2]; // @[Bus.scala 213:35]
   reg  s2_full; // @[Bus.scala 250:26]
   reg [2:0] s2_opcode; // @[Reg.scala 19:16]
   wire [1:0] s2_masterRecvVec = {io_masterFace_out_1_valid,io_masterFace_out_0_valid}; // @[Cat.scala 33:92]
@@ -115,10 +119,10 @@ module TLXbar(
   reg  s2_masterRecvHold_holdReg; // @[Reg.scala 19:16]
   wire  s2_masterRecvHold = s2_masterRecv ? s2_masterRecv : s2_masterRecvHold_holdReg; // @[util.scala 12:12]
   reg [3:0] s2_beatCounter_value; // @[Counter.scala 61:40]
-  reg [1:0] s2_beatSize; // @[Reg.scala 19:16]
-  wire [1:0] _s2_lastBeat_T_1 = s2_beatSize - 2'h1; // @[Bus.scala 276:60]
-  wire [3:0] _GEN_29 = {{2'd0}, _s2_lastBeat_T_1}; // @[Bus.scala 276:44]
-  wire  s2_lastBeat = s2_beatCounter_value == _GEN_29; // @[Bus.scala 276:44]
+  reg [29:0] s2_beatSize; // @[Reg.scala 19:16]
+  wire [29:0] _s2_lastBeat_T_1 = s2_beatSize - 30'h1; // @[Bus.scala 276:60]
+  wire [29:0] _GEN_29 = {{26'd0}, s2_beatCounter_value}; // @[Bus.scala 276:44]
+  wire  s2_lastBeat = _GEN_29 == _s2_lastBeat_T_1; // @[Bus.scala 276:44]
   wire  _s2_valid_T_4 = s2_opcode == 3'h4 & s2_masterRecvHold & s2_lastBeat; // @[Bus.scala 285:56]
   wire  s2_fire = s2_opcode == 3'h2 & s2_masterRecvHold | _s2_valid_T_4; // @[Bus.scala 284:65]
   wire  s2_ready = ~s2_full | s2_fire; // @[Bus.scala 258:26]
@@ -130,9 +134,9 @@ module TLXbar(
   reg  s1_slaveRecvHold_holdReg; // @[Reg.scala 19:16]
   wire  s1_slaveRecvHold = s1_slaveRecv ? s1_slaveRecv : s1_slaveRecvHold_holdReg; // @[util.scala 12:12]
   reg [3:0] s1_beatCounter_value; // @[Counter.scala 61:40]
-  wire [1:0] _s1_lastBeat_T_1 = s1_beatSize - 2'h1; // @[Bus.scala 234:60]
-  wire [3:0] _GEN_30 = {{2'd0}, _s1_lastBeat_T_1}; // @[Bus.scala 234:44]
-  wire  s1_lastBeat = s1_beatCounter_value == _GEN_30; // @[Bus.scala 234:44]
+  wire [29:0] _s1_lastBeat_T_1 = s1_beatSize - 30'h1; // @[Bus.scala 234:60]
+  wire [29:0] _GEN_30 = {{26'd0}, s1_beatCounter_value}; // @[Bus.scala 234:44]
+  wire  s1_lastBeat = _GEN_30 == _s1_lastBeat_T_1; // @[Bus.scala 234:44]
   wire  _s1_valid_T_4 = s1_slaveRecvHold & s1_req_opcode == 3'h4; // @[Bus.scala 243:54]
   wire  s1_valid = s1_slaveRecvHold & s1_lastBeat & s1_req_opcode == 3'h2 | _s1_valid_T_4; // @[Bus.scala 242:78]
   wire  s1_fire = s2_ready & s1_valid; // @[Bus.scala 245:25]
@@ -159,11 +163,13 @@ module TLXbar(
     .io_in_0_ready(reqMux_io_in_0_ready),
     .io_in_0_valid(reqMux_io_in_0_valid),
     .io_in_0_bits_opcode(reqMux_io_in_0_bits_opcode),
+    .io_in_0_bits_size(reqMux_io_in_0_bits_size),
     .io_in_0_bits_address(reqMux_io_in_0_bits_address),
     .io_in_0_bits_data(reqMux_io_in_0_bits_data),
     .io_in_1_ready(reqMux_io_in_1_ready),
     .io_in_1_valid(reqMux_io_in_1_valid),
     .io_in_1_bits_opcode(reqMux_io_in_1_bits_opcode),
+    .io_in_1_bits_size(reqMux_io_in_1_bits_size),
     .io_in_1_bits_address(reqMux_io_in_1_bits_address),
     .io_in_1_bits_data(reqMux_io_in_1_bits_data),
     .io_out_ready(reqMux_io_out_ready),
@@ -229,10 +235,12 @@ module TLXbar(
   assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 192:58]
   assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 195:58]
   assign reqMux_io_in_0_bits_opcode = io_masterFace_in_0_bits_opcode; // @[Bus.scala 195:58]
+  assign reqMux_io_in_0_bits_size = io_masterFace_in_0_bits_size; // @[Bus.scala 195:58]
   assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 195:58]
   assign reqMux_io_in_0_bits_data = io_masterFace_in_0_bits_data; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 195:58]
+  assign reqMux_io_in_1_bits_size = io_masterFace_in_1_bits_size; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 195:58]
   assign reqMux_io_out_ready = buf__io_enq_ready; // @[Bus.scala 201:16]
@@ -366,7 +374,7 @@ initial begin
   _RAND_1 = {1{`RANDOM}};
   s1_req_opcode = _RAND_1[2:0];
   _RAND_2 = {1{`RANDOM}};
-  s1_req_size = _RAND_2[3:0];
+  s1_req_size = _RAND_2[31:0];
   _RAND_3 = {1{`RANDOM}};
   s1_req_source = _RAND_3[0:0];
   _RAND_4 = {1{`RANDOM}};
@@ -384,7 +392,7 @@ initial begin
   _RAND_10 = {1{`RANDOM}};
   s2_beatCounter_value = _RAND_10[3:0];
   _RAND_11 = {1{`RANDOM}};
-  s2_beatSize = _RAND_11[1:0];
+  s2_beatSize = _RAND_11[29:0];
   _RAND_12 = {1{`RANDOM}};
   s1_slaveRecvHold_holdReg = _RAND_12[0:0];
   _RAND_13 = {1{`RANDOM}};

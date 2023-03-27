@@ -1,13 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Mon Mar 27 09:40:17 2023
+[*] Mon Mar 27 16:01:16 2023
 [*]
-[dumpfile] "(null)"
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-27@23:59:07_0.vcd"
+[dumpfile_mtime] "Mon Mar 27 15:59:13 2023"
+[dumpfile_size] 105004688
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 74417
-[size] 1920 1009
+[timestart] 199600
+[size] 2560 1369
 [pos] 8 31
-*-8.000000 75081 75590 75790 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-17.000000 834670 54590 55390 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -15,14 +17,14 @@
 [treeopen] TOP.top_tb.core_inst.dec.
 [treeopen] TOP.top_tb.core_inst.exe.
 [treeopen] TOP.top_tb.core_inst.ife.
+[treeopen] TOP.top_tb.core_inst.ife.icache.
 [treeopen] TOP.top_tb.core_inst.mem.
 [treeopen] TOP.top_tb.core_inst.mem.lsu.
-[treeopen] TOP.top_tb.core_inst.ram.
 [treeopen] TOP.top_tb.core_inst.wb.
 [sst_width] 333
 [signals_width] 486
 [sst_expanded] 1
-[sst_vpaned_height] 459
+[sst_vpaned_height] 655
 @800200
 -ife
 @28
@@ -58,7 +60,6 @@ TOP.top_tb.core_inst.ife.hasBranch
 -
 @28
 TOP.top_tb.core_inst.ife.io_in_start
-TOP.top_tb.core_inst.ife.stall
 TOP.top_tb.core_inst.ife.firstFire
 @200
 -
@@ -69,39 +70,59 @@ TOP.top_tb.core_inst.ife.icache_io_read_req_ready
 TOP.top_tb.core_inst.ife.icache_io_read_req_valid
 @200
 -
-@28
-TOP.top_tb.core_inst.ife.instValid
-TOP.top_tb.core_inst.ife.hasBranch_1
-@200
--
-@28
-TOP.top_tb.core_inst.ife.instValid
-@200
--
-@28
-TOP.top_tb.core_inst.ife.io_excp_valid
-TOP.top_tb.core_inst.ife.io_excp_bits_isMret
 @22
-TOP.top_tb.core_inst.ife.io_mepc[31:0]
+TOP.top_tb.core_inst.ife.icache.io_read_resp_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.ife.icache.io_read_resp_ready
+TOP.top_tb.core_inst.ife.icache.io_read_resp_valid
 @200
 -
 @28
-TOP.top_tb.core_inst.ife.io_in_start
+TOP.top_tb.core_inst.ife.icache.loadPipe.s0_fire
+@22
+TOP.top_tb.core_inst.ife.icache.loadPipe.s1_rAddr[31:0]
+TOP.top_tb.core_inst.ife.icache.loadPipe.s0_reqReg_addr[31:0]
+TOP.top_tb.core_inst.ife.icache.loadPipe.s1_loadResp_bits_data[31:0]
 @200
--
 -
 @22
-TOP.top_tb.core_inst.ife.pcNext[31:0]
-TOP.top_tb.core_inst.ife.pcReg[31:0]
+TOP.top_tb.core_inst.ife.io_tlbus_req_bits_address[31:0]
 @28
-TOP.top_tb.core_inst.ife.preFetchInst
+TOP.top_tb.core_inst.ife.io_tlbus_req_ready
+TOP.top_tb.core_inst.ife.io_tlbus_req_valid
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.loadPipe.s1_chosenWayOH[3:0]
+@28
+TOP.top_tb.core_inst.ife.icache.directory.hasInvalidWay
+@22
+TOP.top_tb.core_inst.ife.icache.directory.replaceWay[3:0]
 @200
 -
 @28
-TOP.top_tb.core_inst.ife.updatePC
+TOP.top_tb.core_inst.ife.icache.directory.invalidWayVec_0
+TOP.top_tb.core_inst.ife.icache.directory.invalidWayVec_1
+@29
+TOP.top_tb.core_inst.ife.icache.directory.invalidWayVec_2
+@28
+TOP.top_tb.core_inst.ife.icache.directory.invalidWayVec_3
 @200
 -
+@22
+TOP.top_tb.core_inst.ife.icache.directory.rSet[6:0]
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.io_tlbus_resp_bits_data[31:0]
 @28
+TOP.top_tb.core_inst.ife.io_tlbus_resp_bits_opcode[2:0]
+TOP.top_tb.core_inst.ife.io_tlbus_resp_valid
+@200
+-
+-
+@28
+TOP.top_tb.core_inst.ife.io_out_bits_instState_commit
 TOP.top_tb.core_inst.ife.io_out_valid
 TOP.top_tb.core_inst.ife.io_out_ready
 @1000200
@@ -149,7 +170,7 @@ TOP.top_tb.core_inst.dec.io_hazard_in_stall
 TOP.top_tb.core_inst.dec.io_out_bits_aluIn2IsReg
 @200
 -
-@29
+@28
 TOP.top_tb.core_inst.dec.immGen_io_immSign
 @22
 TOP.top_tb.core_inst.dec.immGen_io_imm[31:0]
@@ -298,46 +319,6 @@ TOP.top_tb.core_inst.mem.lsu.s1_ready
 @200
 -
 @22
-TOP.top_tb.core_inst.mem.lsu_io_req_bits_addr[31:0]
-@28
-TOP.top_tb.core_inst.mem.lsu_io_req_ready
-@200
--
-@22
-TOP.top_tb.core_inst.mem.io_hazard_rd[4:0]
-TOP.top_tb.core_inst.mem.io_hazard_rdVal[31:0]
-@200
--
-@28
-TOP.top_tb.core_inst.mem.io_excp_bits_isMret
-TOP.top_tb.core_inst.mem.io_excp_valid
-@200
--
--
-@28
-TOP.top_tb.core_inst.mem.lsu.wen
-TOP.top_tb.core_inst.mem.lsu.en
-@22
-TOP.top_tb.core_inst.mem.lsu.io_req_bits_lsuOp[4:0]
-TOP.top_tb.core_inst.mem.lsu.s0_reqReg_lsuOp[4:0]
-@200
--
--
-@28
-TOP.top_tb.core_inst.mem.lsu.io_cache_write_req_ready
-TOP.top_tb.core_inst.mem.lsu.io_cache_write_req_valid
-@200
--
-@28
-TOP.top_tb.core_inst.mem.lsu.io_cache_write_resp_ready
-TOP.top_tb.core_inst.mem.lsu.io_cache_write_resp_valid
-@200
--
-@28
-TOP.top_tb.core_inst.mem.lsu.io_resp_valid
-@200
--
-@22
 TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_bits_addr[31:0]
 @28
 TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_ready
@@ -345,11 +326,20 @@ TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_valid
 @200
 -
 @22
+TOP.top_tb.core_inst.mem.lsu.io_cache_read_resp_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.mem.lsu.io_cache_read_resp_ready
+TOP.top_tb.core_inst.mem.lsu.io_cache_read_resp_valid
+@200
+-
+@22
 TOP.top_tb.core_inst.mem.dcache.io_tlbus_req_bits_address[31:0]
 @28
+TOP.top_tb.core_inst.mem.dcache.io_tlbus_req_bits_opcode[2:0]
 TOP.top_tb.core_inst.mem.dcache.io_tlbus_req_ready
 TOP.top_tb.core_inst.mem.dcache.io_tlbus_req_valid
 @200
+-
 -
 @22
 TOP.top_tb.core_inst.mem.dcache.io_tlbus_resp_bits_data[31:0]
@@ -359,66 +349,45 @@ TOP.top_tb.core_inst.mem.dcache.io_tlbus_resp_ready
 TOP.top_tb.core_inst.mem.dcache.io_tlbus_resp_valid
 @200
 -
-@22
-TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_bits_addr[31:0]
-@28
-TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_ready
-TOP.top_tb.core_inst.mem.lsu.io_cache_read_req_valid
-@200
 -
 @22
-TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-@200
--
--
+TOP.top_tb.core_inst.rom.io_req_bits_address[31:0]
+TOP.top_tb.core_inst.rom.io_req_bits_data[31:0]
 @28
-TOP.top_tb.core_inst.mem.lsu.s1_ready
-TOP.top_tb.core_inst.mem.lsu.en
-TOP.top_tb.core_inst.mem.lsu.io_resp_valid
+TOP.top_tb.core_inst.rom.io_req_ready
+TOP.top_tb.core_inst.rom.io_req_valid
 @200
 -
 @28
-TOP.top_tb.core_inst.mem.lsu.s1_offset[1:0]
-TOP.top_tb.core_inst.mem.lsu.s1_signed
-TOP.top_tb.core_inst.mem.lsu.s1_width[1:0]
-@c00022
-TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
+TOP.top_tb.core_inst.xbar.io_slaveFace_in_0_ready
+TOP.top_tb.core_inst.xbar.io_slaveFace_in_0_valid
+@200
+-
 @28
-(0)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(1)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(2)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(3)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(4)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(5)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(6)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(7)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(8)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(9)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(10)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(11)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(12)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(13)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(14)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(15)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(16)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(17)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(18)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(19)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(20)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(21)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(22)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(23)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(24)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(25)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(26)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(27)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(28)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(29)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(30)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-(31)TOP.top_tb.core_inst.mem.lsu.io_resp_bits_rdata[31:0]
-@1401200
--group_end
+TOP.top_tb.core_inst.xbar.io_slaveFace_out_0_ready
+TOP.top_tb.core_inst.xbar.io_slaveFace_out_0_valid
+@200
+-
 @28
+TOP.top_tb.core_inst.xbar.slaveMux_io_out_ready
+TOP.top_tb.core_inst.xbar.slaveMux_io_out_valid
+@200
+-
+@28
+TOP.top_tb.core_inst.xbar.s2_masterRecv
+@200
+-
+@22
+TOP.top_tb.core_inst.rom.io_resp_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.rom.io_resp_bits_opcode[2:0]
+TOP.top_tb.core_inst.rom.io_resp_ready
+TOP.top_tb.core_inst.rom.io_resp_valid
+@200
+-
+@28
+TOP.top_tb.core_inst.mem.io_excp_bits_isMret
+TOP.top_tb.core_inst.mem.io_excp_valid
 TOP.top_tb.core_inst.mem.io_out_valid
 TOP.top_tb.core_inst.mem.io_out_ready
 @1000200
