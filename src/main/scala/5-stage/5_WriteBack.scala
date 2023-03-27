@@ -40,10 +40,11 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     val io = IO(new WritebackIO)
     
     val wbRam = WireInit(false.B)
-    val stall = io.ctrl.stall || (!io.lsuOK && wbRam)
+    val stall = io.ctrl.stall //|| (!io.lsuOK && wbRam)
     val flush = io.ctrl.flush
 
-    io.in.ready := !stall
+    // io.in.ready := !stall 
+    io.in.ready := !stall && io.in.valid
     val writebackLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(writebackLatch) {

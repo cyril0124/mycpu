@@ -12,7 +12,7 @@ import mycpu.common.consts.ExceptCause._
 import mycpu.common.consts.ExceptType._
 import mycpu.common.consts.CSR._
 import mycpu.common.consts.CsrOp
-import mycpu.common.consts.LsuOp
+import mycpu.common.consts.LsuOp._
 
 class MemHazardBundle()(implicit val p: Parameters) extends MyBundle{
     val rd = UInt(5.W)
@@ -39,9 +39,10 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
     val in = Flipped(DecoupledIO(new ExecuteOut))
     val out = DecoupledIO(new MemOut)
     
-    val ram = new TLMasterBusUL
+    // val ram = new TLMasterBusUL
     val lsuData = Output(UInt(xlen.W))
     val lsuOK = Output(Bool())
+    val tlbus = new TLMasterBusUL
 
     val hazard = Output(new MemHazardBundle)
     val ctrl = Input(new PipelineCtrlBundle)
@@ -50,33 +51,23 @@ class MemIO()(implicit val p: Parameters) extends MyBundle{
     val csrBusy = Input(Bool())
     val csrMode = Input(UInt(CSR_MODE_WIDTH.W))
 
-    // val tlbus = new TLMasterBusUL
 }
 
 class Mem()(implicit val p: Parameters) extends MyModule{
     val io = IO(new MemIO)
 
     val hasTrap = WireInit(false.B)
-    // val ramReady = WireInit(false.B)
-    // val needRam = WireInit(false.B)
-    // dontTouch(ramReady)
-    // dontTouch(needRam)
-
     val lsuReady = WireInit(true.B)
-
+    val validLsuOp = WireInit(false.B) 
     
-    // val stall = io.ctrl.stall || (!ramReady && needRam) || !lsuReady || !io.out.ready
-    val stall = io.ctrl.stall || !lsuReady || !io.out.ready
+    // val stall = io.ctrl.stall || !lsuReady 
+    val stall = io.ctrl.stall || !lsuReady || (validLsuOp && !io.lsuOK)
     val flush = io.ctrl.flush
 
-    io.in.ready := !stall
+    // io.in.ready := !stall
+    io.in.ready := !stall && io.in.valid && io.out.fire
     val memoryLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
-    // when(memoryLatch) {
-    //     stageReg := io.in.bits
-    // }.elsewhen(!stall){
-    //     stageReg := 0.U.asTypeOf(io.in.bits)
-    // }
     when(memoryLatch) {
         stageReg := io.in.bits
     }.elsewhen(io.out.fire){
@@ -138,21 +129,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     // dataMem.io.wmask := "b1111".U
     // dataMem.io.wdata := WriteMask(stageReg.data2, stageReg.memType, xlen)
 
-    val lsu = Module(new LSU())
-    lsu.io <> DontCare
-    lsuReady := lsu.io.req.ready
-    lsu.io.req.valid        := io.in.valid
-    lsu.io.req.bits.addr    := io.in.bits.aluOut
-    lsu.io.req.bits.wdata   := io.in.bits.data2
-    lsu.io.req.bits.hasTrap := hasTrap // ! NOT use 
-    lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
-    io.lsuOK                := lsu.io.resp.valid
-    io.lsuData              := lsu.io.resp.bits.rdata
-    
-    io.ram <> lsu.io.ram
-    // ramReady := io.ram.req.ready
-
-    // val lsu = Module(new LSU_1())
+    // val lsu = Module(new LSU())
     // lsu.io <> DontCare
     // lsuReady := lsu.io.req.ready
     // lsu.io.req.valid        := io.in.valid
@@ -162,11 +139,33 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     // lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
     // io.lsuOK                := lsu.io.resp.valid
     // io.lsuData              := lsu.io.resp.bits.rdata
+    
+    // io.ram <> lsu.io.ram
+    // // ramReady := io.ram.req.ready
 
-    // val dcache = Module(new DCache)
-    // lsu.io.cache.read <> dcache.io.read
-    // lsu.io.cache.write <> dcache.io.write
-    // dcache.io.tlbus <> io.tlbus
+    val lsu = Module(new LSU_1())
+    lsu.io <> DontCare
+    lsuReady := lsu.io.req.ready
+    validLsuOp := !(stageReg.lsuOp === LSU_NOP || stageReg.lsuOp === LSU_FENC)
+    // lsu.io.req.valid        := io.in.valid
+    // lsu.io.req.bits.addr    := io.in.bits.aluOut 
+    // lsu.io.req.bits.wdata   := io.in.bits.data2
+    // lsu.io.req.bits.hasTrap := hasTrap // ! NOT use 
+    // lsu.io.req.bits.lsuOp   := io.in.bits.lsuOp
+    val lsuSend = RegEnable(true.B, false.B, lsu.io.req.fire)
+    when(io.out.fire) { lsuSend := false.B }
+    lsu.io.req.valid        := stageReg.instState.commit && validLsuOp && !lsuSend
+    lsu.io.req.bits.addr    := stageReg.aluOut 
+    lsu.io.req.bits.wdata   := stageReg.data2
+    lsu.io.req.bits.hasTrap := hasTrap // ! NOT use 
+    lsu.io.req.bits.lsuOp   := stageReg.lsuOp
+    io.lsuOK                := lsu.io.resp.valid
+    io.lsuData              := lsu.io.resp.bits.rdata
+
+    val dcache = Module(new DCache)
+    lsu.io.cache.read <> dcache.io.read
+    lsu.io.cache.write <> dcache.io.write
+    dcache.io.tlbus <> io.tlbus
 
 
 
@@ -175,12 +174,13 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     io.out.bits.aluOut      := stageReg.aluOut
     io.out.bits.pcNext4     := stageReg.pcNext4
     io.out.bits.instState   <> stageReg.instState
+    // io.out.bits.instState.commit := Mux(io.ctrl.flush, false.B, stageReg.instState.commit)
 
     // hazard control
     val inst                 = stageReg.instState.inst
     io.hazard.rd            := InstField(inst, "rd")
     io.hazard.regWrEn       := stageReg.regWrEn
-    io.hazard.rdVal         :=  stageReg.aluOut
+    io.hazard.rdVal         := stageReg.aluOut
 
     io.out.valid            := !stall
 }

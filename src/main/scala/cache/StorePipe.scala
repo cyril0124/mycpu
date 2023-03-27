@@ -21,36 +21,34 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     // io <> DontCare
 
 
-    // accept store request 
-    // read directory 
-    // read dataBank
-    // 
+    val s0_valid = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool())
+    val s2_valid, s2_ready = Wire(Bool())
+
     // --------------------------------------------------------------------------------
     // stage 0
     // -------------------------------------------------------------------------------- 
     // send Get(store miss clean)
     // send PutFullData(store miss dirty)
     // write databank & directory (store hit)
-    
-    val s0_ready = RegInit(true.B)
+    val s0_full = RegInit(false.B)
     val s0_latch = io.store.req.fire 
+    val s0_fire = s0_valid && s1_ready
     val s0_reqReg = RegEnable(io.store.req.bits, s0_latch)
-    val s0_reqValidReg = RegEnable(true.B, false.B, s0_latch)
-    val s0_reqValid = Mux(s0_latch, true.B, s0_reqValidReg)
     val s0_wAddr = Mux(s0_latch, io.store.req.bits.addr, s0_reqReg.addr)
     val s0_wSet = addrToDCacheSet(s0_wAddr)
     val s0_dataBlockSelOH = addrToDCacheBlockOH(s0_wAddr)
-    when(s0_latch) { 
-        s0_ready := false.B
-    }
 
-    io.store.req.ready := s0_ready && !s0_reqValidReg
+
+    io.store.req.ready := !s0_full //|| s0_fire
+    when(s0_latch) { s0_full := true.B }
+    .elsewhen(s0_full && s0_fire) { s0_full := false.B }
 
     // read directory
-    io.dir.read.req.valid := s0_reqValid
+    io.dir.read.req.valid := s0_latch || s0_full
     io.dir.read.req.bits.addr := s0_wAddr
     // read databank
-    io.dataBank.read.req.valid := s0_reqValid
+    io.dataBank.read.req.valid := s0_latch || s0_full
     dontTouch(io.dataBank.read.req.valid)
     io.dataBank.read.req.bits.set := addrToDCacheSet(s0_wAddr)
     io.dataBank.read.req.bits.blockSelOH := addrToDCacheBlockOH(s0_wAddr)
@@ -83,7 +81,11 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
         s0_beatCounter.reset()
     }
 
-    s0_tlbusReq.valid := s0_reqValidReg && (storeMissClean && !s0_putAllBeat || storeMissDirty && !s0_putAllBeat)
+    when(s0_fire) {
+        s0_putAllBeat := false.B
+    }
+
+    s0_tlbusReq.valid := s0_full && (storeMissClean && !s0_putAllBeat || storeMissDirty && !s0_putAllBeat)
     s0_tlbusReq.bits := 0.U.asTypeOf(io.tlbus.req.bits)
     s0_tlbusReq.bits.opcode := Mux(storeMissClean, Get, PutFullData)
     val blockAddr = Cat(s0_wAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
@@ -96,11 +98,10 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s0_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s0_tlbusReq.bits.corrupt := false.B
 
-    
-    val s0_valid =  s0_reqValidReg && io.dir.read.resp.fire &&
-                    (storeHit ||
-                    storeMissClean && s0_tlbusReq.fire ||
-                    storeMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
+    s0_valid :=  s0_full && io.dir.read.resp.fire &&
+                        (storeHit ||
+                        storeMissClean && s0_tlbusReq.fire ||
+                        storeMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
 
 
     // --------------------------------------------------------------------------------
@@ -110,22 +111,21 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     // write refill data (store miss clean) (store miss dirty)
     // writeback databank & directory(store hit)
     // send store hit resp (store hit)
-    val s1_ready = RegInit(true.B)
+    val s1_full = RegInit(false.B)
     val s1_latch = s0_valid && s1_ready
+    val s1_fire = s1_valid && s2_ready
     val s1_reqReg = RegEnable(s0_reqReg, s1_latch)
     val s1_wAddr = s1_reqReg.addr
     val s1_wSet = addrToDCacheSet(s1_wAddr)
     val s1_dataBlockSelOH = addrToDCacheBlockOH(s1_wAddr)
     val s1_chosenWayOH = RegEnable(s0_chosenWayOH, s1_latch)
-    val s1_storeHit = RegEnable(storeHit, s1_latch)
-    val s1_storeMissClean = RegEnable(storeMissClean, s1_latch)
-    val s1_storeMissDirty = RegEnable(storeMissDirty, s1_latch)
-    when(s1_latch) {
-        s0_ready := true.B
-        s1_ready := false.B
-        s0_reqValidReg := false.B
-        s0_putAllBeat := false.B
-    }
+    val s1_storeHit = RegEnable(storeHit, s1_latch) && s1_full
+    val s1_storeMissClean = RegEnable(storeMissClean, s1_latch) && s1_full
+    val s1_storeMissDirty = RegEnable(storeMissDirty, s1_latch) && s1_full
+
+    s1_ready := !s1_full || s1_fire
+    when(s1_latch) { s1_full := true.B } 
+    .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
     // send store resp (store hit)
     val s1_storeResp = Wire(chiselTypeOf(io.store.resp))
@@ -188,35 +188,29 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s1_dataBankWrReq.bits.mask := Mux(s1_writeRefill, Fill(dcacheBlockBytes, 1.U), s1_reqReg.mask)  // ! miss and refill data should replace whole cache line
     s1_dataBankWrReq.bits.data := Mux(s1_writeRefill, s1_refillMessage.data, s1_reqReg.data)
 
-
-    val s1_valid = s1_storeHit && s1_storeResp.fire ||
+    s1_valid := s1_storeHit && s1_storeResp.fire ||
                     (s1_storeMissClean || s1_storeMissDirty) && s1_refillFire && s1_lastBeat
-
     
     // --------------------------------------------------------------------------------
     // stage 2
     // --------------------------------------------------------------------------------
     // writeback databank & directory (store miss clean) (store miss diry)
     // send store resp (store miss clean) (store miss diry)
-    val s2_ready = RegInit(true.B)
+    val s2_full = RegInit(false.B)
     val s2_latch = s1_valid && s2_ready
+    val s2_fire = s2_valid // stage2 is final stage
     val s2_reqReg = RegEnable(s1_reqReg, s2_latch)
     val s2_wAddr = s1_reqReg.addr
     val s2_wSet = addrToDCacheSet(s1_wAddr)
     val s2_dataBlockSelOH = addrToDCacheBlockOH(s2_wAddr)
     val s2_chosenWayOH = RegEnable(s1_chosenWayOH, s2_latch)
-    val s2_storeHit = RegEnable(s1_storeHit, s2_latch)
-    val s2_storeMissClean = RegEnable(s1_storeMissClean, s2_latch)
-    val s2_storeMissDirty = RegEnable(s1_storeMissDirty, s2_latch)
-    when(s2_latch) {
-        s1_ready := true.B
-        s1_sendGet := false.B
+    val s2_storeHit = RegEnable(s1_storeHit, s2_latch) && s2_full
+    val s2_storeMissClean = RegEnable(s1_storeMissClean, s2_latch) && s2_full
+    val s2_storeMissDirty = RegEnable(s1_storeMissDirty, s2_latch) && s2_full
 
-        s1_storeHit := false.B
-        s1_storeMissClean := false.B
-        s1_storeMissDirty := false.B
-    }
-
+    s2_ready := !s2_full || s2_fire
+    when(s2_latch) { s2_full := true.B }
+    .elsewhen(s2_full && s2_fire) { s2_full := false.B }
 
     // send store resp (store miss clean) (store miss diry)
     val s2_storeResp = Wire(chiselTypeOf(io.store.resp))
@@ -234,9 +228,6 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     val s2_metaArrayWrData = Wire(new DCacheMeta)
     s2_metaArrayWrData.valid := true.B
     s2_metaArrayWrData.dirty := true.B 
-    // val s2_metaWrData = WireInit(VecInit.tabulate(dcacheWays)(_ => 0.U((new DCacheMeta).getWidth.W)))
-    // for(i <- 0 until dcacheWays) { s2_metaWrData(i) := Mux(s2_chosenWayOH(i), s2_metaArrayWrData.asUInt, 0.U) }
-    // s2_dirWrReq.bits.meta := s2_metaWrData
     s2_dirWrReq.bits.meta := s2_metaArrayWrData.asUInt
 
     // write databank (store miss clean) (store miss dirty)
@@ -248,16 +239,8 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s2_dataBankWrReq.bits.mask := s2_reqReg.mask
     s2_dataBankWrReq.bits.data := s2_reqReg.data
 
+    s2_valid := s2_storeHit || ((s2_storeMissClean || s2_storeMissDirty) && s2_dataBankWrReq.fire && s2_dirWrReq.fire && s2_storeResp.fire)
 
-    val s2_valid = s2_storeHit || ((s2_storeMissClean || s2_storeMissDirty) && s2_dataBankWrReq.fire && s2_dirWrReq.fire && s2_storeResp.fire)
-
-    when(s2_valid) {
-        s2_ready := true.B
-
-        s2_storeHit := false.B
-        s2_storeMissClean := false.B
-        s2_storeMissDirty := false.B
-    }
 
 
     val tlbusReqArb = Module(new Arbiter(chiselTypeOf(io.tlbus.req.bits), 2))

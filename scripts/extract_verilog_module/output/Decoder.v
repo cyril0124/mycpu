@@ -371,8 +371,6 @@ module Decoder(
     _decodeSigs_T_458)); // @[Lookup.scala 34:39]
   wire  _decodeSigs_T_466 = _decodeSigs_T_13 ? 1'h0 : _decodeSigs_T_15 | (_decodeSigs_T_17 | (_decodeSigs_T_19 |
     _decodeSigs_T_462)); // @[Lookup.scala 34:39]
-  wire  _decodeSigs_T_468 = _decodeSigs_T_9 ? 1'h0 : _decodeSigs_T_11 | _decodeSigs_T_466; // @[Lookup.scala 34:39]
-  wire  _decodeSigs_T_469 = _decodeSigs_T_7 ? 1'h0 : _decodeSigs_T_468; // @[Lookup.scala 34:39]
   wire  _decodeSigs_T_478 = _decodeSigs_T_83 ? 1'h0 : _decodeSigs_T_85 | (_decodeSigs_T_87 | (_decodeSigs_T_89 | (
     _decodeSigs_T_91 | (_decodeSigs_T_93 | _decodeSigs_T_95)))); // @[Lookup.scala 34:39]
   wire  _decodeSigs_T_479 = _decodeSigs_T_81 ? 1'h0 : _decodeSigs_T_478; // @[Lookup.scala 34:39]
@@ -490,7 +488,8 @@ module Decoder(
   assign io_out_aluSrc1 = _decodeSigs_T_1 ? 4'h1 : _decodeSigs_T_330; // @[Lookup.scala 34:39]
   assign io_out_aluSrc2 = _decodeSigs_T_1 ? 4'h3 : _decodeSigs_T_377; // @[Lookup.scala 34:39]
   assign io_out_immSrc = decodeSigs_6[1:0]; // @[Decoder.scala 225:19]
-  assign io_out_immSign = _decodeSigs_T_1 | (_decodeSigs_T_3 | (_decodeSigs_T_5 | _decodeSigs_T_469)); // @[Lookup.scala 34:39]
+  assign io_out_immSign = _decodeSigs_T_1 | (_decodeSigs_T_3 | (_decodeSigs_T_5 | (_decodeSigs_T_7 | (_decodeSigs_T_9 |
+    (_decodeSigs_T_11 | _decodeSigs_T_466))))); // @[Lookup.scala 34:39]
   assign io_out_regWrEn = _decodeSigs_T_1 | (_decodeSigs_T_3 | (_decodeSigs_T_5 | (_decodeSigs_T_7 | (_decodeSigs_T_9 |
     (_decodeSigs_T_11 | (_decodeSigs_T_13 | (_decodeSigs_T_15 | (_decodeSigs_T_17 | (_decodeSigs_T_19 | (
     _decodeSigs_T_21 | (_decodeSigs_T_23 | (_decodeSigs_T_25 | (_decodeSigs_T_27 | (_decodeSigs_T_29 | _decodeSigs_T_504

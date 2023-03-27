@@ -21,8 +21,8 @@ class SingleROM()(implicit val p: Parameters) extends MyModule{
         busy := true.B
     }
 
-    val rom = SyncReadMem(romSize, UInt(xlen.W))
-    loadMemoryFromFile(rom, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Imem.hex")
+    val mem = SyncReadMem(romSize, UInt(xlen.W))
+    loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Imem.hex")
 
     val ren = req.opcode === BusReq.Get && (io.req.fire || busy)
     val wen = io.req.fire && req.opcode === BusReq.PutFullData
@@ -37,10 +37,10 @@ class SingleROM()(implicit val p: Parameters) extends MyModule{
 
     val addrOff = beatCounter.value << log2Ceil(xlen / 8)
     val rdAddr = (req.address + addrOff) >> 2 // divide by 4
-    val rdata_1 = rom.read(rdAddr)
+    val rdata_1 = mem.read(rdAddr)
     val rdata = Mux(ren, rdata_1, RegEnable(rdata_1, RegNext(ren)))
     when(wen) {
-        rom.write(req.address, req.data)
+        mem.write(req.address, req.data)
     }
     
     io.resp.valid := busy && (req.opcode === BusReq.Get || req.opcode === BusReq.PutFullData)
@@ -68,8 +68,8 @@ class SingleRAM()(implicit val p: Parameters) extends MyModule{
         busy := true.B
     }
 
-    val rom = SyncReadMem(romSize, UInt(xlen.W))
-    loadMemoryFromFile(rom, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Dmem.hex")
+    val mem = SyncReadMem(romSize, UInt(xlen.W))
+    loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Dmem.hex")
 
     val ren = req.opcode === BusReq.Get && (io.req.fire || busy)
     val wen = io.req.fire && req.opcode === BusReq.PutFullData
@@ -84,10 +84,10 @@ class SingleRAM()(implicit val p: Parameters) extends MyModule{
 
     val addrOff = beatCounter.value << log2Ceil(xlen / 8)
     val rdAddr = (req.address + addrOff) >> 2 // divide by 4
-    val rdata_1 = rom.read(rdAddr - memRamBegin.U)
+    val rdata_1 = mem.read(rdAddr - memRamBegin.U)
     val rdata = Mux(ren, rdata_1, RegEnable(rdata_1, RegNext(ren)))
     when(wen) {
-        rom.write(req.address, req.data)
+        mem.write(req.address, req.data)
     }
     
     io.resp.valid := busy && (req.opcode === BusReq.Get || req.opcode === BusReq.PutFullData)
@@ -95,7 +95,7 @@ class SingleRAM()(implicit val p: Parameters) extends MyModule{
     io.resp.bits.data := rdata
     io.resp.bits.opcode := Mux(req.opcode === BusReq.Get, BusReq.AccessAckData, BusReq.AccessAck)
     io.resp.bits.source := req.source
-
+    
     when(io.resp.fire && (req.opcode === BusReq.PutFullData || req.opcode === BusReq.Get && lastBeat)) {
         busy := false.B
         beatCounter.reset()

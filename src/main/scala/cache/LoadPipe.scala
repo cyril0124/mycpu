@@ -18,6 +18,10 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
         val dataBank = Flipped(new DataBankArrayIO) 
         val tlbus = new TLMasterBusUL
     })
+
+    val s0_valid = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool())
+
     // --------------------------------------------------------------------------------
     // stage 0
     // --------------------------------------------------------------------------------
@@ -26,26 +30,23 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     // read dataBank 
     // send Get(load miss not dirty)
     
-    val s0_ready = RegInit(true.B)
+    val s0_full = RegInit(false.B)
     val s0_latch = io.load.req.fire 
+    val s0_fire = s0_valid && s1_ready
     val s0_reqReg = RegEnable(io.load.req.bits, s0_latch)
-    val s0_reqValidReg = RegEnable(true.B, false.B, s0_latch)
-    val s0_reqValid = Mux(s0_latch, true.B, s0_reqValidReg)
     val s0_rAddr = Mux(s0_latch, io.load.req.bits.addr, s0_reqReg.addr)
     val s0_rSet = addrToDCacheSet(s0_rAddr)
     val s0_dataBlockSelOH = addrToDCacheBlockOH(s0_rAddr)
-    val s1_ready = RegInit(true.B)
-    when(s0_latch) { 
-        s0_ready := false.B
-    }
 
-    io.load.req.ready := s0_ready && !s0_reqValidReg
+    io.load.req.ready := !s0_full //|| s0_fire
+    when(s0_latch) { s0_full := true.B }
+    .elsewhen(s0_full && s0_fire) { s0_full := false.B }
 
     // read directory
-    io.dir.read.req.valid := s0_reqValid
+    io.dir.read.req.valid := s0_latch || s0_full
     io.dir.read.req.bits.addr := s0_rAddr
     // read databank
-    io.dataBank.read.req.valid := s0_reqValid
+    io.dataBank.read.req.valid := s0_latch || s0_full
     dontTouch(io.dataBank.read.req.valid)
     io.dataBank.read.req.bits.set := addrToDCacheSet(s0_rAddr)
     io.dataBank.read.req.bits.blockSelOH := addrToDCacheBlockOH(s0_rAddr)
@@ -70,7 +71,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     val s0_loadResp = Wire(chiselTypeOf(io.load.resp))
     dontTouch(s0_loadResp)
     s0_loadResp := 0.U.asTypeOf(io.load.resp)
-    s0_loadResp.valid := loadHit && s1_ready && s0_reqValidReg
+    s0_loadResp.valid := loadHit && s1_ready && s0_full 
     s0_loadResp.bits.data := s0_rdData
     s0_loadResp.bits.stageID := 0.U
 
@@ -87,8 +88,11 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     }.elsewhen(io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) {
         s0_beatCounter.reset()
     }
+    when(s0_fire) {
+        s0_putAllBeat := false.B
+    }
 
-    s0_tlbusReq.valid := s0_reqValidReg && (loadMissClean && !s0_putAllBeat || loadMissDirty && !s0_putAllBeat)
+    s0_tlbusReq.valid := s0_full && (loadMissClean && !s0_putAllBeat || loadMissDirty && !s0_putAllBeat)
     s0_tlbusReq.bits := 0.U.asTypeOf(io.tlbus.req.bits)
     s0_tlbusReq.bits.opcode := Mux(loadMissClean, Get, PutFullData)
     val blockAddr = Cat(s0_rAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
@@ -101,34 +105,29 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     s0_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s0_tlbusReq.bits.corrupt := false.B
 
-    
-    val s0_valid =  s0_reqValidReg && io.dir.read.resp.fire &&
-                    (loadHit && io.load.resp.fire && io.load.resp.bits.stageID === 0.U ||
-                    loadMissClean && s0_tlbusReq.fire ||
-                    loadMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
+    s0_valid :=  s0_full && io.dir.read.resp.fire &&
+                (loadHit && io.load.resp.fire && io.load.resp.bits.stageID === 0.U ||
+                loadMissClean && s0_tlbusReq.fire ||
+                loadMissDirty && io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === AccessAck) // watting for PutFullData resp
 
     // --------------------------------------------------------------------------------
     // stage 1
     // --------------------------------------------------------------------------------
     // write refill data
-    
+    val s1_full = RegInit(false.B)
     val s1_latch = s0_valid && s1_ready
+    val s1_fire = s1_valid // stage1 is final stage
     val s1_rAddr = RegEnable(s0_rAddr, s1_latch)
     val s1_rSet = addrToDCacheSet(s1_rAddr)
     val s1_chosenWayOH = RegEnable(s0_chosenWayOH, s1_latch)
-    val s1_loadHit = RegEnable(loadHit, s1_latch)
-    val s1_loadMissClean = RegEnable(loadMissClean, s1_latch)
-    val s1_loadMissDirty = RegEnable(loadMissDirty, s1_latch)
-    // val s1_isHit = RegEnable(s0_isHit, s1_latch)
+    val s1_loadHit = RegEnable(loadHit, s1_latch) && s1_full
+    val s1_loadMissClean = RegEnable(loadMissClean, s1_latch) && s1_full
+    val s1_loadMissDirty = RegEnable(loadMissDirty, s1_latch) && s1_full
     val s1_dataBlockSelOH = RegEnable(s0_dataBlockSelOH, s1_latch)
-    val s1_valid = WireInit(false.B)
-    when(s1_latch) {
-        s0_ready := true.B
-        s1_ready := false.B
-        s0_reqValidReg := false.B
-        s0_putAllBeat := false.B
-    }
 
+    s1_ready := !s1_full //|| s1_fire
+    when(s1_latch) { s1_full := true.B } 
+    .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
     // send Get for loadMissDirty
     val s1_tlbusReq = Wire(chiselTypeOf(io.tlbus.req))
@@ -205,17 +204,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     s1_valid := s1_loadMissClean && io.load.resp.fire && io.load.resp.bits.stageID === 1.U  ||
                 s1_loadMissDirty && io.load.resp.fire && io.load.resp.bits.stageID === 1.U ||
                 s1_loadHit
-    
-    
-    when(s1_valid) {
-        s1_ready := true.B
-        s1_sendGet := false.B
 
-        s1_loadHit := false.B
-        s1_loadMissClean := false.B
-        s1_loadMissDirty := false.B
-        // s1_refillLastFireHoldReg := false.B
-    }
 
 
     val loadRespArb = Module(new Arbiter(new CacheReadResp, 2))

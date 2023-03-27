@@ -71,18 +71,15 @@ class DecodeIO()(implicit val p: Parameters) extends MyBundle{
 class Decode()(implicit val p: Parameters) extends MyModule{
     val io = IO(new DecodeIO)
     
-    val stall = io.ctrl.stall || io.hazard.in.stall || !io.out.ready
+    // val stall = io.ctrl.stall || io.hazard.in.stall || !io.out.ready
+    val stall = io.ctrl.stall || io.hazard.in.stall
     val flush = io.ctrl.flush 
 
-    io.in.ready := !stall
+    // io.in.ready := !stall
+    io.in.ready := !stall && io.in.valid && io.out.fire
 
     val decodeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
-    // when(decodeLatch) {
-    //     stageReg := io.in.bits
-    // }.elsewhen(~stall){
-    //     stageReg := 0.U.asTypeOf(io.in.bits)
-    // }
     when(decodeLatch) {
         stageReg := io.in.bits
     }.elsewhen(io.out.fire){
@@ -175,6 +172,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     io.out.bits.imm         := imm
     io.out.bits.pcNext4     := stageReg.pcNext4
     io.out.bits.instState   <> stageReg.instState
+    io.out.bits.instState.commit := Mux(io.ctrl.flush, false.B, stageReg.instState.commit)
 
     // hazard detection
     io.hazard.out.rs1 := rs1

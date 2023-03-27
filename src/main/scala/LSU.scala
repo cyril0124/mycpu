@@ -9,6 +9,7 @@ import mycpu.util._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
 import BusMaster._
+import scala.tools.nsc.doc.base.comment.Bold
 
 object LsuDecode {
     // data width of load & store instructions
@@ -66,26 +67,27 @@ import LsuDecode._
 class LSU()(implicit val p: Parameters) extends MyModule {
     val io = IO(new LsuIO)
     
+    val s0_valid = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool())
+
     // --------------------------------------------------------------------------------
     // stage 0
     // --------------------------------------------------------------------------------
     // decode 
     // send Write data request (load)
     // send read data request (store)
-    val s0_ready = RegInit(true.B)
     val s0_latch = io.req.fire
+    val s0_full = RegInit(false.B)
+    val s0_fire = s0_valid && s1_ready
     val s0_en = Wire(Bool())
     val s0_reqReg = RegEnable(io.req.bits, s0_latch)
     val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
     val s0_offset = s0_req.addr(blockOffsetBits-1, 0)
-    val s0_valid = WireInit(false.B)
-    val s1_ready  = RegInit(true.B)
-    
-    io.req.ready := s0_ready
 
-    when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) {
-        s0_ready := false.B
-    }
+    io.req.ready := !s0_full //|| s0_fire // TODO:
+
+    when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC) ) { s0_full := true.B }
+    .elsewhen(s0_full && s0_fire) { s0_full := false.B}
 
     val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
         ListLookup(s0_req.lsuOp, default, table)
@@ -131,25 +133,25 @@ class LSU()(implicit val p: Parameters) extends MyModule {
         // TODO: consider xlen=64
     ))
 
-    s0_valid := io.ram.req.fire && !s0_ready
-    dontTouch(s0_valid)
+    s0_valid := Hold(io.ram.req.fire, io.ram.req.fire, s0_fire)
 
     // --------------------------------------------------------------------------------
     // stage 1
     // --------------------------------------------------------------------------------
     // read back data (load)
     // waitting for resp (store)
+    val s1_full = RegInit(false.B)
     val s1_latch  = s0_valid && s1_ready
     val s1_signed = RegEnable(signed, s1_latch)
     val s1_width  = RegEnable(width, s1_latch)
     val s1_offset = RegEnable(s0_offset, s1_latch)
-    // val s1_lsuOp  = RegEnable(s0_req.lsuOp, s1_latch)
-    when(s1_latch) {
-        s1_ready  := false.B
-        s0_ready := true.B
-    }
+    val s1_fire = s1_valid
 
-    // when(!s0_valid && io.ram.resp.fire) { s1_lsuOp := LSU_NOP }
+    
+    s1_ready := !s1_full || s1_fire
+
+    when(s1_latch) { s1_full := true.B }
+    .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
     val s1_respReg = RegEnable(io.ram.resp.bits, io.ram.resp.fire)
     val s1_resp = Mux(io.ram.resp.fire, io.ram.resp.bits, s1_respReg)
@@ -172,18 +174,8 @@ class LSU()(implicit val p: Parameters) extends MyModule {
                             // TODO: consider xlen=64 
                         ))
 
-    val s1_valid = io.ram.resp.fire
-    // io.resp.valid := (io.ram.resp.fire && s1_lsuOp =/= LSU_NOP && s1_lsuOp =/= LSU_FENC) || s1_lsuOp === LSU_NOP || s1_lsuOp === LSU_FENC
-    io.resp.valid := s1_valid
-    
-    when(s1_valid) {
-        s1_ready := true.B
-    //     s1_reqValid := false.B
-    }
-    
-    // when(io.ram.resp.fire) { 
-    //     s1_ready := true.B 
-    // }
+    s1_valid := io.ram.resp.fire
+    io.resp.valid := s1_fire
 }
 
 class LsuIO_1()(implicit val p: Parameters) extends MyBundle {
@@ -201,27 +193,35 @@ class LsuIO_1()(implicit val p: Parameters) extends MyBundle {
 
 class LSU_1()(implicit val p: Parameters) extends MyModule {
     val io = IO(new LsuIO_1)
-    
+
+    val s0_valid = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool())
+
     // --------------------------------------------------------------------------------
     // stage 0
     // --------------------------------------------------------------------------------
     // decode 
     // send Write data request (load)
     // send read data request (store)
-    val s0_ready = RegInit(true.B)
+    val s0_full = RegInit(false.B)
     val s0_latch = io.req.fire
+    val s0_fire = s0_valid && s1_ready
     val s0_en = Wire(Bool())
     val s0_reqReg = RegEnable(io.req.bits, s0_latch)
     val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
     val s0_offset = s0_req.addr(blockOffsetBits-1, 0)
-    val s0_valid = WireInit(false.B)
-    val s1_ready  = RegInit(true.B)
+    // val s0_valid = WireInit(false.B)
+    // val s1_ready  = RegInit(true.B)
     
-    io.req.ready := s0_ready
+    // io.req.ready := s0_ready
+    io.req.ready := !s0_full // || s0_fire // TODO:
 
-    when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) {
-        s0_ready := false.B
-    }
+    when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) { s0_full := true.B }
+    .elsewhen(s0_full && s0_fire) { s0_full := false.B }
+
+    // when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) {
+    //     s0_ready := false.B
+    // }
 
     val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
         ListLookup(s0_req.lsuOp, default, table)
@@ -247,11 +247,13 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
                                 ))
     }
 
-    io.cache.read.req.valid := load && !s0_ready
+    val s0_reqSend = RegEnable(true.B, false.B, io.cache.read.req.fire || io.cache.write.req.fire)
+    when(s0_fire) { s0_reqSend := false.B }
+    io.cache.read.req.valid := load && s0_full && !s0_reqSend //!s0_ready //&& !s0_reqSend && s1_ready
     io.cache.read.req.bits.addr := Cat(s0_req.addr(xlen-1, blockOffsetBits), Fill(blockOffsetBits, 0.U))
 
-    io.cache.write.req.valid := wen && !s0_ready
-    io.cache.write.req.bits.addr := s0_req.addr(xlen-1, blockOffsetBits)
+    io.cache.write.req.valid := wen && s0_full && !s0_reqSend //!s0_ready //&& !s0_reqSend && s1_ready
+    io.cache.write.req.bits.addr := Cat(s0_req.addr(xlen-1, blockOffsetBits), Fill(blockOffsetBits, 0.U))
     io.cache.write.req.bits.data := s0_req.wdata << (s0_offset << 3)
     val s0_storeMask = MuxLookup(width, "b1111".U, Seq(
         LS_DATA_BYTE -> UIntToOH(s0_req.addr(blockOffsetBits-1, 0)),
@@ -266,20 +268,28 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
     ))
     io.cache.write.req.bits.mask := s0_storeMask
 
-    s0_valid := !s0_ready && ( (io.cache.read.req.fire && load) || (io.cache.write.req.fire && wen) )
+    // s0_valid := !s0_ready && ( (io.cache.read.req.fire && load) || (io.cache.write.req.fire && wen) )
+    s0_valid := (Hold(true.B, io.cache.read.req.fire, s0_fire) && load) || (Hold(true.B, io.cache.write.req.fire, s0_fire) && wen)
     // --------------------------------------------------------------------------------
     // stage 1
     // --------------------------------------------------------------------------------
     // read back data (load)
     // waitting for resp (store)
+    val s1_full = RegInit(false.B)
     val s1_latch  = s0_valid && s1_ready
+    val s1_fire = s1_valid
     val s1_signed = RegEnable(signed, s1_latch)
     val s1_width  = RegEnable(width, s1_latch)
     val s1_offset = RegEnable(s0_offset, s1_latch)
-    when(s1_latch) {
-        s1_ready  := false.B
-        s0_ready := true.B
-    }
+    
+    s1_ready := !s1_full //|| s1_fire
+    when(s1_latch) { s1_full := true.B }
+    .elsewhen(s1_full && s1_fire) { s1_full := false.B }
+    // when(s1_latch) {
+    //     s1_ready  := false.B
+    //     s0_ready := true.B
+    //     s0_reqSend := false.B
+    // }
 
     io.cache.read.resp.ready := true.B
     io.cache.write.resp.ready := true.B
@@ -304,11 +314,16 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
                             // TODO: consider xlen=64 
                         ))
 
-    val s1_valid = !s1_ready && (s1_loadRespValid || s1_storeRespValid)
-    io.resp.valid := s1_valid
+    // val s1_valid = !s1_ready && (s1_loadRespValid || s1_storeRespValid)
+    s1_valid := s1_full && (s1_loadRespValid || s1_storeRespValid)
+    dontTouch(s1_loadRespValid)
+    dontTouch(s1_storeRespValid)
+
+    // io.resp.valid := s1_valid
+    io.resp.valid := s1_fire
     
-    when(s1_valid) {
-        s1_ready := true.B
-    }
+    // when(s1_valid) {
+    //     s1_ready := true.B
+    // }
     
 }

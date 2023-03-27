@@ -65,10 +65,12 @@ def main():
                 array.append(b2)
                 array.append(b1)
                 array.append(b0)
-                if addr < text_end and addr >= text_start:
+                if addr >= text_start:
                     wt.write(bytearray(array).hex() + '\n')
-                elif addr >= data_start:
-                    wd.write(bytearray(array).hex() + '\n')
+                # if addr < text_end and addr >= text_start:
+                #     wt.write(bytearray(array).hex() + '\n')
+                # elif addr >= data_start:
+                #     wd.write(bytearray(array).hex() + '\n')
             addr = addr + 1
     wt.close()
     wd.close()

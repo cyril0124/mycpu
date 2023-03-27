@@ -34,7 +34,8 @@ class Core()(implicit val p: Parameters) extends MyModule{
     val mepc = Wire(UInt(xlen.W))
 
     // 1_fetch stage
-    val ife = Module(new Fetch)
+    // val ife = Module(new Fetch)
+    val ife = Module(new Fetch_1)
     ife.io.in.start := RegNext(io.in.start)
     ife.io.ctrl <> DontCare
     ife.io.trapVec := trapVec
@@ -112,200 +113,208 @@ class Core()(implicit val p: Parameters) extends MyModule{
     io.out.state.intRegState <> regFile.io.state.getOrElse(DontCare)
 
     // ----------------soc part(temp)-------------------------
-    val testCase = 1
+    val testCase =  3
 
 if( testCase == 0 ) {
     
-    val busCrossBar = Module(new BusCrossBar())
-    busCrossBar.io <> DontCare
+    // val busCrossBar = Module(new BusCrossBar())
+    // busCrossBar.io <> DontCare
 
-    busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
-    ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+    // busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
+    // ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
 
-    busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
-    mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
+    // busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
+    // mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
 
 
-    val rom = Module(new ROM())
-    rom.io.clock := clock
-    rom.io.reset := reset
+    // val rom = Module(new ROM())
+    // rom.io.clock := clock
+    // rom.io.reset := reset
 
-    val romReq = busCrossBar.io.slaveFace.in(0)
-    val romResp = busCrossBar.io.slaveFace.out(0)
+    // val romReq = busCrossBar.io.slaveFace.in(0)
+    // val romResp = busCrossBar.io.slaveFace.out(0)
     
-    rom.io.wen := romReq.fire && isPut(romReq.bits.opcode)
-    rom.io.wmask := "b1111".U
-    rom.io.wdata := romReq.bits.data
-    rom.io.waddr := romReq.bits.address
-    rom.io.raddr := romReq.bits.address // read
-    romReq.ready := true.B
-    romResp.bits.data := rom.io.rdata
-    romResp.valid :=  true.B
-    romResp.bits.source := romReq.bits.source
+    // rom.io.wen := romReq.fire && isPut(romReq.bits.opcode)
+    // rom.io.wmask := "b1111".U
+    // rom.io.wdata := romReq.bits.data
+    // rom.io.waddr := romReq.bits.address
+    // rom.io.raddr := romReq.bits.address // read
+    // romReq.ready := true.B
+    // romResp.bits.data := rom.io.rdata
+    // romResp.valid :=  true.B
+    // romResp.bits.source := romReq.bits.source
 
 
-    val ram = Module(new ROM())
-    ram.io.clock := clock
-    ram.io.reset := reset
+    // val ram = Module(new ROM())
+    // ram.io.clock := clock
+    // ram.io.reset := reset
 
-    val ramReq = busCrossBar.io.slaveFace.in(1)
-    val ramResp = busCrossBar.io.slaveFace.out(1)
-    val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
-    val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
-    ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
-    ram.io.wmask := ramReqVal.mask
-    ram.io.wdata := ramReqVal.data
-    ram.io.waddr := ramReqVal.address - memRamBegin.U
-    ram.io.raddr := ramReqVal.address - memRamBegin.U 
-    ramReq.ready := true.B
-    ramResp.bits.data := ram.io.rdata
-    ramResp.valid := true.B
-    ramResp.bits.source := ramReqVal.source
+    // val ramReq = busCrossBar.io.slaveFace.in(1)
+    // val ramResp = busCrossBar.io.slaveFace.out(1)
+    // val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
+    // val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
+    // ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
+    // ram.io.wmask := ramReqVal.mask
+    // ram.io.wdata := ramReqVal.data
+    // ram.io.waddr := ramReqVal.address - memRamBegin.U
+    // ram.io.raddr := ramReqVal.address - memRamBegin.U 
+    // ramReq.ready := true.B
+    // ramResp.bits.data := ram.io.rdata
+    // ramResp.valid := true.B
+    // ramResp.bits.source := ramReqVal.source
 
 } else if(testCase == 1) {
-    // -------------------------------------------------------------
-    val busCrossBar = Module(new TLXbar())
-    busCrossBar.io <> DontCare
+    // val xbar = Module(new TLXbar())
+    // xbar.io <> DontCare
 
-    busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
-    ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+    // // ife.io.tlbus <> DontCare
+    // xbar.io.masterFace.in(0) <> ife.io.rom.req
+    // ife.io.rom.resp <> xbar.io.masterFace.out(0)
 
-    busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
-    mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
 
-    val rom = Module(new ROM())
-    rom.io.clock := clock
-    rom.io.reset := reset
+    // // mem.io.tlbus <> DontCare
+    // xbar.io.masterFace.in(1) <> mem.io.ram.req
+    // mem.io.ram.resp <> xbar.io.masterFace.out(1)
 
-    val romReq = busCrossBar.io.slaveFace.in(0)
-    val romResp = busCrossBar.io.slaveFace.out(0)
+    // val rom = Module(new ROM())
+    // rom.io.clock := clock
+    // rom.io.reset := reset
 
-    val romReqReg = RegEnable(romReq.bits, romReq.fire)
-    val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
-    val romBusy = RegEnable(true.B, false.B, romReq.fire)
+    // val romReq = xbar.io.slaveFace.in(0)
+    // val romResp = xbar.io.slaveFace.out(0)
 
-    when(romResp.fire) {
-        romBusy := false.B
-    }
+    // val romReqReg = RegEnable(romReq.bits, romReq.fire)
+    // val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
+    // val romBusy = RegEnable(true.B, false.B, romReq.fire)
 
-    rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
-    rom.io.wmask := "b1111".U
-    rom.io.wdata := romReqVal.data
-    rom.io.waddr := romReqVal.address
-    rom.io.raddr := romReqVal.address 
-    romReq.ready := !romBusy
-    romResp.bits.data := rom.io.rdata
-    romResp.valid := romBusy 
-    romResp.bits.source := romReqVal.source
+    // when(romResp.fire) {
+    //     romBusy := false.B
+    // }
+
+    // rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
+    // rom.io.wmask := "b1111".U
+    // rom.io.wdata := romReqVal.data
+    // rom.io.waddr := romReqVal.address
+    // rom.io.raddr := romReqVal.address 
+    // romReq.ready := !romBusy
+    // romResp.bits.data := rom.io.rdata
+    // romResp.valid := romBusy 
+    // romResp.bits.source := romReqVal.source
 
     
-    // romReq.ready := LFSR(8)(5) // ramdom delay test
+    // // romReq.ready := LFSR(8)(5) // ramdom delay test
     
-    // val mCounter = Counter(true.B, 30)
-    // romReq.ready := mCounter._1 > 10.U
+    // // val mCounter = Counter(true.B, 30)
+    // // romReq.ready := mCounter._1 > 10.U
 
-    val ram = Module(new ROM())
-    ram.io.clock := clock
-    ram.io.reset := reset
+    // val ram = Module(new ROM())
+    // ram.io.clock := clock
+    // ram.io.reset := reset
 
-    val ramReq = busCrossBar.io.slaveFace.in(1)
-    val ramResp = busCrossBar.io.slaveFace.out(1)
+    // val ramReq = xbar.io.slaveFace.in(1)
+    // val ramResp = xbar.io.slaveFace.out(1)
     
-    val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
-    val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
-    val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
-    when(ramResp.fire) {
-        ramBusy := false.B
-    }
+    // val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
+    // val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
+    // val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
+    // when(ramResp.fire) {
+    //     ramBusy := false.B
+    // }
 
-    ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
-    ram.io.wmask := ramReqVal.mask
-    ram.io.wdata := ramReqVal.data
-    ram.io.waddr := ramReqVal.address - memRamBegin.U
-    ram.io.raddr := ramReqVal.address - memRamBegin.U 
-    ramReq.ready := !ramBusy 
-    ramResp.bits.data := ram.io.rdata
-    ramResp.valid := ramBusy 
-    ramResp.bits.source := ramReqVal.source 
+    // ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
+    // ram.io.wmask := ramReqVal.mask
+    // ram.io.wdata := ramReqVal.data
+    // ram.io.waddr := ramReqVal.address - memRamBegin.U
+    // ram.io.raddr := ramReqVal.address - memRamBegin.U 
+    // ramReq.ready := !ramBusy 
+    // ramResp.bits.data := ram.io.rdata
+    // ramResp.valid := ramBusy 
+    // ramResp.bits.source := ramReqVal.source 
 
-    // ramReq.ready := LFSR(8)(0) // ramdom delay test
+    // // ramReq.ready := LFSR(8)(0) // ramdom delay test
 
-    // val mCounter1 = Counter(true.B, 30)
-    // ramReq.ready := mCounter1._1 > 25.U
+    // // val mCounter1 = Counter(true.B, 30)
+    // // ramReq.ready := mCounter1._1 > 25.U
 } else if (testCase == 2) {
-    val busCrossBar = Module(new TLXbar_1()) // with PingPongBuf
-    busCrossBar.io <> DontCare
+    // val busCrossBar = Module(new TLXbar_1()) // with PingPongBuf
+    // busCrossBar.io <> DontCare
 
-    busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
-    ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
+    // busCrossBar.io.masterFace.in(0) <> ife.io.rom.req
+    // ife.io.rom.resp <> busCrossBar.io.masterFace.out(0)
 
-    busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
-    mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
+    // busCrossBar.io.masterFace.in(1) <> mem.io.ram.req
+    // mem.io.ram.resp <> busCrossBar.io.masterFace.out(1)
 
-    val rom = Module(new ROM())
-    rom.io.clock := clock
-    rom.io.reset := reset
+    // val rom = Module(new ROM())
+    // rom.io.clock := clock
+    // rom.io.reset := reset
 
-    val romReq = busCrossBar.io.slaveFace.in(0)
-    val romResp = busCrossBar.io.slaveFace.out(0)
+    // val romReq = busCrossBar.io.slaveFace.in(0)
+    // val romResp = busCrossBar.io.slaveFace.out(0)
 
-    val romReqReg = RegEnable(romReq.bits, romReq.fire)
-    val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
-    val romBusy = RegEnable(true.B, false.B, romReq.fire)
+    // val romReqReg = RegEnable(romReq.bits, romReq.fire)
+    // val romReqVal = Mux(romReq.fire, romReq.bits, romReqReg)
+    // val romBusy = RegEnable(true.B, false.B, romReq.fire)
 
-    when(romResp.fire) {
-        romBusy := false.B
-    }
+    // when(romResp.fire) {
+    //     romBusy := false.B
+    // }
 
-    rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
-    rom.io.wmask := "b1111".U
-    rom.io.wdata := romReqVal.data
-    rom.io.waddr := romReqVal.address
-    rom.io.raddr := romReqVal.address 
-    romReq.ready := !romBusy
-    romResp.bits.data := rom.io.rdata
-    romResp.valid := romBusy 
-    romResp.bits.source := romReqVal.source
+    // rom.io.wen   := romReq.fire && isPut(romReqVal.opcode)
+    // rom.io.wmask := "b1111".U
+    // rom.io.wdata := romReqVal.data
+    // rom.io.waddr := romReqVal.address
+    // rom.io.raddr := romReqVal.address 
+    // romReq.ready := !romBusy
+    // romResp.bits.data := rom.io.rdata
+    // romResp.valid := romBusy 
+    // romResp.bits.source := romReqVal.source
 
 
 
-    val ram = Module(new ROM())
-    ram.io.clock := clock
-    ram.io.reset := reset
+    // val ram = Module(new ROM())
+    // ram.io.clock := clock
+    // ram.io.reset := reset
 
-    val ramReq = busCrossBar.io.slaveFace.in(1)
-    val ramResp = busCrossBar.io.slaveFace.out(1)
+    // val ramReq = busCrossBar.io.slaveFace.in(1)
+    // val ramResp = busCrossBar.io.slaveFace.out(1)
     
-    val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
-    val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
-    val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
-    when(ramResp.fire) {
-        ramBusy := false.B
-    }
+    // val ramReqReg = RegEnable(ramReq.bits, ramReq.fire)
+    // val ramReqVal = Mux(ramReq.fire, ramReq.bits, ramReqReg)
+    // val ramBusy = RegEnable(true.B, false.B, ramReq.fire)
+    // when(ramResp.fire) {
+    //     ramBusy := false.B
+    // }
 
-    ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
-    ram.io.wmask := ramReqVal.mask
-    ram.io.wdata := ramReqVal.data
-    ram.io.waddr := ramReqVal.address - memRamBegin.U
-    ram.io.raddr := ramReqVal.address - memRamBegin.U 
-    ramReq.ready := !ramBusy 
-    ramResp.bits.data := ram.io.rdata
-    ramResp.valid := ramBusy 
-    ramResp.bits.source := ramReqVal.source 
+    // ram.io.wen := ramReq.fire && isPut(ramReqVal.opcode)
+    // ram.io.wmask := ramReqVal.mask
+    // ram.io.wdata := ramReqVal.data
+    // ram.io.waddr := ramReqVal.address - memRamBegin.U
+    // ram.io.raddr := ramReqVal.address - memRamBegin.U 
+    // ramReq.ready := !ramBusy 
+    // ramResp.bits.data := ram.io.rdata
+    // ramResp.valid := ramBusy 
+    // ramResp.bits.source := ramReqVal.source 
 } else if( testCase == 3) {
-    // val xbar = Module(new TLXbar)
-    // val rom = Module(new SingleROM)
-    // val ram = Module(new SingleRAM)
+    val xbar = Module(new TLXbar)
+    val rom = Module(new SingleROM)
+    val ram = Module(new SingleRAM)
+    ram.io <> DontCare
 
-    // // Master
-    // mem.io.tlbus.req <> xbar.io.masterFace.in(1)
-    // mem.io.tlbus.req <> xbar.io.masterFace.out(1)
+    // Master
+    ife.io.tlbus.req <> xbar.io.masterFace.in(0)
+    ife.io.tlbus.resp <> xbar.io.masterFace.out(0)
+
+    mem.io.tlbus.req <> xbar.io.masterFace.in(1)
+    mem.io.tlbus.resp <> xbar.io.masterFace.out(1)
 
 
-    // // Slave
-    // rom.io.req <> xbar.io.slaveFace.in(0)
-    // rom.io.resp <> xbar.io.slaveFace.out(0)
+    // Slave
+    rom.io.req <> xbar.io.slaveFace.in(0)
+    rom.io.resp <> xbar.io.slaveFace.out(0)
 
+    xbar.io.slaveFace.in(1) <> DontCare
+    xbar.io.slaveFace.out(1) <> DontCare
     // ram.io.req <> xbar.io.slaveFace.in(1)
     // ram.io.resp <> xbar.io.slaveFace.out(1)
 }

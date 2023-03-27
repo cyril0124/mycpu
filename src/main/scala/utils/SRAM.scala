@@ -38,11 +38,11 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
     val ren = io.en & !io.rw
 
     // for VCS simulator
-    // withReset(reset) {
-    //     (0 until depth).foreach{
-    //         i => ram(i.U) := 0.U.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
-    //     }
-    // }
+    when(reset.asBool) {
+        for(i <- 0 until depth) {
+            ram.write(i.U, 0.U.asTypeOf(Vec(maskSegments, UInt( (width / maskSegments).W))))
+        }
+    }
 
     // read: rdata will keep stable until the next read enable.
     // withReset(reset) {

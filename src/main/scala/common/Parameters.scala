@@ -118,7 +118,7 @@ case class MyCpuParameters
     addrWidth: Int = 32,
     instMemSize: Int = 1024,
     resetPc: Int = 0,
-    romSize: Int = 1024,
+    romSize: Int = 0x00020000,
     ramSize: Int = 1024,
 
     // DCache Configuration
@@ -136,9 +136,9 @@ case class MyCpuParameters
 
     startAddr: Int = 0,
     memRomBegin: Int = 0x00000000,
-    memRomEnd: Int = 0x00002000,
-    memRamBegin: Int = 0x00002000,
-    memRamEnd: Int = 0x00004000,
+    memRomEnd: Int = 0x00020000, //0x00002000,
+    memRamBegin: Int = 0x00020000, //0x00002000,
+    memRamEnd: Int = 0x00040000, //0x00004000,
 
     nrBusMaster: Int = 2,
     nrBusSlave: Int = 2,

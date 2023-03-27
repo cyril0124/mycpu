@@ -1,13 +1,13 @@
 {
     "test_case_num": 62,
     "1": {
-        "name": "test_sw.bin",
-        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
+        "name": "rv32ui-p-lbu.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/rv32ui-p",
         "err_code": 42
     },
     "2": {
-        "name": "rv32ui-p-sw.bin",
-        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/rv32ui-p",
+        "name": "test_sw.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },
     "3": {

@@ -24,8 +24,8 @@ object XDecode {
         LB      -> List(N,  RET_SRC_B,  LSU_LB,   ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
         LH      -> List(N,  RET_SRC_B,  LSU_LH,   ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
         LW      -> List(N,  RET_SRC_B,  LSU_LW,   ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
-        LBU     -> List(N,  RET_SRC_B,  LSU_LBU,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_ZE, REG_WR_Y, CSR_NOP, EXC_NONE),
-        LHU     -> List(N,  RET_SRC_B,  LSU_LHU,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_ZE, REG_WR_Y, CSR_NOP, EXC_NONE),
+        LBU     -> List(N,  RET_SRC_B,  LSU_LBU,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
+        LHU     -> List(N,  RET_SRC_B,  LSU_LHU,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
 
         ADDI    -> List(N,  RET_SRC_A,  LSU_NOP,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
         SLLI    -> List(N,  RET_SRC_A,  LSU_NOP,  ALU_SLL,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_ZE, REG_WR_Y, CSR_NOP, EXC_NONE),

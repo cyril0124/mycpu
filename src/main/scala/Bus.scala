@@ -181,6 +181,9 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     val mf = io.masterFace
     val sf = io.slaveFace
 
+    val s1_valid, s1_ready = Wire(Bool())
+    val s2_valid, s2_ready = Wire(Bool())
+
     // --------------------------------------------------------------------------------
     // stage 0
     // --------------------------------------------------------------------------------
@@ -201,18 +204,19 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     // stage 1
     // --------------------------------------------------------------------------------
     // send buffered request to slave
-    val s1_ready = RegInit(true.B)
+    val s1_full = RegInit(false.B)
+    val s1_fire = Wire(Bool())
     val s1_latch = buf.io.deq.fire
     buf.io.deq.ready := s1_ready
-    val s1_reqValid = RegEnable(true.B, false.B, s1_latch)
     val s1_req = RegEnable(buf.io.deq.bits, s1_latch)
     val s1_opcode = s1_req.opcode
     val s1_beatSize = s1_req.size >> log2Ceil(busBeatSize)
     val s1_address = s1_req.address
     val s1_source = s1_req.source
-    when(s1_latch) {
-        s1_ready := false.B
-    }
+
+    s1_ready := !s1_full || s1_fire
+    when(s1_latch) { s1_full := true.B }
+    .elsewhen(s1_full && s1_fire) { s1_full := false.B}
 
     val addrDec = Module(new TLAddrDecode(nrBusSlave))
     val s1_chosenSlaveOH = addrDec.io.choseOH
@@ -220,39 +224,40 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
 
     sf.in.zipWithIndex.foreach{ case(si, i) => 
         si.bits  := s1_req 
-        si.valid := s1_chosenSlaveOH(i) && s1_reqValid
+        si.valid := s1_chosenSlaveOH(i) && s1_full
     }
 
     val s1_beatCounter = Counter(10)
     val s1_slaveRecVec = Cat(sf.in.map{ sfi => sfi.fire }.reverse)
     val s1_slaveRecv = (s1_slaveRecVec & s1_chosenSlaveOH.asUInt).orR
+    val s1_slaveRecvHold = Hold(s1_slaveRecv, s1_slaveRecv, s1_fire)
     val s1_lastBeat = s1_beatCounter.value === s1_beatSize - 1.U
-    when(s1_slaveRecv) {
+    when(s1_slaveRecv && !s1_lastBeat) {
         s1_beatCounter.inc()
     }
+    when(s1_latch) {
+        s1_beatCounter.reset()
+    }
     
-    val s1_valid = s1_reqValid && (s1_slaveRecv && s1_lastBeat && s1_opcode === PutFullData ||
-                                    s1_slaveRecv && s1_opcode === Get
-                                )
+    s1_valid := s1_slaveRecvHold && s1_lastBeat && s1_opcode === PutFullData ||
+                                    s1_slaveRecvHold && s1_opcode === Get
+    
+    s1_fire := s2_ready && s1_valid
     // --------------------------------------------------------------------------------
     // stage 2
     // --------------------------------------------------------------------------------
     // waitting for request
-    val s2_ready = RegInit(true.B)
+    val s2_full = RegInit(false.B)
     val s2_latch = s2_ready && s1_valid
-    val s2_reqValid = RegEnable(true.B, false.B, s2_latch)
     val s2_chosenSlaveOH = RegEnable(s1_chosenSlaveOH, s2_latch)
     val s2_opcode = RegEnable(s1_opcode, s2_latch)
     val s2_beatSize = RegEnable(s1_beatSize, s2_latch)
     val s2_chosenMasterOH = RegEnable(UIntToOH(s1_source), s2_latch)
+    val s2_fire = s2_valid // stage2 is final stage
     
-    when(s2_latch) {
-        s2_ready := false.B
-
-        s1_ready := true.B
-        s1_reqValid := false.B
-        s1_beatCounter.reset()
-    }
+    s2_ready := !s2_full || s2_fire
+    when(s2_latch) { s2_full := true.B }
+    .elsewhen(s2_full && s2_fire) { s2_full := false.B }
 
     val slaveMux = Module(new TLBusMux(new BusSlaveBundle, nrBusSlave))
     slaveMux.io.in <> sf.out
@@ -260,30 +265,27 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
 
     mf.out.zipWithIndex.foreach{ case(mo, i) => 
         mo.bits <> slaveMux.io.out.bits
-        mo.valid := slaveMux.io.out.valid && s2_chosenMasterOH(i) && s2_reqValid
+        mo.valid := slaveMux.io.out.valid && s2_chosenMasterOH(i) && s2_full
     }
     slaveMux.io.out.ready := Mux1H(s2_chosenMasterOH, mf.out.map{ mo => mo.ready})
 
     val s2_beatCounter = Counter(10)
     val s2_masterRecvVec = Cat(mf.out.map{ mfo => mfo.fire }.reverse) // ! NOTICE: use .reverse for the correct bit sequence
     val s2_masterRecv = (s2_masterRecvVec & s2_chosenMasterOH).orR
+    val s2_masterRecvHold = Hold(s2_masterRecv, s2_masterRecv, s2_fire)
     val s2_lastBeat = s2_beatCounter.value === s2_beatSize - 1.U
-    when(s2_masterRecv) {
+    when(s2_masterRecv && !s2_lastBeat) {
         s2_beatCounter.inc()
     }
-
-    val s2_valid = s2_reqValid && ( s2_opcode === PutFullData && s2_masterRecv || 
-                                    s2_opcode === Get && s2_masterRecv && s2_lastBeat
-                                    )
-
-    when(s2_valid) {
-        s2_ready := true.B
-        s2_reqValid := false.B
+    when(s2_latch) {
         s2_beatCounter.reset()
     }
 
+    s2_valid :=  s2_opcode === PutFullData && s2_masterRecvHold || 
+                s2_opcode === Get && s2_masterRecvHold && s2_lastBeat
 
 
+    
     // Bus status output
     val idle = RegInit(true.B)
     dontTouch(idle)

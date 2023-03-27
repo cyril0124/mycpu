@@ -77,25 +77,21 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     val io = IO(new ExecuteIO)
 
     val needFetch = WireInit(false.B)
-    val stall = io.ctrl.stall || (!io.out.fetch.ready && needFetch) || !io.out.memory.ready
+    // val stall = io.ctrl.stall || (!io.out.fetch.ready && needFetch) || !io.out.memory.ready
+    // val stall = io.ctrl.stall || (!io.out.fetch.ready && needFetch)
+    val stall = io.ctrl.stall
     val flush = io.ctrl.flush
 
 
-    io.in.ready :=  !stall 
+    // io.in.ready :=  !stall 
+    io.in.ready :=  !stall && io.in.valid && io.out.memory.fire
     val executeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
-    // when(executeLatch) {
-    //     stageReg := io.in.bits
-    // }.elsewhen(!stall){
-    //     stageReg := 0.U.asTypeOf(io.in.bits)
-    // }
     when(executeLatch) {
         stageReg := io.in.bits
     }.elsewhen(io.out.memory.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
-
-
 
     when(flush && !stall) { stageReg := 0.U.asTypeOf(io.in.bits) }
 
@@ -188,6 +184,7 @@ class Execute()(implicit val p: Parameters) extends MyModule{
 
     // instruction state flow
     io.out.memory.bits.instState  <> stageReg.instState
+    io.out.memory.bits.instState.commit := Mux(io.ctrl.flush, false.B, stageReg.instState.commit)
 
 
     io.out.memory.valid           :=  !stall 
