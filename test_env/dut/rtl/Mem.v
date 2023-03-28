@@ -262,7 +262,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_lsuOp <= 5'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_lsuOp <= io_in_bits_lsuOp; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_lsuOp <= io_in_bits_lsuOp;
+      end else begin
+        stageReg_lsuOp <= 5'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_lsuOp <= 5'h0; // @[4_Mem.scala 74:18]
     end
@@ -271,7 +275,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_resultSrc <= 2'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_resultSrc <= io_in_bits_resultSrc; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_resultSrc <= io_in_bits_resultSrc;
+      end else begin
+        stageReg_resultSrc <= 2'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_resultSrc <= 2'h0; // @[4_Mem.scala 74:18]
     end
@@ -280,7 +288,7 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_regWrEn <= 1'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_regWrEn <= io_in_bits_regWrEn; // @[4_Mem.scala 72:18]
+      stageReg_regWrEn <= io_in_bits_instState_commit & io_in_bits_regWrEn; // @[4_Mem.scala 72:18]
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_regWrEn <= 1'h0; // @[4_Mem.scala 74:18]
     end
@@ -289,7 +297,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_aluOut <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_aluOut <= io_in_bits_aluOut; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_aluOut <= io_in_bits_aluOut;
+      end else begin
+        stageReg_aluOut <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_aluOut <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -298,7 +310,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_data2 <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_data2 <= io_in_bits_data2; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_data2 <= io_in_bits_data2;
+      end else begin
+        stageReg_data2 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_data2 <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -307,7 +323,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_pcNext4 <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_pcNext4 <= io_in_bits_pcNext4;
+      end else begin
+        stageReg_pcNext4 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_pcNext4 <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -316,7 +336,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrOp <= 3'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_csrOp <= io_in_bits_csrOp; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_csrOp <= io_in_bits_csrOp;
+      end else begin
+        stageReg_csrOp <= 3'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_csrOp <= 3'h0; // @[4_Mem.scala 74:18]
     end
@@ -325,7 +349,7 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrWrEn <= 1'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_csrWrEn <= io_in_bits_csrWrEn; // @[4_Mem.scala 72:18]
+      stageReg_csrWrEn <= io_in_bits_instState_commit & io_in_bits_csrWrEn; // @[4_Mem.scala 72:18]
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_csrWrEn <= 1'h0; // @[4_Mem.scala 74:18]
     end
@@ -334,7 +358,7 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrValid <= 1'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_csrValid <= io_in_bits_csrValid; // @[4_Mem.scala 72:18]
+      stageReg_csrValid <= io_in_bits_instState_commit & io_in_bits_csrValid; // @[4_Mem.scala 72:18]
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_csrValid <= 1'h0; // @[4_Mem.scala 74:18]
     end
@@ -343,7 +367,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrWrData <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_csrWrData <= io_in_bits_csrWrData; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_csrWrData <= io_in_bits_csrWrData;
+      end else begin
+        stageReg_csrWrData <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_csrWrData <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -352,7 +380,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrAddr <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_csrAddr <= io_in_bits_csrAddr; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_csrAddr <= io_in_bits_csrAddr;
+      end else begin
+        stageReg_csrAddr <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_csrAddr <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -361,7 +393,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_excType <= 4'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_excType <= io_in_bits_excType; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_excType <= io_in_bits_excType;
+      end else begin
+        stageReg_excType <= 4'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_excType <= 4'h0; // @[4_Mem.scala 74:18]
     end
@@ -379,7 +415,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_instState_pc <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_instState_pc <= io_in_bits_instState_pc;
+      end else begin
+        stageReg_instState_pc <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_instState_pc <= 32'h0; // @[4_Mem.scala 74:18]
     end
@@ -388,7 +428,11 @@ module Mem(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_instState_inst <= 32'h0; // @[4_Mem.scala 77:38]
     end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[4_Mem.scala 72:18]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_instState_inst <= io_in_bits_instState_inst;
+      end else begin
+        stageReg_instState_inst <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
       stageReg_instState_inst <= 32'h0; // @[4_Mem.scala 74:18]
     end

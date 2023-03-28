@@ -80,7 +80,7 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     println(s" setBits: ${dcacheSetBits}")
     println(s" tagBits: ${dcacheTagBits}")
 
-    val loadPipe = Module(new LoadPipe)
+    val loadPipe = Module(new LoadPipe_1)
     val storePipe = Module(new StorePipe)
 
 

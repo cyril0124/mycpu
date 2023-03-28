@@ -51,7 +51,7 @@ module Decode(
   wire [4:0] ctrlUnit_io_out_lsuOp; // @[2_Decode.scala 119:29]
   wire [3:0] ctrlUnit_io_out_aluSrc1; // @[2_Decode.scala 119:29]
   wire [3:0] ctrlUnit_io_out_aluSrc2; // @[2_Decode.scala 119:29]
-  wire [1:0] ctrlUnit_io_out_immSrc; // @[2_Decode.scala 119:29]
+  wire [2:0] ctrlUnit_io_out_immSrc; // @[2_Decode.scala 119:29]
   wire  ctrlUnit_io_out_immSign; // @[2_Decode.scala 119:29]
   wire  ctrlUnit_io_out_regWrEn; // @[2_Decode.scala 119:29]
   wire  ctrlUnit_io_out_pcAddReg; // @[2_Decode.scala 119:29]
@@ -136,7 +136,7 @@ module Decode(
   assign io_regfile_rs2 = stageReg_instState_inst[24:20]; // @[util.scala 59:31]
   assign ctrlUnit_io_in_inst = stageReg_instState_inst; // @[2_Decode.scala 134:25]
   assign immGen_io_inst = stageReg_instState_inst; // @[2_Decode.scala 143:25]
-  assign immGen_io_immSrc = {{1'd0}, ctrlUnit_io_out_immSrc}; // @[2_Decode.scala 144:25]
+  assign immGen_io_immSrc = ctrlUnit_io_out_immSrc; // @[2_Decode.scala 144:25]
   assign immGen_io_immSign = ctrlUnit_io_out_immSign; // @[2_Decode.scala 145:25]
   always @(posedge clock) begin
     if (reset) begin // @[2_Decode.scala 82:27]
@@ -144,7 +144,11 @@ module Decode(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[2_Decode.scala 90:27]
       stageReg_pcNext4 <= 32'h0; // @[2_Decode.scala 90:38]
     end else if (decodeLatch) begin // @[2_Decode.scala 83:23]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[2_Decode.scala 84:18]
+      if (io_in_bits_instState_commit) begin // @[2_Decode.scala 84:24]
+        stageReg_pcNext4 <= io_in_bits_pcNext4;
+      end else begin
+        stageReg_pcNext4 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[2_Decode.scala 85:28]
       stageReg_pcNext4 <= 32'h0; // @[2_Decode.scala 86:18]
     end
@@ -162,7 +166,11 @@ module Decode(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[2_Decode.scala 90:27]
       stageReg_instState_pc <= 32'h0; // @[2_Decode.scala 90:38]
     end else if (decodeLatch) begin // @[2_Decode.scala 83:23]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[2_Decode.scala 84:18]
+      if (io_in_bits_instState_commit) begin // @[2_Decode.scala 84:24]
+        stageReg_instState_pc <= io_in_bits_instState_pc;
+      end else begin
+        stageReg_instState_pc <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[2_Decode.scala 85:28]
       stageReg_instState_pc <= 32'h0; // @[2_Decode.scala 86:18]
     end
@@ -171,7 +179,11 @@ module Decode(
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[2_Decode.scala 90:27]
       stageReg_instState_inst <= 32'h0; // @[2_Decode.scala 90:38]
     end else if (decodeLatch) begin // @[2_Decode.scala 83:23]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[2_Decode.scala 84:18]
+      if (io_in_bits_instState_commit) begin // @[2_Decode.scala 84:24]
+        stageReg_instState_inst <= io_in_bits_instState_inst;
+      end else begin
+        stageReg_instState_inst <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[2_Decode.scala 85:28]
       stageReg_instState_inst <= 32'h0; // @[2_Decode.scala 86:18]
     end

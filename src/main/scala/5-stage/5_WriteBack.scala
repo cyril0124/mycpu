@@ -48,7 +48,7 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     val writebackLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(writebackLatch) {
-        stageReg := io.in.bits
+        stageReg := Mux(io.in.bits.instState.commit, io.in.bits, 0.U.asTypeOf(io.in.bits))
     }.elsewhen(!stall){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
@@ -65,7 +65,7 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     io.regfile.regWrData := rdVal;
     val inst              = stageReg.instState.inst
     io.regfile.rd        := InstField(inst, "rd")
-    io.regfile.regWrEn   := stageReg.regWrEn 
+    io.regfile.regWrEn   := stageReg.regWrEn && stageReg.instState.commit
 
     io.csrWrite.addr     := stageReg.csrAddr
     io.csrWrite.data     := stageReg.csrWrData

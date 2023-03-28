@@ -39,7 +39,6 @@ module DCache(
   wire [1:0] loadPipe_io_load_resp_bits_stageID; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_read_req_valid; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dir_read_req_bits_addr; // @[DCache.scala 83:26]
-  wire  loadPipe_io_dir_read_resp_valid; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_read_resp_bits_hit; // @[DCache.scala 83:26]
   wire [3:0] loadPipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_read_resp_bits_isDirtyWay; // @[DCache.scala 83:26]
@@ -227,7 +226,7 @@ module DCache(
   wire [31:0] _GEN_12 = loadPipe_io_tlbus_req_bits_address; // @[DCache.scala 161:7 163:27]
   wire [31:0] _GEN_15 = loadPipe_io_tlbus_req_bits_data; // @[DCache.scala 161:7 163:27]
   wire  _GEN_16 = _T_26 & io_tlbus_req_ready; // @[DCache.scala 161:7 164:23 171:23]
-  LoadPipe loadPipe ( // @[DCache.scala 83:26]
+  LoadPipe_1_1 loadPipe ( // @[DCache.scala 83:26]
     .clock(loadPipe_clock),
     .reset(loadPipe_reset),
     .io_load_req_ready(loadPipe_io_load_req_ready),
@@ -238,7 +237,6 @@ module DCache(
     .io_load_resp_bits_stageID(loadPipe_io_load_resp_bits_stageID),
     .io_dir_read_req_valid(loadPipe_io_dir_read_req_valid),
     .io_dir_read_req_bits_addr(loadPipe_io_dir_read_req_bits_addr),
-    .io_dir_read_resp_valid(loadPipe_io_dir_read_resp_valid),
     .io_dir_read_resp_bits_hit(loadPipe_io_dir_read_resp_bits_hit),
     .io_dir_read_resp_bits_chosenWay(loadPipe_io_dir_read_resp_bits_chosenWay),
     .io_dir_read_resp_bits_isDirtyWay(loadPipe_io_dir_read_resp_bits_isDirtyWay),
@@ -429,7 +427,6 @@ module DCache(
   assign loadPipe_reset = reset;
   assign loadPipe_io_load_req_valid = io_read_req_valid; // @[DCache.scala 113:22]
   assign loadPipe_io_load_req_bits_addr = io_read_req_bits_addr; // @[DCache.scala 113:22]
-  assign loadPipe_io_dir_read_resp_valid = directory_io_read_resp_valid; // @[DCache.scala 115:31]
   assign loadPipe_io_dir_read_resp_bits_hit = directory_io_read_resp_bits_hit; // @[DCache.scala 115:31]
   assign loadPipe_io_dir_read_resp_bits_chosenWay = directory_io_read_resp_bits_chosenWay; // @[DCache.scala 115:31]
   assign loadPipe_io_dir_read_resp_bits_isDirtyWay = directory_io_read_resp_bits_isDirtyWay; // @[DCache.scala 115:31]

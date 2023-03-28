@@ -65,7 +65,7 @@ object XDecode {
         
         // TODO:
         JALR    -> List(N,  RET_SRC_C,  LSU_NOP,  ALU_ADD,  OPR_REG1,  OPR_IMM,   IMM_I,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
-        JAL     -> List(N,  RET_SRC_C,  LSU_NOP,  ALU_ADD,  OPR_PC,    OPR_IMM,   IMM_J,  IMM_ZE, REG_WR_Y, CSR_NOP, EXC_NONE),
+        JAL     -> List(N,  RET_SRC_C,  LSU_NOP,  ALU_ADD,  OPR_PC,    OPR_IMM,   IMM_J,  IMM_SE, REG_WR_Y, CSR_NOP, EXC_NONE),
 
         FENCE   -> List(N,  RET_SRC_A,  LSU_FENC, ALU_XXX,  OPR_ZERO,  OPR_ZERO,  IMM_X,  IMM_SE, REG_WR_N, CSR_NOP, EXC_NONE), // TODO:
 
@@ -177,7 +177,7 @@ class DecodeSigs(aluOpWidth: Int = 4)(implicit val p: Parameters) extends MyBund
     val lsuOp       = Output(UInt(LSU_OP_WIDTH.W))
     val aluSrc1     = Output(UInt(OPR_WIDTH.W))
     val aluSrc2     = Output(UInt(OPR_WIDTH.W))
-    val immSrc      = Output(UInt(2.W))
+    val immSrc      = Output(UInt(IMM_TYP_WIDTH.W))
     val immSign     = Output(Bool())
     val regWrEn     = Output(Bool())
     val csrOp       = Output(UInt(CSR_OP_WIDTH.W))

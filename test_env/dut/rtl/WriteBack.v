@@ -54,8 +54,8 @@ module WriteBack(
   reg  stageReg_instState_commit; // @[5_WriteBack.scala 49:27]
   reg [31:0] stageReg_instState_pc; // @[5_WriteBack.scala 49:27]
   reg [31:0] stageReg_instState_inst; // @[5_WriteBack.scala 49:27]
-  wire  _GEN_13 = writebackLatch & io_in_bits_regWrEn; // @[5_WriteBack.scala 50:26 51:18]
-  wire  _GEN_17 = writebackLatch & io_in_bits_csrWrEn; // @[5_WriteBack.scala 50:26 51:18]
+  wire  _GEN_13 = writebackLatch & (io_in_bits_instState_commit & io_in_bits_regWrEn); // @[5_WriteBack.scala 50:26 51:18]
+  wire  _GEN_17 = writebackLatch & (io_in_bits_instState_commit & io_in_bits_csrWrEn); // @[5_WriteBack.scala 50:26 51:18]
   wire  _GEN_21 = writebackLatch & io_in_bits_instState_commit; // @[5_WriteBack.scala 50:26 51:18]
   wire [31:0] _rdVal_T_3 = 2'h1 == stageReg_resultSrc ? io_lsuData : stageReg_aluOut; // @[Mux.scala 81:58]
   assign io_in_ready = io_in_valid; // @[5_WriteBack.scala 47:27]
@@ -66,7 +66,7 @@ module WriteBack(
   assign io_hazard_rdVal = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
   assign io_hazard_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 81:26]
   assign io_regfile_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]
-  assign io_regfile_regWrEn = stageReg_regWrEn; // @[5_WriteBack.scala 68:26]
+  assign io_regfile_regWrEn = stageReg_regWrEn & stageReg_instState_commit; // @[5_WriteBack.scala 68:46]
   assign io_regfile_regWrData = 2'h2 == stageReg_resultSrc ? stageReg_pcNext4 : _rdVal_T_3; // @[Mux.scala 81:58]
   assign io_csrWrite_op = stageReg_csrWrEn ? stageReg_csrOp : 3'h1; // @[5_WriteBack.scala 72:32]
   assign io_csrWrite_addr = stageReg_csrAddr; // @[5_WriteBack.scala 70:26]
@@ -76,7 +76,11 @@ module WriteBack(
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_resultSrc <= 2'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_resultSrc <= io_in_bits_resultSrc; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_resultSrc <= io_in_bits_resultSrc;
+      end else begin
+        stageReg_resultSrc <= 2'h0;
+      end
     end else begin
       stageReg_resultSrc <= 2'h0;
     end
@@ -88,21 +92,33 @@ module WriteBack(
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_aluOut <= 32'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_aluOut <= io_in_bits_aluOut; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_aluOut <= io_in_bits_aluOut;
+      end else begin
+        stageReg_aluOut <= 32'h0;
+      end
     end else begin
       stageReg_aluOut <= 32'h0;
     end
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_pcNext4 <= 32'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_pcNext4 <= io_in_bits_pcNext4;
+      end else begin
+        stageReg_pcNext4 <= 32'h0;
+      end
     end else begin
       stageReg_pcNext4 <= 32'h0;
     end
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_csrOp <= 3'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrOp <= io_in_bits_csrOp; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_csrOp <= io_in_bits_csrOp;
+      end else begin
+        stageReg_csrOp <= 3'h0;
+      end
     end else begin
       stageReg_csrOp <= 3'h0;
     end
@@ -114,14 +130,22 @@ module WriteBack(
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_csrWrData <= 32'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrWrData <= io_in_bits_csrWrData; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_csrWrData <= io_in_bits_csrWrData;
+      end else begin
+        stageReg_csrWrData <= 32'h0;
+      end
     end else begin
       stageReg_csrWrData <= 32'h0;
     end
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_csrAddr <= 12'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_csrAddr <= io_in_bits_csrAddr; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_csrAddr <= io_in_bits_csrAddr;
+      end else begin
+        stageReg_csrAddr <= 12'h0;
+      end
     end else begin
       stageReg_csrAddr <= 12'h0;
     end
@@ -133,14 +157,22 @@ module WriteBack(
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_instState_pc <= 32'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_instState_pc <= io_in_bits_instState_pc;
+      end else begin
+        stageReg_instState_pc <= 32'h0;
+      end
     end else begin
       stageReg_instState_pc <= 32'h0;
     end
     if (reset) begin // @[5_WriteBack.scala 49:27]
       stageReg_instState_inst <= 32'h0; // @[5_WriteBack.scala 49:27]
     end else if (writebackLatch) begin // @[5_WriteBack.scala 50:26]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[5_WriteBack.scala 51:18]
+      if (io_in_bits_instState_commit) begin // @[5_WriteBack.scala 51:24]
+        stageReg_instState_inst <= io_in_bits_instState_inst;
+      end else begin
+        stageReg_instState_inst <= 32'h0;
+      end
     end else begin
       stageReg_instState_inst <= 32'h0;
     end

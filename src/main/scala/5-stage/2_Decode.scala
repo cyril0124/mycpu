@@ -81,7 +81,7 @@ class Decode()(implicit val p: Parameters) extends MyModule{
     val decodeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(decodeLatch) {
-        stageReg := io.in.bits
+        stageReg := Mux(io.in.bits.instState.commit, io.in.bits, 0.U.asTypeOf(io.in.bits))
     }.elsewhen(io.out.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }

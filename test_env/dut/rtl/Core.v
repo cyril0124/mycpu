@@ -718,6 +718,8 @@ module Core(
     .io_resp_bits_opcode(rom_io_resp_bits_opcode),
     .io_resp_bits_data(rom_io_resp_bits_data)
   );
+  SingleRAM ram ( // @[Core.scala 301:21]
+  );
   assign io_out_state_intRegState_regState_0 = regFile_io_state_regState_0; // @[Core.scala 113:30]
   assign io_out_state_intRegState_regState_1 = regFile_io_state_regState_1; // @[Core.scala 113:30]
   assign io_out_state_intRegState_regState_2 = regFile_io_state_regState_2; // @[Core.scala 113:30]

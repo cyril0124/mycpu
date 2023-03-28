@@ -39,7 +39,7 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     val s0_rSet = addrToDCacheSet(s0_rAddr)
     val s0_dataBlockSelOH = addrToDCacheBlockOH(s0_rAddr)
 
-    io.load.req.ready := !s0_full || s0_fire
+    io.load.req.ready := !s0_full //|| s0_fire
     when(s0_latch) { s0_full := true.B }
     .elsewhen(s0_full && s0_fire) { s0_full := false.B }
 

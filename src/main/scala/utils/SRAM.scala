@@ -37,12 +37,12 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
     val wen = io.en & io.rw
     val ren = io.en & !io.rw
 
-    // for VCS simulator
-    when(reset.asBool) {
-        for(i <- 0 until depth) {
-            ram.write(i.U, 0.U.asTypeOf(Vec(maskSegments, UInt( (width / maskSegments).W))))
-        }
-    }
+    // for Verilator simulator
+    // when(reset.asBool) {
+    //     for(i <- 0 until depth) {
+    //         ram.write(i.U, 0.U.asTypeOf(Vec(maskSegments, UInt( (width / maskSegments).W))))
+    //     }
+    // }
 
     // read: rdata will keep stable until the next read enable.
     // withReset(reset) {
@@ -66,6 +66,7 @@ class BankRam1P_1(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4)exte
     withReset(reset) {
         io.rdata := DontCare
     }
+
     // write with mask
     val wmask = if(io.wmask.isDefined) io.wmask.get.asTypeOf(Vec(maskSegments, Bool())) else Fill(maskSegments, 1.U).asTypeOf(Vec(maskSegments, Bool()))
     val wdata = io.wdata.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
@@ -121,6 +122,13 @@ class BankRam2P_1(width: Int = 64, depth: Int = 16, maskSegments: Int = 8)extend
 
     val ram = SyncReadMem(depth, Vec(maskSegments, UInt((width / maskSegments).W)))
 
+    // for Verilator simulator
+    when(reset.asBool) {
+        for(i <- 0 until depth) {
+            ram.write(i.U, 0.U.asTypeOf(Vec(maskSegments, UInt( (width / maskSegments).W))))
+        }
+    }
+
     val wmask = if(io.w.mask.isDefined) io.w.mask.get else Fill(maskSegments, 1.U)
     val wdata = io.w.data.asTypeOf(Vec(maskSegments,UInt((width / maskSegments).W)))
     when(io.w.en) {
@@ -132,8 +140,8 @@ class BankRam2P_1(width: Int = 64, depth: Int = 16, maskSegments: Int = 8)extend
         }
     }
 
-    val rdata = WireInit(0.U.asTypeOf(io.r.data)).asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W)))
-    rdata := ram.read(io.r.addr)
+    val rdata = WireInit(0.U.asTypeOf(Vec(maskSegments, UInt((width / maskSegments).W))))
+    rdata := ram.read(io.r.addr, io.r.en)
 
     // write has higher priority
     when(io.w.en & io.r.en) {
@@ -144,13 +152,14 @@ class BankRam2P_1(width: Int = 64, depth: Int = 16, maskSegments: Int = 8)extend
                         r := w
                     }
             }
-            printf("[BankRam2P] bypass! \n")
+            // printf("[BankRam2P] bypass! \n")
         }
     }
     
 
     // read data will be stable until next read enable
-    io.r.data := RegEnable(Cat(rdata.reverse), 0.U(width.W), io.r.en)
+    // io.r.data := RegEnable(Cat(rdata.reverse), 0.U(width.W), io.r.en)
+    io.r.data := rdata.asUInt
 
     def init(): Unit = {
         io.w.en := false.B
@@ -182,7 +191,7 @@ class BankRam2P_1(width: Int = 64, depth: Int = 16, maskSegments: Int = 8)extend
 }
 
 object SRAM{
-    def apply(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true): BaseSRAM = {
+    def apply(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = false): BaseSRAM = {
         assert(maskSegments >= 1, s"error maskSegments! ==> ${maskSegments}")
         val sram = if(singlePort == true) {
                         Module(new BankRam1P_1(width, depth, maskSegments))
@@ -194,7 +203,7 @@ object SRAM{
     }
 }
 
-class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = true) extends Module {
+class SRAMTemplate(width: Int = 32, depth: Int = 1024, maskSegments: Int = 4, singlePort: Boolean = false) extends Module {
     val io = IO(new Bundle{
         val r = new Bundle{
             val en = Input(Bool())

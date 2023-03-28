@@ -8,6 +8,7 @@
 #include "verilated.h"
 #if VM_TRACE == 1
 #include "verilated_vcd_c.h"
+#include "verilated_fst_c.h"
 #endif
 #include "../utils/common.h"
 #include "../unicorn/uc_engine.h"
@@ -31,10 +32,11 @@ class Emu {
     private:
         // VCore *dut_ptr;
         Vtop_tb *dut_ptr;
-        VerilatedVcdC *tfp;
+        // VerilatedVcdC *tfp;
+        VerilatedFstC *tfp;
         UcEngine *engine;
 
-        uint64_t seed = 0, wave_begin = 0, wave_end = 100000;
+        uint64_t seed = 0, wave_begin = 0, wave_end = -1;
         bool enable_wave = true;
 
         inline char* cycle_wavefile(uint64_t cycles, time_t t);
@@ -104,7 +106,8 @@ inline char *Emu::cycle_wavefile(uint64_t cycles, time_t t) {
     char *pwd = getcwd(NULL, 0);
     m_assert(pwd != NULL, "Wavefile cannot be opened!");
     int len = snprintf(buf, 1024, "%s/%s_%lu", pwd, buf_time, cycles);
-    strcpy(buf + len, ".vcd");
+    // strcpy(buf + len, ".vcd");
+    strcpy(buf + len, ".fst");
     printf("dump wave to %s...\n", buf);
     return buf;
 }

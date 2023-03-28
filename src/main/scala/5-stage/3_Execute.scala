@@ -88,7 +88,7 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     val executeLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(executeLatch) {
-        stageReg := io.in.bits
+        stageReg := Mux(io.in.bits.instState.commit, io.in.bits, 0.U.asTypeOf(io.in.bits))
     }.elsewhen(io.out.memory.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }
@@ -134,7 +134,7 @@ class Execute()(implicit val p: Parameters) extends MyModule{
     aluZero      := alu.io.zero
 
     // output for fetch stage
-    io.out.fetch.bits.brTaken       := (stageReg.isBranch && aluZero) || stageReg.isJump
+    io.out.fetch.bits.brTaken       := ( (stageReg.isBranch && aluZero) || stageReg.isJump ) && stageReg.instState.commit
     io.out.fetch.bits.targetAddr    := Mux(stageReg.pcAddReg, aluOut, 
                                             Mux(stageReg.immSign, 
                                                 (stageReg.imm.asSInt + stageReg.instState.pc.asSInt).asUInt, 

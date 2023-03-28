@@ -11,7 +11,7 @@ import mycpu.common.consts.Control._
 class ImmGen(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val inst = Input(UInt(ilen.W))
-        val immSrc = Input(UInt(3.W))
+        val immSrc = Input(UInt(IMM_TYP_WIDTH.W))
         val immSign = Input(Bool())
         val imm = Output(UInt(xlen.W))
     })
@@ -24,13 +24,13 @@ class ImmGen(implicit val p: Parameters) extends MyModule {
     val immS = ZeroExt(Cat(inst(31,25),inst(11,7)),xlen)
     val immB = ZeroExt(Cat(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W)), xlen)
     val immU = ZeroExt(inst(31,12) << 12, xlen)
-    val immJ = ZeroExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21)),xlen)
+    val immJ = ZeroExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21), 0.U(1.W)),xlen)
 
     val immI_S = SignExt(inst(31,20), xlen)
     val immS_S = SignExt(Cat(inst(31,25),inst(11,7)),xlen)
     val immB_S = SignExt(Cat(inst(31),inst(7),inst(30,25),inst(11,8),0.U(1.W)), xlen)
     val immU_S = SignExt(inst(31,12) << 12, xlen)
-    val immJ_S = SignExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21)),xlen)
+    val immJ_S = SignExt(Cat(inst(31),inst(19,12),inst(20),inst(30,21), 0.U(1.W)),xlen)
 
     val out = WireInit(0.U.asTypeOf(io.imm))
 

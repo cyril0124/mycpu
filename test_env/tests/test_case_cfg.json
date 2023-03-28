@@ -1,8 +1,8 @@
 {
     "test_case_num": 1,
     "1": {
-        "name": "rv32ui-p-lb.bin",
-        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/rv32ui-p",
+        "name": "qsort.bin",
+        "dir": "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build",
         "err_code": 42
     },
     "2": {

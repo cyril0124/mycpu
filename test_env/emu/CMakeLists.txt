@@ -12,4 +12,4 @@ endif()
 verilate(emu SOURCES "${DUT_DIR}/top_tb.v" 
     INCLUDE_DIRS "${DUT_DIR}/" "${DUT_DIR}/rtl"
     ${ARG_TRACE} THREADS ${ARG_THREAD}
-    VERILATOR_ARGS --no-timing -Wno-TIMESCALEMOD --timescale "1ns/100ps" )
+    VERILATOR_ARGS --no-timing --trace-fst -Wno-TIMESCALEMOD --timescale "1ns/100ps" )

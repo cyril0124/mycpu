@@ -141,7 +141,7 @@ module Execute(
   assign io_out_memory_bits_instState_commit = io_ctrl_flush ? 1'h0 : stageReg_instState_commit; // @[3_Execute.scala 187:47]
   assign io_out_memory_bits_instState_pc = stageReg_instState_pc; // @[3_Execute.scala 186:35]
   assign io_out_memory_bits_instState_inst = stageReg_instState_inst; // @[3_Execute.scala 186:35]
-  assign io_out_fetch_bits_brTaken = stageReg_isBranch & aluZero | stageReg_isJump; // @[3_Execute.scala 137:71]
+  assign io_out_fetch_bits_brTaken = (stageReg_isBranch & aluZero | stageReg_isJump) & stageReg_instState_commit; // @[3_Execute.scala 137:94]
   assign io_out_fetch_bits_targetAddr = stageReg_pcAddReg ? alu_io_out : _io_out_fetch_bits_targetAddr_T_8; // @[3_Execute.scala 138:43]
   assign io_hazard_out_rs1 = stageReg_instState_inst[19:15]; // @[util.scala 58:31]
   assign io_hazard_out_rs2 = stageReg_instState_inst[24:20]; // @[util.scala 59:31]
@@ -158,7 +158,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_isBranch <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_isBranch <= io_in_bits_isBranch; // @[3_Execute.scala 91:18]
+      stageReg_isBranch <= io_in_bits_instState_commit & io_in_bits_isBranch; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_isBranch <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -167,7 +167,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_isJump <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_isJump <= io_in_bits_isJump; // @[3_Execute.scala 91:18]
+      stageReg_isJump <= io_in_bits_instState_commit & io_in_bits_isJump; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_isJump <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -176,7 +176,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_resultSrc <= io_in_bits_resultSrc; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_resultSrc <= io_in_bits_resultSrc;
+      end else begin
+        stageReg_resultSrc <= 2'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_resultSrc <= 2'h0; // @[3_Execute.scala 93:18]
     end
@@ -185,7 +189,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_lsuOp <= io_in_bits_lsuOp; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_lsuOp <= io_in_bits_lsuOp;
+      end else begin
+        stageReg_lsuOp <= 5'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_lsuOp <= 5'h0; // @[3_Execute.scala 93:18]
     end
@@ -194,7 +202,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_aluOpSel <= io_in_bits_aluOpSel; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_aluOpSel <= io_in_bits_aluOpSel;
+      end else begin
+        stageReg_aluOpSel <= 4'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_aluOpSel <= 4'h0; // @[3_Execute.scala 93:18]
     end
@@ -203,7 +215,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_immSign <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_immSign <= io_in_bits_immSign; // @[3_Execute.scala 91:18]
+      stageReg_immSign <= io_in_bits_instState_commit & io_in_bits_immSign; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_immSign <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -212,7 +224,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_regWrEn <= io_in_bits_regWrEn; // @[3_Execute.scala 91:18]
+      stageReg_regWrEn <= io_in_bits_instState_commit & io_in_bits_regWrEn; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_regWrEn <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -221,7 +233,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_pcAddReg <= io_in_bits_pcAddReg; // @[3_Execute.scala 91:18]
+      stageReg_pcAddReg <= io_in_bits_instState_commit & io_in_bits_pcAddReg; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_pcAddReg <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -230,7 +242,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_pcNext4 <= io_in_bits_pcNext4; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_pcNext4 <= io_in_bits_pcNext4;
+      end else begin
+        stageReg_pcNext4 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_pcNext4 <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -239,7 +255,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_aluIn1 <= io_in_bits_aluIn1; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_aluIn1 <= io_in_bits_aluIn1;
+      end else begin
+        stageReg_aluIn1 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_aluIn1 <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -248,7 +268,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_aluIn2 <= io_in_bits_aluIn2; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_aluIn2 <= io_in_bits_aluIn2;
+      end else begin
+        stageReg_aluIn2 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_aluIn2 <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -257,7 +281,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_aluIn1IsReg <= io_in_bits_aluIn1IsReg; // @[3_Execute.scala 91:18]
+      stageReg_aluIn1IsReg <= io_in_bits_instState_commit & io_in_bits_aluIn1IsReg; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_aluIn1IsReg <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -266,7 +290,7 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_aluIn2IsReg <= io_in_bits_aluIn2IsReg; // @[3_Execute.scala 91:18]
+      stageReg_aluIn2IsReg <= io_in_bits_instState_commit & io_in_bits_aluIn2IsReg; // @[3_Execute.scala 91:18]
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_aluIn2IsReg <= 1'h0; // @[3_Execute.scala 93:18]
     end
@@ -275,7 +299,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_imm <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_imm <= io_in_bits_imm; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_imm <= io_in_bits_imm;
+      end else begin
+        stageReg_imm <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_imm <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -284,7 +312,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_data2 <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_data2 <= io_in_bits_data2; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_data2 <= io_in_bits_data2;
+      end else begin
+        stageReg_data2 <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_data2 <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -293,7 +325,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_excType <= 4'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_excType <= io_in_bits_excType; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_excType <= io_in_bits_excType;
+      end else begin
+        stageReg_excType <= 4'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_excType <= 4'h0; // @[3_Execute.scala 93:18]
     end
@@ -302,7 +338,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_csrOp <= 3'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_csrOp <= io_in_bits_csrOp; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_csrOp <= io_in_bits_csrOp;
+      end else begin
+        stageReg_csrOp <= 3'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_csrOp <= 3'h0; // @[3_Execute.scala 93:18]
     end
@@ -320,7 +360,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_instState_pc <= io_in_bits_instState_pc; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_instState_pc <= io_in_bits_instState_pc;
+      end else begin
+        stageReg_instState_pc <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_instState_pc <= 32'h0; // @[3_Execute.scala 93:18]
     end
@@ -329,7 +373,11 @@ module Execute(
     end else if (io_ctrl_flush) begin // @[3_Execute.scala 96:27]
       stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 96:38]
     end else if (executeLatch) begin // @[3_Execute.scala 90:24]
-      stageReg_instState_inst <= io_in_bits_instState_inst; // @[3_Execute.scala 91:18]
+      if (io_in_bits_instState_commit) begin // @[3_Execute.scala 91:24]
+        stageReg_instState_inst <= io_in_bits_instState_inst;
+      end else begin
+        stageReg_instState_inst <= 32'h0;
+      end
     end else if (_io_in_ready_T_2) begin // @[3_Execute.scala 92:35]
       stageReg_instState_inst <= 32'h0; // @[3_Execute.scala 93:18]
     end

@@ -6,7 +6,7 @@ module CtrlUnit(
   output [4:0]  io_out_lsuOp,
   output [3:0]  io_out_aluSrc1,
   output [3:0]  io_out_aluSrc2,
-  output [1:0]  io_out_immSrc,
+  output [2:0]  io_out_immSrc,
   output        io_out_immSign,
   output        io_out_regWrEn,
   output        io_out_pcAddReg,
@@ -21,7 +21,7 @@ module CtrlUnit(
   wire [4:0] decoder_io_out_lsuOp; // @[CtrlUnit.scala 59:25]
   wire [3:0] decoder_io_out_aluSrc1; // @[CtrlUnit.scala 59:25]
   wire [3:0] decoder_io_out_aluSrc2; // @[CtrlUnit.scala 59:25]
-  wire [1:0] decoder_io_out_immSrc; // @[CtrlUnit.scala 59:25]
+  wire [2:0] decoder_io_out_immSrc; // @[CtrlUnit.scala 59:25]
   wire  decoder_io_out_immSign; // @[CtrlUnit.scala 59:25]
   wire  decoder_io_out_regWrEn; // @[CtrlUnit.scala 59:25]
   wire [2:0] decoder_io_out_csrOp; // @[CtrlUnit.scala 59:25]

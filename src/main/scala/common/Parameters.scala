@@ -77,11 +77,6 @@ trait HasMyCpuParameters {
       * |____________|  ____________________________|
       * 
       */
-    val textStart = myCpuParams.textStart
-    val globalDataStart = myCpuParams.globalDataStart
-    val heapStart = myCpuParams.heapStart
-    val stackStart = myCpuParams.stackStart
-    val memSizeByte = myCpuParams.memSizeByte
 
     val startAddr = myCpuParams.startAddr
 
@@ -96,6 +91,7 @@ trait HasMyCpuParameters {
     val busBeatSize = myCpuParams.xlen / 8
     val busBeatWidth = myCpuParams.xlen
     val busMaskWidth = myCpuParams.xlen / 8
+    val busMaxBeat = myCpuParams.busMaxBeat
 
     val simulation = myCpuParams.simulation
     val debugThreshold = myCpuParams.debugThreshold
@@ -122,6 +118,8 @@ case class MyCpuParameters
     romSize: Int = 0x00020000,
     ramSize: Int = 1024,
 
+    busMaxBeat: Int = 32,
+
     // DCache Configuration
     dcacheWays: Int = 4,
     dcacheSets: Int = 256,
@@ -129,18 +127,11 @@ case class MyCpuParameters
     dcacheBlockSize: Int = 4,
     dcacheBanks: Int = 2,
 
-    // Memory Map Configuration
-    textStart: Int = 0x100,
-    globalDataStart: Int = 0x200,
-    heapStart: Int = 0x300,
-    stackStart: Int = 0x400,
-    memSizeByte: Int = 0x500,
-
     startAddr: Int = 0,
     memRomBegin: Int = 0x00000000,
-    memRomEnd: Int = 0x00020000, //0x00002000,
-    memRamBegin: Int = 0x00020000, //0x00002000,
-    memRamEnd: Int = 0x00040000, //0x00004000,
+    memRomEnd: Int = 0x10000000, //0x00002000,
+    memRamBegin: Int = 0x10000000, //0x00002000,
+    memRamEnd: Int = 0x20000000, //0x00004000,
 
     nrBusMaster: Int = 2,
     nrBusSlave: Int = 2,

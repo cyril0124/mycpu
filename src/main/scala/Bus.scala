@@ -227,7 +227,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
         si.valid := s1_chosenSlaveOH(i) && s1_full
     }
 
-    val s1_beatCounter = Counter(10)
+    val s1_beatCounter = Counter(busMaxBeat)
     val s1_slaveRecVec = Cat(sf.in.map{ sfi => sfi.fire }.reverse)
     val s1_slaveRecv = (s1_slaveRecVec & s1_chosenSlaveOH.asUInt).orR
     val s1_slaveRecvHold = Hold(s1_slaveRecv, s1_slaveRecv, s1_fire)
@@ -269,7 +269,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     }
     slaveMux.io.out.ready := Mux1H(s2_chosenMasterOH, mf.out.map{ mo => mo.ready})
 
-    val s2_beatCounter = Counter(10)
+    val s2_beatCounter = Counter(busMaxBeat)
     val s2_masterRecvVec = Cat(mf.out.map{ mfo => mfo.fire }.reverse) // ! NOTICE: use .reverse for the correct bit sequence
     val s2_masterRecv = (s2_masterRecvVec & s2_chosenMasterOH).orR
     val s2_masterRecvHold = Hold(s2_masterRecv, s2_masterRecv, s2_fire)

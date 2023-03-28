@@ -69,7 +69,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     val memoryLatch = io.in.fire
     val stageReg = RegInit(0.U.asTypeOf(io.in.bits))
     when(memoryLatch) {
-        stageReg := io.in.bits
+        stageReg := Mux(io.in.bits.instState.commit, io.in.bits, 0.U.asTypeOf(io.in.bits))
     }.elsewhen(io.out.fire){
         stageReg := 0.U.asTypeOf(io.in.bits)
     }

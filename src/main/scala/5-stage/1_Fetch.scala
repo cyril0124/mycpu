@@ -234,12 +234,9 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
         }
     )))
 
-    val instValid = WireInit(false.B)
-
     val hasBranch_1 = io.excp.valid || io.in.execute.bits.brTaken
-    // val hasBranch = Mux(hasBranch_1, true.B, RSLatch(hasBranch_1, io.out.fire))
     val hasBranch = Hold(true.B, hasBranch_1, io.out.fire || !io.in.start)
-    val branchAddr = Hold(branchAddr_1, hasBranch_1, !io.in.start) // Mux(hasBranch_1, branchAddr_1, RegEnable(branchAddr_1, hasBranch_1))
+    val branchAddr = Hold(branchAddr_1, hasBranch_1, !io.in.start)
     dontTouch(hasBranch)
 
     pcNext := Mux(hasBranch, branchAddr, pcNext4)
@@ -250,14 +247,8 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
     io.in.execute.ready := !stall && io.in.execute.valid
 
 
-    val inst            = WireInit(0.U(ilen.W))
     val commit          = !stall && io.out.ready && !hasBranch
 
-    instValid := Mux(icache.io.read.resp.fire, 
-                    true.B, 
-                    RSLatch(icache.io.read.resp.fire, io.out.fire)
-                )
-    // instValid := Hold(true.B, icache.io.read.resp.fire, io.out.fire)
     val lastInstValid = Hold(true.B, icache.io.read.resp.fire, io.out.fire)
     dontTouch(lastInstValid)
 
@@ -269,7 +260,10 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
     icache.io.read.req.valid := !flush && io.in.start && preFetchInst
     icache.io.read.req.bits.addr := Mux(io.out.fire, pcNext, pcReg)
     icache.io.read.resp.ready := true.B
-    inst := Mux(icache.io.read.resp.fire, icache.io.read.resp.bits.data, RegEnable(icache.io.read.resp.bits.data, icache.io.read.resp.fire))
+    val inst = Mux(icache.io.read.resp.fire, 
+                    icache.io.read.resp.bits.data, 
+                    RegEnable(icache.io.read.resp.bits.data, icache.io.read.resp.fire)
+                )
 
     when(io.out.fire) { pcReg := pcNext }
 
@@ -283,7 +277,7 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
         io.out.bits.instState <> DontCare
     }
 
-    io.out.valid := !stall && io.in.start && icache.io.read.req.ready && lastInstValid//instValid //&& RegNext(instValid)
+    io.out.valid := !stall && io.in.start && icache.io.read.req.ready && lastInstValid
 }
 
 object FetchGenRTL extends App {

@@ -30,8 +30,8 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     println(s" setBits: ${dcacheSetBits}")
     println(s" tagBits: ${dcacheTagBits}")
 
-    val loadPipe = Module(new LoadPipe_1)
-    // val loadPipe = Module(new LoadPipe)
+    val loadPipe = Module(new LoadPipe_1) // for ICache, 3-stage pipeline
+    // val loadPipe = Module(new LoadPipe) // for DCache, 2-stage pipeline // TODO: integrate 3-stage LoadPipe into DCache
 
     val dataBankArray = Module(new DataBankArray)
     val directory = Module(new DCacheDirectory)

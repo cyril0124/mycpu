@@ -24,29 +24,29 @@ module DCacheDirectory(
   reg [31:0] _RAND_7;
   reg [31:0] _RAND_8;
 `endif // RANDOMIZE_REG_INIT
-  wire  tagArray_clock; // @[Directory.scala 66:26]
-  wire  tagArray_reset; // @[Directory.scala 66:26]
-  wire [6:0] tagArray_io_r_addr; // @[Directory.scala 66:26]
-  wire [79:0] tagArray_io_r_data; // @[Directory.scala 66:26]
-  wire  tagArray_io_w_en; // @[Directory.scala 66:26]
-  wire [6:0] tagArray_io_w_addr; // @[Directory.scala 66:26]
-  wire [79:0] tagArray_io_w_data; // @[Directory.scala 66:26]
-  wire [3:0] tagArray_io_w_mask; // @[Directory.scala 66:26]
-  wire  tagValidArray_clock; // @[Directory.scala 67:31]
-  wire  tagValidArray_reset; // @[Directory.scala 67:31]
-  wire [6:0] tagValidArray_io_r_addr; // @[Directory.scala 67:31]
-  wire [3:0] tagValidArray_io_r_data; // @[Directory.scala 67:31]
-  wire  tagValidArray_io_w_en; // @[Directory.scala 67:31]
-  wire [6:0] tagValidArray_io_w_addr; // @[Directory.scala 67:31]
-  wire [3:0] tagValidArray_io_w_mask; // @[Directory.scala 67:31]
-  wire  metaArray_clock; // @[Directory.scala 68:27]
-  wire  metaArray_reset; // @[Directory.scala 68:27]
-  wire [6:0] metaArray_io_r_addr; // @[Directory.scala 68:27]
-  wire [7:0] metaArray_io_r_data; // @[Directory.scala 68:27]
-  wire  metaArray_io_w_en; // @[Directory.scala 68:27]
-  wire [6:0] metaArray_io_w_addr; // @[Directory.scala 68:27]
-  wire [7:0] metaArray_io_w_data; // @[Directory.scala 68:27]
-  wire [3:0] metaArray_io_w_mask; // @[Directory.scala 68:27]
+  wire  tagArray_clock; // @[Directory.scala 67:26]
+  wire  tagArray_reset; // @[Directory.scala 67:26]
+  wire [6:0] tagArray_io_r_addr; // @[Directory.scala 67:26]
+  wire [79:0] tagArray_io_r_data; // @[Directory.scala 67:26]
+  wire  tagArray_io_w_en; // @[Directory.scala 67:26]
+  wire [6:0] tagArray_io_w_addr; // @[Directory.scala 67:26]
+  wire [79:0] tagArray_io_w_data; // @[Directory.scala 67:26]
+  wire [3:0] tagArray_io_w_mask; // @[Directory.scala 67:26]
+  wire  tagValidArray_clock; // @[Directory.scala 68:31]
+  wire  tagValidArray_reset; // @[Directory.scala 68:31]
+  wire [6:0] tagValidArray_io_r_addr; // @[Directory.scala 68:31]
+  wire [3:0] tagValidArray_io_r_data; // @[Directory.scala 68:31]
+  wire  tagValidArray_io_w_en; // @[Directory.scala 68:31]
+  wire [6:0] tagValidArray_io_w_addr; // @[Directory.scala 68:31]
+  wire [3:0] tagValidArray_io_w_mask; // @[Directory.scala 68:31]
+  wire  metaArray_clock; // @[Directory.scala 69:27]
+  wire  metaArray_reset; // @[Directory.scala 69:27]
+  wire [6:0] metaArray_io_r_addr; // @[Directory.scala 69:27]
+  wire [7:0] metaArray_io_r_data; // @[Directory.scala 69:27]
+  wire  metaArray_io_w_en; // @[Directory.scala 69:27]
+  wire [6:0] metaArray_io_w_addr; // @[Directory.scala 69:27]
+  wire [7:0] metaArray_io_w_data; // @[Directory.scala 69:27]
+  wire [3:0] metaArray_io_w_mask; // @[Directory.scala 69:27]
   wire  replaceWay_lfsr_prng_clock; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_reset; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_io_out_0; // @[PRNG.scala 91:22]
@@ -64,77 +64,77 @@ module DCacheDirectory(
   wire [19:0] rTag = _GEN_0[31:12]; // @[Parameters.scala 46:11]
   wire  _wAddr_T = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] wAddr_r; // @[Reg.scala 19:16]
-  wire [31:0] wAddr = _wAddr_T ? io_write_req_bits_addr : wAddr_r; // @[Directory.scala 52:20]
+  wire [31:0] wAddr = _wAddr_T ? io_write_req_bits_addr : wAddr_r; // @[Directory.scala 53:20]
   wire [6:0] wSet = wAddr[11:5]; // @[Parameters.scala 50:11]
   wire [19:0] wTag = wAddr[31:12]; // @[Parameters.scala 46:11]
   wire [1:0] _T_4 = io_write_req_bits_way[0] + io_write_req_bits_way[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_6 = io_write_req_bits_way[2] + io_write_req_bits_way[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_8 = _T_4 + _T_6; // @[Bitwise.scala 51:90]
-  wire  _T_22 = ~reset; // @[Directory.scala 64:11]
-  wire [79:0] _WIRE_1 = tagArray_io_r_data; // @[Directory.scala 76:{44,44}]
-  wire [19:0] tagRdVec_0 = _WIRE_1[19:0]; // @[Directory.scala 76:44]
-  wire [19:0] tagRdVec_1 = _WIRE_1[39:20]; // @[Directory.scala 76:44]
-  wire [19:0] tagRdVec_2 = _WIRE_1[59:40]; // @[Directory.scala 76:44]
-  wire [19:0] tagRdVec_3 = _WIRE_1[79:60]; // @[Directory.scala 76:44]
-  wire [3:0] _WIRE_3 = tagValidArray_io_r_data; // @[Directory.scala 81:{54,54}]
-  wire  tagValidRdVec_0 = _WIRE_3[0]; // @[Directory.scala 81:54]
-  wire  tagValidRdVec_1 = _WIRE_3[1]; // @[Directory.scala 81:54]
-  wire  tagValidRdVec_2 = _WIRE_3[2]; // @[Directory.scala 81:54]
-  wire  tagValidRdVec_3 = _WIRE_3[3]; // @[Directory.scala 81:54]
-  wire [7:0] _WIRE_5 = metaArray_io_r_data; // @[Directory.scala 87:{46,46}]
-  wire  metaRdVec_0_valid = _WIRE_5[0]; // @[Directory.scala 87:46]
-  wire  metaRdVec_0_dirty = _WIRE_5[1]; // @[Directory.scala 87:46]
-  wire  metaRdVec_1_valid = _WIRE_5[2]; // @[Directory.scala 87:46]
-  wire  metaRdVec_1_dirty = _WIRE_5[3]; // @[Directory.scala 87:46]
-  wire  metaRdVec_2_valid = _WIRE_5[4]; // @[Directory.scala 87:46]
-  wire  metaRdVec_2_dirty = _WIRE_5[5]; // @[Directory.scala 87:46]
-  wire  metaRdVec_3_valid = _WIRE_5[6]; // @[Directory.scala 87:46]
-  wire  metaRdVec_3_dirty = _WIRE_5[7]; // @[Directory.scala 87:46]
-  wire  tagMatchVec_0 = tagRdVec_0 == rTag & tagValidRdVec_0; // @[Directory.scala 91:79]
-  wire  tagMatchVec_1 = tagRdVec_1 == rTag & tagValidRdVec_1; // @[Directory.scala 91:79]
-  wire  tagMatchVec_2 = tagRdVec_2 == rTag & tagValidRdVec_2; // @[Directory.scala 91:79]
-  wire  tagMatchVec_3 = tagRdVec_3 == rTag & tagValidRdVec_3; // @[Directory.scala 91:79]
-  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory.scala 94:77]
-  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory.scala 94:77]
-  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory.scala 94:77]
-  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory.scala 94:77]
+  wire  _T_22 = ~reset; // @[Directory.scala 65:11]
+  wire [79:0] _WIRE_1 = tagArray_io_r_data; // @[Directory.scala 77:{44,44}]
+  wire [19:0] tagRdVec_0 = _WIRE_1[19:0]; // @[Directory.scala 77:44]
+  wire [19:0] tagRdVec_1 = _WIRE_1[39:20]; // @[Directory.scala 77:44]
+  wire [19:0] tagRdVec_2 = _WIRE_1[59:40]; // @[Directory.scala 77:44]
+  wire [19:0] tagRdVec_3 = _WIRE_1[79:60]; // @[Directory.scala 77:44]
+  wire [3:0] _WIRE_3 = tagValidArray_io_r_data; // @[Directory.scala 82:{54,54}]
+  wire  tagValidRdVec_0 = _WIRE_3[0]; // @[Directory.scala 82:54]
+  wire  tagValidRdVec_1 = _WIRE_3[1]; // @[Directory.scala 82:54]
+  wire  tagValidRdVec_2 = _WIRE_3[2]; // @[Directory.scala 82:54]
+  wire  tagValidRdVec_3 = _WIRE_3[3]; // @[Directory.scala 82:54]
+  wire [7:0] _WIRE_5 = metaArray_io_r_data; // @[Directory.scala 88:{46,46}]
+  wire  metaRdVec_0_valid = _WIRE_5[0]; // @[Directory.scala 88:46]
+  wire  metaRdVec_0_dirty = _WIRE_5[1]; // @[Directory.scala 88:46]
+  wire  metaRdVec_1_valid = _WIRE_5[2]; // @[Directory.scala 88:46]
+  wire  metaRdVec_1_dirty = _WIRE_5[3]; // @[Directory.scala 88:46]
+  wire  metaRdVec_2_valid = _WIRE_5[4]; // @[Directory.scala 88:46]
+  wire  metaRdVec_2_dirty = _WIRE_5[5]; // @[Directory.scala 88:46]
+  wire  metaRdVec_3_valid = _WIRE_5[6]; // @[Directory.scala 88:46]
+  wire  metaRdVec_3_dirty = _WIRE_5[7]; // @[Directory.scala 88:46]
+  wire  tagMatchVec_0 = tagRdVec_0 == rTag & tagValidRdVec_0; // @[Directory.scala 92:79]
+  wire  tagMatchVec_1 = tagRdVec_1 == rTag & tagValidRdVec_1; // @[Directory.scala 92:79]
+  wire  tagMatchVec_2 = tagRdVec_2 == rTag & tagValidRdVec_2; // @[Directory.scala 92:79]
+  wire  tagMatchVec_3 = tagRdVec_3 == rTag & tagValidRdVec_3; // @[Directory.scala 92:79]
+  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory.scala 95:77]
+  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory.scala 95:77]
+  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory.scala 95:77]
+  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory.scala 95:77]
   wire [3:0] matchWayOH = {_matchWayOH_T_3,_matchWayOH_T_2,_matchWayOH_T_1,_matchWayOH_T}; // @[Cat.scala 33:92]
-  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory.scala 95:53]
-  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory.scala 95:53]
-  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory.scala 95:53]
-  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory.scala 95:53]
+  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory.scala 96:53]
+  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory.scala 96:53]
+  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory.scala 96:53]
+  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory.scala 96:53]
   wire [3:0] _invalidWayOH_T_8 = invalidWayVec_2 ? 4'h4 : 4'h8; // @[Mux.scala 47:70]
   wire [3:0] _invalidWayOH_T_9 = invalidWayVec_1 ? 4'h2 : _invalidWayOH_T_8; // @[Mux.scala 47:70]
   wire [3:0] invalidWayOH = invalidWayVec_0 ? 4'h1 : _invalidWayOH_T_9; // @[Mux.scala 47:70]
   wire [3:0] _hasInvalidWay_T = {invalidWayVec_0,invalidWayVec_1,invalidWayVec_2,invalidWayVec_3}; // @[Cat.scala 33:92]
-  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory.scala 97:44]
+  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory.scala 98:44]
   wire [7:0] replaceWay_lfsr = {replaceWay_lfsr_prng_io_out_7,replaceWay_lfsr_prng_io_out_6,
     replaceWay_lfsr_prng_io_out_5,replaceWay_lfsr_prng_io_out_4,replaceWay_lfsr_prng_io_out_3,
     replaceWay_lfsr_prng_io_out_2,replaceWay_lfsr_prng_io_out_1,replaceWay_lfsr_prng_io_out_0}; // @[PRNG.scala 95:17]
   wire [1:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[1:0]; // @[DCache.scala 61:39]
   wire [3:0] replaceWay = 4'h1 << replaceWay_outputWay_shiftAmount; // @[OneHot.scala 64:12]
-  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory.scala 99:65]
+  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory.scala 100:65]
   reg [3:0] replaceWayReg; // @[Reg.scala 19:16]
-  wire  isHit = |matchWayOH; // @[Directory.scala 101:33]
-  wire [3:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory.scala 103:48]
-  wire [3:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 103:25]
-  wire [3:0] _isDirtyWay_T = {metaRdVec_3_dirty,metaRdVec_2_dirty,metaRdVec_1_dirty,metaRdVec_0_dirty}; // @[Cat.scala 33:92]
-  wire [3:0] _isDirtyWay_T_1 = choseWayOH & _isDirtyWay_T; // @[Directory.scala 104:35]
-  wire [3:0] _isDirtyWay_T_2 = {metaRdVec_3_valid,metaRdVec_2_valid,metaRdVec_1_valid,metaRdVec_0_valid}; // @[Cat.scala 33:92]
-  wire [3:0] _isDirtyWay_T_3 = _isDirtyWay_T_1 & _isDirtyWay_T_2; // @[Directory.scala 104:63]
-  wire  isDirtyWay = |_isDirtyWay_T_3; // @[Directory.scala 104:93]
+  wire  isHit = |matchWayOH; // @[Directory.scala 102:33]
+  wire [3:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory.scala 104:48]
+  wire [3:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 104:25]
+  wire [3:0] _dirtyWayOH_T = {metaRdVec_3_dirty,metaRdVec_2_dirty,metaRdVec_1_dirty,metaRdVec_0_dirty}; // @[Cat.scala 33:92]
+  wire [3:0] _dirtyWayOH_T_1 = {metaRdVec_3_valid,metaRdVec_2_valid,metaRdVec_1_valid,metaRdVec_0_valid}; // @[Cat.scala 33:92]
+  wire [3:0] dirtyWayOH = _dirtyWayOH_T & _dirtyWayOH_T_1; // @[Directory.scala 105:48]
+  wire [3:0] _isDirtyWay_T = choseWayOH & dirtyWayOH; // @[Directory.scala 106:35]
+  wire  isDirtyWay = |_isDirtyWay_T; // @[Directory.scala 106:50]
   wire [1:0] _T_44 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_46 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_48 = _T_44 + _T_46; // @[Bitwise.scala 51:90]
-  reg  io_read_resp_bits_isDirtyWay_REG; // @[Directory.scala 111:100]
+  reg  io_read_resp_bits_isDirtyWay_REG; // @[Directory.scala 114:100]
   reg  io_read_resp_bits_isDirtyWay_r; // @[Reg.scala 19:16]
-  reg  io_read_resp_bits_chosenWay_REG; // @[Directory.scala 112:99]
+  reg  io_read_resp_bits_chosenWay_REG; // @[Directory.scala 115:99]
   reg [3:0] io_read_resp_bits_chosenWay_r; // @[Reg.scala 19:16]
-  reg  io_read_resp_bits_hit_REG; // @[Directory.scala 113:83]
+  reg  io_read_resp_bits_hit_REG; // @[Directory.scala 116:83]
   reg  io_read_resp_bits_hit_r; // @[Reg.scala 19:16]
   wire [39:0] _tagArray_io_w_data_T = {wTag,wTag}; // @[Cat.scala 33:92]
   wire [3:0] _metaArray_io_w_data_T = {io_write_req_bits_meta,io_write_req_bits_meta}; // @[Cat.scala 33:92]
-  SRAMTemplate_32 tagArray ( // @[Directory.scala 66:26]
+  SRAMTemplate_32 tagArray ( // @[Directory.scala 67:26]
     .clock(tagArray_clock),
     .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
@@ -144,7 +144,7 @@ module DCacheDirectory(
     .io_w_data(tagArray_io_w_data),
     .io_w_mask(tagArray_io_w_mask)
   );
-  SRAMTemplate_33 tagValidArray ( // @[Directory.scala 67:31]
+  SRAMTemplate_33 tagValidArray ( // @[Directory.scala 68:31]
     .clock(tagValidArray_clock),
     .reset(tagValidArray_reset),
     .io_r_addr(tagValidArray_io_r_addr),
@@ -153,7 +153,7 @@ module DCacheDirectory(
     .io_w_addr(tagValidArray_io_w_addr),
     .io_w_mask(tagValidArray_io_w_mask)
   );
-  SRAMTemplate_34 metaArray ( // @[Directory.scala 68:27]
+  SRAMTemplate_34 metaArray ( // @[Directory.scala 69:27]
     .clock(metaArray_clock),
     .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),
@@ -175,31 +175,31 @@ module DCacheDirectory(
     .io_out_6(replaceWay_lfsr_prng_io_out_6),
     .io_out_7(replaceWay_lfsr_prng_io_out_7)
   );
-  assign io_read_req_ready = 1'h1; // @[Directory.scala 70:23]
-  assign io_read_resp_bits_hit = _rAddr_T ? isHit : io_read_resp_bits_hit_r; // @[Directory.scala 113:33]
-  assign io_read_resp_bits_chosenWay = _rAddr_T ? choseWayOH : io_read_resp_bits_chosenWay_r; // @[Directory.scala 112:39]
-  assign io_read_resp_bits_isDirtyWay = _rAddr_T ? isDirtyWay : io_read_resp_bits_isDirtyWay_r; // @[Directory.scala 111:40]
-  assign io_write_req_ready = 1'h1; // @[Directory.scala 71:24]
+  assign io_read_req_ready = 1'h1; // @[Directory.scala 71:23]
+  assign io_read_resp_bits_hit = _rAddr_T ? isHit : io_read_resp_bits_hit_r; // @[Directory.scala 116:33]
+  assign io_read_resp_bits_chosenWay = _rAddr_T ? choseWayOH : io_read_resp_bits_chosenWay_r; // @[Directory.scala 115:39]
+  assign io_read_resp_bits_isDirtyWay = _rAddr_T ? isDirtyWay : io_read_resp_bits_isDirtyWay_r; // @[Directory.scala 114:40]
+  assign io_write_req_ready = 1'h1; // @[Directory.scala 72:24]
   assign tagArray_clock = clock;
   assign tagArray_reset = reset;
-  assign tagArray_io_r_addr = rSet; // @[Directory.scala 75:24]
+  assign tagArray_io_r_addr = rSet; // @[Directory.scala 76:24]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign tagArray_io_w_addr = wSet; // @[Directory.scala 121:24]
+  assign tagArray_io_w_addr = wSet; // @[Directory.scala 125:24]
   assign tagArray_io_w_data = {_tagArray_io_w_data_T,_tagArray_io_w_data_T}; // @[Cat.scala 33:92]
-  assign tagArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 122:28]
+  assign tagArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 126:28]
   assign tagValidArray_clock = clock;
   assign tagValidArray_reset = reset;
-  assign tagValidArray_io_r_addr = rSet; // @[Directory.scala 80:29]
+  assign tagValidArray_io_r_addr = rSet; // @[Directory.scala 81:29]
   assign tagValidArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign tagValidArray_io_w_addr = wSet; // @[Directory.scala 126:29]
-  assign tagValidArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 127:33]
+  assign tagValidArray_io_w_addr = wSet; // @[Directory.scala 130:29]
+  assign tagValidArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 131:33]
   assign metaArray_clock = clock;
   assign metaArray_reset = reset;
-  assign metaArray_io_r_addr = rSet; // @[Directory.scala 86:25]
+  assign metaArray_io_r_addr = rSet; // @[Directory.scala 87:25]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign metaArray_io_w_addr = wSet; // @[Directory.scala 131:25]
+  assign metaArray_io_w_addr = wSet; // @[Directory.scala 135:25]
   assign metaArray_io_w_data = {_metaArray_io_w_data_T,_metaArray_io_w_data_T}; // @[Cat.scala 33:92]
-  assign metaArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 132:29]
+  assign metaArray_io_w_mask = io_write_req_bits_way; // @[Directory.scala 136:29]
   assign replaceWay_lfsr_prng_clock = clock;
   assign replaceWay_lfsr_prng_reset = reset;
   always @(posedge clock) begin
@@ -218,9 +218,9 @@ module DCacheDirectory(
     end
     io_read_resp_bits_chosenWay_REG <= io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
     if (io_read_resp_bits_chosenWay_REG) begin // @[Reg.scala 20:18]
-      if (isHit) begin // @[Directory.scala 103:25]
+      if (isHit) begin // @[Directory.scala 104:25]
         io_read_resp_bits_chosenWay_r <= matchWayOH;
-      end else if (hasInvalidWay) begin // @[Directory.scala 103:48]
+      end else if (hasInvalidWay) begin // @[Directory.scala 104:48]
         if (invalidWayVec_0) begin // @[Mux.scala 47:70]
           io_read_resp_bits_chosenWay_r <= 4'h1;
         end else begin
@@ -240,8 +240,8 @@ module DCacheDirectory(
     `endif
         if (~reset & ~(_T_8 < 3'h2)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory.scala:64 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
-            ,_T_8); // @[Directory.scala 64:11]
+            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory.scala:65 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
+            ,_T_8); // @[Directory.scala 65:11]
         end
     `ifdef PRINTF_COND
       end
@@ -252,7 +252,7 @@ module DCacheDirectory(
       if (`STOP_COND) begin
     `endif
         if (~(_T_8 < 3'h2) & ~reset) begin
-          $fatal; // @[Directory.scala 64:11]
+          $fatal; // @[Directory.scala 65:11]
         end
     `ifdef STOP_COND
       end
@@ -264,8 +264,8 @@ module DCacheDirectory(
     `endif
         if (_T_22 & ~(_T_48 == 3'h1)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory.scala:106 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
-            ); // @[Directory.scala 106:11]
+            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory.scala:109 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
+            ); // @[Directory.scala 109:11]
         end
     `ifdef PRINTF_COND
       end
@@ -276,7 +276,7 @@ module DCacheDirectory(
       if (`STOP_COND) begin
     `endif
         if (~(_T_48 == 3'h1) & _T_22) begin
-          $fatal; // @[Directory.scala 106:11]
+          $fatal; // @[Directory.scala 109:11]
         end
     `ifdef STOP_COND
       end

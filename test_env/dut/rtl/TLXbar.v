@@ -118,11 +118,11 @@ module TLXbar(
   wire  s2_masterRecv = |_s2_masterRecv_T; // @[Bus.scala 274:64]
   reg  s2_masterRecvHold_holdReg; // @[Reg.scala 19:16]
   wire  s2_masterRecvHold = s2_masterRecv ? s2_masterRecv : s2_masterRecvHold_holdReg; // @[util.scala 12:12]
-  reg [3:0] s2_beatCounter_value; // @[Counter.scala 61:40]
+  reg [4:0] s2_beatCounter_value; // @[Counter.scala 61:40]
   reg [29:0] s2_beatSize; // @[Reg.scala 19:16]
   wire [29:0] _s2_lastBeat_T_1 = s2_beatSize - 30'h1; // @[Bus.scala 276:60]
-  wire [29:0] _GEN_29 = {{26'd0}, s2_beatCounter_value}; // @[Bus.scala 276:44]
-  wire  s2_lastBeat = _GEN_29 == _s2_lastBeat_T_1; // @[Bus.scala 276:44]
+  wire [29:0] _GEN_27 = {{25'd0}, s2_beatCounter_value}; // @[Bus.scala 276:44]
+  wire  s2_lastBeat = _GEN_27 == _s2_lastBeat_T_1; // @[Bus.scala 276:44]
   wire  _s2_valid_T_4 = s2_opcode == 3'h4 & s2_masterRecvHold & s2_lastBeat; // @[Bus.scala 285:56]
   wire  s2_fire = s2_opcode == 3'h2 & s2_masterRecvHold | _s2_valid_T_4; // @[Bus.scala 284:65]
   wire  s2_ready = ~s2_full | s2_fire; // @[Bus.scala 258:26]
@@ -133,26 +133,24 @@ module TLXbar(
   wire  s1_slaveRecv = |_s1_slaveRecv_T_1; // @[Bus.scala 232:67]
   reg  s1_slaveRecvHold_holdReg; // @[Reg.scala 19:16]
   wire  s1_slaveRecvHold = s1_slaveRecv ? s1_slaveRecv : s1_slaveRecvHold_holdReg; // @[util.scala 12:12]
-  reg [3:0] s1_beatCounter_value; // @[Counter.scala 61:40]
+  reg [4:0] s1_beatCounter_value; // @[Counter.scala 61:40]
   wire [29:0] _s1_lastBeat_T_1 = s1_beatSize - 30'h1; // @[Bus.scala 234:60]
-  wire [29:0] _GEN_30 = {{26'd0}, s1_beatCounter_value}; // @[Bus.scala 234:44]
-  wire  s1_lastBeat = _GEN_30 == _s1_lastBeat_T_1; // @[Bus.scala 234:44]
+  wire [29:0] _GEN_28 = {{25'd0}, s1_beatCounter_value}; // @[Bus.scala 234:44]
+  wire  s1_lastBeat = _GEN_28 == _s1_lastBeat_T_1; // @[Bus.scala 234:44]
   wire  _s1_valid_T_4 = s1_slaveRecvHold & s1_req_opcode == 3'h4; // @[Bus.scala 243:54]
   wire  s1_valid = s1_slaveRecvHold & s1_lastBeat & s1_req_opcode == 3'h2 | _s1_valid_T_4; // @[Bus.scala 242:78]
   wire  s1_fire = s2_ready & s1_valid; // @[Bus.scala 245:25]
   wire  _GEN_8 = s1_full & s1_fire ? 1'h0 : s1_full; // @[Bus.scala 207:26 219:{35,45}]
   wire  _GEN_9 = s1_latch | _GEN_8; // @[Bus.scala 218:{20,30}]
-  wire  wrap = s1_beatCounter_value == 4'h9; // @[Counter.scala 73:24]
-  wire [3:0] _value_T_1 = s1_beatCounter_value + 4'h1; // @[Counter.scala 77:24]
+  wire [4:0] _value_T_1 = s1_beatCounter_value + 5'h1; // @[Counter.scala 77:24]
   reg  s2_chosenSlaveOH_0; // @[Reg.scala 19:16]
   wire [1:0] _s2_chosenMasterOH_T = 2'h1 << s1_req_source; // @[OneHot.scala 57:35]
-  wire  _GEN_20 = s2_full & s2_fire ? 1'h0 : s2_full; // @[Bus.scala 250:26 260:{35,45}]
-  wire  _GEN_21 = s1_fire | _GEN_20; // @[Bus.scala 259:{20,30}]
-  wire  wrap_1 = s2_beatCounter_value == 4'h9; // @[Counter.scala 73:24]
-  wire [3:0] _value_T_3 = s2_beatCounter_value + 4'h1; // @[Counter.scala 77:24]
+  wire  _GEN_19 = s2_full & s2_fire ? 1'h0 : s2_full; // @[Bus.scala 250:26 260:{35,45}]
+  wire  _GEN_20 = s1_fire | _GEN_19; // @[Bus.scala 259:{20,30}]
+  wire [4:0] _value_T_3 = s2_beatCounter_value + 5'h1; // @[Counter.scala 77:24]
   reg  idle; // @[Bus.scala 290:23]
-  wire  _GEN_27 = s2_fire | idle; // @[Bus.scala 294:26 295:14 290:23]
-  wire  _GEN_28 = s1_latch | s1_fire ? 1'h0 : _GEN_27; // @[Bus.scala 292:32 293:14]
+  wire  _GEN_25 = s2_fire | idle; // @[Bus.scala 294:26 295:14 290:23]
+  wire  _GEN_26 = s1_latch | s1_fire ? 1'h0 : _GEN_25; // @[Bus.scala 292:32 293:14]
   TLBusArbiter reqArb ( // @[Bus.scala 191:24]
     .clock(reqArb_clock),
     .reset(reqArb_reset),
@@ -285,7 +283,7 @@ module TLXbar(
     if (reset) begin // @[Bus.scala 250:26]
       s2_full <= 1'h0; // @[Bus.scala 250:26]
     end else begin
-      s2_full <= _GEN_21;
+      s2_full <= _GEN_20;
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_opcode <= s1_req_opcode; // @[Reg.scala 20:22]
@@ -299,15 +297,11 @@ module TLXbar(
       s2_masterRecvHold_holdReg <= s2_masterRecv;
     end
     if (reset) begin // @[Counter.scala 61:40]
-      s2_beatCounter_value <= 4'h0; // @[Counter.scala 61:40]
+      s2_beatCounter_value <= 5'h0; // @[Counter.scala 61:40]
     end else if (s1_fire) begin // @[Bus.scala 280:20]
-      s2_beatCounter_value <= 4'h0; // @[Counter.scala 98:11]
+      s2_beatCounter_value <= 5'h0; // @[Counter.scala 98:11]
     end else if (s2_masterRecv & ~s2_lastBeat) begin // @[Bus.scala 277:41]
-      if (wrap_1) begin // @[Counter.scala 87:20]
-        s2_beatCounter_value <= 4'h0; // @[Counter.scala 87:28]
-      end else begin
-        s2_beatCounter_value <= _value_T_3; // @[Counter.scala 77:15]
-      end
+      s2_beatCounter_value <= _value_T_3; // @[Counter.scala 77:15]
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_beatSize <= s1_beatSize; // @[Reg.scala 20:22]
@@ -318,20 +312,16 @@ module TLXbar(
       s1_slaveRecvHold_holdReg <= s1_slaveRecv;
     end
     if (reset) begin // @[Counter.scala 61:40]
-      s1_beatCounter_value <= 4'h0; // @[Counter.scala 61:40]
+      s1_beatCounter_value <= 5'h0; // @[Counter.scala 61:40]
     end else if (s1_latch) begin // @[Bus.scala 238:20]
-      s1_beatCounter_value <= 4'h0; // @[Counter.scala 98:11]
+      s1_beatCounter_value <= 5'h0; // @[Counter.scala 98:11]
     end else if (s1_slaveRecv & ~s1_lastBeat) begin // @[Bus.scala 235:40]
-      if (wrap) begin // @[Counter.scala 87:20]
-        s1_beatCounter_value <= 4'h0; // @[Counter.scala 87:28]
-      end else begin
-        s1_beatCounter_value <= _value_T_1; // @[Counter.scala 77:15]
-      end
+      s1_beatCounter_value <= _value_T_1; // @[Counter.scala 77:15]
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_chosenSlaveOH_0 <= addrDec_io_choseOH_0; // @[Reg.scala 20:22]
     end
-    idle <= reset | _GEN_28; // @[Bus.scala 290:{23,23}]
+    idle <= reset | _GEN_26; // @[Bus.scala 290:{23,23}]
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -390,13 +380,13 @@ initial begin
   _RAND_9 = {1{`RANDOM}};
   s2_masterRecvHold_holdReg = _RAND_9[0:0];
   _RAND_10 = {1{`RANDOM}};
-  s2_beatCounter_value = _RAND_10[3:0];
+  s2_beatCounter_value = _RAND_10[4:0];
   _RAND_11 = {1{`RANDOM}};
   s2_beatSize = _RAND_11[29:0];
   _RAND_12 = {1{`RANDOM}};
   s1_slaveRecvHold_holdReg = _RAND_12[0:0];
   _RAND_13 = {1{`RANDOM}};
-  s1_beatCounter_value = _RAND_13[3:0];
+  s1_beatCounter_value = _RAND_13[4:0];
   _RAND_14 = {1{`RANDOM}};
   s2_chosenSlaveOH_0 = _RAND_14[0:0];
   _RAND_15 = {1{`RANDOM}};

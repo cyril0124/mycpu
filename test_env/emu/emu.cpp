@@ -17,7 +17,8 @@ Emu::Emu(int argc, char **argv) {
 #if VM_TRACE == 1
     if (this->enable_wave) {
         Verilated::traceEverOn(true); // Verilator must compute traced signals
-        tfp = new VerilatedVcdC;
+        // tfp = new VerilatedVcdC;
+        tfp = new VerilatedFstC;
         dut_ptr->trace(tfp, 99); // Trace 99 levels of hierarchy
         time_t now = time(NULL);
         tfp->open(cycle_wavefile(cycles, now));
@@ -191,7 +192,6 @@ void Emu::execute(uint64_t nr_cycles) {
                             break;
                     }
                 }
-
                 // !! if you want assert the whole program, make sure you properly close the dump trace file.
 #if VM_TRACE == 1
                 if (this->enable_wave) {
