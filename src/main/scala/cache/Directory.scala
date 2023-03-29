@@ -20,7 +20,7 @@ class DirectoryReadBus()(implicit val p: Parameters) extends MyBundle {
         val hit = Bool()
         val chosenWay = UInt(dcacheWays.W)
         val isDirtyWay = Bool()
-        // val dirtyTag = UInt(dcacheTagBits.W)
+        val dirtyTag = UInt(dcacheTagBits.W)
     })
 }
 
@@ -102,11 +102,12 @@ class DCacheDirectory()(implicit val p: Parameters) extends MyModule {
     val isHit = Cat(matchWayOH).orR //&& io.read.req.fire 
     // val choseWayOH = Mux(isHit, matchWayOH, Mux(hasInvalidWay, invalidWayOH, replaceWay))
     val choseWayOH = Mux(isHit, matchWayOH, Mux(hasInvalidWay, invalidWayOH, replaceWayReg))
-    val dirtyWayOH = Cat(metaDirtyVec.reverse) & Cat(metaValidVec.reverse)
+    val dirtyWayOH = Cat(metaDirtyVec.reverse) & Cat(metaValidVec.reverse) & choseWayOH
     val isDirtyWay = ( choseWayOH & dirtyWayOH ).orR //&& io.read.req.fire // the chosen way is a dirty and valid way
-    // val dirtyTag = Mux1H(dirtyWayOH, tagRdVec)
+    val dirtyTag = Mux1H(dirtyWayOH, tagRdVec)
 
     assert(PopCount(choseWayOH) === 1.U, "Error chosenWay has multiple valid bit!")
+    assert(PopCount(dirtyWayOH) <= 1.U, "Error dirtyWay has multiple valid bit!")
 
     // directory read result
     io.read.resp.valid := RegNext(io.read.req.fire) // true.B
@@ -114,7 +115,7 @@ class DCacheDirectory()(implicit val p: Parameters) extends MyModule {
     io.read.resp.bits.isDirtyWay := Mux(io.read.req.fire, isDirtyWay, RegEnable(isDirtyWay, RegNext(io.read.req.fire))) // isDirtyWay
     io.read.resp.bits.chosenWay := Mux(io.read.req.fire, choseWayOH, RegEnable(choseWayOH, RegNext(io.read.req.fire))) // choseWayOH
     io.read.resp.bits.hit := Mux(io.read.req.fire, isHit, RegEnable(isHit, RegNext(io.read.req.fire))) // isHit
-    // io.read.resp.bits.dirtyTag := Mux(io.read.req.fire, dirtyTag, RegEnable(dirtyTag, RegNext(io.read.req.fire))) // dirtyTag
+    io.read.resp.bits.dirtyTag := Mux(io.read.req.fire, dirtyTag, RegEnable(dirtyTag, RegNext(io.read.req.fire))) // dirtyTag
 
     // io.read.resp.bits.isDirtyWay := RegEnable(isDirtyWay, RegNext(io.read.req.fire))
     // io.read.resp.bits.chosenWay := RegEnable(choseWayOH, RegNext(io.read.req.fire))

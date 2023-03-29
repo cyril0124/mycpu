@@ -57,6 +57,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     val s0_isHit = s0_dirInfo.hit
     val s0_chosenWayOH = s0_dirInfo.chosenWay
     val s0_isDirtyWay = s0_dirInfo.isDirtyWay
+    val s0_dirtyTag = s0_dirInfo.dirtyTag
 
     // store cases
     val storeMissClean = !s0_isHit && !s0_isDirtyWay
@@ -65,6 +66,8 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     
 
     val s0_rdBlockData = io.dataBank.read.resp.bits.blockData
+    val temp = s0_rdBlockData.map{ d => d.asTypeOf(Vec(dcacheWays, UInt((dcacheBlockBytes*8).W)))}
+    val s0_chosenRdBlockData = temp.map{ t => Mux1H(s0_chosenWayOH, t) }
     val s0_rdDataAll = io.dataBank.read.resp.bits.data
     val s0_rdData = Mux1H(s0_chosenWayOH, s0_rdDataAll)
 
@@ -88,12 +91,14 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     s0_tlbusReq.valid := s0_full && (storeMissClean && !s0_putAllBeat || storeMissDirty && !s0_putAllBeat)
     s0_tlbusReq.bits := 0.U.asTypeOf(io.tlbus.req.bits)
     s0_tlbusReq.bits.opcode := Mux(storeMissClean, Get, PutFullData)
-    val blockAddr = Cat(s0_wAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
+    val blockAddr = Cat(s0_reqReg.addr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
+    val writebackAddr = Cat(s0_dirtyTag, addrToDCacheSet(s0_reqReg.addr), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
     s0_tlbusReq.bits.address := Mux(storeMissDirty, 
-                                    blockAddr + (s0_beatCounter.value << dcacheByteOffsetBits),
+                                    writebackAddr + (s0_beatCounter.value << dcacheByteOffsetBits), // blockAddr + (s0_beatCounter.value << dcacheByteOffsetBits),
                                     blockAddr
                                 )
-    s0_tlbusReq.bits.data := Mux(storeMissDirty, Mux1H(s0_beatOH, s0_rdBlockData), 0.U)
+    s0_tlbusReq.bits.data := Mux(storeMissDirty, Mux1H(s0_beatOH, s0_chosenRdBlockData), 0.U)
+    // s0_tlbusReq.bits.data := Mux(storeMissDirty, Mux1H(s0_beatOH, s0_rdBlockData), 0.U)
     s0_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s0_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s0_tlbusReq.bits.corrupt := false.B
@@ -138,6 +143,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     // send Get (store miss dirty)
     val s1_tlbusReq = Wire(chiselTypeOf(io.tlbus.req))
     val s1_sendGet = RegEnable(true.B, false.B, s1_tlbusReq.fire && s1_tlbusReq.bits.opcode === Get)
+    when(s1_fire) { s1_sendGet := false.B }
     s1_tlbusReq.valid := s1_storeMissDirty && !s1_sendGet
     s1_tlbusReq.bits := 0.U.asTypeOf(io.tlbus.req.bits)
     s1_tlbusReq.bits.opcode := Get

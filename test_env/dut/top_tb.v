@@ -2,6 +2,7 @@ module top_tb (
   input         clock,
   input         reset,
   input         io_in_start,
+  // input  [31:0] io_in_csrStateIn_mcycle,
   output [31:0] io_out_state_intRegState_regState_0,
   output [31:0] io_out_state_intRegState_regState_1,
   output [31:0] io_out_state_intRegState_regState_2,
@@ -36,7 +37,9 @@ module top_tb (
   output [31:0] io_out_state_intRegState_regState_31,
   output        io_out_state_instState_commit,
   output [31:0] io_out_state_instState_pc,
-  output [31:0] io_out_state_instState_inst
+  output [31:0] io_out_state_instState_inst,
+  output [31:0] io_out_state_csrState_mcycle,
+  output [31:0] io_out_state_csrState_mcycleh
 );
 
 
@@ -44,6 +47,9 @@ Core core_inst (
     .clock(clock),
     .reset(reset),
     .io_in_start(io_in_start),
+    // .io_in_csrStateIn_mcycle(io_in_csrStateIn_mcycle),
+    // .io_in_csrStateIn_mcycleh(io_in_csrStateIn_mcycle),
+    // int reg state
     .io_out_state_intRegState_regState_0( io_out_state_intRegState_regState_0 ),
     .io_out_state_intRegState_regState_1( io_out_state_intRegState_regState_1 ),
     .io_out_state_intRegState_regState_2( io_out_state_intRegState_regState_2 ),
@@ -76,9 +82,13 @@ Core core_inst (
     .io_out_state_intRegState_regState_29( io_out_state_intRegState_regState_29 ),
     .io_out_state_intRegState_regState_30( io_out_state_intRegState_regState_30 ),
     .io_out_state_intRegState_regState_31( io_out_state_intRegState_regState_31 ),
+    // instruction state
     .io_out_state_instState_commit( io_out_state_instState_commit ),
     .io_out_state_instState_pc( io_out_state_instState_pc ),
-    .io_out_state_instState_inst( io_out_state_instState_inst )
+    .io_out_state_instState_inst( io_out_state_instState_inst ),
+    // csr state
+    .io_out_state_csrState_mcycle( io_out_state_csrState_mcycle ),
+    .io_out_state_csrState_mcycleh( io_out_state_csrState_mcycleh )
 );
 
 task initMem;

@@ -24,10 +24,11 @@ find_library(unicorn unicorn lib)
 
 add_subdirectory(emu)
 add_subdirectory(unicorn)
+add_subdirectory(decode)
 
 add_executable(mycpu_test main.cpp)
 if(DEFINED THREAD)
-    target_link_libraries(mycpu_test emu uc_engine ${unicorn} Threads::Threads)
+    target_link_libraries(mycpu_test emu uc_engine decode ${unicorn} Threads::Threads)
 else()
-    target_link_libraries(mycpu_test emu uc_engine ${unicorn} )
+    target_link_libraries(mycpu_test emu uc_engine decode ${unicorn} )
 endif()

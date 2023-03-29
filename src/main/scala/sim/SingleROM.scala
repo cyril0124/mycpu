@@ -69,6 +69,6 @@ class SingleROM()(override implicit val p: Parameters) extends SingleMemBase{
 }
 
 class SingleRAM()(override implicit val p: Parameters) extends SingleMemBase{
-    loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Dmem.hex")
+    // loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Dmem.hex")
 }
 

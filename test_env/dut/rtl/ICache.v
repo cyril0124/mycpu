@@ -28,11 +28,12 @@ module ICache(
   wire  loadPipe_io_dir_read_req_valid; // @[ICache.scala 33:26]
   wire [31:0] loadPipe_io_dir_read_req_bits_addr; // @[ICache.scala 33:26]
   wire  loadPipe_io_dir_read_resp_bits_hit; // @[ICache.scala 33:26]
-  wire [3:0] loadPipe_io_dir_read_resp_bits_chosenWay; // @[ICache.scala 33:26]
+  wire [7:0] loadPipe_io_dir_read_resp_bits_chosenWay; // @[ICache.scala 33:26]
   wire  loadPipe_io_dir_read_resp_bits_isDirtyWay; // @[ICache.scala 33:26]
+  wire [19:0] loadPipe_io_dir_read_resp_bits_dirtyTag; // @[ICache.scala 33:26]
   wire  loadPipe_io_dir_write_req_valid; // @[ICache.scala 33:26]
   wire [31:0] loadPipe_io_dir_write_req_bits_addr; // @[ICache.scala 33:26]
-  wire [3:0] loadPipe_io_dir_write_req_bits_way; // @[ICache.scala 33:26]
+  wire [7:0] loadPipe_io_dir_write_req_bits_way; // @[ICache.scala 33:26]
   wire [1:0] loadPipe_io_dir_write_req_bits_meta; // @[ICache.scala 33:26]
   wire  loadPipe_io_dataBank_read_req_valid; // @[ICache.scala 33:26]
   wire [6:0] loadPipe_io_dataBank_read_req_bits_set; // @[ICache.scala 33:26]
@@ -41,19 +42,23 @@ module ICache(
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_1; // @[ICache.scala 33:26]
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_2; // @[ICache.scala 33:26]
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_3; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_0; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_1; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_2; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_3; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_4; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_5; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_6; // @[ICache.scala 33:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_7; // @[ICache.scala 33:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_4; // @[ICache.scala 33:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_5; // @[ICache.scala 33:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_6; // @[ICache.scala 33:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_7; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_0; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_1; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_2; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_3; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_4; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_5; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_6; // @[ICache.scala 33:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_7; // @[ICache.scala 33:26]
   wire  loadPipe_io_dataBank_write_req_valid; // @[ICache.scala 33:26]
   wire [31:0] loadPipe_io_dataBank_write_req_bits_data; // @[ICache.scala 33:26]
   wire [6:0] loadPipe_io_dataBank_write_req_bits_set; // @[ICache.scala 33:26]
   wire [7:0] loadPipe_io_dataBank_write_req_bits_blockSelOH; // @[ICache.scala 33:26]
-  wire [3:0] loadPipe_io_dataBank_write_req_bits_way; // @[ICache.scala 33:26]
+  wire [7:0] loadPipe_io_dataBank_write_req_bits_way; // @[ICache.scala 33:26]
   wire  loadPipe_io_tlbus_req_ready; // @[ICache.scala 33:26]
   wire  loadPipe_io_tlbus_req_valid; // @[ICache.scala 33:26]
   wire [2:0] loadPipe_io_tlbus_req_bits_opcode; // @[ICache.scala 33:26]
@@ -74,32 +79,37 @@ module ICache(
   wire [31:0] dataBankArray_io_read_resp_bits_data_1; // @[ICache.scala 36:31]
   wire [31:0] dataBankArray_io_read_resp_bits_data_2; // @[ICache.scala 36:31]
   wire [31:0] dataBankArray_io_read_resp_bits_data_3; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_0; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_1; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_2; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_3; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_4; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_5; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_6; // @[ICache.scala 36:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_7; // @[ICache.scala 36:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_4; // @[ICache.scala 36:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_5; // @[ICache.scala 36:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_6; // @[ICache.scala 36:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_7; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_0; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_1; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_2; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_3; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_4; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_5; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_6; // @[ICache.scala 36:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_7; // @[ICache.scala 36:31]
   wire  dataBankArray_io_write_req_ready; // @[ICache.scala 36:31]
   wire  dataBankArray_io_write_req_valid; // @[ICache.scala 36:31]
   wire [31:0] dataBankArray_io_write_req_bits_data; // @[ICache.scala 36:31]
   wire [6:0] dataBankArray_io_write_req_bits_set; // @[ICache.scala 36:31]
   wire [7:0] dataBankArray_io_write_req_bits_blockSelOH; // @[ICache.scala 36:31]
-  wire [3:0] dataBankArray_io_write_req_bits_way; // @[ICache.scala 36:31]
+  wire [7:0] dataBankArray_io_write_req_bits_way; // @[ICache.scala 36:31]
   wire  directory_clock; // @[ICache.scala 37:27]
   wire  directory_reset; // @[ICache.scala 37:27]
   wire  directory_io_read_req_ready; // @[ICache.scala 37:27]
   wire  directory_io_read_req_valid; // @[ICache.scala 37:27]
   wire [31:0] directory_io_read_req_bits_addr; // @[ICache.scala 37:27]
   wire  directory_io_read_resp_bits_hit; // @[ICache.scala 37:27]
-  wire [3:0] directory_io_read_resp_bits_chosenWay; // @[ICache.scala 37:27]
+  wire [7:0] directory_io_read_resp_bits_chosenWay; // @[ICache.scala 37:27]
   wire  directory_io_read_resp_bits_isDirtyWay; // @[ICache.scala 37:27]
+  wire [19:0] directory_io_read_resp_bits_dirtyTag; // @[ICache.scala 37:27]
   wire  directory_io_write_req_ready; // @[ICache.scala 37:27]
   wire  directory_io_write_req_valid; // @[ICache.scala 37:27]
   wire [31:0] directory_io_write_req_bits_addr; // @[ICache.scala 37:27]
-  wire [3:0] directory_io_write_req_bits_way; // @[ICache.scala 37:27]
+  wire [7:0] directory_io_write_req_bits_way; // @[ICache.scala 37:27]
   wire [1:0] directory_io_write_req_bits_meta; // @[ICache.scala 37:27]
   LoadPipe_1 loadPipe ( // @[ICache.scala 33:26]
     .clock(loadPipe_clock),
@@ -115,6 +125,7 @@ module ICache(
     .io_dir_read_resp_bits_hit(loadPipe_io_dir_read_resp_bits_hit),
     .io_dir_read_resp_bits_chosenWay(loadPipe_io_dir_read_resp_bits_chosenWay),
     .io_dir_read_resp_bits_isDirtyWay(loadPipe_io_dir_read_resp_bits_isDirtyWay),
+    .io_dir_read_resp_bits_dirtyTag(loadPipe_io_dir_read_resp_bits_dirtyTag),
     .io_dir_write_req_valid(loadPipe_io_dir_write_req_valid),
     .io_dir_write_req_bits_addr(loadPipe_io_dir_write_req_bits_addr),
     .io_dir_write_req_bits_way(loadPipe_io_dir_write_req_bits_way),
@@ -126,6 +137,10 @@ module ICache(
     .io_dataBank_read_resp_bits_data_1(loadPipe_io_dataBank_read_resp_bits_data_1),
     .io_dataBank_read_resp_bits_data_2(loadPipe_io_dataBank_read_resp_bits_data_2),
     .io_dataBank_read_resp_bits_data_3(loadPipe_io_dataBank_read_resp_bits_data_3),
+    .io_dataBank_read_resp_bits_data_4(loadPipe_io_dataBank_read_resp_bits_data_4),
+    .io_dataBank_read_resp_bits_data_5(loadPipe_io_dataBank_read_resp_bits_data_5),
+    .io_dataBank_read_resp_bits_data_6(loadPipe_io_dataBank_read_resp_bits_data_6),
+    .io_dataBank_read_resp_bits_data_7(loadPipe_io_dataBank_read_resp_bits_data_7),
     .io_dataBank_read_resp_bits_blockData_0(loadPipe_io_dataBank_read_resp_bits_blockData_0),
     .io_dataBank_read_resp_bits_blockData_1(loadPipe_io_dataBank_read_resp_bits_blockData_1),
     .io_dataBank_read_resp_bits_blockData_2(loadPipe_io_dataBank_read_resp_bits_blockData_2),
@@ -161,6 +176,10 @@ module ICache(
     .io_read_resp_bits_data_1(dataBankArray_io_read_resp_bits_data_1),
     .io_read_resp_bits_data_2(dataBankArray_io_read_resp_bits_data_2),
     .io_read_resp_bits_data_3(dataBankArray_io_read_resp_bits_data_3),
+    .io_read_resp_bits_data_4(dataBankArray_io_read_resp_bits_data_4),
+    .io_read_resp_bits_data_5(dataBankArray_io_read_resp_bits_data_5),
+    .io_read_resp_bits_data_6(dataBankArray_io_read_resp_bits_data_6),
+    .io_read_resp_bits_data_7(dataBankArray_io_read_resp_bits_data_7),
     .io_read_resp_bits_blockData_0(dataBankArray_io_read_resp_bits_blockData_0),
     .io_read_resp_bits_blockData_1(dataBankArray_io_read_resp_bits_blockData_1),
     .io_read_resp_bits_blockData_2(dataBankArray_io_read_resp_bits_blockData_2),
@@ -185,6 +204,7 @@ module ICache(
     .io_read_resp_bits_hit(directory_io_read_resp_bits_hit),
     .io_read_resp_bits_chosenWay(directory_io_read_resp_bits_chosenWay),
     .io_read_resp_bits_isDirtyWay(directory_io_read_resp_bits_isDirtyWay),
+    .io_read_resp_bits_dirtyTag(directory_io_read_resp_bits_dirtyTag),
     .io_write_req_ready(directory_io_write_req_ready),
     .io_write_req_valid(directory_io_write_req_valid),
     .io_write_req_bits_addr(directory_io_write_req_bits_addr),
@@ -206,10 +226,15 @@ module ICache(
   assign loadPipe_io_dir_read_resp_bits_hit = directory_io_read_resp_bits_hit; // @[ICache.scala 41:21]
   assign loadPipe_io_dir_read_resp_bits_chosenWay = directory_io_read_resp_bits_chosenWay; // @[ICache.scala 41:21]
   assign loadPipe_io_dir_read_resp_bits_isDirtyWay = directory_io_read_resp_bits_isDirtyWay; // @[ICache.scala 41:21]
+  assign loadPipe_io_dir_read_resp_bits_dirtyTag = directory_io_read_resp_bits_dirtyTag; // @[ICache.scala 41:21]
   assign loadPipe_io_dataBank_read_resp_bits_data_0 = dataBankArray_io_read_resp_bits_data_0; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_data_1 = dataBankArray_io_read_resp_bits_data_1; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_data_2 = dataBankArray_io_read_resp_bits_data_2; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_data_3 = dataBankArray_io_read_resp_bits_data_3; // @[ICache.scala 40:26]
+  assign loadPipe_io_dataBank_read_resp_bits_data_4 = dataBankArray_io_read_resp_bits_data_4; // @[ICache.scala 40:26]
+  assign loadPipe_io_dataBank_read_resp_bits_data_5 = dataBankArray_io_read_resp_bits_data_5; // @[ICache.scala 40:26]
+  assign loadPipe_io_dataBank_read_resp_bits_data_6 = dataBankArray_io_read_resp_bits_data_6; // @[ICache.scala 40:26]
+  assign loadPipe_io_dataBank_read_resp_bits_data_7 = dataBankArray_io_read_resp_bits_data_7; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_0 = dataBankArray_io_read_resp_bits_blockData_0; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_1 = dataBankArray_io_read_resp_bits_blockData_1; // @[ICache.scala 40:26]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_2 = dataBankArray_io_read_resp_bits_blockData_2; // @[ICache.scala 40:26]

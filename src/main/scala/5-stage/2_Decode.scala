@@ -26,7 +26,7 @@ class DecodeHazardInBundle()(implicit val p: Parameters) extends MyBundle{
 class DecodeOut()(implicit val p: Parameters) extends MyBundle{
     val isBranch = Bool()
     val isJump = Bool()
-    val resultSrc = UInt(2.W)
+    val resultSrc = UInt(RET_SRC_WIDTH.W)
     val lsuOp = UInt(LSU_OP_WIDTH.W)
     val aluOpSel = UInt(aluOpWidth.W)
     val immSign = Bool()

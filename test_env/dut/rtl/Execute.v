@@ -34,6 +34,7 @@ module Execute(
   output [2:0]  io_out_memory_bits_csrOp,
   output        io_out_memory_bits_csrWrEn,
   output        io_out_memory_bits_csrValid,
+  output [31:0] io_out_memory_bits_csrRdData,
   output [31:0] io_out_memory_bits_csrWrData,
   output [31:0] io_out_memory_bits_csrAddr,
   output [3:0]  io_out_memory_bits_excType,
@@ -53,7 +54,8 @@ module Execute(
   input         io_ctrl_flush,
   output [2:0]  io_csrRead_op,
   input         io_csrRead_valid,
-  output [11:0] io_csrRead_addr
+  output [11:0] io_csrRead_addr,
+  input  [31:0] io_csrRead_data
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -135,6 +137,7 @@ module Execute(
   assign io_out_memory_bits_csrOp = stageReg_csrOp; // @[3_Execute.scala 168:35]
   assign io_out_memory_bits_csrWrEn = stageReg_csrOp != 3'h0 & io_csrRead_valid; // @[3_Execute.scala 169:65]
   assign io_out_memory_bits_csrValid = io_csrRead_valid; // @[3_Execute.scala 170:35]
+  assign io_out_memory_bits_csrRdData = io_csrRead_data; // @[3_Execute.scala 171:35]
   assign io_out_memory_bits_csrWrData = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 118:27]
   assign io_out_memory_bits_csrAddr = {{20'd0}, csrAddr}; // @[3_Execute.scala 173:35]
   assign io_out_memory_bits_excType = stageReg_excType; // @[3_Execute.scala 174:35]

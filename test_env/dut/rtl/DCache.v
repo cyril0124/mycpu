@@ -40,11 +40,12 @@ module DCache(
   wire  loadPipe_io_dir_read_req_valid; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dir_read_req_bits_addr; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_read_resp_bits_hit; // @[DCache.scala 83:26]
-  wire [3:0] loadPipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 83:26]
+  wire [7:0] loadPipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_read_resp_bits_isDirtyWay; // @[DCache.scala 83:26]
+  wire [19:0] loadPipe_io_dir_read_resp_bits_dirtyTag; // @[DCache.scala 83:26]
   wire  loadPipe_io_dir_write_req_valid; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dir_write_req_bits_addr; // @[DCache.scala 83:26]
-  wire [3:0] loadPipe_io_dir_write_req_bits_way; // @[DCache.scala 83:26]
+  wire [7:0] loadPipe_io_dir_write_req_bits_way; // @[DCache.scala 83:26]
   wire [1:0] loadPipe_io_dir_write_req_bits_meta; // @[DCache.scala 83:26]
   wire  loadPipe_io_dataBank_read_req_valid; // @[DCache.scala 83:26]
   wire [7:0] loadPipe_io_dataBank_read_req_bits_set; // @[DCache.scala 83:26]
@@ -53,15 +54,19 @@ module DCache(
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_1; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_2; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_3; // @[DCache.scala 83:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_0; // @[DCache.scala 83:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_1; // @[DCache.scala 83:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_2; // @[DCache.scala 83:26]
-  wire [127:0] loadPipe_io_dataBank_read_resp_bits_blockData_3; // @[DCache.scala 83:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_4; // @[DCache.scala 83:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_5; // @[DCache.scala 83:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_6; // @[DCache.scala 83:26]
+  wire [31:0] loadPipe_io_dataBank_read_resp_bits_data_7; // @[DCache.scala 83:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_0; // @[DCache.scala 83:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_1; // @[DCache.scala 83:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_2; // @[DCache.scala 83:26]
+  wire [255:0] loadPipe_io_dataBank_read_resp_bits_blockData_3; // @[DCache.scala 83:26]
   wire  loadPipe_io_dataBank_write_req_valid; // @[DCache.scala 83:26]
   wire [31:0] loadPipe_io_dataBank_write_req_bits_data; // @[DCache.scala 83:26]
   wire [7:0] loadPipe_io_dataBank_write_req_bits_set; // @[DCache.scala 83:26]
   wire [3:0] loadPipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache.scala 83:26]
-  wire [3:0] loadPipe_io_dataBank_write_req_bits_way; // @[DCache.scala 83:26]
+  wire [7:0] loadPipe_io_dataBank_write_req_bits_way; // @[DCache.scala 83:26]
   wire  loadPipe_io_tlbus_req_ready; // @[DCache.scala 83:26]
   wire  loadPipe_io_tlbus_req_valid; // @[DCache.scala 83:26]
   wire [2:0] loadPipe_io_tlbus_req_bits_opcode; // @[DCache.scala 83:26]
@@ -84,26 +89,27 @@ module DCache(
   wire [31:0] storePipe_io_dir_read_req_bits_addr; // @[DCache.scala 84:27]
   wire  storePipe_io_dir_read_resp_valid; // @[DCache.scala 84:27]
   wire  storePipe_io_dir_read_resp_bits_hit; // @[DCache.scala 84:27]
-  wire [3:0] storePipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 84:27]
+  wire [7:0] storePipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 84:27]
   wire  storePipe_io_dir_read_resp_bits_isDirtyWay; // @[DCache.scala 84:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_dirtyTag; // @[DCache.scala 84:27]
   wire  storePipe_io_dir_write_req_ready; // @[DCache.scala 84:27]
   wire  storePipe_io_dir_write_req_valid; // @[DCache.scala 84:27]
   wire [31:0] storePipe_io_dir_write_req_bits_addr; // @[DCache.scala 84:27]
-  wire [3:0] storePipe_io_dir_write_req_bits_way; // @[DCache.scala 84:27]
+  wire [7:0] storePipe_io_dir_write_req_bits_way; // @[DCache.scala 84:27]
   wire [1:0] storePipe_io_dir_write_req_bits_meta; // @[DCache.scala 84:27]
   wire  storePipe_io_dataBank_read_req_valid; // @[DCache.scala 84:27]
   wire [7:0] storePipe_io_dataBank_read_req_bits_set; // @[DCache.scala 84:27]
   wire [3:0] storePipe_io_dataBank_read_req_bits_blockSelOH; // @[DCache.scala 84:27]
-  wire [127:0] storePipe_io_dataBank_read_resp_bits_blockData_0; // @[DCache.scala 84:27]
-  wire [127:0] storePipe_io_dataBank_read_resp_bits_blockData_1; // @[DCache.scala 84:27]
-  wire [127:0] storePipe_io_dataBank_read_resp_bits_blockData_2; // @[DCache.scala 84:27]
-  wire [127:0] storePipe_io_dataBank_read_resp_bits_blockData_3; // @[DCache.scala 84:27]
+  wire [255:0] storePipe_io_dataBank_read_resp_bits_blockData_0; // @[DCache.scala 84:27]
+  wire [255:0] storePipe_io_dataBank_read_resp_bits_blockData_1; // @[DCache.scala 84:27]
+  wire [255:0] storePipe_io_dataBank_read_resp_bits_blockData_2; // @[DCache.scala 84:27]
+  wire [255:0] storePipe_io_dataBank_read_resp_bits_blockData_3; // @[DCache.scala 84:27]
   wire  storePipe_io_dataBank_write_req_ready; // @[DCache.scala 84:27]
   wire  storePipe_io_dataBank_write_req_valid; // @[DCache.scala 84:27]
   wire [31:0] storePipe_io_dataBank_write_req_bits_data; // @[DCache.scala 84:27]
   wire [7:0] storePipe_io_dataBank_write_req_bits_set; // @[DCache.scala 84:27]
   wire [3:0] storePipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache.scala 84:27]
-  wire [3:0] storePipe_io_dataBank_write_req_bits_way; // @[DCache.scala 84:27]
+  wire [7:0] storePipe_io_dataBank_write_req_bits_way; // @[DCache.scala 84:27]
   wire [3:0] storePipe_io_dataBank_write_req_bits_mask; // @[DCache.scala 84:27]
   wire  storePipe_io_tlbus_req_ready; // @[DCache.scala 84:27]
   wire  storePipe_io_tlbus_req_valid; // @[DCache.scala 84:27]
@@ -125,16 +131,20 @@ module DCache(
   wire [31:0] dataBankArray_io_read_resp_bits_data_1; // @[DCache.scala 87:31]
   wire [31:0] dataBankArray_io_read_resp_bits_data_2; // @[DCache.scala 87:31]
   wire [31:0] dataBankArray_io_read_resp_bits_data_3; // @[DCache.scala 87:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_0; // @[DCache.scala 87:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_1; // @[DCache.scala 87:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_2; // @[DCache.scala 87:31]
-  wire [127:0] dataBankArray_io_read_resp_bits_blockData_3; // @[DCache.scala 87:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_4; // @[DCache.scala 87:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_5; // @[DCache.scala 87:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_6; // @[DCache.scala 87:31]
+  wire [31:0] dataBankArray_io_read_resp_bits_data_7; // @[DCache.scala 87:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_0; // @[DCache.scala 87:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_1; // @[DCache.scala 87:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_2; // @[DCache.scala 87:31]
+  wire [255:0] dataBankArray_io_read_resp_bits_blockData_3; // @[DCache.scala 87:31]
   wire  dataBankArray_io_write_req_ready; // @[DCache.scala 87:31]
   wire  dataBankArray_io_write_req_valid; // @[DCache.scala 87:31]
   wire [31:0] dataBankArray_io_write_req_bits_data; // @[DCache.scala 87:31]
   wire [7:0] dataBankArray_io_write_req_bits_set; // @[DCache.scala 87:31]
   wire [3:0] dataBankArray_io_write_req_bits_blockSelOH; // @[DCache.scala 87:31]
-  wire [3:0] dataBankArray_io_write_req_bits_way; // @[DCache.scala 87:31]
+  wire [7:0] dataBankArray_io_write_req_bits_way; // @[DCache.scala 87:31]
   wire [3:0] dataBankArray_io_write_req_bits_mask; // @[DCache.scala 87:31]
   wire  directory_clock; // @[DCache.scala 88:27]
   wire  directory_reset; // @[DCache.scala 88:27]
@@ -143,12 +153,13 @@ module DCache(
   wire [31:0] directory_io_read_req_bits_addr; // @[DCache.scala 88:27]
   wire  directory_io_read_resp_valid; // @[DCache.scala 88:27]
   wire  directory_io_read_resp_bits_hit; // @[DCache.scala 88:27]
-  wire [3:0] directory_io_read_resp_bits_chosenWay; // @[DCache.scala 88:27]
+  wire [7:0] directory_io_read_resp_bits_chosenWay; // @[DCache.scala 88:27]
   wire  directory_io_read_resp_bits_isDirtyWay; // @[DCache.scala 88:27]
+  wire [19:0] directory_io_read_resp_bits_dirtyTag; // @[DCache.scala 88:27]
   wire  directory_io_write_req_ready; // @[DCache.scala 88:27]
   wire  directory_io_write_req_valid; // @[DCache.scala 88:27]
   wire [31:0] directory_io_write_req_bits_addr; // @[DCache.scala 88:27]
-  wire [3:0] directory_io_write_req_bits_way; // @[DCache.scala 88:27]
+  wire [7:0] directory_io_write_req_bits_way; // @[DCache.scala 88:27]
   wire [1:0] directory_io_write_req_bits_meta; // @[DCache.scala 88:27]
   wire  dataBankReadReqArb_io_in_0_valid; // @[DCache.scala 176:36]
   wire [7:0] dataBankReadReqArb_io_in_0_bits_set; // @[DCache.scala 176:36]
@@ -164,20 +175,20 @@ module DCache(
   wire [31:0] dataBankWriteReqArb_io_in_0_bits_data; // @[DCache.scala 181:37]
   wire [7:0] dataBankWriteReqArb_io_in_0_bits_set; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_in_0_bits_blockSelOH; // @[DCache.scala 181:37]
-  wire [3:0] dataBankWriteReqArb_io_in_0_bits_way; // @[DCache.scala 181:37]
+  wire [7:0] dataBankWriteReqArb_io_in_0_bits_way; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_in_0_bits_mask; // @[DCache.scala 181:37]
   wire  dataBankWriteReqArb_io_in_1_valid; // @[DCache.scala 181:37]
   wire [31:0] dataBankWriteReqArb_io_in_1_bits_data; // @[DCache.scala 181:37]
   wire [7:0] dataBankWriteReqArb_io_in_1_bits_set; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_in_1_bits_blockSelOH; // @[DCache.scala 181:37]
-  wire [3:0] dataBankWriteReqArb_io_in_1_bits_way; // @[DCache.scala 181:37]
+  wire [7:0] dataBankWriteReqArb_io_in_1_bits_way; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_in_1_bits_mask; // @[DCache.scala 181:37]
   wire  dataBankWriteReqArb_io_out_ready; // @[DCache.scala 181:37]
   wire  dataBankWriteReqArb_io_out_valid; // @[DCache.scala 181:37]
   wire [31:0] dataBankWriteReqArb_io_out_bits_data; // @[DCache.scala 181:37]
   wire [7:0] dataBankWriteReqArb_io_out_bits_set; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_out_bits_blockSelOH; // @[DCache.scala 181:37]
-  wire [3:0] dataBankWriteReqArb_io_out_bits_way; // @[DCache.scala 181:37]
+  wire [7:0] dataBankWriteReqArb_io_out_bits_way; // @[DCache.scala 181:37]
   wire [3:0] dataBankWriteReqArb_io_out_bits_mask; // @[DCache.scala 181:37]
   wire  dirReadReqArb_io_in_0_valid; // @[DCache.scala 186:31]
   wire [31:0] dirReadReqArb_io_in_0_bits_addr; // @[DCache.scala 186:31]
@@ -188,16 +199,16 @@ module DCache(
   wire  dirWriteReqArb_io_in_0_ready; // @[DCache.scala 191:32]
   wire  dirWriteReqArb_io_in_0_valid; // @[DCache.scala 191:32]
   wire [31:0] dirWriteReqArb_io_in_0_bits_addr; // @[DCache.scala 191:32]
-  wire [3:0] dirWriteReqArb_io_in_0_bits_way; // @[DCache.scala 191:32]
+  wire [7:0] dirWriteReqArb_io_in_0_bits_way; // @[DCache.scala 191:32]
   wire [1:0] dirWriteReqArb_io_in_0_bits_meta; // @[DCache.scala 191:32]
   wire  dirWriteReqArb_io_in_1_valid; // @[DCache.scala 191:32]
   wire [31:0] dirWriteReqArb_io_in_1_bits_addr; // @[DCache.scala 191:32]
-  wire [3:0] dirWriteReqArb_io_in_1_bits_way; // @[DCache.scala 191:32]
+  wire [7:0] dirWriteReqArb_io_in_1_bits_way; // @[DCache.scala 191:32]
   wire [1:0] dirWriteReqArb_io_in_1_bits_meta; // @[DCache.scala 191:32]
   wire  dirWriteReqArb_io_out_ready; // @[DCache.scala 191:32]
   wire  dirWriteReqArb_io_out_valid; // @[DCache.scala 191:32]
   wire [31:0] dirWriteReqArb_io_out_bits_addr; // @[DCache.scala 191:32]
-  wire [3:0] dirWriteReqArb_io_out_bits_way; // @[DCache.scala 191:32]
+  wire [7:0] dirWriteReqArb_io_out_bits_way; // @[DCache.scala 191:32]
   wire [1:0] dirWriteReqArb_io_out_bits_meta; // @[DCache.scala 191:32]
   reg [3:0] tlbusPendingOpcode; // @[DCache.scala 124:37]
   reg  tlbusPendingAck; // @[DCache.scala 125:34]
@@ -240,6 +251,7 @@ module DCache(
     .io_dir_read_resp_bits_hit(loadPipe_io_dir_read_resp_bits_hit),
     .io_dir_read_resp_bits_chosenWay(loadPipe_io_dir_read_resp_bits_chosenWay),
     .io_dir_read_resp_bits_isDirtyWay(loadPipe_io_dir_read_resp_bits_isDirtyWay),
+    .io_dir_read_resp_bits_dirtyTag(loadPipe_io_dir_read_resp_bits_dirtyTag),
     .io_dir_write_req_valid(loadPipe_io_dir_write_req_valid),
     .io_dir_write_req_bits_addr(loadPipe_io_dir_write_req_bits_addr),
     .io_dir_write_req_bits_way(loadPipe_io_dir_write_req_bits_way),
@@ -251,6 +263,10 @@ module DCache(
     .io_dataBank_read_resp_bits_data_1(loadPipe_io_dataBank_read_resp_bits_data_1),
     .io_dataBank_read_resp_bits_data_2(loadPipe_io_dataBank_read_resp_bits_data_2),
     .io_dataBank_read_resp_bits_data_3(loadPipe_io_dataBank_read_resp_bits_data_3),
+    .io_dataBank_read_resp_bits_data_4(loadPipe_io_dataBank_read_resp_bits_data_4),
+    .io_dataBank_read_resp_bits_data_5(loadPipe_io_dataBank_read_resp_bits_data_5),
+    .io_dataBank_read_resp_bits_data_6(loadPipe_io_dataBank_read_resp_bits_data_6),
+    .io_dataBank_read_resp_bits_data_7(loadPipe_io_dataBank_read_resp_bits_data_7),
     .io_dataBank_read_resp_bits_blockData_0(loadPipe_io_dataBank_read_resp_bits_blockData_0),
     .io_dataBank_read_resp_bits_blockData_1(loadPipe_io_dataBank_read_resp_bits_blockData_1),
     .io_dataBank_read_resp_bits_blockData_2(loadPipe_io_dataBank_read_resp_bits_blockData_2),
@@ -286,6 +302,7 @@ module DCache(
     .io_dir_read_resp_bits_hit(storePipe_io_dir_read_resp_bits_hit),
     .io_dir_read_resp_bits_chosenWay(storePipe_io_dir_read_resp_bits_chosenWay),
     .io_dir_read_resp_bits_isDirtyWay(storePipe_io_dir_read_resp_bits_isDirtyWay),
+    .io_dir_read_resp_bits_dirtyTag(storePipe_io_dir_read_resp_bits_dirtyTag),
     .io_dir_write_req_ready(storePipe_io_dir_write_req_ready),
     .io_dir_write_req_valid(storePipe_io_dir_write_req_valid),
     .io_dir_write_req_bits_addr(storePipe_io_dir_write_req_bits_addr),
@@ -327,6 +344,10 @@ module DCache(
     .io_read_resp_bits_data_1(dataBankArray_io_read_resp_bits_data_1),
     .io_read_resp_bits_data_2(dataBankArray_io_read_resp_bits_data_2),
     .io_read_resp_bits_data_3(dataBankArray_io_read_resp_bits_data_3),
+    .io_read_resp_bits_data_4(dataBankArray_io_read_resp_bits_data_4),
+    .io_read_resp_bits_data_5(dataBankArray_io_read_resp_bits_data_5),
+    .io_read_resp_bits_data_6(dataBankArray_io_read_resp_bits_data_6),
+    .io_read_resp_bits_data_7(dataBankArray_io_read_resp_bits_data_7),
     .io_read_resp_bits_blockData_0(dataBankArray_io_read_resp_bits_blockData_0),
     .io_read_resp_bits_blockData_1(dataBankArray_io_read_resp_bits_blockData_1),
     .io_read_resp_bits_blockData_2(dataBankArray_io_read_resp_bits_blockData_2),
@@ -349,6 +370,7 @@ module DCache(
     .io_read_resp_bits_hit(directory_io_read_resp_bits_hit),
     .io_read_resp_bits_chosenWay(directory_io_read_resp_bits_chosenWay),
     .io_read_resp_bits_isDirtyWay(directory_io_read_resp_bits_isDirtyWay),
+    .io_read_resp_bits_dirtyTag(directory_io_read_resp_bits_dirtyTag),
     .io_write_req_ready(directory_io_write_req_ready),
     .io_write_req_valid(directory_io_write_req_valid),
     .io_write_req_bits_addr(directory_io_write_req_bits_addr),
@@ -430,10 +452,15 @@ module DCache(
   assign loadPipe_io_dir_read_resp_bits_hit = directory_io_read_resp_bits_hit; // @[DCache.scala 115:31]
   assign loadPipe_io_dir_read_resp_bits_chosenWay = directory_io_read_resp_bits_chosenWay; // @[DCache.scala 115:31]
   assign loadPipe_io_dir_read_resp_bits_isDirtyWay = directory_io_read_resp_bits_isDirtyWay; // @[DCache.scala 115:31]
+  assign loadPipe_io_dir_read_resp_bits_dirtyTag = directory_io_read_resp_bits_dirtyTag; // @[DCache.scala 115:31]
   assign loadPipe_io_dataBank_read_resp_bits_data_0 = dataBankArray_io_read_resp_bits_data_0; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_data_1 = dataBankArray_io_read_resp_bits_data_1; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_data_2 = dataBankArray_io_read_resp_bits_data_2; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_data_3 = dataBankArray_io_read_resp_bits_data_3; // @[DCache.scala 114:36]
+  assign loadPipe_io_dataBank_read_resp_bits_data_4 = dataBankArray_io_read_resp_bits_data_4; // @[DCache.scala 114:36]
+  assign loadPipe_io_dataBank_read_resp_bits_data_5 = dataBankArray_io_read_resp_bits_data_5; // @[DCache.scala 114:36]
+  assign loadPipe_io_dataBank_read_resp_bits_data_6 = dataBankArray_io_read_resp_bits_data_6; // @[DCache.scala 114:36]
+  assign loadPipe_io_dataBank_read_resp_bits_data_7 = dataBankArray_io_read_resp_bits_data_7; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_0 = dataBankArray_io_read_resp_bits_blockData_0; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_1 = dataBankArray_io_read_resp_bits_blockData_1; // @[DCache.scala 114:36]
   assign loadPipe_io_dataBank_read_resp_bits_blockData_2 = dataBankArray_io_read_resp_bits_blockData_2; // @[DCache.scala 114:36]
@@ -452,6 +479,7 @@ module DCache(
   assign storePipe_io_dir_read_resp_bits_hit = directory_io_read_resp_bits_hit; // @[DCache.scala 120:32]
   assign storePipe_io_dir_read_resp_bits_chosenWay = directory_io_read_resp_bits_chosenWay; // @[DCache.scala 120:32]
   assign storePipe_io_dir_read_resp_bits_isDirtyWay = directory_io_read_resp_bits_isDirtyWay; // @[DCache.scala 120:32]
+  assign storePipe_io_dir_read_resp_bits_dirtyTag = directory_io_read_resp_bits_dirtyTag; // @[DCache.scala 120:32]
   assign storePipe_io_dir_write_req_ready = dirWriteReqArb_io_in_0_ready; // @[DCache.scala 192:29]
   assign storePipe_io_dataBank_read_resp_bits_blockData_0 = dataBankArray_io_read_resp_bits_blockData_0; // @[DCache.scala 119:37]
   assign storePipe_io_dataBank_read_resp_bits_blockData_1 = dataBankArray_io_read_resp_bits_blockData_1; // @[DCache.scala 119:37]

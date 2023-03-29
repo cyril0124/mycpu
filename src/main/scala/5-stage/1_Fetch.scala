@@ -228,7 +228,7 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
         {
             case MyCpuParamsKey => MyCpuParameters(
                 dcacheSets = 128,
-                dcacheWays = 4,
+                dcacheWays = 8,
                 dcacheBlockSize = 8
             )
         }

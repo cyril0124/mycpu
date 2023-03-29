@@ -3,6 +3,8 @@
 uint64_t cycles;
 
 uint64_t inst_num = 0;
+uint64_t idle_cycles = 0;
+uint64_t machine_cycles = 0;
 
 Emu::Emu(int argc, char **argv) {
     Verilated::commandArgs(argc, argv);
@@ -107,12 +109,10 @@ void Emu::execute(uint64_t nr_cycles) {
         }
 
         while(cycles < nr_cycles) {
-            if(commit == 1) {
-                inst_num++;
+            if(commit == 1 || !run_dut) {
+                inst_num++; 
 
                 engine->step();
-                cmp_err[0] = engine->compare_pc(pc);
-                cmp_err[1] = engine->compare_inst(inst);
 
                 int_regs[0] = dut_ptr->io_out_state_intRegState_regState_0;
                 int_regs[1] = dut_ptr->io_out_state_intRegState_regState_1;
@@ -146,17 +146,32 @@ void Emu::execute(uint64_t nr_cycles) {
                 int_regs[29] = dut_ptr->io_out_state_intRegState_regState_29;
                 int_regs[30] = dut_ptr->io_out_state_intRegState_regState_30;
                 int_regs[31] = dut_ptr->io_out_state_intRegState_regState_31;
-                cmp_err[2] = engine->compare_int_reg(int_regs);
 
+                if(step_check_pc && run_dut)
+                    cmp_err[0] = engine->compare_pc(pc);
+                if(step_check_inst && run_dut)
+                    cmp_err[1] = engine->compare_inst(inst);
+                if(step_check_int_reg && run_dut) 
+                    cmp_err[2] = engine->compare_int_reg(int_regs);
+                
+
+                uint64_t mcycle = dut_ptr->io_out_state_csrState_mcycle;
+                uint64_t mcycleh = dut_ptr->io_out_state_csrState_mcycleh;
+                machine_cycles = (mcycleh << 32) + mcycle;
+                
                 engine->update_next_pc();
 
                 if(engine->is_terminate() && test_case == test_case_num) {
                     printf(PRINT_GREEN "test end, all case PASS!\n" PRINT_RESET);
                     m_assert(false, "terminate...");
                 }
+                idle_cycles = 0;
+            } else {
+                idle_cycles ++;
             }
-
-            this->step();
+            
+            if(run_dut)
+                this->step();
             this->update_cycles(1);
 
             // engine stop
@@ -172,10 +187,11 @@ void Emu::execute(uint64_t nr_cycles) {
 
             // compare error handle
             bool has_cmp_err = false;
+            bool too_many_idle_cyclse = idle_cycles >= 10000;
             for(int i = 0; i < 3; i++) {
                 has_cmp_err = has_cmp_err | cmp_err[i] != 0;
             }
-            if(has_cmp_err) {
+            if(has_cmp_err || too_many_idle_cyclse) {
                 for(int i = 0; i < 3; i++) {
                     auto err = cmp_err[i];
                     switch (err) {
@@ -198,7 +214,10 @@ void Emu::execute(uint64_t nr_cycles) {
                     this->tfp->close();
                 }
 #endif
-                m_assert(false, (std::string("compare error! ") + "test_case_name: " + bin_file + "\n").c_str());
+                if(too_many_idle_cyclse)
+                    m_assert(false, "too many idle cycles!!!\n");
+                else
+                    m_assert(false, (std::string("compare error! ") + "test_case_name: " + bin_file + "\n").c_str());
             }
         }
     }
@@ -206,7 +225,8 @@ void Emu::execute(uint64_t nr_cycles) {
 
 
 void before_assert(void) {
-    float ipc = (float)((float)inst_num/(float)cycles);
+    // float ipc = (float)((float)inst_num/(float)cycles);
+    float ipc = (float)((float)inst_num/(float)machine_cycles);
     float cpi = 1 / ipc;
-    printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, cycles, ipc, cpi);
+    printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, machine_cycles, ipc, cpi);
 }

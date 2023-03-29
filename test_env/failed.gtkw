@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Tue Mar 28 07:24:53 2023
+[*] Wed Mar 29 08:52:23 2023
 [*]
-[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-28@15:21:59_0.fst"
-[dumpfile_mtime] "Tue Mar 28 07:22:20 2023"
-[dumpfile_size] 9767132
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-03-29@16:40:46_0.fst"
+[dumpfile_mtime] "Wed Mar 29 08:41:13 2023"
+[dumpfile_size] 21771057
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 50004170
-[size] 1902 991
-[pos] 9 32
-*-10.000000 50005390 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 63753055
+[size] 1920 1009
+[pos] 8 31
+*-9.000000 63754038 75165990 63754038 61585540 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -22,11 +22,12 @@
 [treeopen] TOP.top_tb.core_inst.mem.
 [treeopen] TOP.top_tb.core_inst.mem.dcache.
 [treeopen] TOP.top_tb.core_inst.mem.lsu.
+[treeopen] TOP.top_tb.core_inst.rom.
 [treeopen] TOP.top_tb.core_inst.wb.
 [sst_width] 439
-[signals_width] 519
+[signals_width] 440
 [sst_expanded] 1
-[sst_vpaned_height] 449
+[sst_vpaned_height] 459
 @800200
 -ife
 @28
@@ -208,6 +209,7 @@ TOP.top_tb.core_inst.exe.io_in_bits_aluIn2IsReg
 TOP.top_tb.core_inst.exe.stageReg_aluIn2[31:0]
 @200
 -
+-
 @28
 TOP.top_tb.core_inst.exe.aluZero
 TOP.top_tb.core_inst.exe.stageReg_isBranch
@@ -216,6 +218,15 @@ TOP.top_tb.core_inst.exe.stageReg_isJump
 -
 @28
 TOP.top_tb.core_inst.exe.io_ctrl_flush
+@200
+-
+@22
+TOP.top_tb.core_inst.exe.io_csrRead_addr[11:0]
+@28
+TOP.top_tb.core_inst.exe.io_csrRead_op[2:0]
+TOP.top_tb.core_inst.exe.io_csrRead_valid
+@22
+TOP.top_tb.core_inst.csrFile.io_read_data[31:0]
 @200
 -
 @28
@@ -275,8 +286,10 @@ TOP.top_tb.core_inst.mem.lsu.io_req_bits_addr[31:0]
 @200
 -
 @22
+>600
 TOP.top_tb.core_inst.mem.dcache_io_read_req_bits_addr[31:0]
 @28
+>0
 TOP.top_tb.core_inst.mem.dcache_io_read_req_ready
 TOP.top_tb.core_inst.mem.dcache_io_read_req_valid
 @200
@@ -287,17 +300,90 @@ TOP.top_tb.core_inst.mem.dcache_io_read_resp_bits_data[31:0]
 TOP.top_tb.core_inst.mem.dcache_io_read_resp_valid
 @200
 -
+-
 @22
-TOP.top_tb.core_inst.mem.dcache.loadPipe.s0_rdData[31:0]
+TOP.top_tb.core_inst.mem.dcache_io_write_req_bits_addr[31:0]
+TOP.top_tb.core_inst.mem.dcache_io_write_req_bits_data[31:0]
 @28
-TOP.top_tb.core_inst.mem.dcache.loadPipe.io_dir_read_resp_bits_hit
-@29
-TOP.top_tb.core_inst.mem.dcache.loadPipe.s1_loadMissClean
-@28
-TOP.top_tb.core_inst.mem.dcache.loadPipe.s1_loadMissDirty
+TOP.top_tb.core_inst.mem.dcache_io_write_req_ready
+TOP.top_tb.core_inst.mem.dcache_io_write_req_valid
 @200
 -
 @22
+TOP.top_tb.core_inst.mem.dcache.directory.wSet[7:0]
+TOP.top_tb.core_inst.mem.dcache.directory.rSet[7:0]
+@28
+TOP.top_tb.core_inst.mem.dcache.directory.io_write_req_valid
+@200
+-
+@22
+TOP.top_tb.core_inst.mem.dcache.directory.wTag[19:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_write_req_bits_set[7:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_write_req_bits_way[3:0]
+@28
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_write_req_ready
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_write_req_valid
+@200
+-
+@28
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_storeHit
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_storeMissClean
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_storeMissDirty
+@200
+-
+@28
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_tlbusReq_ready
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_sendGet
+TOP.top_tb.core_inst.mem.dcache.storePipe.s1_tlbusReq_valid
+TOP.top_tb.core_inst.mem.dcache.storePipe.s0_fire
+@200
+-
+-
+-
+@29
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_req_bits_blockSelOH[3:0]
+@200
+-
+@22
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_0[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_1[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_2[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_3[31:0]
+@200
+-
+@22
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_0[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_1[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_2[31:0]
+TOP.top_tb.core_inst.mem.dcache.dataBankArray.io_read_resp_bits_data_3[31:0]
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.mem.dcache.storePipe.io_dataBank_read_resp_bits_blockData_0[127:0]
+TOP.top_tb.core_inst.mem.dcache.storePipe.io_dataBank_read_resp_bits_blockData_1[127:0]
+TOP.top_tb.core_inst.mem.dcache.storePipe.io_dataBank_read_resp_bits_blockData_2[127:0]
+TOP.top_tb.core_inst.mem.dcache.storePipe.io_dataBank_read_resp_bits_blockData_3[127:0]
+@200
+-
+@28
+TOP.top_tb.core_inst.mem.dcache.directory.hasInvalidWay
+TOP.top_tb.core_inst.mem.dcache.directory.replaceWayReg[3:0]
+TOP.top_tb.core_inst.mem.dcache.directory.isHit
+TOP.top_tb.core_inst.mem.dcache.directory.choseWayOH[3:0]
+TOP.top_tb.core_inst.mem.dcache.directory.dirtyWayOH[3:0]
+@22
+TOP.top_tb.core_inst.mem.dcache.directory.tagRdVec_0[19:0]
+TOP.top_tb.core_inst.mem.dcache.directory.tagRdVec_1[19:0]
+TOP.top_tb.core_inst.mem.dcache.directory.tagRdVec_2[19:0]
+TOP.top_tb.core_inst.mem.dcache.directory.tagRdVec_3[19:0]
+@200
+-
+@22
+TOP.top_tb.core_inst.mem.dcache.directory.io_read_resp_bits_dirtyTag[19:0]
+TOP.top_tb.core_inst.mem.dcache.loadPipe.io_dir_read_resp_bits_dirtyTag[19:0]
+TOP.top_tb.core_inst.mem.dcache.loadPipe.s1_dirInfo_dirtyTag[19:0]
+TOP.top_tb.core_inst.mem.dcache.loadPipe.writebackAddr[31:0]
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_req_bits_address[31:0]
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_req_bits_data[31:0]
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_req_bits_size[31:0]
@@ -314,6 +400,75 @@ TOP.top_tb.core_inst.mem.dcache_io_tlbus_resp_bits_data[31:0]
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_resp_bits_opcode[2:0]
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_resp_ready
 TOP.top_tb.core_inst.mem.dcache_io_tlbus_resp_valid
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.xbar.buf__io_enq_bits_address[31:0]
+TOP.top_tb.core_inst.xbar.buf__io_enq_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.xbar.buf__io_enq_bits_opcode[2:0]
+@22
+TOP.top_tb.core_inst.xbar.buf__io_enq_bits_size[31:0]
+@28
+TOP.top_tb.core_inst.xbar.buf__io_enq_bits_source
+TOP.top_tb.core_inst.xbar.buf__io_enq_ready
+TOP.top_tb.core_inst.xbar.buf__io_enq_valid
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.xbar.buf__io_deq_bits_address[31:0]
+TOP.top_tb.core_inst.xbar.buf__io_deq_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.xbar.buf__io_deq_bits_opcode[2:0]
+@22
+TOP.top_tb.core_inst.xbar.buf__io_deq_bits_size[31:0]
+@28
+TOP.top_tb.core_inst.xbar.buf__io_deq_bits_source
+TOP.top_tb.core_inst.xbar.buf__io_deq_ready
+TOP.top_tb.core_inst.xbar.buf__io_deq_valid
+@200
+-
+@28
+>-10
+TOP.top_tb.core_inst.xbar.clock
+@22
+>0
+TOP.top_tb.core_inst.xbar.s1_beatCounter_value[4:0]
+@28
+TOP.top_tb.core_inst.xbar.s1_lastBeat
+@200
+-
+@28
+TOP.top_tb.core_inst.xbar.s1_slaveRecv
+TOP.top_tb.core_inst.xbar.s1_latch
+TOP.top_tb.core_inst.xbar.s1_fire
+TOP.top_tb.core_inst.xbar.s1_full
+@200
+-
+@28
+TOP.top_tb.core_inst.xbar.slaveMux_io_out_valid
+TOP.top_tb.core_inst.xbar.s2_full
+TOP.top_tb.core_inst.xbar.s2_fire
+@200
+-
+@22
+TOP.top_tb.core_inst.rom.io_req_bits_address[31:0]
+TOP.top_tb.core_inst.rom.io_req_bits_data[31:0]
+@28
+TOP.top_tb.core_inst.rom.io_req_bits_opcode[2:0]
+@22
+TOP.top_tb.core_inst.rom.io_req_bits_size[31:0]
+@28
+TOP.top_tb.core_inst.rom.io_req_ready
+TOP.top_tb.core_inst.rom.io_req_valid
+@200
+-
+@28
+TOP.top_tb.core_inst.xbar.s1_full
+TOP.top_tb.core_inst.xbar.s1_putAllBeat
+TOP.top_tb.core_inst.xbar.s1_fire
 @200
 -
 @28
@@ -399,7 +554,7 @@ TOP.top_tb.core_inst.io_out_state_instState_pc[31:0]
 @200
 -
 -
-@c00200
+@800200
 -csrfile
 @28
 TOP.top_tb.core_inst.csrFile.io_except_bits_isMret
@@ -411,7 +566,7 @@ TOP.top_tb.core_inst.csrFile.io_except_bits_excPc[31:0]
 TOP.top_tb.core_inst.csrFile.io_except_valid
 @22
 TOP.top_tb.core_inst.csrFile.mepc_data[31:0]
-@1401200
+@1000200
 -csrfile
 @200
 -
@@ -458,42 +613,14 @@ TOP.top_tb.core_inst.rom.io_req_valid
 -
 @c00200
 -regfile
-@22
-TOP.top_tb.core_inst.regFile.io_state_regState_0[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_1[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_2[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_3[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_4[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_5[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_6[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_7[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_8[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_9[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_10[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_11[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_12[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_13[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_14[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_15[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_16[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_17[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_18[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_19[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_20[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_21[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_22[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_23[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_24[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_25[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_26[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_27[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_28[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_29[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_30[31:0]
-TOP.top_tb.core_inst.regFile.io_state_regState_31[31:0]
 @1401200
 -regfile
 @200
 -
 [pattern_trace] 1
+!100000@@
+?"3D1A0D01
+@23
+TOP.top_tb.core_inst.mem.dcache_io_write_req_bits_data[31:0]
+!!
 [pattern_trace] 0

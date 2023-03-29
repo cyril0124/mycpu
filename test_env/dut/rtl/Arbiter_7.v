@@ -2,16 +2,16 @@ module Arbiter_7(
   output        io_in_0_ready,
   input         io_in_0_valid,
   input  [31:0] io_in_0_bits_addr,
-  input  [3:0]  io_in_0_bits_way,
+  input  [7:0]  io_in_0_bits_way,
   input  [1:0]  io_in_0_bits_meta,
   input         io_in_1_valid,
   input  [31:0] io_in_1_bits_addr,
-  input  [3:0]  io_in_1_bits_way,
+  input  [7:0]  io_in_1_bits_way,
   input  [1:0]  io_in_1_bits_meta,
   input         io_out_ready,
   output        io_out_valid,
   output [31:0] io_out_bits_addr,
-  output [3:0]  io_out_bits_way,
+  output [7:0]  io_out_bits_way,
   output [1:0]  io_out_bits_meta
 );
   wire  grant_1 = ~io_in_0_valid; // @[Arbiter.scala 45:78]

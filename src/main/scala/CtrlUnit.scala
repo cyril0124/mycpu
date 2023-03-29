@@ -20,7 +20,7 @@ class CtrlSigs(aluOpWidth:Int = 4) extends Bundle {
     val isBranch    = Output(Bool())
     val isJump      = Output(Bool()) // for jalr and jal instruction
 
-    val resultSrc   = Output(UInt(2.W))
+    val resultSrc   = Output(UInt(RET_SRC_WIDTH.W))
     // val memWrEn     = Output(Bool())
     // val memType     = Output(UInt(3.W))
     val aluOpSel    = Output(UInt(aluOpWidth.W))

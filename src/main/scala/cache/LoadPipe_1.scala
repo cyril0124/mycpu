@@ -56,6 +56,7 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     val s0_isHit = s0_dirInfo.hit
     val s0_chosenWayOH = s0_dirInfo.chosenWay
     val s0_isDirtyWay = s0_dirInfo.isDirtyWay
+    val s0_dirtyTag = s0_dirInfo.dirtyTag
 
     val s0_rdBlockData = io.dataBank.read.resp.bits.blockData
     val s0_rdDataAll = io.dataBank.read.resp.bits.data
@@ -78,10 +79,12 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     val s1_dirInfo = RegEnable(s0_dirInfo, s1_latch)
     val s1_isHit = s1_dirInfo.hit && s1_full
     val s1_isDirtyWay = s1_dirInfo.isDirtyWay && s1_full
+    val s1_dirtyTag = s1_dirInfo.dirtyTag
     val s1_chosenWayOH = s1_dirInfo.chosenWay
     val s1_rdBlockData = RegEnable(s0_rdBlockData, s1_latch)
     val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch)
     val s1_rdData = Mux1H(s1_chosenWayOH, s1_rdDataAll)
+    val s1_dataBlockSelOH = RegEnable(s0_dataBlockSelOH, s1_latch)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B }
@@ -126,11 +129,15 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     s1_tlbusReq.bits := 0.U.asTypeOf(io.tlbus.req.bits)
     s1_tlbusReq.bits.opcode := Mux(s1_loadMissClean, Get, PutFullData)
     val blockAddr = Cat(s1_rAddr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
+    val writebackAddr = Cat(s1_dirtyTag, addrToDCacheSet(s1_rAddr), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
     s1_tlbusReq.bits.address := Mux(s1_loadMissDirty, 
-                                    blockAddr + (s1_beatCounter.value << dcacheByteOffsetBits),
+                                    writebackAddr + (s1_beatCounter.value << dcacheByteOffsetBits), // blockAddr + (s1_beatCounter.value << dcacheByteOffsetBits),
                                     blockAddr
                                 )
-    s1_tlbusReq.bits.data := Mux(s1_loadMissDirty, Mux1H(s1_beatOH, s1_rdBlockData), 0.U)
+    val temp = s1_rdBlockData.map{ d => d.asTypeOf(Vec(dcacheWays, UInt((dcacheBlockBytes*8).W)))}
+    val s1_chosenRdBlockData = temp.map{ t => Mux1H(s1_chosenWayOH, t) }
+    s1_tlbusReq.bits.data := Mux(s1_loadMissDirty, Mux1H(s1_beatOH, s1_chosenRdBlockData), 0.U)
+    // s1_tlbusReq.bits.data := Mux(s1_loadMissDirty, Mux1H(s1_beatOH, s1_rdBlockData), 0.U)
     s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s1_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s1_tlbusReq.bits.corrupt := false.B
@@ -149,11 +156,11 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     val s2_fire = s2_valid // stage1 is final stage
     val s2_rAddr = RegEnable(s1_rAddr, s2_latch)
     val s2_rSet = addrToDCacheSet(s2_rAddr)
-    val s2_chosenWayOH = RegEnable(s0_chosenWayOH, s2_latch)
+    val s2_chosenWayOH = RegEnable(s1_chosenWayOH, s2_latch)
     val s2_loadHit = RegEnable(s1_loadHit, s2_latch) && s2_full
     val s2_loadMissClean = RegEnable(s1_loadMissClean, s2_latch) && s2_full
     val s2_loadMissDirty = RegEnable(s1_loadMissDirty, s2_latch) && s2_full
-    val s2_dataBlockSelOH = RegEnable(s0_dataBlockSelOH, s2_latch)
+    val s2_dataBlockSelOH = RegEnable(s1_dataBlockSelOH, s2_latch)
 
     s2_ready := !s2_full || s2_fire
     when(s2_latch) { s2_full := true.B } 

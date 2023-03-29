@@ -104,7 +104,7 @@ trait HasMyCpuParameters {
     val rfRdPort = myCpuParams.rfRdPort
     val rfWrPort = myCpuParams.rfWrPort
     val rfDebug = myCpuParams.rfDebug
-    val rfStateOut = myCpuParams.rfStateOut
+    // val rfStateOut = myCpuParams.rfStateOut
     
 }
 
@@ -121,7 +121,7 @@ case class MyCpuParameters
     busMaxBeat: Int = 32,
 
     // DCache Configuration
-    dcacheWays: Int = 4,
+    dcacheWays: Int = 8,
     dcacheSets: Int = 256,
     // dcacheBlockBytes: Int = 8,
     dcacheBlockSize: Int = 4,
@@ -144,7 +144,7 @@ case class MyCpuParameters
     rfRdPort: Int = 2,
     rfWrPort: Int = 1,
     rfDebug: Boolean = false,
-    rfStateOut: Boolean = true,
+    // rfStateOut: Boolean = true,
 
 )
 {

@@ -3,8 +3,8 @@
 static void hook_code(uc_engine *uc, uint64_t address, uint32_t size,
                       void *user_data)
 {
-    printf(">>> Tracing instruction at 0x%" PRIx64
-            ", instruction size = 0x%x\n",
+    printf(">>> inst: 0x%" PRIx64
+            ", inst size = 0x%x\n",
             address, size);
 }
 
@@ -91,6 +91,8 @@ void UcEngine::step() {
     engine_inst = image_buffer[engine_pc+3] << 24 | image_buffer[engine_pc+2] << 16 | \
                 image_buffer[engine_pc+1] << 8 | image_buffer[engine_pc];
 
+    
+
     bool is_mret = false;
     if(engine_inst == MRET) {
         is_mret = true;
@@ -101,6 +103,7 @@ void UcEngine::step() {
     }
 
     get_int_regs();
+
 
     if(verbose)
         printf("inst: 0x%08x at pc: 0x%08x\n\n", engine_inst, engine_pc);
@@ -136,8 +139,20 @@ void UcEngine::step() {
     if(!is_mret) 
         uc_reg_read(uc, UC_RISCV_REG_PC, &engine_next_pc);
     
-    
-    // update cycles
+    uc_emu_stop(uc);
+
+
+    if(engine_pc == 0x27a0 && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/qsort.bin" ||
+        engine_pc == 0x2930 && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/rsort.bin" ||
+        engine_pc == 0x25fc && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/vvadd.bin" ||
+        engine_pc == 0x265c && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/median.bin" ||
+        engine_pc == 0x25f8 && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/multiply.bin" ||
+        engine_pc == 0x2c4c && image_name == "/home/cyril/workspace/riscv/mycpu/test_env/tests/rv32i/build/towers.bin"
+    ) {
+        stop = true;
+    }
+
+
     engine_cycles += 1;
 }
 
@@ -208,6 +223,12 @@ void UcEngine::load_image(std::string image) {
     return;
 }
 
+uint32_t UcEngine::update_dut_csr() {
+    uint32_t mcycle = 0;
+    uc_reg_read(uc, UC_RISCV_REG_MCYCLE, &mcycle);
+    return mcycle;
+}
+
 void UcEngine::get_int_regs(void) {
 
     uc_err err;
@@ -243,7 +264,7 @@ cmp_err_t UcEngine::compare_int_reg(xlen_t *regs) {
             same[i] = true;
         all_same = all_same && same[i];
     }
-
+    
     if(all_same) {
         if(verbose)
             printf(PRINT_YELLOW "reg all same! \n" PRINT_RESET);

@@ -8,14 +8,9 @@ import mycpu.common._
 import mycpu.util._
 import mycpu.csr._
 import mycpu.common.consts.CsrOp._
+import mycpu.common.consts.Control._
 
 class WritebackHazardBundle()(override implicit val p: Parameters) extends  MemHazardBundle
-
-class InstState()(implicit val p: Parameters) extends MyBundle{
-    val commit = Bool()
-    val pc = UInt(xlen.W)
-    val inst = UInt(ilen.W)
-}
 
 class WritebackOut()(implicit val p: Parameters) extends MyBundle{
     val rd = UInt(5.W)
@@ -58,15 +53,17 @@ class WriteBack()(implicit val p: Parameters) extends MyModule{
     wbRam := stageReg.resultSrc === "b01".U
 
     val rdVal = MuxLookup(stageReg.resultSrc, stageReg.aluOut, Seq(
-                                "b00".U -> stageReg.aluOut,
-                                "b01".U -> io.lsuData,
-                                "b10".U -> stageReg.pcNext4
+                                RET_SRC_A -> stageReg.aluOut,
+                                RET_SRC_B -> io.lsuData,
+                                RET_SRC_C -> stageReg.pcNext4,
+                                RET_SRC_D -> stageReg.csrRdData
                             ))
     io.regfile.regWrData := rdVal;
     val inst              = stageReg.instState.inst
     io.regfile.rd        := InstField(inst, "rd")
     io.regfile.regWrEn   := stageReg.regWrEn && stageReg.instState.commit
 
+    // stageReg.csrRdData
     io.csrWrite.addr     := stageReg.csrAddr
     io.csrWrite.data     := stageReg.csrWrData
     io.csrWrite.op       := Mux(stageReg.csrWrEn, stageReg.csrOp, CSR_R)

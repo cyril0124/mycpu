@@ -14,7 +14,7 @@ import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
 
 class ExecuteOut()(implicit val p: Parameters) extends MyBundle{
-    val resultSrc = UInt(2.W)
+    val resultSrc = UInt(RET_SRC_WIDTH.W)
     val lsuOp  = UInt(LSU_OP_WIDTH.W)
     val regWrEn = Bool()
     val aluOut = UInt(xlen.W)

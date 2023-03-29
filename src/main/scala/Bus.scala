@@ -197,7 +197,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
 
     val s0_req = reqMux.io.out
 
-    val buf = Module(new Queue(new BusMasterBundle, entries = 4, flow = true))
+    val buf = Module(new Queue(new BusMasterBundle, entries = dcacheBlockSize * 2, flow = true))
     buf.io.enq <> s0_req
     
     // --------------------------------------------------------------------------------
@@ -213,8 +213,10 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     val s1_beatSize = s1_req.size >> log2Ceil(busBeatSize)
     val s1_address = s1_req.address
     val s1_source = s1_req.source
+    val s1_putMultiBeat = WireInit(false.B)
+    val s1_putAllBeat = WireInit(false.B)
 
-    s1_ready := !s1_full || s1_fire
+    s1_ready := !s1_full || s1_putMultiBeat || s1_fire
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_full && s1_fire) { s1_full := false.B}
 
@@ -224,7 +226,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
 
     sf.in.zipWithIndex.foreach{ case(si, i) => 
         si.bits  := s1_req 
-        si.valid := s1_chosenSlaveOH(i) && s1_full
+        si.valid := s1_chosenSlaveOH(i) && s1_full //&& !s1_putAllBeat
     }
 
     val s1_beatCounter = Counter(busMaxBeat)
@@ -235,12 +237,15 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     when(s1_slaveRecv && !s1_lastBeat) {
         s1_beatCounter.inc()
     }
-    when(s1_latch) {
+    when(s1_fire) {
         s1_beatCounter.reset()
     }
+
+    // val s1_putAllBeat = RegInit(false.B)
+    s1_putMultiBeat := (!s1_lastBeat && s1_req.opcode === PutFullData)
     
-    s1_valid := s1_slaveRecvHold && s1_lastBeat && s1_opcode === PutFullData ||
-                                    s1_slaveRecvHold && s1_opcode === Get
+    s1_putAllBeat := s1_lastBeat && s1_opcode === PutFullData
+    s1_valid := s1_slaveRecvHold && (s1_putAllBeat || s1_opcode === Get)
     
     s1_fire := s2_ready && s1_valid
     // --------------------------------------------------------------------------------
@@ -254,6 +259,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     val s2_beatSize = RegEnable(s1_beatSize, s2_latch)
     val s2_chosenMasterOH = RegEnable(UIntToOH(s1_source), s2_latch)
     val s2_fire = s2_valid // stage2 is final stage
+    val s2_getAllBeat = WireInit(false.B)
     
     s2_ready := !s2_full || s2_fire
     when(s2_latch) { s2_full := true.B }
@@ -265,7 +271,7 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
 
     mf.out.zipWithIndex.foreach{ case(mo, i) => 
         mo.bits <> slaveMux.io.out.bits
-        mo.valid := slaveMux.io.out.valid && s2_chosenMasterOH(i) && s2_full
+        mo.valid := slaveMux.io.out.valid && s2_chosenMasterOH(i)
     }
     slaveMux.io.out.ready := Mux1H(s2_chosenMasterOH, mf.out.map{ mo => mo.ready})
 
@@ -277,14 +283,13 @@ class TLXbar()(implicit val p: Parameters) extends MyModule{
     when(s2_masterRecv && !s2_lastBeat) {
         s2_beatCounter.inc()
     }
-    when(s2_latch) {
+    when(s2_fire) {
         s2_beatCounter.reset()
     }
 
-    s2_valid :=  s2_opcode === PutFullData && s2_masterRecvHold || 
-                s2_opcode === Get && s2_masterRecvHold && s2_lastBeat
-
-
+    s2_getAllBeat := s2_opcode === Get && s2_masterRecvHold && s2_lastBeat
+    s2_valid :=  s2_opcode === PutFullData && s2_masterRecvHold || s2_getAllBeat
+    
     
     // Bus status output
     val idle = RegInit(true.B)

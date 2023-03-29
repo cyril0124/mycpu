@@ -11,6 +11,7 @@ module Mem(
   input  [2:0]  io_in_bits_csrOp,
   input         io_in_bits_csrWrEn,
   input         io_in_bits_csrValid,
+  input  [31:0] io_in_bits_csrRdData,
   input  [31:0] io_in_bits_csrWrData,
   input  [31:0] io_in_bits_csrAddr,
   input  [3:0]  io_in_bits_excType,
@@ -25,6 +26,7 @@ module Mem(
   output [31:0] io_out_bits_pcNext4,
   output [2:0]  io_out_bits_csrOp,
   output        io_out_bits_csrWrEn,
+  output [31:0] io_out_bits_csrRdData,
   output [31:0] io_out_bits_csrWrData,
   output [11:0] io_out_bits_csrAddr,
   output        io_out_bits_instState_commit,
@@ -70,6 +72,7 @@ module Mem(
   reg [31:0] _RAND_13;
   reg [31:0] _RAND_14;
   reg [31:0] _RAND_15;
+  reg [31:0] _RAND_16;
 `endif // RANDOMIZE_REG_INIT
   wire  lsu_clock; // @[4_Mem.scala 146:21]
   wire  lsu_reset; // @[4_Mem.scala 146:21]
@@ -130,6 +133,7 @@ module Mem(
   reg [2:0] stageReg_csrOp; // @[4_Mem.scala 70:27]
   reg  stageReg_csrWrEn; // @[4_Mem.scala 70:27]
   reg  stageReg_csrValid; // @[4_Mem.scala 70:27]
+  reg [31:0] stageReg_csrRdData; // @[4_Mem.scala 70:27]
   reg [31:0] stageReg_csrWrData; // @[4_Mem.scala 70:27]
   reg [31:0] stageReg_csrAddr; // @[4_Mem.scala 70:27]
   reg [3:0] stageReg_excType; // @[4_Mem.scala 70:27]
@@ -213,6 +217,7 @@ module Mem(
   assign io_out_bits_pcNext4 = stageReg_pcNext4; // @[4_Mem.scala 175:29]
   assign io_out_bits_csrOp = stageReg_csrOp; // @[4_Mem.scala 115:29]
   assign io_out_bits_csrWrEn = stageReg_csrWrEn; // @[4_Mem.scala 116:29]
+  assign io_out_bits_csrRdData = stageReg_csrRdData; // @[4_Mem.scala 117:29]
   assign io_out_bits_csrWrData = stageReg_csrWrData; // @[4_Mem.scala 118:29]
   assign io_out_bits_csrAddr = stageReg_csrAddr[11:0]; // @[4_Mem.scala 119:29]
   assign io_out_bits_instState_commit = stageReg_instState_commit; // @[4_Mem.scala 176:29]
@@ -363,6 +368,19 @@ module Mem(
       stageReg_csrValid <= 1'h0; // @[4_Mem.scala 74:18]
     end
     if (reset) begin // @[4_Mem.scala 70:27]
+      stageReg_csrRdData <= 32'h0; // @[4_Mem.scala 70:27]
+    end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
+      stageReg_csrRdData <= 32'h0; // @[4_Mem.scala 77:38]
+    end else if (io_in_ready) begin // @[4_Mem.scala 71:23]
+      if (io_in_bits_instState_commit) begin // @[4_Mem.scala 72:24]
+        stageReg_csrRdData <= io_in_bits_csrRdData;
+      end else begin
+        stageReg_csrRdData <= 32'h0;
+      end
+    end else if (_io_in_ready_T_2) begin // @[4_Mem.scala 73:28]
+      stageReg_csrRdData <= 32'h0; // @[4_Mem.scala 74:18]
+    end
+    if (reset) begin // @[4_Mem.scala 70:27]
       stageReg_csrWrData <= 32'h0; // @[4_Mem.scala 70:27]
     end else if (io_ctrl_flush & _io_in_ready_T) begin // @[4_Mem.scala 77:27]
       stageReg_csrWrData <= 32'h0; // @[4_Mem.scala 77:38]
@@ -499,19 +517,21 @@ initial begin
   _RAND_8 = {1{`RANDOM}};
   stageReg_csrValid = _RAND_8[0:0];
   _RAND_9 = {1{`RANDOM}};
-  stageReg_csrWrData = _RAND_9[31:0];
+  stageReg_csrRdData = _RAND_9[31:0];
   _RAND_10 = {1{`RANDOM}};
-  stageReg_csrAddr = _RAND_10[31:0];
+  stageReg_csrWrData = _RAND_10[31:0];
   _RAND_11 = {1{`RANDOM}};
-  stageReg_excType = _RAND_11[3:0];
+  stageReg_csrAddr = _RAND_11[31:0];
   _RAND_12 = {1{`RANDOM}};
-  stageReg_instState_commit = _RAND_12[0:0];
+  stageReg_excType = _RAND_12[3:0];
   _RAND_13 = {1{`RANDOM}};
-  stageReg_instState_pc = _RAND_13[31:0];
+  stageReg_instState_commit = _RAND_13[0:0];
   _RAND_14 = {1{`RANDOM}};
-  stageReg_instState_inst = _RAND_14[31:0];
+  stageReg_instState_pc = _RAND_14[31:0];
   _RAND_15 = {1{`RANDOM}};
-  lsuSend = _RAND_15[0:0];
+  stageReg_instState_inst = _RAND_15[31:0];
+  _RAND_16 = {1{`RANDOM}};
+  lsuSend = _RAND_16[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

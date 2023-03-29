@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include "../utils/common.h"
+#include "../decode/decode.h"
 
 // memory address where emulation starts
 #define ADDRESS 0x00000
@@ -43,6 +44,7 @@ class UcEngine {
         void step();
         bool is_terminate() { return stop; };
         void update_next_pc() { engine_pc = engine_next_pc; };
+        uint32_t update_dut_csr();
         void load_image(std::string image);
         cmp_err_t compare_int_reg(xlen_t *regs);
         cmp_err_t compare_pc(xlen_t pc_in);

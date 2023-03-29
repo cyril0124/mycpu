@@ -4,12 +4,15 @@ import chisel3._
 import chisel3.util._
 import org.chipsalliance.cde.config._
 
+import chisel3.util.experimental.BoringUtils
+
 import mycpu.common._
 import mycpu.util._
 import mycpu.common.consts.CSR._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.CsrOp._
 import mycpu.common.consts.ExceptCause._
+import mycpu.CsrFileState
 
 // https://github.com/MaxXSoft/Fuxi
 
@@ -71,6 +74,8 @@ class CsrFile[T <: Data]()(implicit val p: Parameters) extends MyModule {
     val mepc      = RegInit(MepcCsr.default)
     val satp      = RegInit(SatpCsr.default)
     val mtval     = RegInit(MtvalCsr.default)
+    val mcycle    = RegInit(McycleCsr.default)
+    val cycle     = mcycle.asUInt
 
     // all supported CSRs
     val default  =
@@ -88,6 +93,8 @@ class CsrFile[T <: Data]()(implicit val p: Parameters) extends MyModule {
         BitPat(CSR_MEPC)         -> List(mepc.asUInt,    Y, Y),
         BitPat(CSR_SATP)         -> List(satp.asUInt,    Y, Y),
         BitPat(CSR_MTVAL)        -> List(mtval.asUInt,   Y, Y),
+        BitPat(CSR_MCYCLE)       -> List(cycle(31, 0),   Y, Y),
+        BitPat(CSR_MCYCLEH)      -> List(cycle(63, 32),  Y, Y),
 
         BitPat(CSR_PMPCFG0)       ->  List(0.U,             Y, Y),
         BitPat(CSR_PMPCFG1)       ->  List(0.U,             Y, Y),
@@ -138,6 +145,7 @@ class CsrFile[T <: Data]()(implicit val p: Parameters) extends MyModule {
         CSR_RC  -> (csrData & ~io.write.data),
     ))
 
+    mcycle.data := mcycle.data + 1.U
 
     when(writeEn) {
         switch(io.write.addr) {
@@ -148,6 +156,8 @@ class CsrFile[T <: Data]()(implicit val p: Parameters) extends MyModule {
             is(CSR_MIDELEG) { mideleg <= writeData  } 
             is(CSR_MEPC)    { mepc    <= writeData  }
             is(CSR_SATP)    { satp    <= writeData  }
+            is(CSR_MCYCLE)  { mcycle.data := Cat(mcycle.data(63, 32), writeData) }
+            is(CSR_MCYCLEH) { mcycle.data := Cat(writeData, mcycle.data(31, 0))  }
         }
     }.elsewhen(io.except.valid) {
         mcause       <= Cat(false.B, io.except.bits.excCause)
@@ -164,5 +174,10 @@ class CsrFile[T <: Data]()(implicit val p: Parameters) extends MyModule {
     io.trapVec := mtvec.asUInt
     
     io.read.data := readData
+
+    val csrState = Wire(new CsrFileState)
+    csrState.mcycle := cycle(31,0)
+    csrState.mcycleh := cycle(63, 32)
+    BoringUtils.addSource(csrState,"csrState")
 
 }

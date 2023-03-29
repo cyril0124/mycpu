@@ -4,20 +4,20 @@ module Arbiter_6(
   input  [31:0] io_in_0_bits_data,
   input  [7:0]  io_in_0_bits_set,
   input  [3:0]  io_in_0_bits_blockSelOH,
-  input  [3:0]  io_in_0_bits_way,
+  input  [7:0]  io_in_0_bits_way,
   input  [3:0]  io_in_0_bits_mask,
   input         io_in_1_valid,
   input  [31:0] io_in_1_bits_data,
   input  [7:0]  io_in_1_bits_set,
   input  [3:0]  io_in_1_bits_blockSelOH,
-  input  [3:0]  io_in_1_bits_way,
+  input  [7:0]  io_in_1_bits_way,
   input  [3:0]  io_in_1_bits_mask,
   input         io_out_ready,
   output        io_out_valid,
   output [31:0] io_out_bits_data,
   output [7:0]  io_out_bits_set,
   output [3:0]  io_out_bits_blockSelOH,
-  output [3:0]  io_out_bits_way,
+  output [7:0]  io_out_bits_way,
   output [3:0]  io_out_bits_mask
 );
   wire  grant_1 = ~io_in_0_valid; // @[Arbiter.scala 45:78]

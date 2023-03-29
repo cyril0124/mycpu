@@ -7,13 +7,31 @@ import org.chipsalliance.cde.config._
 import mycpu.common._
 import mycpu.util._
 
+import chisel3.util.experimental.BoringUtils
+
 import mycpu.BusReq._
 import mycpu.csr.CsrFile
 import chisel3.util.random.LFSR
 
+class RegFileState()(implicit val p: Parameters) extends MyBundle{
+    val regState = Vec(rfSets, UInt(xlen.W))
+}
+
+class InstState()(implicit val p: Parameters) extends MyBundle{
+    val commit = Bool()
+    val pc = UInt(xlen.W)
+    val inst = UInt(ilen.W)
+}
+
+class CsrFileState()(implicit val p: Parameters) extends MyBundle{
+    val mcycle = UInt(32.W)
+    val mcycleh = UInt(32.W)
+}
+
 class CoreState()(implicit val p: Parameters) extends MyBundle{
     val intRegState = new RegFileState
     val instState = new InstState
+    val csrState = new CsrFileState
 }
 
 class CoreIO()(implicit val p: Parameters) extends MyBundle{
@@ -109,8 +127,17 @@ class Core()(implicit val p: Parameters) extends MyModule{
     
 
     // core runtime instruction info and reg info
+    val regState = WireInit(0.U.asTypeOf(new RegFileState))
+    BoringUtils.addSink(regState, "regState")
+
+    val csrState = WireInit(0.U.asTypeOf(new CsrFileState))
+    BoringUtils.addSink(csrState, "csrState")
+
     io.out.state.instState <> RegNext(wb.io.instState)
-    io.out.state.intRegState <> regFile.io.state.getOrElse(DontCare)
+    io.out.state.intRegState <> regState  //regFile.io.state.getOrElse(DontCare)
+    io.out.state.csrState <> csrState
+
+
 
     // ----------------soc part(temp)-------------------------
     val testCase =  3

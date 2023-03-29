@@ -11,6 +11,8 @@ import chisel3.util.random.LFSR
 import chisel3.util.Counter
 import chisel3.util.log2Ceil
 
+import scala.util.Random.nextInt
+
 /*
     ICache  DCache
     |       |
@@ -212,56 +214,81 @@ class BusTest extends AnyFlatSpec with ChiselScalatestTester {
         )
     })
 
-    // it should "test TLXbar" in { 
-    //     test(new TLXbar()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
-    //         val mf = c.io.masterFace
-    //         val sf = c.io.slaveFace
+    it should "test TLXbar" in { 
+        test(new TLXbar()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
+            val mf = c.io.masterFace
+            val sf = c.io.slaveFace
 
-    //         sf.in.foreach(i => i.ready.poke(1))
-    //         c.clock.step(10)
+            val beatByte = 4
+
+            def init() = {
+                sf.in.foreach(i => i.ready.poke(1))
+                mf.out.foreach(i => i.ready.poke(1))
+                c.clock.step(10)
+            }
+
+            def mfWaitReady(mfid: Int) = {
+                while(!mf.in(mfid).ready.peekBoolean()){
+                    c.clock.step()
+                }
+            }
+
+            def sfWaitReady(mfid: Int) = {
+                while(!sf.out(mfid).ready.peekBoolean()){
+                    c.clock.step()
+                }
+            }
             
-    //         def mfIssue(mfid: Int, valid: UInt, data: UInt, addr: UInt, typ: UInt): Unit = {
-    //             mf.in(mfid).valid.poke(valid)
-    //             mf.in(mfid).bits.data.poke(data)
-    //             mf.in(mfid).bits.address.poke(addr)
-    //             mf.in(mfid).bits.opcode.poke(typ)
-    //             mf.in(mfid).bits.source.poke(mfid.U)
-    //         }
+            def mfIssue(mfid: Int, data: Int, addr: Int, opcode: Int, beatNum: Int): Unit = {
+                mf.in(mfid).valid.poke(1)
+                mfWaitReady(mfid)
+                mf.in(mfid).bits.data.poke(data)
+                mf.in(mfid).bits.address.poke(addr)
+                mf.in(mfid).bits.opcode.poke(opcode)
+                mf.in(mfid).bits.source.poke(mfid)
+                mf.in(mfid).bits.size.poke(beatNum*beatByte)
+                c.clock.step()
+                mf.in(mfid).valid.poke(0)
+            }
 
-    //         def sfIssue(sfid: Int, valid: UInt, data: UInt): Unit = {
-    //             sf.out(sfid).valid.poke(valid)
-    //             sf.out(sfid).bits.data.poke(data)
-    //             sf.out(sfid).bits.source.poke(sfid.U)
-    //         }
+            def sfIssue(sfid: Int, data: Int, opcode: Int): Unit = {
+                sf.out(sfid).valid.poke(1)
+                sfWaitReady(sfid)
+                sf.out(sfid).bits.data.poke(data)
+                sf.out(sfid).bits.source.poke(sfid)
+                sf.out(sfid).bits.opcode.poke(opcode)
+                c.clock.step()
+                sf.out(sfid).valid.poke(0)
+            }
 
-    //         val Get = 4.U
-    //         val PutFullData = 2.U
+            def randData() = nextInt(1000)
+            
+            def putRandomData(addr: Int, beatNum: Int) = {
+                for( i <- 0 until beatNum) {
+                    mfIssue(1, randData, addr + beatByte * i, 2, beatNum) // PutFullData
+                }
+                // c.clock.step()
+            }
 
-    //         mfIssue(0, true.B, 123.U, "h0000_0444".U, Get) // slave 0
-    //         mfIssue(1, true.B, 223.U, "h0000_2500".U, Get) // slave 1
-    //         c.clock.step()
-    //         // mf.in(0).valid.poke(0)
-    //         // mf.in(1).valid.poke(0)
-    //         c.clock.step()
+            init()
 
-    //         // sf.in(1).bits.data.expect(223.U)
-    //         // sf.in(1).bits.address.expect("h0000_2500".U)
-    //         // sf.in(1).valid.expect(true.B)
-    //         // sf.in(0).valid.expect(false.B)
+            putRandomData(0, 8)
+            sfIssue(0, 0, 0) // AccessAck
 
-    //         mfIssue(0, true.B, 123.U, "h0000_0444".U, Get) // slave 0
-    //         mfIssue(1, false.B, 223.U, "h0000_2500".U, Get) // slave 1
-    //         c.clock.step(2)
-    //         // sf.in(0).bits.data.expect(123.U)
-    //         // sf.in(0).bits.address.expect("h0000_0444".U)
-    //         // sf.in(0).valid.expect(true.B)
-    //         // sf.in(1).valid.expect(false.B)
+            putRandomData(1024, 8)
+            c.clock.step()
+            sfIssue(0, 0, 0) // AccessAck
+            
+            c.clock.step(10)
+            putRandomData(0, 8)
+            putRandomData(1024, 8)
+            sfIssue(0, 0, 0) // AccessAck
+            sfIssue(0, 0, 0) // AccessAck
 
 
-    //         c.clock.step(10)
-    //         println("PASS")
-    //     }
-    // }
+            c.clock.step(100)
+        }
+    }
 
     // it should "test Dcache with Bus" in { 
     //     test(new DCacheWithBus()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
@@ -341,58 +368,58 @@ class BusTest extends AnyFlatSpec with ChiselScalatestTester {
     //     }
     // }
 
-    it should "test LSU with Bus" in { 
-        test(new LSUWithBus()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
-            def init(): Unit = {
-                c.io.resp.ready.poke(1)
-                c.clock.step(10)
-            }
+    // it should "test LSU with Bus" in { 
+    //     test(new LSUWithBus()(defaultConfig2)).withAnnotations(Seq(WriteVcdAnnotation)) { c => 
+    //         def init(): Unit = {
+    //             c.io.resp.ready.poke(1)
+    //             c.clock.step(10)
+    //         }
 
-            def load(addr: Int, lsuOp: Int): Unit = {
-                c.io.req.bits.addr.poke(addr)
-                c.io.req.bits.lsuOp.poke(lsuOp) 
-                c.io.req.valid.poke(1)
-                c.clock.step()
-                c.io.req.valid.poke(0)
-            }
+    //         def load(addr: Int, lsuOp: Int): Unit = {
+    //             c.io.req.bits.addr.poke(addr)
+    //             c.io.req.bits.lsuOp.poke(lsuOp) 
+    //             c.io.req.valid.poke(1)
+    //             c.clock.step()
+    //             c.io.req.valid.poke(0)
+    //         }
 
-            def lb(addr: Int) = load(addr, 1)
-            def lh(addr: Int) = load(addr, 2)
-            def lw(addr: Int) = load(addr, 3)
-            def lbu(addr: Int) = load(addr, 4)
-            def lhu(addr: Int) = load(addr, 5)
+    //         def lb(addr: Int) = load(addr, 1)
+    //         def lh(addr: Int) = load(addr, 2)
+    //         def lw(addr: Int) = load(addr, 3)
+    //         def lbu(addr: Int) = load(addr, 4)
+    //         def lhu(addr: Int) = load(addr, 5)
 
-            def store(addr: Int, data: Int, lsuOp: Int): Unit = {
-                c.io.req.bits.addr.poke(addr)
-                c.io.req.bits.wdata.poke(data)
-                c.io.req.bits.lsuOp.poke(lsuOp) 
-                c.io.req.valid.poke(1)
-                c.clock.step()
-                c.io.req.valid.poke(0)
-            }
+    //         def store(addr: Int, data: Int, lsuOp: Int): Unit = {
+    //             c.io.req.bits.addr.poke(addr)
+    //             c.io.req.bits.wdata.poke(data)
+    //             c.io.req.bits.lsuOp.poke(lsuOp) 
+    //             c.io.req.valid.poke(1)
+    //             c.clock.step()
+    //             c.io.req.valid.poke(0)
+    //         }
 
-            def sb(addr: Int, data: Int) = store(addr, data, 6)
-            def sh(addr: Int, data: Int) = store(addr, data, 7)
-            def sw(addr: Int, data: Int) = store(addr, data, 8)
+    //         def sb(addr: Int, data: Int) = store(addr, data, 6)
+    //         def sh(addr: Int, data: Int) = store(addr, data, 7)
+    //         def sw(addr: Int, data: Int) = store(addr, data, 8)
 
-            init()
-            lb(0)
-            c.clock.step(8)
-            lw(4)
-            c.clock.step(3)
+    //         init()
+    //         lb(0)
+    //         c.clock.step(8)
+    //         lw(4)
+    //         c.clock.step(3)
 
-            lw(0x2000)
-            c.clock.step(8)
+    //         lw(0x2000)
+    //         c.clock.step(8)
 
-            lbu(0x2002)
-            c.clock.step(8)
+    //         lbu(0x2002)
+    //         c.clock.step(8)
 
-            lh(0x2001)
-            c.clock.step(8)
+    //         lh(0x2001)
+    //         c.clock.step(8)
 
 
 
-            c.clock.step(100)
-        }
-    }
+    //         c.clock.step(100)
+    //     }
+    // }
 }

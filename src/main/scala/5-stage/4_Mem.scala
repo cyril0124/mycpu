@@ -21,7 +21,7 @@ class MemHazardBundle()(implicit val p: Parameters) extends MyBundle{
 }
 
 class MemOut()(implicit val p: Parameters) extends MyBundle{
-    val resultSrc    = UInt(2.W)
+    val resultSrc    = UInt(RET_SRC_WIDTH.W)
     val regWrEn      = Bool()
     val aluOut       = UInt(xlen.W)
     val pcNext4      = UInt(xlen.W)

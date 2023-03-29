@@ -36,8 +36,12 @@ class Emu {
         VerilatedFstC *tfp;
         UcEngine *engine;
 
-        uint64_t seed = 0, wave_begin = 0, wave_end = -1;
+        uint64_t seed = 0, wave_begin = 400000, wave_end = -1;
         bool enable_wave = true;
+        bool step_check_pc = true;
+        bool step_check_inst = true;
+        bool step_check_int_reg = true;
+        bool run_dut = true;
 
         inline char* cycle_wavefile(uint64_t cycles, time_t t);
 };

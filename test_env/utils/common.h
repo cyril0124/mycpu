@@ -31,5 +31,8 @@ extern void before_assert(void);
         }                                                                   \
     } while (0)
 
+#define GET_BIT_RANGE(val, end, start) ((num >> start) & ((1 << (end - start + 1)) - 1))
+
+
 
 #endif // COMMON_H

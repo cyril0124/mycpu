@@ -9,109 +9,145 @@ module DataBankArray(
   output [31:0]  io_read_resp_bits_data_1,
   output [31:0]  io_read_resp_bits_data_2,
   output [31:0]  io_read_resp_bits_data_3,
-  output [127:0] io_read_resp_bits_blockData_0,
-  output [127:0] io_read_resp_bits_blockData_1,
-  output [127:0] io_read_resp_bits_blockData_2,
-  output [127:0] io_read_resp_bits_blockData_3,
-  output [127:0] io_read_resp_bits_blockData_4,
-  output [127:0] io_read_resp_bits_blockData_5,
-  output [127:0] io_read_resp_bits_blockData_6,
-  output [127:0] io_read_resp_bits_blockData_7,
+  output [31:0]  io_read_resp_bits_data_4,
+  output [31:0]  io_read_resp_bits_data_5,
+  output [31:0]  io_read_resp_bits_data_6,
+  output [31:0]  io_read_resp_bits_data_7,
+  output [255:0] io_read_resp_bits_blockData_0,
+  output [255:0] io_read_resp_bits_blockData_1,
+  output [255:0] io_read_resp_bits_blockData_2,
+  output [255:0] io_read_resp_bits_blockData_3,
+  output [255:0] io_read_resp_bits_blockData_4,
+  output [255:0] io_read_resp_bits_blockData_5,
+  output [255:0] io_read_resp_bits_blockData_6,
+  output [255:0] io_read_resp_bits_blockData_7,
   output         io_write_req_ready,
   input          io_write_req_valid,
   input  [31:0]  io_write_req_bits_data,
   input  [6:0]   io_write_req_bits_set,
   input  [7:0]   io_write_req_bits_blockSelOH,
-  input  [3:0]   io_write_req_bits_way
+  input  [7:0]   io_write_req_bits_way
 );
   wire  dataBanks_0_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_0_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_0_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_0_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_0_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_0_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_0_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_0_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_0_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_0_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_0_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_0_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_0_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_0_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_0_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_0_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_1_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_1_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_1_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_1_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_1_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_1_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_1_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_1_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_1_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_1_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_1_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_1_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_1_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_1_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_1_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_1_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_2_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_2_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_2_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_2_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_2_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_2_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_2_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_2_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_2_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_2_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_2_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_2_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_2_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_2_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_2_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_2_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_3_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_3_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_3_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_3_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_3_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_3_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_3_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_3_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_3_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_3_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_3_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_3_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_3_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_3_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_3_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_3_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_4_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_4_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_4_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_4_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_4_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_4_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_4_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_4_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_4_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_4_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_4_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_4_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_4_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_4_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_4_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_4_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_5_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_5_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_5_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_5_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_5_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_5_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_5_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_5_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_5_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_5_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_5_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_5_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_5_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_5_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_5_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_5_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_6_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_6_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_6_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_6_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_6_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_6_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_6_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_6_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_6_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_6_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_6_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_6_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_6_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_6_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_6_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_6_io_r_data_7; // @[DataBank.scala 90:53]
   wire  dataBanks_7_clock; // @[DataBank.scala 90:53]
   wire  dataBanks_7_reset; // @[DataBank.scala 90:53]
   wire  dataBanks_7_io_w_en; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_7_io_w_set; // @[DataBank.scala 90:53]
-  wire [3:0] dataBanks_7_io_w_way; // @[DataBank.scala 90:53]
+  wire [7:0] dataBanks_7_io_w_way; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_7_io_w_data; // @[DataBank.scala 90:53]
   wire [6:0] dataBanks_7_io_r_set; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_7_io_r_data_0; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_7_io_r_data_1; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_7_io_r_data_2; // @[DataBank.scala 90:53]
   wire [31:0] dataBanks_7_io_r_data_3; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_7_io_r_data_4; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_7_io_r_data_5; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_7_io_r_data_6; // @[DataBank.scala 90:53]
+  wire [31:0] dataBanks_7_io_r_data_7; // @[DataBank.scala 90:53]
   wire  _dataBanks_0_io_w_en_T = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   wire [31:0] blockData_0_0 = dataBanks_0_io_r_data_0; // @[DataBank.scala 107:{28,28}]
   wire [31:0] _T_8 = io_read_req_bits_blockSelOH[0] ? blockData_0_0 : 32'h0; // @[Mux.scala 27:73]
@@ -201,22 +237,110 @@ module DataBankArray(
   wire [31:0] _T_64 = _T_63 | _T_57; // @[Mux.scala 27:73]
   wire [31:0] _T_65 = _T_64 | _T_58; // @[Mux.scala 27:73]
   wire [31:0] _T_66 = _T_65 | _T_59; // @[Mux.scala 27:73]
-  wire [63:0] lo = {blockData_0_1,blockData_0_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi = {blockData_0_3,blockData_0_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_1 = {blockData_1_1,blockData_1_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_1 = {blockData_1_3,blockData_1_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_2 = {blockData_2_1,blockData_2_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_2 = {blockData_2_3,blockData_2_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_3 = {blockData_3_1,blockData_3_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_3 = {blockData_3_3,blockData_3_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_4 = {blockData_4_1,blockData_4_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_4 = {blockData_4_3,blockData_4_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_5 = {blockData_5_1,blockData_5_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_5 = {blockData_5_3,blockData_5_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_6 = {blockData_6_1,blockData_6_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_6 = {blockData_6_3,blockData_6_2}; // @[DataBank.scala 109:57]
-  wire [63:0] lo_7 = {blockData_7_1,blockData_7_0}; // @[DataBank.scala 109:57]
-  wire [63:0] hi_7 = {blockData_7_3,blockData_7_2}; // @[DataBank.scala 109:57]
+  wire [31:0] blockData_0_4 = dataBanks_0_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_68 = io_read_req_bits_blockSelOH[0] ? blockData_0_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_1_4 = dataBanks_1_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_69 = io_read_req_bits_blockSelOH[1] ? blockData_1_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_2_4 = dataBanks_2_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_70 = io_read_req_bits_blockSelOH[2] ? blockData_2_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_3_4 = dataBanks_3_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_71 = io_read_req_bits_blockSelOH[3] ? blockData_3_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_4_4 = dataBanks_4_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_72 = io_read_req_bits_blockSelOH[4] ? blockData_4_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_5_4 = dataBanks_5_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_73 = io_read_req_bits_blockSelOH[5] ? blockData_5_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_6_4 = dataBanks_6_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_74 = io_read_req_bits_blockSelOH[6] ? blockData_6_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_7_4 = dataBanks_7_io_r_data_4; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_75 = io_read_req_bits_blockSelOH[7] ? blockData_7_4 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _T_76 = _T_68 | _T_69; // @[Mux.scala 27:73]
+  wire [31:0] _T_77 = _T_76 | _T_70; // @[Mux.scala 27:73]
+  wire [31:0] _T_78 = _T_77 | _T_71; // @[Mux.scala 27:73]
+  wire [31:0] _T_79 = _T_78 | _T_72; // @[Mux.scala 27:73]
+  wire [31:0] _T_80 = _T_79 | _T_73; // @[Mux.scala 27:73]
+  wire [31:0] _T_81 = _T_80 | _T_74; // @[Mux.scala 27:73]
+  wire [31:0] blockData_0_5 = dataBanks_0_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_83 = io_read_req_bits_blockSelOH[0] ? blockData_0_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_1_5 = dataBanks_1_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_84 = io_read_req_bits_blockSelOH[1] ? blockData_1_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_2_5 = dataBanks_2_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_85 = io_read_req_bits_blockSelOH[2] ? blockData_2_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_3_5 = dataBanks_3_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_86 = io_read_req_bits_blockSelOH[3] ? blockData_3_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_4_5 = dataBanks_4_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_87 = io_read_req_bits_blockSelOH[4] ? blockData_4_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_5_5 = dataBanks_5_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_88 = io_read_req_bits_blockSelOH[5] ? blockData_5_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_6_5 = dataBanks_6_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_89 = io_read_req_bits_blockSelOH[6] ? blockData_6_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_7_5 = dataBanks_7_io_r_data_5; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_90 = io_read_req_bits_blockSelOH[7] ? blockData_7_5 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _T_91 = _T_83 | _T_84; // @[Mux.scala 27:73]
+  wire [31:0] _T_92 = _T_91 | _T_85; // @[Mux.scala 27:73]
+  wire [31:0] _T_93 = _T_92 | _T_86; // @[Mux.scala 27:73]
+  wire [31:0] _T_94 = _T_93 | _T_87; // @[Mux.scala 27:73]
+  wire [31:0] _T_95 = _T_94 | _T_88; // @[Mux.scala 27:73]
+  wire [31:0] _T_96 = _T_95 | _T_89; // @[Mux.scala 27:73]
+  wire [31:0] blockData_0_6 = dataBanks_0_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_98 = io_read_req_bits_blockSelOH[0] ? blockData_0_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_1_6 = dataBanks_1_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_99 = io_read_req_bits_blockSelOH[1] ? blockData_1_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_2_6 = dataBanks_2_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_100 = io_read_req_bits_blockSelOH[2] ? blockData_2_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_3_6 = dataBanks_3_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_101 = io_read_req_bits_blockSelOH[3] ? blockData_3_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_4_6 = dataBanks_4_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_102 = io_read_req_bits_blockSelOH[4] ? blockData_4_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_5_6 = dataBanks_5_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_103 = io_read_req_bits_blockSelOH[5] ? blockData_5_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_6_6 = dataBanks_6_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_104 = io_read_req_bits_blockSelOH[6] ? blockData_6_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_7_6 = dataBanks_7_io_r_data_6; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_105 = io_read_req_bits_blockSelOH[7] ? blockData_7_6 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _T_106 = _T_98 | _T_99; // @[Mux.scala 27:73]
+  wire [31:0] _T_107 = _T_106 | _T_100; // @[Mux.scala 27:73]
+  wire [31:0] _T_108 = _T_107 | _T_101; // @[Mux.scala 27:73]
+  wire [31:0] _T_109 = _T_108 | _T_102; // @[Mux.scala 27:73]
+  wire [31:0] _T_110 = _T_109 | _T_103; // @[Mux.scala 27:73]
+  wire [31:0] _T_111 = _T_110 | _T_104; // @[Mux.scala 27:73]
+  wire [31:0] blockData_0_7 = dataBanks_0_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_113 = io_read_req_bits_blockSelOH[0] ? blockData_0_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_1_7 = dataBanks_1_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_114 = io_read_req_bits_blockSelOH[1] ? blockData_1_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_2_7 = dataBanks_2_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_115 = io_read_req_bits_blockSelOH[2] ? blockData_2_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_3_7 = dataBanks_3_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_116 = io_read_req_bits_blockSelOH[3] ? blockData_3_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_4_7 = dataBanks_4_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_117 = io_read_req_bits_blockSelOH[4] ? blockData_4_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_5_7 = dataBanks_5_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_118 = io_read_req_bits_blockSelOH[5] ? blockData_5_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_6_7 = dataBanks_6_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_119 = io_read_req_bits_blockSelOH[6] ? blockData_6_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] blockData_7_7 = dataBanks_7_io_r_data_7; // @[DataBank.scala 107:{28,28}]
+  wire [31:0] _T_120 = io_read_req_bits_blockSelOH[7] ? blockData_7_7 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _T_121 = _T_113 | _T_114; // @[Mux.scala 27:73]
+  wire [31:0] _T_122 = _T_121 | _T_115; // @[Mux.scala 27:73]
+  wire [31:0] _T_123 = _T_122 | _T_116; // @[Mux.scala 27:73]
+  wire [31:0] _T_124 = _T_123 | _T_117; // @[Mux.scala 27:73]
+  wire [31:0] _T_125 = _T_124 | _T_118; // @[Mux.scala 27:73]
+  wire [31:0] _T_126 = _T_125 | _T_119; // @[Mux.scala 27:73]
+  wire [127:0] lo = {blockData_0_3,blockData_0_2,blockData_0_1,blockData_0_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi = {blockData_0_7,blockData_0_6,blockData_0_5,blockData_0_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_1 = {blockData_1_3,blockData_1_2,blockData_1_1,blockData_1_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_1 = {blockData_1_7,blockData_1_6,blockData_1_5,blockData_1_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_2 = {blockData_2_3,blockData_2_2,blockData_2_1,blockData_2_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_2 = {blockData_2_7,blockData_2_6,blockData_2_5,blockData_2_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_3 = {blockData_3_3,blockData_3_2,blockData_3_1,blockData_3_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_3 = {blockData_3_7,blockData_3_6,blockData_3_5,blockData_3_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_4 = {blockData_4_3,blockData_4_2,blockData_4_1,blockData_4_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_4 = {blockData_4_7,blockData_4_6,blockData_4_5,blockData_4_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_5 = {blockData_5_3,blockData_5_2,blockData_5_1,blockData_5_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_5 = {blockData_5_7,blockData_5_6,blockData_5_5,blockData_5_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_6 = {blockData_6_3,blockData_6_2,blockData_6_1,blockData_6_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_6 = {blockData_6_7,blockData_6_6,blockData_6_5,blockData_6_4}; // @[DataBank.scala 109:57]
+  wire [127:0] lo_7 = {blockData_7_3,blockData_7_2,blockData_7_1,blockData_7_0}; // @[DataBank.scala 109:57]
+  wire [127:0] hi_7 = {blockData_7_7,blockData_7_6,blockData_7_5,blockData_7_4}; // @[DataBank.scala 109:57]
   DataBank dataBanks_0 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_0_clock),
     .reset(dataBanks_0_reset),
@@ -228,7 +352,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_0_io_r_data_0),
     .io_r_data_1(dataBanks_0_io_r_data_1),
     .io_r_data_2(dataBanks_0_io_r_data_2),
-    .io_r_data_3(dataBanks_0_io_r_data_3)
+    .io_r_data_3(dataBanks_0_io_r_data_3),
+    .io_r_data_4(dataBanks_0_io_r_data_4),
+    .io_r_data_5(dataBanks_0_io_r_data_5),
+    .io_r_data_6(dataBanks_0_io_r_data_6),
+    .io_r_data_7(dataBanks_0_io_r_data_7)
   );
   DataBank dataBanks_1 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_1_clock),
@@ -241,7 +369,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_1_io_r_data_0),
     .io_r_data_1(dataBanks_1_io_r_data_1),
     .io_r_data_2(dataBanks_1_io_r_data_2),
-    .io_r_data_3(dataBanks_1_io_r_data_3)
+    .io_r_data_3(dataBanks_1_io_r_data_3),
+    .io_r_data_4(dataBanks_1_io_r_data_4),
+    .io_r_data_5(dataBanks_1_io_r_data_5),
+    .io_r_data_6(dataBanks_1_io_r_data_6),
+    .io_r_data_7(dataBanks_1_io_r_data_7)
   );
   DataBank dataBanks_2 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_2_clock),
@@ -254,7 +386,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_2_io_r_data_0),
     .io_r_data_1(dataBanks_2_io_r_data_1),
     .io_r_data_2(dataBanks_2_io_r_data_2),
-    .io_r_data_3(dataBanks_2_io_r_data_3)
+    .io_r_data_3(dataBanks_2_io_r_data_3),
+    .io_r_data_4(dataBanks_2_io_r_data_4),
+    .io_r_data_5(dataBanks_2_io_r_data_5),
+    .io_r_data_6(dataBanks_2_io_r_data_6),
+    .io_r_data_7(dataBanks_2_io_r_data_7)
   );
   DataBank dataBanks_3 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_3_clock),
@@ -267,7 +403,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_3_io_r_data_0),
     .io_r_data_1(dataBanks_3_io_r_data_1),
     .io_r_data_2(dataBanks_3_io_r_data_2),
-    .io_r_data_3(dataBanks_3_io_r_data_3)
+    .io_r_data_3(dataBanks_3_io_r_data_3),
+    .io_r_data_4(dataBanks_3_io_r_data_4),
+    .io_r_data_5(dataBanks_3_io_r_data_5),
+    .io_r_data_6(dataBanks_3_io_r_data_6),
+    .io_r_data_7(dataBanks_3_io_r_data_7)
   );
   DataBank dataBanks_4 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_4_clock),
@@ -280,7 +420,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_4_io_r_data_0),
     .io_r_data_1(dataBanks_4_io_r_data_1),
     .io_r_data_2(dataBanks_4_io_r_data_2),
-    .io_r_data_3(dataBanks_4_io_r_data_3)
+    .io_r_data_3(dataBanks_4_io_r_data_3),
+    .io_r_data_4(dataBanks_4_io_r_data_4),
+    .io_r_data_5(dataBanks_4_io_r_data_5),
+    .io_r_data_6(dataBanks_4_io_r_data_6),
+    .io_r_data_7(dataBanks_4_io_r_data_7)
   );
   DataBank dataBanks_5 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_5_clock),
@@ -293,7 +437,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_5_io_r_data_0),
     .io_r_data_1(dataBanks_5_io_r_data_1),
     .io_r_data_2(dataBanks_5_io_r_data_2),
-    .io_r_data_3(dataBanks_5_io_r_data_3)
+    .io_r_data_3(dataBanks_5_io_r_data_3),
+    .io_r_data_4(dataBanks_5_io_r_data_4),
+    .io_r_data_5(dataBanks_5_io_r_data_5),
+    .io_r_data_6(dataBanks_5_io_r_data_6),
+    .io_r_data_7(dataBanks_5_io_r_data_7)
   );
   DataBank dataBanks_6 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_6_clock),
@@ -306,7 +454,11 @@ module DataBankArray(
     .io_r_data_0(dataBanks_6_io_r_data_0),
     .io_r_data_1(dataBanks_6_io_r_data_1),
     .io_r_data_2(dataBanks_6_io_r_data_2),
-    .io_r_data_3(dataBanks_6_io_r_data_3)
+    .io_r_data_3(dataBanks_6_io_r_data_3),
+    .io_r_data_4(dataBanks_6_io_r_data_4),
+    .io_r_data_5(dataBanks_6_io_r_data_5),
+    .io_r_data_6(dataBanks_6_io_r_data_6),
+    .io_r_data_7(dataBanks_6_io_r_data_7)
   );
   DataBank dataBanks_7 ( // @[DataBank.scala 90:53]
     .clock(dataBanks_7_clock),
@@ -319,13 +471,21 @@ module DataBankArray(
     .io_r_data_0(dataBanks_7_io_r_data_0),
     .io_r_data_1(dataBanks_7_io_r_data_1),
     .io_r_data_2(dataBanks_7_io_r_data_2),
-    .io_r_data_3(dataBanks_7_io_r_data_3)
+    .io_r_data_3(dataBanks_7_io_r_data_3),
+    .io_r_data_4(dataBanks_7_io_r_data_4),
+    .io_r_data_5(dataBanks_7_io_r_data_5),
+    .io_r_data_6(dataBanks_7_io_r_data_6),
+    .io_r_data_7(dataBanks_7_io_r_data_7)
   );
   assign io_read_req_ready = 1'h1; // @[DataBank.scala 87:23]
   assign io_read_resp_bits_data_0 = _T_21 | _T_15; // @[Mux.scala 27:73]
   assign io_read_resp_bits_data_1 = _T_36 | _T_30; // @[Mux.scala 27:73]
   assign io_read_resp_bits_data_2 = _T_51 | _T_45; // @[Mux.scala 27:73]
   assign io_read_resp_bits_data_3 = _T_66 | _T_60; // @[Mux.scala 27:73]
+  assign io_read_resp_bits_data_4 = _T_81 | _T_75; // @[Mux.scala 27:73]
+  assign io_read_resp_bits_data_5 = _T_96 | _T_90; // @[Mux.scala 27:73]
+  assign io_read_resp_bits_data_6 = _T_111 | _T_105; // @[Mux.scala 27:73]
+  assign io_read_resp_bits_data_7 = _T_126 | _T_120; // @[Mux.scala 27:73]
   assign io_read_resp_bits_blockData_0 = {hi,lo}; // @[DataBank.scala 109:57]
   assign io_read_resp_bits_blockData_1 = {hi_1,lo_1}; // @[DataBank.scala 109:57]
   assign io_read_resp_bits_blockData_2 = {hi_2,lo_2}; // @[DataBank.scala 109:57]
