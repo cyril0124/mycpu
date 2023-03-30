@@ -162,7 +162,7 @@ class Mem()(implicit val p: Parameters) extends MyModule{
     io.lsuOK                := lsu.io.resp.valid
     io.lsuData              := lsu.io.resp.bits.rdata
 
-    val dcache = Module(new DCache)
+    val dcache = Module(new DCache_1)
     lsu.io.cache.read <> dcache.io.read
     lsu.io.cache.write <> dcache.io.write
     dcache.io.tlbus <> io.tlbus

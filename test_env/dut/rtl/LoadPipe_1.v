@@ -113,8 +113,10 @@ module LoadPipe_1(
   wire [1:0] loadRespArb_io_out_bits_stageID; // @[LoadPipe_1.scala 234:29]
   wire  tlbusReqArb_io_in_0_ready; // @[LoadPipe_1.scala 239:29]
   wire  tlbusReqArb_io_in_0_valid; // @[LoadPipe_1.scala 239:29]
+  wire [2:0] tlbusReqArb_io_in_0_bits_opcode; // @[LoadPipe_1.scala 239:29]
   wire [31:0] tlbusReqArb_io_in_0_bits_size; // @[LoadPipe_1.scala 239:29]
   wire [31:0] tlbusReqArb_io_in_0_bits_address; // @[LoadPipe_1.scala 239:29]
+  wire [31:0] tlbusReqArb_io_in_0_bits_data; // @[LoadPipe_1.scala 239:29]
   wire  tlbusReqArb_io_in_1_ready; // @[LoadPipe_1.scala 239:29]
   wire  tlbusReqArb_io_in_1_valid; // @[LoadPipe_1.scala 239:29]
   wire [2:0] tlbusReqArb_io_in_1_bits_opcode; // @[LoadPipe_1.scala 239:29]
@@ -489,8 +491,10 @@ module LoadPipe_1(
   Arbiter_1 tlbusReqArb ( // @[LoadPipe_1.scala 239:29]
     .io_in_0_ready(tlbusReqArb_io_in_0_ready),
     .io_in_0_valid(tlbusReqArb_io_in_0_valid),
+    .io_in_0_bits_opcode(tlbusReqArb_io_in_0_bits_opcode),
     .io_in_0_bits_size(tlbusReqArb_io_in_0_bits_size),
     .io_in_0_bits_address(tlbusReqArb_io_in_0_bits_address),
+    .io_in_0_bits_data(tlbusReqArb_io_in_0_bits_data),
     .io_in_1_ready(tlbusReqArb_io_in_1_ready),
     .io_in_1_valid(tlbusReqArb_io_in_1_valid),
     .io_in_1_bits_opcode(tlbusReqArb_io_in_1_bits_opcode),
@@ -535,8 +539,10 @@ module LoadPipe_1(
   assign loadRespArb_io_in_1_bits_data = _s1_rdData_T_22; // @[LoadPipe_1.scala 236:26]
   assign loadRespArb_io_in_1_bits_stageID = s1_loadResp_bits_stageID; // @[LoadPipe_1.scala 236:26]
   assign tlbusReqArb_io_in_0_valid = s2_loadMissDirty & ~s2_sendGet; // @[LoadPipe_1.scala 173:43]
+  assign tlbusReqArb_io_in_0_bits_opcode = 3'h4; // @[LoadPipe_1.scala 170:27 175:29]
   assign tlbusReqArb_io_in_0_bits_size = 32'h20; // @[LoadPipe_1.scala 170:27 178:27]
   assign tlbusReqArb_io_in_0_bits_address = {s2_rAddr[31:5],5'h0}; // @[Cat.scala 33:92]
+  assign tlbusReqArb_io_in_0_bits_data = 32'h0; // @[LoadPipe_1.scala 174:{37,37}]
   assign tlbusReqArb_io_in_1_valid = s1_full & (s1_loadMissClean & ~s1_putAllBeat | s1_loadMissDirty & ~s1_putAllBeat); // @[LoadPipe_1.scala 128:34]
   assign tlbusReqArb_io_in_1_bits_opcode = s1_loadMissClean ? 3'h4 : 3'h2; // @[LoadPipe_1.scala 130:35]
   assign tlbusReqArb_io_in_1_bits_size = 32'h20; // @[LoadPipe_1.scala 113:27 141:27]

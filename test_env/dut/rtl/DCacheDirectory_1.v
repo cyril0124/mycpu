@@ -4,7 +4,6 @@ module DCacheDirectory_1(
   output        io_read_req_ready,
   input         io_read_req_valid,
   input  [31:0] io_read_req_bits_addr,
-  output        io_read_resp_valid,
   output        io_read_resp_bits_hit,
   output [7:0]  io_read_resp_bits_chosenWay,
   output        io_read_resp_bits_isDirtyWay,
@@ -27,7 +26,6 @@ module DCacheDirectory_1(
   reg [31:0] _RAND_8;
   reg [31:0] _RAND_9;
   reg [31:0] _RAND_10;
-  reg [31:0] _RAND_11;
 `endif // RANDOMIZE_REG_INIT
   wire  tagArray_clock; // @[Directory.scala 67:26]
   wire  tagArray_reset; // @[Directory.scala 67:26]
@@ -209,7 +207,6 @@ module DCacheDirectory_1(
   wire [1:0] _T_122 = dirtyWayOH[6] + dirtyWayOH[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_124 = _T_120 + _T_122; // @[Bitwise.scala 51:90]
   wire [3:0] _T_126 = _T_118 + _T_124; // @[Bitwise.scala 51:90]
-  reg  io_read_resp_valid_REG; // @[Directory.scala 113:34]
   reg  io_read_resp_bits_isDirtyWay_REG; // @[Directory.scala 115:100]
   reg  io_read_resp_bits_isDirtyWay_r; // @[Reg.scala 19:16]
   reg  io_read_resp_bits_chosenWay_REG; // @[Directory.scala 116:99]
@@ -271,7 +268,6 @@ module DCacheDirectory_1(
     .io_out_15(replaceWay_lfsr_prng_io_out_15)
   );
   assign io_read_req_ready = 1'h1; // @[Directory.scala 71:23]
-  assign io_read_resp_valid = io_read_resp_valid_REG; // @[Directory.scala 113:24]
   assign io_read_resp_bits_hit = _rAddr_T ? isHit : io_read_resp_bits_hit_r; // @[Directory.scala 117:33]
   assign io_read_resp_bits_chosenWay = _rAddr_T ? choseWayOH : io_read_resp_bits_chosenWay_r; // @[Directory.scala 116:39]
   assign io_read_resp_bits_isDirtyWay = _rAddr_T ? isDirtyWay : io_read_resp_bits_isDirtyWay_r; // @[Directory.scala 115:40]
@@ -309,7 +305,6 @@ module DCacheDirectory_1(
     if (_replaceWayReg_T) begin // @[Reg.scala 20:18]
       replaceWayReg <= replaceWay; // @[Reg.scala 20:22]
     end
-    io_read_resp_valid_REG <= io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
     io_read_resp_bits_isDirtyWay_REG <= io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
     if (io_read_resp_bits_isDirtyWay_REG) begin // @[Reg.scala 20:18]
       io_read_resp_bits_isDirtyWay_r <= isDirtyWay; // @[Reg.scala 20:22]
@@ -452,23 +447,21 @@ initial begin
   _RAND_2 = {1{`RANDOM}};
   replaceWayReg = _RAND_2[7:0];
   _RAND_3 = {1{`RANDOM}};
-  io_read_resp_valid_REG = _RAND_3[0:0];
+  io_read_resp_bits_isDirtyWay_REG = _RAND_3[0:0];
   _RAND_4 = {1{`RANDOM}};
-  io_read_resp_bits_isDirtyWay_REG = _RAND_4[0:0];
+  io_read_resp_bits_isDirtyWay_r = _RAND_4[0:0];
   _RAND_5 = {1{`RANDOM}};
-  io_read_resp_bits_isDirtyWay_r = _RAND_5[0:0];
+  io_read_resp_bits_chosenWay_REG = _RAND_5[0:0];
   _RAND_6 = {1{`RANDOM}};
-  io_read_resp_bits_chosenWay_REG = _RAND_6[0:0];
+  io_read_resp_bits_chosenWay_r = _RAND_6[7:0];
   _RAND_7 = {1{`RANDOM}};
-  io_read_resp_bits_chosenWay_r = _RAND_7[7:0];
+  io_read_resp_bits_hit_REG = _RAND_7[0:0];
   _RAND_8 = {1{`RANDOM}};
-  io_read_resp_bits_hit_REG = _RAND_8[0:0];
+  io_read_resp_bits_hit_r = _RAND_8[0:0];
   _RAND_9 = {1{`RANDOM}};
-  io_read_resp_bits_hit_r = _RAND_9[0:0];
+  io_read_resp_bits_dirtyTag_REG = _RAND_9[0:0];
   _RAND_10 = {1{`RANDOM}};
-  io_read_resp_bits_dirtyTag_REG = _RAND_10[0:0];
-  _RAND_11 = {1{`RANDOM}};
-  io_read_resp_bits_dirtyTag_r = _RAND_11[19:0];
+  io_read_resp_bits_dirtyTag_r = _RAND_10[19:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

@@ -6,7 +6,6 @@ import org.chipsalliance.cde.config._
 
 import mycpu.common._
 import mycpu.util._
-import firrtl.passes.wiring.Wiring
 
 import mycpu.BusReq._
 import mycpu.BusMaster._
@@ -28,6 +27,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     // --------------------------------------------------------------------------------
     // stage 0
     // -------------------------------------------------------------------------------- 
+    // read directory & databank
     // send Get(store miss clean)
     // send PutFullData(store miss dirty)
     // write databank & directory (store hit)

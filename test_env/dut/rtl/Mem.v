@@ -115,7 +115,6 @@ module Mem(
   wire [31:0] dcache_io_tlbus_req_bits_size; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_req_bits_address; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 165:24]
-  wire  dcache_io_tlbus_resp_ready; // @[4_Mem.scala 165:24]
   wire  dcache_io_tlbus_resp_valid; // @[4_Mem.scala 165:24]
   wire [2:0] dcache_io_tlbus_resp_bits_opcode; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_resp_bits_data; // @[4_Mem.scala 165:24]
@@ -184,7 +183,7 @@ module Mem(
     .io_cache_write_resp_ready(lsu_io_cache_write_resp_ready),
     .io_cache_write_resp_valid(lsu_io_cache_write_resp_valid)
   );
-  DCache dcache ( // @[4_Mem.scala 165:24]
+  DCache_1 dcache ( // @[4_Mem.scala 165:24]
     .clock(dcache_clock),
     .reset(dcache_reset),
     .io_read_req_ready(dcache_io_read_req_ready),
@@ -204,7 +203,6 @@ module Mem(
     .io_tlbus_req_bits_size(dcache_io_tlbus_req_bits_size),
     .io_tlbus_req_bits_address(dcache_io_tlbus_req_bits_address),
     .io_tlbus_req_bits_data(dcache_io_tlbus_req_bits_data),
-    .io_tlbus_resp_ready(dcache_io_tlbus_resp_ready),
     .io_tlbus_resp_valid(dcache_io_tlbus_resp_valid),
     .io_tlbus_resp_bits_opcode(dcache_io_tlbus_resp_bits_opcode),
     .io_tlbus_resp_bits_data(dcache_io_tlbus_resp_bits_data)

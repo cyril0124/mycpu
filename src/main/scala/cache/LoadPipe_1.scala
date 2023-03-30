@@ -60,7 +60,6 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
 
     val s0_rdBlockData = io.dataBank.read.resp.bits.blockData
     val s0_rdDataAll = io.dataBank.read.resp.bits.data
-    // val s0_rdData = Mux1H(s0_chosenWayOH, s0_rdDataAll)
 
     val s0_validReg = RegInit(false.B)
     when(s0_latch) { s0_validReg := true.B }
@@ -137,7 +136,6 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
     val temp = s1_rdBlockData.map{ d => d.asTypeOf(Vec(dcacheWays, UInt((dcacheBlockBytes*8).W)))}
     val s1_chosenRdBlockData = temp.map{ t => Mux1H(s1_chosenWayOH, t) }
     s1_tlbusReq.bits.data := Mux(s1_loadMissDirty, Mux1H(s1_beatOH, s1_chosenRdBlockData), 0.U)
-    // s1_tlbusReq.bits.data := Mux(s1_loadMissDirty, Mux1H(s1_beatOH, s1_rdBlockData), 0.U)
     s1_tlbusReq.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
     s1_tlbusReq.bits.mask := Fill(dcacheWays, 1.U)
     s1_tlbusReq.bits.corrupt := false.B
@@ -181,7 +179,7 @@ class LoadPipe_1()(implicit val p: Parameters) extends MyModule {
 
 
     // handle refill data
-    io.tlbus.resp.ready := true.B // io.dataBank.write.req.ready && io.dir.write.req.ready // true.B
+    io.tlbus.resp.ready := true.B
     val s2_refillMessage = io.tlbus.resp.bits
     val s2_refillFire = s2_refillMessage.opcode === AccessAckData && io.tlbus.resp.fire
     val s2_beatCounter = new Counter(dcacheBlockSize)
