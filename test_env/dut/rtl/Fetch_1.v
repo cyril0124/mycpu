@@ -40,6 +40,7 @@ module Fetch_1(
   wire  icache_io_tlbus_req_ready; // @[1_Fetch.scala 151:24]
   wire  icache_io_tlbus_req_valid; // @[1_Fetch.scala 151:24]
   wire [31:0] icache_io_tlbus_req_bits_address; // @[1_Fetch.scala 151:24]
+  wire  icache_io_tlbus_resp_ready; // @[1_Fetch.scala 151:24]
   wire  icache_io_tlbus_resp_valid; // @[1_Fetch.scala 151:24]
   wire [2:0] icache_io_tlbus_resp_bits_opcode; // @[1_Fetch.scala 151:24]
   wire [31:0] icache_io_tlbus_resp_bits_data; // @[1_Fetch.scala 151:24]
@@ -81,6 +82,7 @@ module Fetch_1(
     .io_tlbus_req_ready(icache_io_tlbus_req_ready),
     .io_tlbus_req_valid(icache_io_tlbus_req_valid),
     .io_tlbus_req_bits_address(icache_io_tlbus_req_bits_address),
+    .io_tlbus_resp_ready(icache_io_tlbus_resp_ready),
     .io_tlbus_resp_valid(icache_io_tlbus_resp_valid),
     .io_tlbus_resp_bits_opcode(icache_io_tlbus_resp_bits_opcode),
     .io_tlbus_resp_bits_data(icache_io_tlbus_resp_bits_data)

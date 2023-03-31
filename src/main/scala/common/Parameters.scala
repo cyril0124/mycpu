@@ -58,6 +58,10 @@ trait HasMyCpuParameters {
       UIntToOH(addr(dcacheBlockBits + dcacheByteOffsetBits - 1, dcacheByteOffsetBits))
     }
 
+    def addrToDCacheBlockAddr(addr: UInt): UInt = {
+      Cat(addr(xlen-1, dcacheBlockBits + dcacheByteOffsetBits), Fill(dcacheBlockBits + dcacheByteOffsetBits, 0.U))
+    }
+
 
     // TODO:
     /**           Memory Map Configuration

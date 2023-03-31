@@ -179,7 +179,6 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
     val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
     val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && io.out.fire)
     icache.io.read <> DontCare
-    // icache.io.write <> DontCare
     icache.io.tlbus <> io.tlbus
     icache.io.read.req.valid := !flush && io.in.start && preFetchInst
     icache.io.read.req.bits.addr := Mux(io.out.fire, pcNext, pcReg)

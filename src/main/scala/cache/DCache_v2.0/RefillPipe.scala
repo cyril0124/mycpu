@@ -116,7 +116,7 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
 
     // writeback directory
     val refillSafe = refillFire && state === sRefillData
-    io.dirWrite.req.valid := refillSafe
+    io.dirWrite.req.valid := refillSafe && lastBeat
     io.dirWrite.req.bits.addr := req.addr
     val meta = Wire(new DCacheMeta)
     meta.valid := true.B 
