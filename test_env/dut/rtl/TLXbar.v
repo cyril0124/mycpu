@@ -3,14 +3,10 @@ module TLXbar(
   input         reset,
   output        io_masterFace_in_0_ready,
   input         io_masterFace_in_0_valid,
-  input  [2:0]  io_masterFace_in_0_bits_opcode,
-  input  [31:0] io_masterFace_in_0_bits_size,
   input  [31:0] io_masterFace_in_0_bits_address,
-  input  [31:0] io_masterFace_in_0_bits_data,
   output        io_masterFace_in_1_ready,
   input         io_masterFace_in_1_valid,
   input  [2:0]  io_masterFace_in_1_bits_opcode,
-  input  [31:0] io_masterFace_in_1_bits_size,
   input  [31:0] io_masterFace_in_1_bits_address,
   input  [31:0] io_masterFace_in_1_bits_data,
   output        io_masterFace_out_0_valid,
@@ -54,14 +50,10 @@ module TLXbar(
   wire [1:0] reqArb_io_grantOH; // @[Bus.scala 191:24]
   wire  reqMux_io_in_0_ready; // @[Bus.scala 194:24]
   wire  reqMux_io_in_0_valid; // @[Bus.scala 194:24]
-  wire [2:0] reqMux_io_in_0_bits_opcode; // @[Bus.scala 194:24]
-  wire [31:0] reqMux_io_in_0_bits_size; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_0_bits_address; // @[Bus.scala 194:24]
-  wire [31:0] reqMux_io_in_0_bits_data; // @[Bus.scala 194:24]
   wire  reqMux_io_in_1_ready; // @[Bus.scala 194:24]
   wire  reqMux_io_in_1_valid; // @[Bus.scala 194:24]
   wire [2:0] reqMux_io_in_1_bits_opcode; // @[Bus.scala 194:24]
-  wire [31:0] reqMux_io_in_1_bits_size; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_1_bits_address; // @[Bus.scala 194:24]
   wire [31:0] reqMux_io_in_1_bits_data; // @[Bus.scala 194:24]
   wire  reqMux_io_out_ready; // @[Bus.scala 194:24]
@@ -163,14 +155,10 @@ module TLXbar(
   TLBusMux reqMux ( // @[Bus.scala 194:24]
     .io_in_0_ready(reqMux_io_in_0_ready),
     .io_in_0_valid(reqMux_io_in_0_valid),
-    .io_in_0_bits_opcode(reqMux_io_in_0_bits_opcode),
-    .io_in_0_bits_size(reqMux_io_in_0_bits_size),
     .io_in_0_bits_address(reqMux_io_in_0_bits_address),
-    .io_in_0_bits_data(reqMux_io_in_0_bits_data),
     .io_in_1_ready(reqMux_io_in_1_ready),
     .io_in_1_valid(reqMux_io_in_1_valid),
     .io_in_1_bits_opcode(reqMux_io_in_1_bits_opcode),
-    .io_in_1_bits_size(reqMux_io_in_1_bits_size),
     .io_in_1_bits_address(reqMux_io_in_1_bits_address),
     .io_in_1_bits_data(reqMux_io_in_1_bits_data),
     .io_out_ready(reqMux_io_out_ready),
@@ -183,7 +171,7 @@ module TLXbar(
     .io_choseOH_0(reqMux_io_choseOH_0),
     .io_choseOH_1(reqMux_io_choseOH_1)
   );
-  Queue buf_ ( // @[Bus.scala 200:21]
+  Queue_1 buf_ ( // @[Bus.scala 200:21]
     .clock(buf__clock),
     .reset(buf__reset),
     .io_enq_ready(buf__io_enq_ready),
@@ -235,13 +223,9 @@ module TLXbar(
   assign reqArb_reset = reset;
   assign reqArb_io_reqs_1 = io_masterFace_in_1_valid; // @[Bus.scala 192:58]
   assign reqMux_io_in_0_valid = io_masterFace_in_0_valid; // @[Bus.scala 195:58]
-  assign reqMux_io_in_0_bits_opcode = io_masterFace_in_0_bits_opcode; // @[Bus.scala 195:58]
-  assign reqMux_io_in_0_bits_size = io_masterFace_in_0_bits_size; // @[Bus.scala 195:58]
   assign reqMux_io_in_0_bits_address = io_masterFace_in_0_bits_address; // @[Bus.scala 195:58]
-  assign reqMux_io_in_0_bits_data = io_masterFace_in_0_bits_data; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_valid = io_masterFace_in_1_valid; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_opcode = io_masterFace_in_1_bits_opcode; // @[Bus.scala 195:58]
-  assign reqMux_io_in_1_bits_size = io_masterFace_in_1_bits_size; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_address = io_masterFace_in_1_bits_address; // @[Bus.scala 195:58]
   assign reqMux_io_in_1_bits_data = io_masterFace_in_1_bits_data; // @[Bus.scala 195:58]
   assign reqMux_io_out_ready = buf__io_enq_ready; // @[Bus.scala 201:16]

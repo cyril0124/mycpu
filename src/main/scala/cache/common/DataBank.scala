@@ -84,20 +84,20 @@ class DataBankArray()(implicit val p: Parameters) extends MyModule {
     val wrBlockSelOH = io.write.req.bits.blockSelOH
     dontTouch(io.read.req)
 
-    for(j <- 0 until dcacheBlockSize) {
-        dataBanks(j).io.r.en := io.read.req.fire & rdBlockSelOH(j) // TODO: enble parallel access
-        dataBanks(j).io.r.set := io.read.req.bits.set
+    for(i <- 0 until dcacheBlockSize) {
+        dataBanks(i).io.r.en := io.read.req.fire & rdBlockSelOH(i) // TODO: enble parallel access
+        dataBanks(i).io.r.set := io.read.req.bits.set
         
-        dataBanks(j).io.w.en := io.write.req.fire & wrBlockSelOH(j) // TODO: enble parallel access
-        dataBanks(j).io.w.data := io.write.req.bits.data
-        dataBanks(j).io.w.way := io.write.req.bits.way
-        dataBanks(j).io.w.set := io.write.req.bits.set
-        dataBanks(j).io.w.mask := io.write.req.bits.mask
+        dataBanks(i).io.w.en := io.write.req.fire & wrBlockSelOH(i) // TODO: enble parallel access
+        dataBanks(i).io.w.data := io.write.req.bits.data
+        dataBanks(i).io.w.way := io.write.req.bits.way
+        dataBanks(i).io.w.set := io.write.req.bits.set
+        dataBanks(i).io.w.mask := io.write.req.bits.mask
     }
 
     val blockData = VecInit((0 until dcacheBlockSize).map{i => dataBanks(i).io.r.data})
     io.read.resp.bits.data :=  Mux1H(rdBlockSelOH, blockData)
-    io.read.resp.bits.blockData := blockData.map(b => b.asUInt)
+    io.read.resp.bits.blockData := blockData.map(b => b.asUInt) // CacheLine Data, each CacheLine contains multiple data block, each block is 32-bit(4-byte)
 
     io.read.resp.valid := true.B
 

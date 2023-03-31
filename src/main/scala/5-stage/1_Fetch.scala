@@ -130,82 +130,6 @@ class FetchIO_1()(implicit val p: Parameters) extends MyBundle{
     val excp = Flipped(ValidIO(new ExceptionIO))
 }
 
-// class Fetch_1()(implicit val p: Parameters) extends MyModule{
-//     val io = IO(new FetchIO_1)
-
-//     val pcReg           = RegInit(resetPc.U(xlen.W))
-//     val pcNext          = Wire(UInt(xlen.W))
-//     val pcNext4         = pcReg + (ilen / 8).U
-
-//     val branchAddr_1 = Mux(io.excp.valid, 
-//                     Mux(io.excp.bits.isMret, 
-//                         io.mepc, 
-//                         io.trapVec
-//                     ), 
-//                     Mux(io.in.execute.bits.brTaken, 
-//                         io.in.execute.bits.targetAddr, 
-//                         pcReg
-//                     )
-//                 )
-//     val icache = Module(new ICache()(p.alterPartial(
-//         {
-//             case MyCpuParamsKey => MyCpuParameters(
-//                 dcacheSets = 32,
-//                 dcacheWays = 4,
-//                 dcacheBlockSize = 8
-//             )
-//         }
-//     )))
-
-//     val instValid = WireInit(false.B)
-
-//     val hasBranch_1 = io.excp.valid || io.in.execute.bits.brTaken
-//     // val hasBranch = Mux(hasBranch_1, true.B, RSLatch(hasBranch_1, io.out.fire))
-//     val hasBranch = Hold(true.B, hasBranch_1, io.out.fire || !io.in.start)
-//     val branchAddr = Hold(branchAddr_1, hasBranch_1, !io.in.start) // Mux(hasBranch_1, branchAddr_1, RegEnable(branchAddr_1, hasBranch_1))
-//     dontTouch(hasBranch)
-
-//     pcNext := Mux(hasBranch, branchAddr, pcNext4)
-    
-//     val stall = io.ctrl.stall
-//     val flush = io.ctrl.flush
-
-//     io.in.execute.ready := !stall && io.in.execute.valid
-
-
-//     val inst            = WireInit(0.U(ilen.W))
-//     val commit          = !stall && io.out.ready && !hasBranch
-
-//     instValid := Mux(icache.io.read.resp.fire, 
-//                     true.B, 
-//                     RSLatch(icache.io.read.resp.fire, io.out.fire)
-//                 )
-//     // instValid := Hold(true.B, icache.io.read.resp.fire, io.out.fire)
-
-//     val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
-//     val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && io.out.fire)
-//     icache.io.read <> DontCare
-//     icache.io.write <> DontCare
-//     icache.io.tlbus <> io.tlbus
-//     icache.io.read.req.valid := !flush && io.in.start && preFetchInst
-//     icache.io.read.req.bits.addr := Mux(io.out.fire, pcNext, pcReg)
-//     icache.io.read.resp.ready := true.B
-//     inst := Mux(icache.io.read.resp.fire, icache.io.read.resp.bits.data, RegEnable(icache.io.read.resp.bits.data, icache.io.read.resp.fire))
-
-//     when(io.out.fire) { pcReg := pcNext }
-
-//     io.out.bits.pcNext4          := pcNext4
-//     io.out.bits.instState.commit := commit
-//     io.out.bits.instState.pc     := pcReg
-//     io.out.bits.instState.inst   := Mux(commit, inst , "h00000013".U)
-
-//     when(!commit) {
-//         io.out.bits <> DontCare
-//         io.out.bits.instState <> DontCare
-//     }
-
-//     io.out.valid := !stall && io.in.start && icache.io.read.req.ready && RegNext(instValid)
-// }
 
 class Fetch_1()(implicit val p: Parameters) extends MyModule{
     val io = IO(new FetchIO_1)
@@ -255,7 +179,7 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
     val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
     val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && io.out.fire)
     icache.io.read <> DontCare
-    icache.io.write <> DontCare
+    // icache.io.write <> DontCare
     icache.io.tlbus <> io.tlbus
     icache.io.read.req.valid := !flush && io.in.start && preFetchInst
     icache.io.read.req.bits.addr := Mux(io.out.fire, pcNext, pcReg)

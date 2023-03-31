@@ -5,7 +5,6 @@ module BankRam2P_1_66(
   output [15:0] io_r_data,
   input         io_w_en,
   input  [6:0]  io_w_addr,
-  input  [15:0] io_w_data,
   input  [7:0]  io_w_mask
 );
 `ifdef RANDOMIZE_MEM_INIT
@@ -4212,22 +4211,14 @@ module BankRam2P_1_66(
   wire  ram_7_MPORT_128_en; // @[SRAM.scala 123:26]
   reg  ram_7_MPORT_129_en_pipe_0;
   reg [6:0] ram_7_MPORT_129_addr_pipe_0;
-  wire [1:0] wdata_0 = io_w_data[1:0]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_1 = io_w_data[3:2]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_2 = io_w_data[5:4]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_3 = io_w_data[7:6]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_4 = io_w_data[9:8]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_5 = io_w_data[11:10]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_6 = io_w_data[13:12]; // @[SRAM.scala 133:35]
-  wire [1:0] wdata_7 = io_w_data[15:14]; // @[SRAM.scala 133:35]
-  wire [1:0] _GEN_1193 = io_w_mask[0] ? wdata_0 : ram_0_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1194 = io_w_mask[1] ? wdata_1 : ram_1_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1195 = io_w_mask[2] ? wdata_2 : ram_2_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1196 = io_w_mask[3] ? wdata_3 : ram_3_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1197 = io_w_mask[4] ? wdata_4 : ram_4_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1198 = io_w_mask[5] ? wdata_5 : ram_5_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1199 = io_w_mask[6] ? wdata_6 : ram_6_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
-  wire [1:0] _GEN_1200 = io_w_mask[7] ? wdata_7 : ram_7_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1193 = io_w_mask[0] ? 2'h1 : ram_0_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1194 = io_w_mask[1] ? 2'h1 : ram_1_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1195 = io_w_mask[2] ? 2'h1 : ram_2_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1196 = io_w_mask[3] ? 2'h1 : ram_3_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1197 = io_w_mask[4] ? 2'h1 : ram_4_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1198 = io_w_mask[5] ? 2'h1 : ram_5_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1199 = io_w_mask[6] ? 2'h1 : ram_6_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
+  wire [1:0] _GEN_1200 = io_w_mask[7] ? 2'h1 : ram_7_MPORT_129_data; // @[SRAM.scala 144:11 151:36 152:27]
   wire [1:0] _GEN_1201 = io_w_addr == io_r_addr ? _GEN_1193 : ram_0_MPORT_129_data; // @[SRAM.scala 144:11 148:39]
   wire [1:0] _GEN_1202 = io_w_addr == io_r_addr ? _GEN_1194 : ram_1_MPORT_129_data; // @[SRAM.scala 144:11 148:39]
   wire [1:0] _GEN_1203 = io_w_addr == io_r_addr ? _GEN_1195 : ram_2_MPORT_129_data; // @[SRAM.scala 144:11 148:39]
@@ -4761,7 +4752,7 @@ module BankRam2P_1_66(
   assign ram_0_MPORT_127_addr = 7'h7f;
   assign ram_0_MPORT_127_mask = 1'h1;
   assign ram_0_MPORT_127_en = reset;
-  assign ram_0_MPORT_128_data = io_w_data[1:0];
+  assign ram_0_MPORT_128_data = 2'h1;
   assign ram_0_MPORT_128_addr = io_w_addr;
   assign ram_0_MPORT_128_mask = io_w_mask[0];
   assign ram_0_MPORT_128_en = io_w_en;
@@ -5280,7 +5271,7 @@ module BankRam2P_1_66(
   assign ram_1_MPORT_127_addr = 7'h7f;
   assign ram_1_MPORT_127_mask = 1'h1;
   assign ram_1_MPORT_127_en = reset;
-  assign ram_1_MPORT_128_data = io_w_data[3:2];
+  assign ram_1_MPORT_128_data = 2'h1;
   assign ram_1_MPORT_128_addr = io_w_addr;
   assign ram_1_MPORT_128_mask = io_w_mask[1];
   assign ram_1_MPORT_128_en = io_w_en;
@@ -5799,7 +5790,7 @@ module BankRam2P_1_66(
   assign ram_2_MPORT_127_addr = 7'h7f;
   assign ram_2_MPORT_127_mask = 1'h1;
   assign ram_2_MPORT_127_en = reset;
-  assign ram_2_MPORT_128_data = io_w_data[5:4];
+  assign ram_2_MPORT_128_data = 2'h1;
   assign ram_2_MPORT_128_addr = io_w_addr;
   assign ram_2_MPORT_128_mask = io_w_mask[2];
   assign ram_2_MPORT_128_en = io_w_en;
@@ -6318,7 +6309,7 @@ module BankRam2P_1_66(
   assign ram_3_MPORT_127_addr = 7'h7f;
   assign ram_3_MPORT_127_mask = 1'h1;
   assign ram_3_MPORT_127_en = reset;
-  assign ram_3_MPORT_128_data = io_w_data[7:6];
+  assign ram_3_MPORT_128_data = 2'h1;
   assign ram_3_MPORT_128_addr = io_w_addr;
   assign ram_3_MPORT_128_mask = io_w_mask[3];
   assign ram_3_MPORT_128_en = io_w_en;
@@ -6837,7 +6828,7 @@ module BankRam2P_1_66(
   assign ram_4_MPORT_127_addr = 7'h7f;
   assign ram_4_MPORT_127_mask = 1'h1;
   assign ram_4_MPORT_127_en = reset;
-  assign ram_4_MPORT_128_data = io_w_data[9:8];
+  assign ram_4_MPORT_128_data = 2'h1;
   assign ram_4_MPORT_128_addr = io_w_addr;
   assign ram_4_MPORT_128_mask = io_w_mask[4];
   assign ram_4_MPORT_128_en = io_w_en;
@@ -7356,7 +7347,7 @@ module BankRam2P_1_66(
   assign ram_5_MPORT_127_addr = 7'h7f;
   assign ram_5_MPORT_127_mask = 1'h1;
   assign ram_5_MPORT_127_en = reset;
-  assign ram_5_MPORT_128_data = io_w_data[11:10];
+  assign ram_5_MPORT_128_data = 2'h1;
   assign ram_5_MPORT_128_addr = io_w_addr;
   assign ram_5_MPORT_128_mask = io_w_mask[5];
   assign ram_5_MPORT_128_en = io_w_en;
@@ -7875,7 +7866,7 @@ module BankRam2P_1_66(
   assign ram_6_MPORT_127_addr = 7'h7f;
   assign ram_6_MPORT_127_mask = 1'h1;
   assign ram_6_MPORT_127_en = reset;
-  assign ram_6_MPORT_128_data = io_w_data[13:12];
+  assign ram_6_MPORT_128_data = 2'h1;
   assign ram_6_MPORT_128_addr = io_w_addr;
   assign ram_6_MPORT_128_mask = io_w_mask[6];
   assign ram_6_MPORT_128_en = io_w_en;
@@ -8394,7 +8385,7 @@ module BankRam2P_1_66(
   assign ram_7_MPORT_127_addr = 7'h7f;
   assign ram_7_MPORT_127_mask = 1'h1;
   assign ram_7_MPORT_127_en = reset;
-  assign ram_7_MPORT_128_data = io_w_data[15:14];
+  assign ram_7_MPORT_128_data = 2'h1;
   assign ram_7_MPORT_128_addr = io_w_addr;
   assign ram_7_MPORT_128_mask = io_w_mask[7];
   assign ram_7_MPORT_128_en = io_w_en;

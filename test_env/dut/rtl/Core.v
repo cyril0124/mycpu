@@ -59,10 +59,7 @@ module Core(
   wire [31:0] ife_io_out_bits_instState_inst; // @[Core.scala 56:21]
   wire  ife_io_tlbus_req_ready; // @[Core.scala 56:21]
   wire  ife_io_tlbus_req_valid; // @[Core.scala 56:21]
-  wire [2:0] ife_io_tlbus_req_bits_opcode; // @[Core.scala 56:21]
-  wire [31:0] ife_io_tlbus_req_bits_size; // @[Core.scala 56:21]
   wire [31:0] ife_io_tlbus_req_bits_address; // @[Core.scala 56:21]
-  wire [31:0] ife_io_tlbus_req_bits_data; // @[Core.scala 56:21]
   wire  ife_io_tlbus_resp_valid; // @[Core.scala 56:21]
   wire [2:0] ife_io_tlbus_resp_bits_opcode; // @[Core.scala 56:21]
   wire [31:0] ife_io_tlbus_resp_bits_data; // @[Core.scala 56:21]
@@ -203,7 +200,6 @@ module Core(
   wire  mem_io_tlbus_req_ready; // @[Core.scala 74:21]
   wire  mem_io_tlbus_req_valid; // @[Core.scala 74:21]
   wire [2:0] mem_io_tlbus_req_bits_opcode; // @[Core.scala 74:21]
-  wire [31:0] mem_io_tlbus_req_bits_size; // @[Core.scala 74:21]
   wire [31:0] mem_io_tlbus_req_bits_address; // @[Core.scala 74:21]
   wire [31:0] mem_io_tlbus_req_bits_data; // @[Core.scala 74:21]
   wire  mem_io_tlbus_resp_valid; // @[Core.scala 74:21]
@@ -339,14 +335,10 @@ module Core(
   wire  xbar_reset; // @[Core.scala 326:22]
   wire  xbar_io_masterFace_in_0_ready; // @[Core.scala 326:22]
   wire  xbar_io_masterFace_in_0_valid; // @[Core.scala 326:22]
-  wire [2:0] xbar_io_masterFace_in_0_bits_opcode; // @[Core.scala 326:22]
-  wire [31:0] xbar_io_masterFace_in_0_bits_size; // @[Core.scala 326:22]
   wire [31:0] xbar_io_masterFace_in_0_bits_address; // @[Core.scala 326:22]
-  wire [31:0] xbar_io_masterFace_in_0_bits_data; // @[Core.scala 326:22]
   wire  xbar_io_masterFace_in_1_ready; // @[Core.scala 326:22]
   wire  xbar_io_masterFace_in_1_valid; // @[Core.scala 326:22]
   wire [2:0] xbar_io_masterFace_in_1_bits_opcode; // @[Core.scala 326:22]
-  wire [31:0] xbar_io_masterFace_in_1_bits_size; // @[Core.scala 326:22]
   wire [31:0] xbar_io_masterFace_in_1_bits_address; // @[Core.scala 326:22]
   wire [31:0] xbar_io_masterFace_in_1_bits_data; // @[Core.scala 326:22]
   wire  xbar_io_masterFace_out_0_valid; // @[Core.scala 326:22]
@@ -407,10 +399,7 @@ module Core(
     .io_out_bits_instState_inst(ife_io_out_bits_instState_inst),
     .io_tlbus_req_ready(ife_io_tlbus_req_ready),
     .io_tlbus_req_valid(ife_io_tlbus_req_valid),
-    .io_tlbus_req_bits_opcode(ife_io_tlbus_req_bits_opcode),
-    .io_tlbus_req_bits_size(ife_io_tlbus_req_bits_size),
     .io_tlbus_req_bits_address(ife_io_tlbus_req_bits_address),
-    .io_tlbus_req_bits_data(ife_io_tlbus_req_bits_data),
     .io_tlbus_resp_valid(ife_io_tlbus_resp_valid),
     .io_tlbus_resp_bits_opcode(ife_io_tlbus_resp_bits_opcode),
     .io_tlbus_resp_bits_data(ife_io_tlbus_resp_bits_data),
@@ -557,7 +546,6 @@ module Core(
     .io_tlbus_req_ready(mem_io_tlbus_req_ready),
     .io_tlbus_req_valid(mem_io_tlbus_req_valid),
     .io_tlbus_req_bits_opcode(mem_io_tlbus_req_bits_opcode),
-    .io_tlbus_req_bits_size(mem_io_tlbus_req_bits_size),
     .io_tlbus_req_bits_address(mem_io_tlbus_req_bits_address),
     .io_tlbus_req_bits_data(mem_io_tlbus_req_bits_data),
     .io_tlbus_resp_valid(mem_io_tlbus_resp_valid),
@@ -705,14 +693,10 @@ module Core(
     .reset(xbar_reset),
     .io_masterFace_in_0_ready(xbar_io_masterFace_in_0_ready),
     .io_masterFace_in_0_valid(xbar_io_masterFace_in_0_valid),
-    .io_masterFace_in_0_bits_opcode(xbar_io_masterFace_in_0_bits_opcode),
-    .io_masterFace_in_0_bits_size(xbar_io_masterFace_in_0_bits_size),
     .io_masterFace_in_0_bits_address(xbar_io_masterFace_in_0_bits_address),
-    .io_masterFace_in_0_bits_data(xbar_io_masterFace_in_0_bits_data),
     .io_masterFace_in_1_ready(xbar_io_masterFace_in_1_ready),
     .io_masterFace_in_1_valid(xbar_io_masterFace_in_1_valid),
     .io_masterFace_in_1_bits_opcode(xbar_io_masterFace_in_1_bits_opcode),
-    .io_masterFace_in_1_bits_size(xbar_io_masterFace_in_1_bits_size),
     .io_masterFace_in_1_bits_address(xbar_io_masterFace_in_1_bits_address),
     .io_masterFace_in_1_bits_data(xbar_io_masterFace_in_1_bits_data),
     .io_masterFace_out_0_valid(xbar_io_masterFace_out_0_valid),
@@ -934,13 +918,9 @@ module Core(
   assign xbar_clock = clock;
   assign xbar_reset = reset;
   assign xbar_io_masterFace_in_0_valid = ife_io_tlbus_req_valid; // @[Core.scala 332:22]
-  assign xbar_io_masterFace_in_0_bits_opcode = ife_io_tlbus_req_bits_opcode; // @[Core.scala 332:22]
-  assign xbar_io_masterFace_in_0_bits_size = ife_io_tlbus_req_bits_size; // @[Core.scala 332:22]
   assign xbar_io_masterFace_in_0_bits_address = ife_io_tlbus_req_bits_address; // @[Core.scala 332:22]
-  assign xbar_io_masterFace_in_0_bits_data = ife_io_tlbus_req_bits_data; // @[Core.scala 332:22]
   assign xbar_io_masterFace_in_1_valid = mem_io_tlbus_req_valid; // @[Core.scala 335:22]
   assign xbar_io_masterFace_in_1_bits_opcode = mem_io_tlbus_req_bits_opcode; // @[Core.scala 335:22]
-  assign xbar_io_masterFace_in_1_bits_size = mem_io_tlbus_req_bits_size; // @[Core.scala 335:22]
   assign xbar_io_masterFace_in_1_bits_address = mem_io_tlbus_req_bits_address; // @[Core.scala 335:22]
   assign xbar_io_masterFace_in_1_bits_data = mem_io_tlbus_req_bits_data; // @[Core.scala 335:22]
   assign xbar_io_slaveFace_in_0_ready = rom_io_req_ready; // @[Core.scala 340:16]

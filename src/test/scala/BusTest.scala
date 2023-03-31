@@ -44,7 +44,7 @@ class DCacheWithBus()(implicit val p: Parameters) extends MyModule {
     dcache.io.tlbus.resp <> xbar.io.masterFace.out(1)
 
     io.read2 <> DontCare
-    icache.io.write <> DontCare
+    // icache.io.write <> DontCare
     icache.io.read <> io.read2
     icache.io.tlbus.req <> xbar.io.masterFace.in(0)
     icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
