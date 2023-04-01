@@ -16,7 +16,6 @@ import scala.tools.cmd.Meta
 
 class CacheReadReq()(implicit val p: Parameters) extends MyBundle{
     val addr = UInt(xlen.W)
-    // val memType = UInt(3.W)
 }
 
 class CacheReadResp()(implicit val p: Parameters) extends MyBundle{
@@ -33,7 +32,7 @@ class CacheWriteReq()(implicit val p: Parameters) extends MyBundle{
     val addr = UInt(xlen.W)
     val data = UInt(xlen.W)
     // val memType = UInt(3.W)
-    val mask = UInt(blockBytes.W) 
+    val mask = UInt(dcacheBlockBytes.W) 
 }
 
 class CacheWriteResp()(implicit val p: Parameters) extends MyBundle{
@@ -80,7 +79,7 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     println(s" setBits: ${dcacheSetBits}")
     println(s" tagBits: ${dcacheTagBits}")
 
-    val loadPipe = Module(new LoadPipe_1)
+    val loadPipe = Module(new LoadPipe)
     val storePipe = Module(new StorePipe)
 
 

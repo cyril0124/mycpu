@@ -122,20 +122,26 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
 
     state := nextState
 
-    io.tasks.refill.req.valid := state === sRefill
+    val willRefill       = !io.req.bits.dirInfo.isDirtyWay && !io.req.bits.dirInfo.hit && io.req.fire
+    val willWriteback    = io.req.bits.dirInfo.isDirtyWay && !io.req.bits.dirInfo.hit && io.req.fire
+    val willWriteStore   = state === sRefill && req.isStore && io.tasks.refill.resp.fire
+    val willRespLoad     = state === sRefill && !req.isStore && io.tasks.refill.resp.fire
+    val willRespStore    = state === sWriteData && io.dirWrite.req.fire && io.dataWrite.req.fire
+
+    io.tasks.refill.req.valid := state === sRefill || willRefill
     io.tasks.refill.req.bits.addr := req.addr
     io.tasks.refill.req.bits.chosenWay := req.dirInfo.chosenWay
     io.tasks.refill.resp.ready := true.B
 
 
-    io.tasks.writeback.req.valid := state === sWriteback
+    io.tasks.writeback.req.valid := state === sWriteback || willWriteback
     io.tasks.writeback.req.bits.addr := req.addr
     io.tasks.writeback.req.bits.dirtyTag := req.dirInfo.dirtyTag
     io.tasks.writeback.req.bits.data := req.data
     io.tasks.writeback.resp.ready := true.B
 
 
-    io.dirWrite.req.valid := state === sWriteData
+    io.dirWrite.req.valid := state === sWriteData || willWriteStore
     io.dirWrite.req.bits.addr := req.addr
     val meta = Wire(new DCacheMeta)
     meta.dirty := true.B
@@ -144,7 +150,7 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     io.dirWrite.req.bits.way := req.dirInfo.chosenWay
 
 
-    io.dataWrite.req.valid := state === sWriteData
+    io.dataWrite.req.valid := state === sWriteData || willWriteStore
     io.dataWrite.req.bits.blockSelOH := addrToDCacheBlockOH(req.addr)
     io.dataWrite.req.bits.data := req.storeData
     io.dataWrite.req.bits.set := addrToDCacheSet(req.addr)
@@ -152,10 +158,13 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     io.dataWrite.req.bits.way := req.dirInfo.chosenWay
 
 
-    io.resp.load.valid := !req.isStore && state === sResp
-    io.resp.load.bits.data := Mux(io.tasks.refill.resp.fire, io.tasks.refill.resp.bits.data, RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire))
+    io.resp.load.valid := !req.isStore && (state === sResp || willRespLoad)
+    io.resp.load.bits.data := Mux(io.tasks.refill.resp.fire, 
+                                io.tasks.refill.resp.bits.data, 
+                                RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire)
+                            )
 
-    io.resp.store.valid := req.isStore && state === sResp
+    io.resp.store.valid := req.isStore && (state === sResp || willRespStore)
 }
 
 object MSHRGenRTL extends App {

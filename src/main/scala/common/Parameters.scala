@@ -92,7 +92,7 @@ trait HasMyCpuParameters {
     // Bus Configuration
     val nrBusMaster = myCpuParams.nrBusMaster
     val nrBusSlave = myCpuParams.nrBusSlave
-    val busBeatSize = myCpuParams.xlen / 8
+    val busBeatSize = myCpuParams.busBeatSize
     val busBeatWidth = myCpuParams.xlen
     val busMaskWidth = myCpuParams.xlen / 8
     val busMaxBeat = myCpuParams.busMaxBeat
@@ -122,6 +122,7 @@ case class MyCpuParameters
     romSize: Int = 0x00020000,
     ramSize: Int = 1024,
 
+    busBeatSize: Int = 4,
     busMaxBeat: Int = 32,
 
     // DCache Configuration

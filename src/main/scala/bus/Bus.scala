@@ -46,12 +46,12 @@ import BusReq._
 class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatWidth.W) //UInt(log2Ceil(busBeatSize / 8).W)
+    val size = UInt(busBeatWidth.W) 
     val source = UInt(log2Ceil(nrBusMaster).W)
     val address = UInt(xlen.W)
-    val mask = UInt(busBeatSize.W) // UInt((busBeatSize / 8).W)
+    val mask = UInt(busBeatSize.W) 
     val corrupt = Bool()
-    val data = UInt((busBeatSize*8).W) // UInt(busBeatSize.W)
+    val data = UInt((busBeatSize*8).W) 
     // val sink = UInt(log2Ceil(nrBusMaster).W)
 }
 
@@ -59,21 +59,63 @@ class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
 class BusSlaveBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatWidth.W) // UInt(log2Ceil(busBeatSize / 8).W)
+    val size = UInt(busBeatWidth.W) 
     val source = UInt(log2Ceil(nrBusMaster).W)
     val sink = UInt(log2Ceil(nrBusSlave).W)
     val denied = Bool()
     val corrupt = Bool()
-    val data = UInt((busBeatSize*8).W) // UInt(busBeatSize.W)
+    val data = UInt((busBeatSize*8).W) 
+}
+
+class TLBeatInfo()(implicit val p: Parameters) extends MyBundle{
+        val isLastBeat = Bool()
+        val beatCount = UInt(log2Ceil(busMaxBeat).W)
+}
+
+abstract class TLBusULBase()(implicit val p: Parameters) extends MyBundle{
+    val req: DecoupledIO[BusMasterBundle]
+    val resp: DecoupledIO[BusSlaveBundle]
+
+    def beatInfo(typ: String = "req"): TLBeatInfo = {
+        val beatCount = WireInit(0.U(log2Ceil(busMaxBeat).W))
+        val fireLastBeat = WireInit(false.B)
+        val ret = WireInit(0.U.asTypeOf(new TLBeatInfo))
+        if(typ == "req") {
+            val count = Counter(busMaxBeat)
+            val beatNum = req.bits.size >> log2Ceil(busBeatSize)
+            val lastBeat = count.value === beatNum - 1.U
+            fireLastBeat := req.fire && lastBeat
+            when(fireLastBeat || req.fire && req.bits.opcode === Get) {
+                count.reset()
+            }.elsewhen(req.fire) {
+                count.inc()
+            }
+            beatCount := count.value
+        }else if(typ == "resp") {
+            val count = Counter(busMaxBeat)
+            val beatNum = resp.bits.size >> log2Ceil(busBeatSize)
+            val lastBeat = count.value === beatNum - 1.U
+            fireLastBeat := resp.fire && lastBeat
+            when(fireLastBeat || resp.fire && resp.bits.opcode === AccessAck) {
+                count.reset()
+            }.elsewhen(resp.fire) {
+                count.inc()
+            }
+            beatCount := count.value
+        }
+        ret.beatCount := beatCount
+        ret.isLastBeat := fireLastBeat
+        ret
+    }  
 }
 
 // tl-ul master
-class TLMasterBusUL()(implicit val p: Parameters) extends MyBundle{
+class TLMasterBusUL()(override implicit val p: Parameters) extends TLBusULBase{
     val req = DecoupledIO(new BusMasterBundle)
     val resp = Flipped(DecoupledIO(new BusSlaveBundle))
 }
 // tl-ul slave
-class TLSlaveBusUL()(implicit val p: Parameters) extends MyBundle{
+class TLSlaveBusUL()(override implicit val p: Parameters) extends TLBusULBase{
     val req = Flipped(DecoupledIO(new BusMasterBundle))
     val resp = DecoupledIO(new BusSlaveBundle)
 }

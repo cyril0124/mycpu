@@ -73,6 +73,8 @@ class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     val s1_rdBlockData = RegEnable(s0_rdBlockData, s1_latch)
     val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch)
     val s1_rdData = Mux1H(s1_chosenWayOH, s1_rdDataAll)
+    dontTouch(s1_rdData)
+    dontTouch(s1_latch)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B }

@@ -2,6 +2,7 @@ module Arbiter(
   output        io_in_0_ready,
   input         io_in_0_valid,
   input  [31:0] io_in_0_bits_addr,
+  input         io_in_0_bits_dirInfo_hit,
   input  [7:0]  io_in_0_bits_dirInfo_chosenWay,
   input         io_in_0_bits_dirInfo_isDirtyWay,
   input  [19:0] io_in_0_bits_dirInfo_dirtyTag,
@@ -12,6 +13,7 @@ module Arbiter(
   output        io_in_1_ready,
   input         io_in_1_valid,
   input  [31:0] io_in_1_bits_addr,
+  input         io_in_1_bits_dirInfo_hit,
   input  [7:0]  io_in_1_bits_dirInfo_chosenWay,
   input         io_in_1_bits_dirInfo_isDirtyWay,
   input  [19:0] io_in_1_bits_dirInfo_dirtyTag,
@@ -24,6 +26,7 @@ module Arbiter(
   input         io_out_ready,
   output        io_out_valid,
   output [31:0] io_out_bits_addr,
+  output        io_out_bits_dirInfo_hit,
   output [7:0]  io_out_bits_dirInfo_chosenWay,
   output        io_out_bits_dirInfo_isDirtyWay,
   output [19:0] io_out_bits_dirInfo_dirtyTag,
@@ -40,6 +43,7 @@ module Arbiter(
   assign io_in_1_ready = grant_1 & io_out_ready; // @[Arbiter.scala 146:19]
   assign io_out_valid = ~grant_1 | io_in_1_valid; // @[Arbiter.scala 147:31]
   assign io_out_bits_addr = io_in_0_valid ? io_in_0_bits_addr : io_in_1_bits_addr; // @[Arbiter.scala 136:15 138:26 140:19]
+  assign io_out_bits_dirInfo_hit = io_in_0_valid ? io_in_0_bits_dirInfo_hit : io_in_1_bits_dirInfo_hit; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_dirInfo_chosenWay = io_in_0_valid ? io_in_0_bits_dirInfo_chosenWay : io_in_1_bits_dirInfo_chosenWay
     ; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_dirInfo_isDirtyWay = io_in_0_valid ? io_in_0_bits_dirInfo_isDirtyWay :

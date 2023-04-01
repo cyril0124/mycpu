@@ -54,6 +54,7 @@ module DCache_1(
   wire  loadPipe_io_mshr_ready; // @[DCache_2.scala 31:26]
   wire  loadPipe_io_mshr_valid; // @[DCache_2.scala 31:26]
   wire [31:0] loadPipe_io_mshr_bits_addr; // @[DCache_2.scala 31:26]
+  wire  loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 31:26]
   wire [7:0] loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 31:26]
   wire  loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 31:26]
   wire [19:0] loadPipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 31:26]
@@ -95,6 +96,7 @@ module DCache_1(
   wire  storePipe_io_mshr_ready; // @[DCache_2.scala 33:27]
   wire  storePipe_io_mshr_valid; // @[DCache_2.scala 33:27]
   wire [31:0] storePipe_io_mshr_bits_addr; // @[DCache_2.scala 33:27]
+  wire  storePipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 33:27]
   wire [7:0] storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 33:27]
   wire  storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 33:27]
   wire [19:0] storePipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 33:27]
@@ -109,6 +111,7 @@ module DCache_1(
   wire  mshr_io_req_ready; // @[DCache_2.scala 35:22]
   wire  mshr_io_req_valid; // @[DCache_2.scala 35:22]
   wire [31:0] mshr_io_req_bits_addr; // @[DCache_2.scala 35:22]
+  wire  mshr_io_req_bits_dirInfo_hit; // @[DCache_2.scala 35:22]
   wire [7:0] mshr_io_req_bits_dirInfo_chosenWay; // @[DCache_2.scala 35:22]
   wire  mshr_io_req_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 35:22]
   wire [19:0] mshr_io_req_bits_dirInfo_dirtyTag; // @[DCache_2.scala 35:22]
@@ -234,6 +237,7 @@ module DCache_1(
   wire  mshrReqArb_io_in_0_ready; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_in_0_valid; // @[DCache_2.scala 63:28]
   wire [31:0] mshrReqArb_io_in_0_bits_addr; // @[DCache_2.scala 63:28]
+  wire  mshrReqArb_io_in_0_bits_dirInfo_hit; // @[DCache_2.scala 63:28]
   wire [7:0] mshrReqArb_io_in_0_bits_dirInfo_chosenWay; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 63:28]
   wire [19:0] mshrReqArb_io_in_0_bits_dirInfo_dirtyTag; // @[DCache_2.scala 63:28]
@@ -244,6 +248,7 @@ module DCache_1(
   wire  mshrReqArb_io_in_1_ready; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_in_1_valid; // @[DCache_2.scala 63:28]
   wire [31:0] mshrReqArb_io_in_1_bits_addr; // @[DCache_2.scala 63:28]
+  wire  mshrReqArb_io_in_1_bits_dirInfo_hit; // @[DCache_2.scala 63:28]
   wire [7:0] mshrReqArb_io_in_1_bits_dirInfo_chosenWay; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 63:28]
   wire [19:0] mshrReqArb_io_in_1_bits_dirInfo_dirtyTag; // @[DCache_2.scala 63:28]
@@ -256,6 +261,7 @@ module DCache_1(
   wire  mshrReqArb_io_out_ready; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_out_valid; // @[DCache_2.scala 63:28]
   wire [31:0] mshrReqArb_io_out_bits_addr; // @[DCache_2.scala 63:28]
+  wire  mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache_2.scala 63:28]
   wire [7:0] mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache_2.scala 63:28]
   wire  mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 63:28]
   wire [19:0] mshrReqArb_io_out_bits_dirInfo_dirtyTag; // @[DCache_2.scala 63:28]
@@ -382,6 +388,7 @@ module DCache_1(
     .io_mshr_ready(loadPipe_io_mshr_ready),
     .io_mshr_valid(loadPipe_io_mshr_valid),
     .io_mshr_bits_addr(loadPipe_io_mshr_bits_addr),
+    .io_mshr_bits_dirInfo_hit(loadPipe_io_mshr_bits_dirInfo_hit),
     .io_mshr_bits_dirInfo_chosenWay(loadPipe_io_mshr_bits_dirInfo_chosenWay),
     .io_mshr_bits_dirInfo_isDirtyWay(loadPipe_io_mshr_bits_dirInfo_isDirtyWay),
     .io_mshr_bits_dirInfo_dirtyTag(loadPipe_io_mshr_bits_dirInfo_dirtyTag),
@@ -425,6 +432,7 @@ module DCache_1(
     .io_mshr_ready(storePipe_io_mshr_ready),
     .io_mshr_valid(storePipe_io_mshr_valid),
     .io_mshr_bits_addr(storePipe_io_mshr_bits_addr),
+    .io_mshr_bits_dirInfo_hit(storePipe_io_mshr_bits_dirInfo_hit),
     .io_mshr_bits_dirInfo_chosenWay(storePipe_io_mshr_bits_dirInfo_chosenWay),
     .io_mshr_bits_dirInfo_isDirtyWay(storePipe_io_mshr_bits_dirInfo_isDirtyWay),
     .io_mshr_bits_dirInfo_dirtyTag(storePipe_io_mshr_bits_dirInfo_dirtyTag),
@@ -441,6 +449,7 @@ module DCache_1(
     .io_req_ready(mshr_io_req_ready),
     .io_req_valid(mshr_io_req_valid),
     .io_req_bits_addr(mshr_io_req_bits_addr),
+    .io_req_bits_dirInfo_hit(mshr_io_req_bits_dirInfo_hit),
     .io_req_bits_dirInfo_chosenWay(mshr_io_req_bits_dirInfo_chosenWay),
     .io_req_bits_dirInfo_isDirtyWay(mshr_io_req_bits_dirInfo_isDirtyWay),
     .io_req_bits_dirInfo_dirtyTag(mshr_io_req_bits_dirInfo_dirtyTag),
@@ -576,6 +585,7 @@ module DCache_1(
     .io_in_0_ready(mshrReqArb_io_in_0_ready),
     .io_in_0_valid(mshrReqArb_io_in_0_valid),
     .io_in_0_bits_addr(mshrReqArb_io_in_0_bits_addr),
+    .io_in_0_bits_dirInfo_hit(mshrReqArb_io_in_0_bits_dirInfo_hit),
     .io_in_0_bits_dirInfo_chosenWay(mshrReqArb_io_in_0_bits_dirInfo_chosenWay),
     .io_in_0_bits_dirInfo_isDirtyWay(mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay),
     .io_in_0_bits_dirInfo_dirtyTag(mshrReqArb_io_in_0_bits_dirInfo_dirtyTag),
@@ -586,6 +596,7 @@ module DCache_1(
     .io_in_1_ready(mshrReqArb_io_in_1_ready),
     .io_in_1_valid(mshrReqArb_io_in_1_valid),
     .io_in_1_bits_addr(mshrReqArb_io_in_1_bits_addr),
+    .io_in_1_bits_dirInfo_hit(mshrReqArb_io_in_1_bits_dirInfo_hit),
     .io_in_1_bits_dirInfo_chosenWay(mshrReqArb_io_in_1_bits_dirInfo_chosenWay),
     .io_in_1_bits_dirInfo_isDirtyWay(mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay),
     .io_in_1_bits_dirInfo_dirtyTag(mshrReqArb_io_in_1_bits_dirInfo_dirtyTag),
@@ -598,6 +609,7 @@ module DCache_1(
     .io_out_ready(mshrReqArb_io_out_ready),
     .io_out_valid(mshrReqArb_io_out_valid),
     .io_out_bits_addr(mshrReqArb_io_out_bits_addr),
+    .io_out_bits_dirInfo_hit(mshrReqArb_io_out_bits_dirInfo_hit),
     .io_out_bits_dirInfo_chosenWay(mshrReqArb_io_out_bits_dirInfo_chosenWay),
     .io_out_bits_dirInfo_isDirtyWay(mshrReqArb_io_out_bits_dirInfo_isDirtyWay),
     .io_out_bits_dirInfo_dirtyTag(mshrReqArb_io_out_bits_dirInfo_dirtyTag),
@@ -757,6 +769,7 @@ module DCache_1(
   assign mshr_reset = reset;
   assign mshr_io_req_valid = mshrReqArb_io_out_valid; // @[DCache_2.scala 66:17]
   assign mshr_io_req_bits_addr = mshrReqArb_io_out_bits_addr; // @[DCache_2.scala 66:17]
+  assign mshr_io_req_bits_dirInfo_hit = mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache_2.scala 66:17]
   assign mshr_io_req_bits_dirInfo_chosenWay = mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache_2.scala 66:17]
   assign mshr_io_req_bits_dirInfo_isDirtyWay = mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 66:17]
   assign mshr_io_req_bits_dirInfo_dirtyTag = mshrReqArb_io_out_bits_dirInfo_dirtyTag; // @[DCache_2.scala 66:17]
@@ -817,6 +830,7 @@ module DCache_1(
   assign directory_io_write_req_bits_meta = dirWrArb_io_out_bits_meta; // @[DCache_2.scala 112:28]
   assign mshrReqArb_io_in_0_valid = loadPipe_io_mshr_valid; // @[DCache_2.scala 64:25]
   assign mshrReqArb_io_in_0_bits_addr = loadPipe_io_mshr_bits_addr; // @[DCache_2.scala 64:25]
+  assign mshrReqArb_io_in_0_bits_dirInfo_hit = loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 64:25]
   assign mshrReqArb_io_in_0_bits_dirInfo_chosenWay = loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 64:25]
   assign mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay = loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 64:25]
   assign mshrReqArb_io_in_0_bits_dirInfo_dirtyTag = loadPipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 64:25]
@@ -826,6 +840,7 @@ module DCache_1(
   assign mshrReqArb_io_in_0_bits_data_3 = loadPipe_io_mshr_bits_data_3; // @[DCache_2.scala 64:25]
   assign mshrReqArb_io_in_1_valid = storePipe_io_mshr_valid; // @[DCache_2.scala 65:25]
   assign mshrReqArb_io_in_1_bits_addr = storePipe_io_mshr_bits_addr; // @[DCache_2.scala 65:25]
+  assign mshrReqArb_io_in_1_bits_dirInfo_hit = storePipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 65:25]
   assign mshrReqArb_io_in_1_bits_dirInfo_chosenWay = storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 65:25]
   assign mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay = storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 65:25]
   assign mshrReqArb_io_in_1_bits_dirInfo_dirtyTag = storePipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 65:25]

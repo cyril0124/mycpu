@@ -368,6 +368,7 @@ module Core(
   wire  rom_io_resp_ready; // @[Core.scala 327:21]
   wire  rom_io_resp_valid; // @[Core.scala 327:21]
   wire [2:0] rom_io_resp_bits_opcode; // @[Core.scala 327:21]
+  wire [31:0] rom_io_resp_bits_size; // @[Core.scala 327:21]
   wire [31:0] rom_io_resp_bits_data; // @[Core.scala 327:21]
   wire  ram_clock; // @[Core.scala 328:21]
   wire  ram_reset; // @[Core.scala 328:21]
@@ -380,6 +381,7 @@ module Core(
   wire  ram_io_resp_ready; // @[Core.scala 328:21]
   wire  ram_io_resp_valid; // @[Core.scala 328:21]
   wire [2:0] ram_io_resp_bits_opcode; // @[Core.scala 328:21]
+  wire [31:0] ram_io_resp_bits_size; // @[Core.scala 328:21]
   wire [31:0] ram_io_resp_bits_data; // @[Core.scala 328:21]
   reg  ife_io_in_start_REG; // @[Core.scala 57:31]
   reg  io_out_state_instState_REG_commit; // @[Core.scala 136:38]
@@ -728,6 +730,7 @@ module Core(
     .io_resp_ready(rom_io_resp_ready),
     .io_resp_valid(rom_io_resp_valid),
     .io_resp_bits_opcode(rom_io_resp_bits_opcode),
+    .io_resp_bits_size(rom_io_resp_bits_size),
     .io_resp_bits_data(rom_io_resp_bits_data)
   );
   SingleROM ram ( // @[Core.scala 328:21]
@@ -742,6 +745,7 @@ module Core(
     .io_resp_ready(ram_io_resp_ready),
     .io_resp_valid(ram_io_resp_valid),
     .io_resp_bits_opcode(ram_io_resp_bits_opcode),
+    .io_resp_bits_size(ram_io_resp_bits_size),
     .io_resp_bits_data(ram_io_resp_bits_data)
   );
   assign io_out_state_intRegState_regState_0 = regFile_regState_0_regState_0; // @[Core.scala 130:28]

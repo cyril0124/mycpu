@@ -15,12 +15,26 @@ import chisel3.util.random.LFSR
 import scala.tools.cmd.Meta
 import chisel3.internal.firrtl.Ref
 
+
+class ICacheReadReq()(implicit val p: Parameters) extends MyBundle{
+    val addr = UInt(xlen.W)
+}
+
+class ICacheReadResp()(implicit val p: Parameters) extends MyBundle{
+    val data = UInt(xlen.W)
+}
+
+class ICacheReadBus()(implicit val p: Parameters) extends MyBundle{
+    val req = Flipped(Decoupled(new ICacheReadReq))
+    val resp = Decoupled(new ICacheReadResp)
+}
+
 class ICacheIO()(implicit val p: Parameters) extends MyBundle{
-    val read = new CacheReadBus
+    val read = new ICacheReadBus
     val tlbus = new TLMasterBusUL
 }
 
-// class ICache()(implicit val p: Parameters) extends MyModule {
+// class ICache_1()(implicit val p: Parameters) extends MyModule {
 //     val io = IO(new ICacheIO)
 //     io <> DontCare
 
@@ -161,14 +175,16 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
             val cacheLineAddr = UInt(xlen.W)
             val data = UInt((dcacheBlockBytes*8).W)
         }))
-        val read = new Bundle{
+        val read = Output(new Bundle{
             val cacheLineAddr = Vec(entries, UInt(xlen.W))
             val cacheLineData = Vec(entries, Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W)))
-        }
+            val valids = Vec(entries, Bool())
+        })
     })
 
     val buf = Reg(Vec(entries, Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))))
     val addr = Reg(Vec(entries, UInt(xlen.W)))
+    val valids = Reg(Vec(entries, Bool()))
 
     val wrPtr = Counter(entries)
     val beatCounter = Counter(dcacheBlockSize)
@@ -188,6 +204,7 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
 
     io.read.cacheLineAddr <> addr
     io.read.cacheLineData <> buf
+    io.read.valids <> valids
 }
 
 class ICache()(implicit val p: Parameters) extends MyModule {
@@ -256,7 +273,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
         val rdData = chiselTypeOf(db.io.read.resp.bits.data)
     }
 
-    loadQueue.io.enq.valid := s0_latch
+    loadQueue.io.enq.valid := s0_valid
     loadQueue.io.enq.bits.dirInfo := dir.io.read.resp.bits
     loadQueue.io.enq.bits.req := s0_req
     loadQueue.io.enq.bits.rdCacheLine := db.io.read.resp.bits.blockData
@@ -275,8 +292,8 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
-    val bypassVec = refillBuffer.io.read.cacheLineAddr.map{ a => a === addrToDCacheBlockAddr(s1_info.req.addr)}
-    val s1_bypass = Cat(bypassVec).orR && s1_full
+    val bypassVec = refillBuffer.io.read.cacheLineAddr.zip(refillBuffer.io.read.valids).map{ case(a, v) => a === addrToDCacheBlockAddr(s1_info.req.addr) && v}
+    val s1_bypass = Cat(bypassVec).orR && s1_full && !s1_info.dirInfo.hit
     val s1_bypassIdx = OHToUInt(Cat(bypassVec.reverse))
     val s1_bypassData = Mux1H(addrToDCacheBlockOH(s1_info.req.addr), refillBuffer.io.read.cacheLineData(s1_bypassIdx))
     dontTouch(s1_bypassData)
@@ -323,7 +340,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     io.read.resp.bits.data := Mux(s1_info.dirInfo.hit,
                                     Mux1H(s1_info.dirInfo.chosenWay, s1_info.rdData),
                                     Mux(s1_bypass, 
-                                        s1_bypassData, 
+                                        s1_bypassData,  // bypass from refill buffer
                                         refillPipe.io.resp.bits.data
                                     )
                                 ) 

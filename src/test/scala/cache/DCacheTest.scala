@@ -11,6 +11,7 @@ import scala.util.Random.shuffle
 import scala.math
 import chisel3.util.Fill
 import chisel3.util.FillInterleaved
+import chisel3.util.log2Ceil
 
 
 class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
@@ -198,458 +199,258 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
             simulation = true,
-            dcacheSets =  128,
-            dcacheWays = 4,
-            dcacheBlockSize = 2,
+            dcacheSets =  64,
+            dcacheWays = 2,
+            dcacheBlockSize = 8,
         )
     })
-    it should "test read miss and read hit" in {
-        test(new DCache()(defaultConfig)).withAnnotations(annos) { c => 
-            val resp = c.io.tlbus.resp
-
-            def read(addr: Int): Unit = {
-                c.io.read.req.valid.poke(1)
-                c.io.read.req.bits.addr.poke(addr)
-                c.clock.step()
-                c.io.read.req.valid.poke(0)
-            }
-
-            def read_1(addr: Int): Unit = {
-                c.io.read.req.valid.poke(1)
-                c.io.read.req.bits.addr.poke(addr)
-            }
-
-            def respRefill(data: Int, source: Int): Unit = {
-                resp.valid.poke(1)
-                resp.bits.data.poke(data)
-                resp.bits.source.poke(source)
-                resp.bits.opcode.poke(1) // AccessAckData
-                // c.clock.step()
-            }
-
-            def respRefill_1(data: Int, source: Int): Unit = {
-                resp.valid.poke(1)
-                resp.bits.data.poke(data)
-                resp.bits.source.poke(source)
-                resp.bits.opcode.poke(1) // AccessAckData
-                c.clock.step()
-            }
+    // it should "test read miss and read hit" in {
+    //     test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c => 
             
-            c.io.tlbus.req.ready.poke(1)
-            c.io.read.resp.ready.poke(1)
-            // read(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // resp.valid.poke(0)
-            // c.clock.step()
+    //         case class p()(implicit val p: Parameters) extends HasMyCpuParameters
+    //         val param = p()(c.p)
+    //         val resp = c.io.tlbus.resp
 
-            // read(1536)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // resp.valid.poke(0)
-            // c.clock.step()
+    //         def init() = {
+    //             c.io.tlbus.req.ready.poke(1)
+    //             c.io.read.resp.ready.poke(1)
+    //         }
 
-            // read(3584)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // resp.valid.poke(0)
-            // c.clock.step()
+    //         def read(addr: Int): Unit = {
+    //             c.io.read.req.valid.poke(1)
+    //             c.io.read.req.bits.addr.poke(addr)
+    //             c.clock.step()
+    //             c.io.read.req.valid.poke(0)
+    //         }
 
-            // read(7680)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // resp.valid.poke(0)
-            // c.clock.step()
+    //         def respRefill(data: Int, source: Int): Unit = {
+    //             resp.valid.poke(1)
+    //             resp.bits.data.poke(data)
+    //             resp.bits.source.poke(source)
+    //             resp.bits.opcode.poke(1) // AccessAckData
+    //             // c.clock.step()
+    //         }
 
-            // read(512)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.io.tlbus.req.bits.opcode.expect(2)
-            // val wbData1 = c.io.tlbus.req.bits.data.peekInt().toInt
-            // val wbAddr1 = c.io.tlbus.req.bits.address.peekInt().toInt
-            // println(s"wbData1: ${wbData1}  wbAddr1: ${wbAddr1}")
-            // c.clock.step()
-            // val wbData2 = c.io.tlbus.req.bits.data.peekInt().toInt
-            // val wbAddr2 = c.io.tlbus.req.bits.address.peekInt().toInt
-            // println(s"wbData2: ${wbData2}  wbAddr2: ${wbAddr2}")
-            // c.clock.step()
-            // c.io.tlbus.resp.valid.poke(1)
-            // c.io.tlbus.resp.bits.opcode.poke(0) // AccessAck
-            // c.clock.step()
-            // c.io.tlbus.resp.valid.poke(0)
-
-            // c.io.tlbus.req.valid.expect(1)
-            // c.io.tlbus.req.bits.address.expect(512)
-            // c.io.tlbus.req.bits.opcode.expect(4) // Get
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // // respRefill(3333, 1)
-            // resp.valid.poke(1)
-            // resp.bits.data.poke(3333)
-            // resp.bits.source.poke(1)
-            // resp.bits.opcode.poke(1) // AccessAckData
-            // c.io.read.resp.valid.expect(1)
-            // c.io.read.resp.bits.data.expect(2222)
-
-            // c.clock.step()
-            // resp.valid.poke(0)
-            // c.clock.step()
-
-            val dcacheByteOffsetBits = 2
-            val dcacheBlockBits = 1
-
-            var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
-            val testCaseNum = 200
-
-            var hit = 0
-            var dirty = 0
-            for( i <- 0 until testCaseNum) {
-                val addr = nextInt(math.pow(2, 10).toInt) << dcacheByteOffsetBits
-                read(addr)
-
-                if(c.io.read.resp.valid.peekBoolean() == true) { // load hit
-                    println("HIT")
-                    c.io.read.resp.bits.data.expect(scoreboard(addr))
-                    c.clock.step()
-                    hit = hit + 1
-                } else { // load miss
-                    c.io.tlbus.req.valid.expect(1)
-                    if(c.io.tlbus.req.bits.opcode.peekInt() == 4) {// load miss clean    Get
-                        c.clock.step()
-                        val refillData1 = nextInt(1000).toInt
-                        val refillData2 = nextInt(1000).toInt
-                        
-                        val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                        println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                        scoreboard += ( tempAddr -> refillData1)
-                        scoreboard += (tempAddr + 4 -> refillData2)
-
-                        println(s">>>[load miss clean] at addr:${addr} expect:${scoreboard(addr)}")
-                        
-                        respRefill(refillData1, 1)
-                        c.clock.step()
-                        
-                        respRefill(refillData2, 1)
-                        c.io.read.resp.valid.expect(1)
-                        c.io.read.resp.bits.data.expect(scoreboard(addr))
-                        c.clock.step()
-
-                        resp.valid.poke(0)
-                        
-                        println("PASS[load miss clean]<<<\n")
-                    } else {
-                        println(">>>[load miss dirty] ")
-                        val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-
-                        c.io.tlbus.req.bits.opcode.expect(2) // load miss dirty   PutFullData
-                        val wbData1 = c.io.tlbus.req.bits.data.peekInt().toInt
-                        val wbAddr1 = c.io.tlbus.req.bits.address.peekInt().toInt
-                        println(s"wbData1: ${wbData1}  wbAddr1: ${wbAddr1}")
-                        c.clock.step()
-                        val wbData2 = c.io.tlbus.req.bits.data.peekInt().toInt
-                        val wbAddr2 = c.io.tlbus.req.bits.address.peekInt().toInt
-                        println(s"wbData2: ${wbData2}  wbAddr2: ${wbAddr2}")
-                        c.clock.step()
-
-                        c.io.tlbus.resp.valid.poke(1)
-                        c.io.tlbus.resp.bits.opcode.poke(0) // AccessAck
-                        
-                        c.clock.step()
-                        c.io.tlbus.resp.valid.poke(0)
-                        // c.clock.step()
-                        
-                        // c.io.tlbus.req.valid.expect(1) // !
-                        c.io.tlbus.req.bits.address.expect(tempAddr)
-                        c.io.tlbus.req.bits.opcode.expect(4) // Get
-                        c.clock.step()
-                        c.io.tlbus.resp.valid.poke(0)
-                        val refillData1 = nextInt(1000).toInt
-                        val refillData2 = nextInt(1000).toInt
-                        // val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                        println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                        println(s"    refillData1:${refillData1}  refillData2:${refillData2}")
-                        scoreboard += ( tempAddr -> refillData1)
-                        scoreboard += (tempAddr + 4 -> refillData2)
-
-                        respRefill(refillData1, 1)
-                        c.clock.step()
-
-                        respRefill(refillData2, 1)
-                        c.io.read.resp.valid.expect(1)
-                        c.io.read.resp.bits.data.expect(scoreboard(addr))
-                        c.clock.step()
-                        
-                        c.io.tlbus.resp.valid.poke(0)
-                        resp.valid.poke(0)
-                        println("PASS[load miss dirty]<<<\n")
-                        dirty = dirty + 1
-
-                        // c.clock.step(500)
-                    }
-                }
-            }
-            println(s"hit times:${hit}   dirty times:${dirty}")
-            c.clock.step(10)
-
-        }
-    }
-
-    it should "test write miss and write hit" in {
-        test(new DCache()(defaultConfig)).withAnnotations(annos) { c => 
-            val resp = c.io.tlbus.resp
-
-            def init(): Unit = {
-                c.io.tlbus.req.ready.poke(1)
-                c.io.write.resp.ready.poke(1)
-                c.io.read.resp.ready.poke(1)
-                c.io.tlbus.req.ready.poke(1)
-            }
-
-            def read(addr: Int): Unit = {
-                c.io.read.req.valid.poke(1)
-                c.io.read.req.bits.addr.poke(addr)
-                c.clock.step()
-                c.io.read.req.valid.poke(0)
-            }
-
-            def readBegin(addr: Int): Unit = {
-                c.io.read.req.valid.poke(1)
-                c.io.read.req.bits.addr.poke(addr)
-                // c.clock.step()
-                // c.io.read.req.valid.poke(0)
-            }
-
-            def readEnd(): Unit = {
-                c.io.read.req.valid.poke(0)
-            }
-
-            def respRefill(data: Int, source: Int): Unit = {
-                resp.valid.poke(1)
-                resp.bits.data.poke(data)
-                resp.bits.source.poke(source)
-                resp.bits.opcode.poke(1) // AccessAckData
-                c.clock.step()
-            }
-
-            def write(addr: Int, data: Int, mask: UInt): Unit = {
-                c.io.write.req.valid.poke(1)
-                c.io.write.req.bits.addr.poke(addr)
-                c.io.write.req.bits.data.poke(data)
-                c.io.write.req.bits.mask.poke(mask)
-                c.clock.step()
-                c.io.write.req.valid.poke(0)
-            }
-
-            def writeBegin(addr: Int, data: Int, mask: UInt): Unit = {
-                c.io.write.req.valid.poke(1)
-                c.io.write.req.bits.addr.poke(addr)
-                c.io.write.req.bits.data.poke(data)
-                c.io.write.req.bits.mask.poke(mask)
-                // c.clock.step()
-                // c.io.write.req.valid.poke(0)
-            }
-
-            def writeEnd(): Unit = {
-                c.io.write.req.valid.poke(0)
-            }
-
-
-            def readHitTest(addr: Int, expectData: Int): Unit = {
-                read(addr)
-                // c.clock.step()
-                if(c.io.read.resp.valid.peekBoolean() == true) {
-                    c.io.read.resp.valid.expect(1)
-                    val rdata = c.io.read.resp.bits.data.peekInt().toInt
-                    assert(rdata == expectData || rdata == 1111, s"expect:${expectData}  get:${rdata} at addr:${addr}")
-                }else{
-                    while(c.io.tlbus.req.valid.peekBoolean() == false) {
-                        print(".")
-                        c.clock.step()
-                    }
-                    c.clock.step()
-                    println("MISS")
-                    respRefill(1111, 1)
-                    respRefill(1111, 1)
-                    resp.valid.poke(0)
-                }
-            }
-
-            init()
-            // simple write dirty test  !!! 4-way only
-            // write(0, 100, "b1111".U)
-            // c.io.write.resp.valid.expect(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // c.io.write.resp.valid.expect(1)
-            // resp.valid.poke(0)
-            // c.clock.step()
-
-
-            // write(1536, 101, "b1111".U)
-            // c.io.write.resp.valid.expect(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // c.io.write.resp.valid.expect(1)
-            // resp.valid.poke(0)
-            // c.clock.step()
-
-
-            // write(3584, 102, "b1111".U)
-            // c.io.write.resp.valid.expect(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // c.io.write.resp.valid.expect(1)
-            // resp.valid.poke(0)
-            // c.clock.step()
-
-
-            // write(7680, 103, "b1111".U)
-            // c.io.write.resp.valid.expect(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // c.io.write.resp.valid.expect(1)
-            // resp.valid.poke(0)
-            // c.clock.step()
-
-
-            // write(512, 120, "b1111".U)
-            // c.clock.step(2)
-            // c.io.tlbus.resp.bits.opcode.poke(0) // AccessAck
-            // c.io.tlbus.resp.valid.poke(1)
-            // c.clock.step()
-            // c.io.tlbus.resp.valid.poke(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // resp.valid.poke(0)
+    //         def randData() = nextInt(math.pow(2,20).toInt)
             
-            // c.clock.step(20)
+    //         def addrToBlockAddr(addr: Int): Int = {
+    //             (addr >> (param.dcacheBlockBits + param.dcacheByteOffsetBits)) << (param.dcacheBlockBits + param.dcacheByteOffsetBits)
+    //         }
 
-            // -----------------------
-            // readBegin()
-            // writeBegin(12342, 100, "b1111".U)
-            // c.clock.step()
+    //         var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
+    //         val testCaseNum = 200
 
-            // c.io.write.resp.valid.expect(0)
-            // c.io.tlbus.req.valid.expect(1)
-            // c.clock.step()
-            // respRefill(2222, 1)
-            // respRefill(3333, 1)
-            // c.io.write.resp.valid.expect(1)
-            // resp.valid.poke(0)
-            // c.clock.step()
+    //         var hitTimes = 0
+    //         init()
+    //         for( i <- 0 until testCaseNum) {
+    //             val addr = nextInt(math.pow(2, 10).toInt) << param.dcacheByteOffsetBits
 
+    //             read(addr)
+
+    //             while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.read.resp.valid.peekBoolean()) {
+    //                 c.clock.step()
+    //             }
+    //             val missClean = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 4 // Get
+    //             // val missDirty = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 2 // PutFullData
+    //             val hit = c.io.read.resp.valid.peekBoolean()
+
+    //             val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
+                
+                
+    //             if(missClean) {
+    //                 c.clock.step()
+    //                 println(">>>load miss clean")
+    //                 for(i <- 0 until reqBeat) {
+    //                     val refillData = randData()
+    //                     val blockAddr = addrToBlockAddr(addr)
+    //                     scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+
+    //                     respRefill(refillData, 1)
+    //                     if(i == reqBeat - 1) {
+    //                         c.io.read.resp.valid.expect(1)
+    //                         c.io.read.resp.bits.data.expect(scoreboard(addr))
+    //                     }
+    //                     c.clock.step()
+    //                     resp.valid.poke(0)
+    //                 }
+    //             } else if(hit) {
+    //                 println(">>>load HIT")
+    //                 c.io.read.resp.valid.expect(1)
+    //                 c.io.read.resp.bits.data.expect(scoreboard(addr))
+    //                 c.clock.step()
+    //                 hitTimes = hitTimes + 1
+    //             }
+    //         }
+    //         println(s"hit times:${hitTimes}   totalTimes:${testCaseNum}")
+    //         c.clock.step(10)
+    //     }
+    // }
+
+    // it should "test write miss and write hit" in {
+    //     test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c => 
+
+    //         case class p()(implicit val p: Parameters) extends HasMyCpuParameters
+    //         val param = p()(c.p)
+    //         val resp = c.io.tlbus.resp
+
+    //         def init(): Unit = {
+    //             c.io.tlbus.req.ready.poke(1)
+    //             c.io.write.resp.ready.poke(1)
+    //             c.io.read.resp.ready.poke(1)
+    //             c.io.tlbus.req.ready.poke(1)
+    //         }
+
+    //         def read(addr: Int): Unit = {
+    //             c.io.read.req.valid.poke(1)
+    //             c.io.read.req.bits.addr.poke(addr)
+    //             c.clock.step()
+    //             c.io.read.req.valid.poke(0)
+    //         }
+
+    //         def respRefill(data: Int, source: Int): Unit = {
+    //             resp.valid.poke(1)
+    //             resp.bits.data.poke(data)
+    //             resp.bits.source.poke(source)
+    //             resp.bits.opcode.poke(1) // AccessAckData
+    //             // c.clock.step()
+    //         }
+
+    //         def write(addr: Int, data: Int, mask: Int): Unit = {
+    //             c.io.write.req.valid.poke(1)
+    //             c.io.write.req.bits.addr.poke(addr)
+    //             c.io.write.req.bits.data.poke(data)
+    //             c.io.write.req.bits.mask.poke(mask)
+    //             c.clock.step()
+    //             c.io.write.req.valid.poke(0)
+    //         }
+
+    //         def fill(value: Int, times: Int): BigInt = {
+    //             require(times >= 0, "Times should be non-negative")
+    //             if (times == 0) {
+    //             BigInt(0)
+    //             } else {
+    //             val binaryValue = value.toBinaryString
+    //             val filledBinaryValue = binaryValue * times
+    //             BigInt(filledBinaryValue, 2)
+    //             }
+    //         }
+
+    //         def randData() = nextInt(math.pow(2,20).toInt)
+
+    //         def addrToBlockAddr(addr: Int): Int = {
+    //             (addr >> (param.dcacheBlockBits + param.dcacheByteOffsetBits)) << (param.dcacheBlockBits + param.dcacheByteOffsetBits)
+    //         }
             
-            // writeEnd()
-            // readEnd()
-            // -----------------------
 
+    //         init()
 
-            val dcacheByteOffsetBits = 2
-            val dcacheBlockBits = 1
-            val off = dcacheBlockBits + dcacheByteOffsetBits
+    //         // val off = param.dcacheBlockBits + param.dcacheByteOffsetBits
 
-            var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
-            val testCaseNum = 200
+    //         var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
+    //         val testCaseNum = 200
 
-            def tlValid: Boolean = c.io.tlbus.req.valid.peekBoolean()
-            def tlOpcode: Int = c.io.tlbus.req.bits.opcode.peekInt().toInt
-            val Get = 4
-            val PutFullData = 2
-            val AccessAck = 0
-            val AccessAckData = 1
+    //         def tlValid: Boolean = c.io.tlbus.req.valid.peekBoolean()
+    //         def tlOpcode: Int = c.io.tlbus.req.bits.opcode.peekInt().toInt
+    //         val Get = 4
+    //         val PutFullData = 2
+    //         val AccessAck = 0
+    //         val AccessAckData = 1
+            
 
-            var hit = 0
-            var dirty = 0
-            for(i <- 0 until testCaseNum) {
-                val addr = nextInt(math.pow(2, 10).toInt) << dcacheByteOffsetBits
-                val data = nextInt(math.pow(2, 20).toInt)
-                write(addr, data, "b1111".U)
+    //         var hitTimes = 0
+    //         var dirtyTimes = 0
+    //         for(i <- 0 until testCaseNum) {
+    //             val addr = nextInt(math.pow(2, 20).toInt) << param.dcacheByteOffsetBits
+    //             val data = nextInt(math.pow(2, 20).toInt)
+    //             write(addr, data, fill(1, param.dcacheBlockBytes).toInt)
+                
+    //             while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.write.resp.valid.peekBoolean()) {
+    //                 c.clock.step()
+    //             }
 
-                if(tlValid == true) { // store miss
-                    val refillData1 = nextInt(1000).toInt
-                    val refillData2 = nextInt(1000).toInt
-                    val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                    println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                    scoreboard += ( tempAddr -> refillData1)
-                    scoreboard += (tempAddr + 4 -> refillData2)
+    //             val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
+    //             val missClean = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 4 // Get
+    //             val missDirty = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 2 // PutFullData
+    //             val hit = c.io.write.resp.valid.peekBoolean()
 
-                    if(tlOpcode == Get) { // store miss clean   Get
-                        println(">>>>[store miss clean]")
-                        c.clock.step()
-                        respRefill(refillData1,1)
-                        respRefill(refillData2,1)
-                        resp.valid.poke(0)
-                        c.io.write.resp.valid.expect(1)
-                        c.clock.step()
+    //             if(missClean) {
+    //                 c.clock.step()
+    //                 println(">>>store miss clean")
+    //                 for(i <- 0 until reqBeat) {
+    //                     val refillData = randData()
+    //                     val blockAddr = addrToBlockAddr(addr)
+    //                     scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
 
-                        scoreboard += (addr -> data)
-                        println("PASS[store miss clean]<<<<")
-                    } else if (tlOpcode == PutFullData) { // store miss diry  PutFullData
-                        println(">>>>[store miss dirty]")
-                        val writebackData1 = c.io.tlbus.req.bits.data.peekInt().toInt
-                        val writebackAddr1 = c.io.tlbus.req.bits.address.peekInt().toInt
-                        println(s"writeback Data1 is ${writebackData1} at addr:${writebackAddr1}")
-                        c.clock.step()
+    //                     respRefill(refillData, 1)
+    //                     c.clock.step()
+    //                     resp.valid.poke(0)
+    //                 }
+    //                 c.clock.step()
+    //                 scoreboard += (addr -> data)
 
-                        val writebackData2 = c.io.tlbus.req.bits.data.peekInt().toInt
-                        val writebackAddr2 = c.io.tlbus.req.bits.address.peekInt().toInt
-                        println(s"writeback Data1 is ${writebackData1} at addr:${writebackAddr2}")
-                        c.clock.step()
+    //                 // read back
+    //                 read(addr)
+    //                 while(!c.io.read.resp.valid.peekBoolean()) c.clock.step()
+    //                 c.io.read.resp.bits.data.expect(scoreboard(addr))
+    //                 c.clock.step()
+    //                 println("<<<<[PASS]")
+    //             } else if(missDirty) {
+    //                 // c.clock.step()
+    //                 println(">>>store miss dirty")
+    //                 for(i <- 0 until reqBeat) {
+    //                     c.io.tlbus.req.valid.expect(1)
+    //                     c.io.tlbus.req.bits.opcode.expect(PutFullData)
+    //                     c.io.tlbus.req.bits.data.expect(scoreboard(c.io.tlbus.req.bits.address.peekInt().toInt))
+    //                     c.clock.step()
+    //                 }
+    //                 c.io.tlbus.resp.valid.poke(1)
+    //                 c.io.tlbus.resp.bits.opcode.poke(1) // AccessAckData
+    //                 c.clock.step()
+    //                 c.io.tlbus.resp.valid.poke(0)
 
-                        c.io.tlbus.resp.bits.opcode.poke(AccessAck) // AccessAck
-                        c.io.tlbus.resp.valid.poke(1)
-                        c.clock.step()
-                        c.io.tlbus.resp.valid.poke(0)
+    //                 while(!c.io.tlbus.req.valid.peekBoolean()) c.clock.step()
+    //                 c.io.tlbus.req.bits.opcode.expect(4) // Get
+    //                 c.clock.step()
 
-                        c.io.tlbus.req.valid.expect(1)
-                        c.io.tlbus.req.bits.opcode.expect(Get)
-                        c.clock.step()
+    //                 for(i <- 0 until reqBeat) {
+    //                     val refillData = randData()
+    //                     val blockAddr = addrToBlockAddr(addr)
+    //                     scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+    //                     respRefill(refillData, 1)
+    //                     c.clock.step()
+    //                     resp.valid.poke(0)
+    //                 }
+    //                 c.io.write.resp.valid.expect(1)
+    //                 c.clock.step()
+    //                 scoreboard += (addr -> data)
 
-                        respRefill(refillData1, 1)
-                        respRefill(refillData2, 1)
-                        resp.valid.poke(0)
+    //                 // read back
+    //                 read(addr)
+    //                 while(!c.io.read.resp.valid.peekBoolean()) c.clock.step()
+    //                 c.io.read.resp.bits.data.expect(scoreboard(addr))
+    //                 c.clock.step()
+    //                 println("<<<<[PASS]")
 
-                        c.io.write.resp.valid.expect(1)
-                        scoreboard += (addr -> data)
-                        println("PASS[store miss dirty]<<<<")
-                        dirty = dirty + 1
-                        c.clock.step()
-                    }
-                } else { // store hit
-                    println(">>>>[STORE HIT]")
-                    c.clock.step()
-                    c.io.write.resp.valid.expect(1)
-                    
-                    scoreboard += (addr -> data)
-                    println("PASS[STORE HIT]<<<<")
-                    hit = hit + 1
-                    c.clock.step()
-                }
-            }
-            println(s"hit:${hit}   dirty:${dirty}")
+    //                 dirtyTimes = dirtyTimes + 1
+    //             } else if(hit) {
+    //                 println(">>>> store HIT")
+    //                 scoreboard += (addr -> data)
+    //                 while(!c.io.write.resp.valid.peekBoolean()) c.clock.step()
+    //                 c.clock.step()
 
-        }
-    }
+    //                 hitTimes = hitTimes + 1
+    //             }
+    //         }
+    //         println(s"hitTimes: ${hitTimes}  dirtyTimes: ${dirtyTimes}  totalTimes: ${testCaseNum}")
+    //         c.clock.step(10)
+    //     }
+    // }
 
     it should "test both write and read" in {
-        test(new DCache()(defaultConfig)).withAnnotations(annos) { c =>
+        test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c =>
+
+            case class p()(implicit val p: Parameters) extends HasMyCpuParameters
+            val param = p()(c.p)
             val resp = c.io.tlbus.resp
 
             def init(): Unit = {
@@ -666,23 +467,12 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
                 c.io.read.req.valid.poke(0)
             }
 
-            def readBegin(addr: Int): Unit = {
-                c.io.read.req.valid.poke(1)
-                c.io.read.req.bits.addr.poke(addr)
-                // c.clock.step()
-                // c.io.read.req.valid.poke(0)
-            }
-
-            def readEnd(): Unit = {
-                c.io.read.req.valid.poke(0)
-            }
-
             def respRefill(data: Int, source: Int): Unit = {
                 resp.valid.poke(1)
                 resp.bits.data.poke(data)
                 resp.bits.source.poke(source)
                 resp.bits.opcode.poke(1) // AccessAckData
-                c.clock.step()
+                // c.clock.step()
             }
 
             def respRefill_1(data: Int, source: Int): Unit = {
@@ -693,7 +483,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
                 // c.clock.step()
             }
 
-            def write(addr: Int, data: Int, mask: UInt): Unit = {
+            def write(addr: Int, data: Int, mask: Int): Unit = {
                 c.io.write.req.valid.poke(1)
                 c.io.write.req.bits.addr.poke(addr)
                 c.io.write.req.bits.data.poke(data)
@@ -702,12 +492,30 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
                 c.io.write.req.valid.poke(0)
             }
 
+            def fill(value: Int, times: Int): BigInt = {
+                require(times >= 0, "Times should be non-negative")
+                if (times == 0) {
+                BigInt(0)
+                } else {
+                val binaryValue = value.toBinaryString
+                val filledBinaryValue = binaryValue * times
+                BigInt(filledBinaryValue, 2)
+                }
+            }
+
+            def randData() = nextInt(math.pow(2,20).toInt)
+
+            def addrToBlockAddr(addr: Int): Int = {
+                (addr >> (param.dcacheBlockBits + param.dcacheByteOffsetBits)) << (param.dcacheBlockBits + param.dcacheByteOffsetBits)
+            }
+
             val dcacheByteOffsetBits = 2
             val dcacheBlockBits = 1
             val off = dcacheBlockBits + dcacheByteOffsetBits
 
             var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
-            val testCaseNum = 2000
+            var dirtyBoard: scala.collection.mutable.Map[Int, Boolean] = scala.collection.mutable.Map() // (addr, dirty)
+            val testCaseNum = 1000
 
             def tlValid: Boolean = c.io.tlbus.req.valid.peekBoolean()
             def tlOpcode: Int = c.io.tlbus.req.bits.opcode.peekInt().toInt
@@ -728,159 +536,209 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
             var store_hit = 0
             var store_miss = 0
             var store_miss_dirty = 0
+
+            // ----------------------------------------------------------------
+            // def storeMissClean(addr: Int) = {
+            //     write(addr, randData, fill(1, param.dcacheBlockBytes).toInt)
+            //     while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.read.resp.valid.peekBoolean()) {
+            //                 c.clock.step()
+            //     }
+            //     val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
+            //     c.clock.step()
+            //     for(i <- 0 until reqBeat) {
+            //         val refillData = randData()
+            //         val blockAddr = addrToBlockAddr(addr)
+            //         scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+
+            //         respRefill(refillData, 1)
+            //         c.clock.step()
+            //         resp.valid.poke(0)
+            //     }
+            //     c.clock.step()
+            // }
+
+            // storeMissClean(0)
+            // storeMissClean(2048)
+
+            // c.clock.step(10)
+            // read(4096) // load miss dirty
+
+
+
+            // c.clock.step(100)
+
+            // ----------------------------------------------------------------
+
             for( i <- 0 until testCaseNum) {
-                val addr = nextInt(math.pow(2, 10).toInt) << dcacheByteOffsetBits + 0x2000
+                val addr = nextInt(math.pow(2, 15).toInt) << param.dcacheByteOffsetBits
                 val data = nextInt(math.pow(2, 20).toInt)
 
                 val reqType = nextInt(2)
-                if(reqType == 0) { // load
+                if(reqType == 0) { // read
                     load = load + 1
                     read(addr)
-                    if(c.io.read.resp.valid.peekBoolean() == true) { // load hit
-                        if(verbose) println("HIT")
+
+                    while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.read.resp.valid.peekBoolean()) {
+                        c.clock.step()
+                    }
+                    val missClean = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 4 // Get
+                    val missDirty = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 2 // PutFullData
+                    val hit = c.io.read.resp.valid.peekBoolean()
+
+                    val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
+                    
+                    
+                    if(missClean) {
+                        c.clock.step()
+                        println(">>>load miss clean")
+                        for(i <- 0 until reqBeat) {
+                            val refillData = randData()
+                            val blockAddr = addrToBlockAddr(addr)
+                            scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+
+                            respRefill(refillData, 1)
+                            if(i == reqBeat - 1) {
+                                c.io.read.resp.valid.expect(1)
+                                c.io.read.resp.bits.data.expect(scoreboard(addr))
+                            }
+                            c.clock.step()
+                            resp.valid.poke(0)
+                            load_miss = load_miss + 1
+                        }
+                    } else if(missDirty) {
+                        println(">>> load miss dirty")
+                        for(i <- 0 until reqBeat) {
+                            c.io.tlbus.req.valid.expect(1)
+                            c.io.tlbus.req.bits.opcode.expect(PutFullData)
+                            c.io.tlbus.req.bits.data.expect(scoreboard(c.io.tlbus.req.bits.address.peekInt().toInt))
+                            c.clock.step()
+                        }
+
+                        c.io.tlbus.resp.valid.poke(1)
+                        c.io.tlbus.resp.bits.opcode.poke(1) // AccessAckData
+                        c.clock.step()
+                        c.io.tlbus.resp.valid.poke(0)
+
+                        while(!c.io.tlbus.req.valid.peekBoolean()) c.clock.step()
+                        c.io.tlbus.req.bits.opcode.expect(4) // Get
+                        c.clock.step()
+
+                        for(i <- 0 until reqBeat) {
+                            val refillData = randData()
+                            val blockAddr = addrToBlockAddr(addr)
+                            scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+                            respRefill(refillData, 1)
+                            if( i == reqBeat - 1) {
+                                c.io.read.resp.valid.expect(1)
+                                c.io.read.resp.bits.data.expect(scoreboard(addr))
+                            }
+                            c.clock.step()
+                            resp.valid.poke(0)
+                        }
+
+                        load_miss_dirty = load_miss_dirty + 1
+                    } else if(hit) {
+                        println(">>>load HIT")
+                        c.io.read.resp.valid.expect(1)
                         c.io.read.resp.bits.data.expect(scoreboard(addr))
                         c.clock.step()
+
                         load_hit = load_hit + 1
-                    } else { // load miss
-                        c.io.tlbus.req.valid.expect(1)
-                        if(c.io.tlbus.req.bits.opcode.peekInt() == 4) { // load miss clean    Get
-                            c.clock.step()
-                            val refillData1 = nextInt(1000).toInt
-                            val refillData2 = nextInt(1000).toInt
-                            
-                            val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                            if(verbose) println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                            scoreboard += ( tempAddr -> refillData1)
-                            scoreboard += (tempAddr + 4 -> refillData2)
-
-                            if(verbose) println(s">>>[load miss clean] at addr:${addr} expect:${scoreboard(addr)}")
-                            
-                            respRefill_1(refillData1, 1)
-                            c.clock.step()
-                            
-                            respRefill_1(refillData2, 1)
-                            c.io.read.resp.valid.expect(1)
-                            c.io.read.resp.bits.data.expect(scoreboard(addr))
-                            c.clock.step()
-
-                            resp.valid.poke(0)
-                            
-                            if(verbose) println("PASS[load miss clean]<<<\n")
-                            load_miss = load_miss + 1
-                        } else {
-                            if(verbose) println(">>>[load miss dirty] ")
-                            val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-
-                            c.io.tlbus.req.bits.opcode.expect(2) // load miss dirty   PutFullData
-                            val wbData1 = c.io.tlbus.req.bits.data.peekInt().toInt
-                            val wbAddr1 = c.io.tlbus.req.bits.address.peekInt().toInt
-                            if(verbose) println(s"wbData1: ${wbData1}  wbAddr1: ${wbAddr1}")
-                            c.clock.step()
-                            val wbData2 = c.io.tlbus.req.bits.data.peekInt().toInt
-                            val wbAddr2 = c.io.tlbus.req.bits.address.peekInt().toInt
-                            if(verbose) println(s"wbData2: ${wbData2}  wbAddr2: ${wbAddr2}")
-                            c.clock.step()
-
-                            c.io.tlbus.resp.valid.poke(1)
-                            c.io.tlbus.resp.bits.opcode.poke(0) // AccessAck
-                            
-                            c.clock.step()
-                            c.io.tlbus.resp.valid.poke(0)
-                            c.io.tlbus.req.bits.address.expect(tempAddr)
-                            c.io.tlbus.req.bits.opcode.expect(4) // Get
-                            c.clock.step()
-                            c.io.tlbus.resp.valid.poke(0)
-                            val refillData1 = nextInt(1000).toInt
-                            val refillData2 = nextInt(1000).toInt
-                            // val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                            if(verbose) println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                            if(verbose) println(s"    refillData1:${refillData1}  refillData2:${refillData2}")
-                            scoreboard += ( tempAddr -> refillData1)
-                            scoreboard += (tempAddr + 4 -> refillData2)
-
-                            respRefill_1(refillData1, 1)
-                            c.clock.step()
-
-                            respRefill_1(refillData2, 1)
-                            c.io.read.resp.valid.expect(1)
-                            c.io.read.resp.bits.data.expect(scoreboard(addr))
-                            c.clock.step()
-                            
-                            c.io.tlbus.resp.valid.poke(0)
-                            resp.valid.poke(0)
-                            if(verbose) println("PASS[load miss dirty]<<<\n")
-                            load_miss_dirty = load_miss_dirty + 1
-                        }
                     }
-                } else { // store
+                    // if(dirtyBoard.getOrElse(addr, false))
+                    //     assert( dirtyBoard(addr) & (missDirty || hit))
+                } else { // write
                     store = store + 1
-                    write(addr, data, "b1111".U)
+                    write(addr, data, fill(1, param.dcacheBlockBytes).toInt)
+                
+                    while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.write.resp.valid.peekBoolean()) {
+                        c.clock.step()
+                    }
 
-                    if(tlValid == true) { // store miss
-                        val refillData1 = nextInt(1000).toInt
-                        val refillData2 = nextInt(1000).toInt
-                        val tempAddr = (addr >> (dcacheBlockBits + dcacheByteOffsetBits)) << (dcacheBlockBits + dcacheByteOffsetBits)
-                        if(verbose) println(s"    addr:${addr} tempAddr:${tempAddr} tempAddr+4:${tempAddr+4} ")
-                        scoreboard += ( tempAddr -> refillData1)
-                        scoreboard += (tempAddr + 4 -> refillData2)
+                    val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
+                    val missClean = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 4 // Get
+                    val missDirty = c.io.tlbus.req.valid.peekBoolean() && c.io.tlbus.req.bits.opcode.peekInt().toInt == 2 // PutFullData
+                    val hit = c.io.write.resp.valid.peekBoolean()
+                    
+                    dirtyBoard += (addr -> true)
+                    if(missDirty) dirtyBoard += (addr -> false)
 
-                        if(tlOpcode == Get) { // store miss clean   Get
-                            if(verbose) println(">>>>[store miss clean]")
+                    if(missClean) {
+                        c.clock.step()
+                        println(">>>store miss clean")
+                        for(i <- 0 until reqBeat) {
+                            val refillData = randData()
+                            val blockAddr = addrToBlockAddr(addr)
+                            scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+
+                            respRefill(refillData, 1)
                             c.clock.step()
-                            respRefill(refillData1,1)
-                            respRefill(refillData2,1)
                             resp.valid.poke(0)
-                            c.io.write.resp.valid.expect(1)
-                            c.clock.step()
-
-                            scoreboard += (addr -> data)
-                            if(verbose) println("PASS[store miss clean]<<<<")
-                            store_miss = store_miss + 1
-                        } else if (tlOpcode == PutFullData) { // store miss diry  PutFullData
-                            if(verbose) println(">>>>[store miss dirty]")
-                            val writebackData1 = c.io.tlbus.req.bits.data.peekInt().toInt
-                            val writebackAddr1 = c.io.tlbus.req.bits.address.peekInt().toInt
-                            if(verbose) println(s"writeback Data1 is ${writebackData1} at addr:${writebackAddr1}")
-                            c.clock.step()
-
-                            val writebackData2 = c.io.tlbus.req.bits.data.peekInt().toInt
-                            val writebackAddr2 = c.io.tlbus.req.bits.address.peekInt().toInt
-                            if(verbose) println(s"writeback Data1 is ${writebackData1} at addr:${writebackAddr2}")
-                            c.clock.step()
-
-                            c.io.tlbus.resp.bits.opcode.poke(AccessAck) // AccessAck
-                            c.io.tlbus.resp.valid.poke(1)
-                            c.clock.step()
-                            c.io.tlbus.resp.valid.poke(0)
-
-                            c.io.tlbus.req.valid.expect(1)
-                            c.io.tlbus.req.bits.opcode.expect(Get)
-                            c.clock.step()
-
-                            respRefill(refillData1, 1)
-                            respRefill(refillData2, 1)
-                            resp.valid.poke(0)
-
-                            c.io.write.resp.valid.expect(1)
-                            scoreboard += (addr -> data)
-                            if(verbose) println("PASS[store miss dirty]<<<<")
-                            c.clock.step()
-                            store_miss_dirty = store_miss_dirty + 1
                         }
-                    } else { // store hit
-                        if(verbose) println(">>>>[STORE HIT]")
                         c.clock.step()
-                        c.io.write.resp.valid.expect(1)
-                        
                         scoreboard += (addr -> data)
-                        if(verbose) println("PASS[STORE HIT]<<<<")
+
+                        // read back
+                        read(addr)
+                        while(!c.io.read.resp.valid.peekBoolean()) c.clock.step()
+                        c.io.read.resp.bits.data.expect(scoreboard(addr))
                         c.clock.step()
+                        println("<<<<[PASS]")
+
+                        store_miss = store_miss + 1
+                    } else if(missDirty) {
+                        // c.clock.step()
+                        println(">>>store miss dirty")
+                        for(i <- 0 until reqBeat) {
+                            c.io.tlbus.req.valid.expect(1)
+                            c.io.tlbus.req.bits.opcode.expect(PutFullData)
+                            c.io.tlbus.req.bits.data.expect(scoreboard(c.io.tlbus.req.bits.address.peekInt().toInt))
+                            c.clock.step()
+                        }
+                        c.io.tlbus.resp.valid.poke(1)
+                        c.io.tlbus.resp.bits.opcode.poke(1) // AccessAckData
+                        c.clock.step()
+                        c.io.tlbus.resp.valid.poke(0)
+
+                        while(!c.io.tlbus.req.valid.peekBoolean()) c.clock.step()
+                        c.io.tlbus.req.bits.opcode.expect(4) // Get
+                        c.clock.step()
+
+                        for(i <- 0 until reqBeat) {
+                            val refillData = randData()
+                            val blockAddr = addrToBlockAddr(addr)
+                            scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
+                            respRefill(refillData, 1)
+                            c.clock.step()
+                            resp.valid.poke(0)
+                        }
+                        c.io.write.resp.valid.expect(1)
+                        c.clock.step()
+                        scoreboard += (addr -> data)
+
+                        // read back
+                        read(addr)
+                        while(!c.io.read.resp.valid.peekBoolean()) c.clock.step()
+                        c.io.read.resp.bits.data.expect(scoreboard(addr))
+                        c.clock.step()
+                        println("<<<<[PASS]")
+                        
+                        store_miss_dirty = store_miss_dirty + 1
+                    } else if(hit) {
+                        println(">>>> store HIT")
+                        scoreboard += (addr -> data)
+                        while(!c.io.write.resp.valid.peekBoolean()) c.clock.step()
+                        c.clock.step()
+
                         store_hit = store_hit + 1
                     }
-                }   
+                }
             }
+
             println(s"load: ${load}  load_hit:${load_hit}  load_miss:${load_miss}  load_miss_dirty:${load_miss_dirty}")
             println(s"store: ${store}  store_hit:${store_hit}  store_miss:${store_miss}  store_miss_dirty:${store_miss_dirty}")
+            assert(load_miss_dirty != 0)
+            assert(store_miss_dirty != 0)
         }
     }
 

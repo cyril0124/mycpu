@@ -33,6 +33,7 @@ module StorePipe_2(
   input          io_mshr_ready,
   output         io_mshr_valid,
   output [31:0]  io_mshr_bits_addr,
+  output         io_mshr_bits_dirInfo_hit,
   output [7:0]   io_mshr_bits_dirInfo_chosenWay,
   output         io_mshr_bits_dirInfo_isDirtyWay,
   output [19:0]  io_mshr_bits_dirInfo_dirtyTag,
@@ -213,6 +214,7 @@ module StorePipe_2(
   assign io_dataBank_write_req_bits_mask = s1_reqReg_mask; // @[StorePipe_2.scala 107:37]
   assign io_mshr_valid = _s1_valid_T & s1_full; // @[StorePipe_2.scala 85:32]
   assign io_mshr_bits_addr = s1_reqReg_addr; // @[StorePipe_2.scala 87:23]
+  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[StorePipe_2.scala 88:26]
   assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[StorePipe_2.scala 88:26]
   assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[StorePipe_2.scala 88:26]
   assign io_mshr_bits_dirInfo_dirtyTag = s1_dirInfo_dirtyTag; // @[StorePipe_2.scala 88:26]
