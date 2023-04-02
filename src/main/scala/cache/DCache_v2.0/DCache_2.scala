@@ -29,17 +29,11 @@ class DCache_1()(implicit val p: Parameters) extends MyModule {
     println(s" tagBits: ${dcacheTagBits}")
 
     val loadPipe = Module(new LoadPipe_2)
-
     val storePipe = Module(new StorePipe_2)
-
     val mshr = Module(new MSHR)
-
     val refillPipe = Module(new RefillPipe)
-
     val writebackQueue = Module(new WritebackQueue)
-
     val dataBankArray = Module(new DataBankArray)
-
     val directory = Module(new DCacheDirectory)
 
     loadPipe.io.dir.resp.valid := directory.io.read.resp.valid

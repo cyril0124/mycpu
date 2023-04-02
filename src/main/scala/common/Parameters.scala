@@ -62,6 +62,8 @@ trait HasMyCpuParameters {
       Cat(addr(xlen-1, dcacheBlockBits + dcacheByteOffsetBits), Fill(dcacheBlockBits + dcacheByteOffsetBits, 0.U))
     }
 
+    val icacheRdWays = myCpuParams.icacheRdWays
+
 
     // TODO:
     /**           Memory Map Configuration
@@ -131,6 +133,8 @@ case class MyCpuParameters
     // dcacheBlockBytes: Int = 8,
     dcacheBlockSize: Int = 4,
     dcacheBanks: Int = 2,
+
+    icacheRdWays: Int = 4,
 
     startAddr: Int = 0,
     memRomBegin: Int = 0x00000000,

@@ -163,6 +163,11 @@ void Emu::execute(uint64_t nr_cycles) {
 
                 if(engine->is_terminate() && test_case == test_case_num) {
                     printf(PRINT_GREEN "test end, all case PASS!\n" PRINT_RESET);
+#if VM_TRACE == 1
+                if (this->enable_wave) {
+                    this->tfp->close();
+                }
+#endif
                     m_assert(false, "terminate...");
                 }
                 idle_cycles = 0;
