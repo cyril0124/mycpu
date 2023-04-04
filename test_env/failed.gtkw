@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Apr  1 17:38:05 2023
+[*] Tue Apr  4 02:35:27 2023
 [*]
-[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-04-02@01:36:39_0.fst"
-[dumpfile_mtime] "Sat Apr  1 17:36:50 2023"
-[dumpfile_size] 2833892
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/test_env/build/2023-04-04@10:30:39_0.fst"
+[dumpfile_mtime] "Tue Apr  4 02:30:40 2023"
+[dumpfile_size] 398111
 [savefile] "/home/cyril/workspace/riscv/mycpu/test_env/failed.gtkw"
-[timestart] 1118879
+[timestart] 65257
 [size] 1920 1009
 [pos] 8 31
-*-10.000000 1121091 7370000 93720 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-10.000000 68590 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.top_tb.
 [treeopen] TOP.top_tb.core_inst.
@@ -19,6 +19,9 @@
 [treeopen] TOP.top_tb.core_inst.exe.alu.
 [treeopen] TOP.top_tb.core_inst.ife.
 [treeopen] TOP.top_tb.core_inst.ife.icache.
+[treeopen] TOP.top_tb.core_inst.ife.icache.db_1.
+[treeopen] TOP.top_tb.core_inst.ife.icache.db_1.dataBanks_0.brams_7.
+[treeopen] TOP.top_tb.core_inst.ife.icache.dir.
 [treeopen] TOP.top_tb.core_inst.mem.
 [treeopen] TOP.top_tb.core_inst.mem.dcache.
 [treeopen] TOP.top_tb.core_inst.mem.dcache.mshr.
@@ -29,7 +32,7 @@
 [signals_width] 526
 [sst_expanded] 1
 [sst_vpaned_height] 441
-@c00200
+@800200
 -ife
 @28
 TOP.top_tb.reset
@@ -86,21 +89,28 @@ TOP.top_tb.core_inst.ife.icache.io_read_resp_ready
 TOP.top_tb.core_inst.ife.icache.io_read_resp_valid
 @200
 -
+@22
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_bits_addr[31:0]
+@28
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_ready
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_valid
+TOP.top_tb.core_inst.ife.icache.dir.io_read_resp_bits_hit
+@22
+TOP.top_tb.core_inst.ife.icache.dir.choseWayOH[7:0]
+@28
+TOP.top_tb.core_inst.ife.icache.dir.metaRdVec_0_dirty
+TOP.top_tb.core_inst.ife.icache.dir.metaRdVec_0_valid
+@201
+-
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.s1_info_req_addr[31:0]
 @28
 TOP.top_tb.core_inst.ife.icache.s1_info_dirInfo_hit
 TOP.top_tb.core_inst.ife.icache.s1_info_dirInfo_chosenWay[7:0]
 @200
 -
-@22
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_1[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_2[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_3[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_4[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_5[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_6[31:0]
-TOP.top_tb.core_inst.ife.icache.s1_info_rdData_7[31:0]
-@200
 -
 @22
 TOP.top_tb.core_inst.ife.icache.io_tlbus_req_bits_address[31:0]
@@ -118,6 +128,72 @@ TOP.top_tb.core_inst.ife.icache.io_tlbus_resp_valid
 @200
 -
 @22
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_blockSelOH[7:0]
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_data[31:0]
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_set[6:0]
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_way[7:0]
+@28
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_ready
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_valid
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.db_1.dataBanks_0.brams_0.io_w_data[31:0]
+@28
+TOP.top_tb.core_inst.ife.icache.db_1.dataBanks_0.brams_0.io_w_en
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.ife.icache.io_read_req_bits_addr[31:0]
+TOP.top_tb.core_inst.ife.icache.db_1_io_read_bits_set[6:0]
+TOP.top_tb.core_inst.ife.icache.db_1.io_read_bits_set[6:0]
+@28
+TOP.top_tb.core_inst.ife.icache.db_1.io_read_valid
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.s1_info_req_addr[31:0]
+@28
+TOP.top_tb.core_inst.ife.icache.s1_info_dirInfo_hit
+TOP.top_tb.core_inst.ife.icache.s1_blockSel[7:0]
+@22
+TOP.top_tb.core_inst.ife.icache.s1_info_dirInfo_chosenWay[7:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_0[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_1[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_2[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_3[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_4[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_5[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_6[31:0]
+TOP.top_tb.core_inst.ife.icache.s1_info_rdData_0_7[31:0]
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.ife.icache.db_1.dataBanks_0.brams_7.io_r_addr[6:0]
+TOP.top_tb.core_inst.ife.icache.db_1.dataBanks_0.brams_7.io_r_data[31:0]
+@200
+-
+@28
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_blockSelOH[7:0]
+TOP.top_tb.core_inst.ife.icache.db_1.io_write_req_bits_way[7:0]
+@200
+-
+-
+@22
+TOP.top_tb.core_inst.ife.icache.db_1.io_read_bits_set[6:0]
+@200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.dir.io_write_req_bits_addr[31:0]
+TOP.top_tb.core_inst.ife.icache.dir.io_write_req_bits_way[7:0]
+@28
+TOP.top_tb.core_inst.ife.icache.dir.io_write_req_ready
+TOP.top_tb.core_inst.ife.icache.dir.io_write_req_valid
+@200
+-
+@22
 TOP.top_tb.core_inst.ife.icache.dir_io_read_req_bits_addr[31:0]
 @28
 TOP.top_tb.core_inst.ife.icache.dir_io_read_resp_bits_hit
@@ -125,17 +201,19 @@ TOP.top_tb.core_inst.ife.icache.dir_io_read_req_ready
 TOP.top_tb.core_inst.ife.icache.dir_io_read_req_valid
 @200
 -
--
-@28
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_bits_blockSelOH[7:0]
 @22
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_bits_data[31:0]
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_bits_set[6:0]
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_bits_way[7:0]
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_bits_addr[31:0]
 @28
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_ready
-TOP.top_tb.core_inst.ife.icache.db.io_write_req_valid
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_ready
+TOP.top_tb.core_inst.ife.icache.dir.io_read_req_valid
 @200
+-
+@22
+TOP.top_tb.core_inst.ife.icache.dir.io_read_resp_bits_chosenWay[7:0]
+@28
+TOP.top_tb.core_inst.ife.icache.dir.io_read_resp_bits_hit
+@200
+-
 -
 @22
 TOP.top_tb.core_inst.ife.io_tlbus_req_bits_address[31:0]
@@ -161,7 +239,7 @@ TOP.top_tb.core_inst.ife.icache.s1_info_dirInfo_hit
 TOP.top_tb.core_inst.ife.io_out_bits_instState_commit
 TOP.top_tb.core_inst.ife.io_out_valid
 TOP.top_tb.core_inst.ife.io_out_ready
-@1401200
+@1000200
 -ife
 @200
 -
@@ -324,7 +402,7 @@ TOP.top_tb.core_inst.exe.io_out_memory_valid
 -exe
 @200
 -
-@800200
+@c00200
 -mem
 @28
 >-10
@@ -389,11 +467,11 @@ TOP.top_tb.core_inst.mem.dcache.refillPipe.io_tlbus_resp_valid
 @200
 -
 -
-@23
+@22
 TOP.top_tb.core_inst.mem.dcache.io_write_req_bits_addr[31:0]
 TOP.top_tb.core_inst.mem.dcache.io_write_req_bits_data[31:0]
 TOP.top_tb.core_inst.mem.dcache.io_write_req_bits_mask[3:0]
-@29
+@28
 TOP.top_tb.core_inst.mem.dcache.io_write_req_ready
 TOP.top_tb.core_inst.mem.dcache.io_write_req_valid
 @200
@@ -405,7 +483,7 @@ TOP.top_tb.core_inst.mem.io_excp_bits_isMret
 TOP.top_tb.core_inst.mem.io_excp_valid
 TOP.top_tb.core_inst.mem.io_out_valid
 TOP.top_tb.core_inst.mem.io_out_ready
-@1000200
+@1401200
 -mem
 @200
 -

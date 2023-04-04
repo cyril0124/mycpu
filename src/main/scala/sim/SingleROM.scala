@@ -122,3 +122,12 @@ class SingleRAM()(override implicit val p: Parameters) extends SingleMemBase{
     // loadMemoryFromFile(mem, "/home/cyril/workspace/riscv/mycpu/src/main/resources/Dmem.hex")
 }
 
+object SingleROMGenRTL extends App {
+    val defaultConfig = new Config((_,_,_) => {
+        case MyCpuParamsKey => MyCpuParameters(
+            simulation = false,
+        )
+    })
+    println("Generating the SingleROM hardware")
+    (new chisel3.stage.ChiselStage).emitVerilog(new SingleROM()(defaultConfig), Array("--target-dir", "build"))
+}

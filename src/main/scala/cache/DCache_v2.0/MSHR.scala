@@ -40,7 +40,7 @@ class MSHRIO()(implicit val p: Parameters) extends MyBundle {
     val tasks = new MSHRTasks 
     val busy = Output(Bool())
     val dirWrite = Flipped(new DirectoryWriteBus)
-    val dataWrite = Flipped(new DataBankArrayWrite)
+    val dataWrite = Flipped(new DataBankArrayWrite_1)
 }
 
 object MSHR {
@@ -133,7 +133,7 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     io.tasks.refill.req.bits.chosenWay := req.dirInfo.chosenWay
     io.tasks.refill.resp.ready := true.B
 
-
+    // write back dirty block data into next level memory
     io.tasks.writeback.req.valid := state === sWriteback || willWriteback
     io.tasks.writeback.req.bits.addr := req.addr
     io.tasks.writeback.req.bits.dirtyTag := req.dirInfo.dirtyTag
@@ -142,20 +142,20 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
 
 
     io.dirWrite.req.valid := state === sWriteData || willWriteStore
-    io.dirWrite.req.bits.addr := req.addr
+    io.dirWrite.req.bits.addr := reqReg.addr
     val meta = Wire(new DCacheMeta)
     meta.dirty := true.B
     meta.valid := true.B
     io.dirWrite.req.bits.meta := meta.asUInt
-    io.dirWrite.req.bits.way := req.dirInfo.chosenWay
+    io.dirWrite.req.bits.way := reqReg.dirInfo.chosenWay
 
-
+    // write store data into dataBanks
     io.dataWrite.req.valid := state === sWriteData || willWriteStore
-    io.dataWrite.req.bits.blockSelOH := addrToDCacheBlockOH(req.addr)
-    io.dataWrite.req.bits.data := req.storeData
-    io.dataWrite.req.bits.set := addrToDCacheSet(req.addr)
-    io.dataWrite.req.bits.mask := req.storeMask
-    io.dataWrite.req.bits.way := req.dirInfo.chosenWay
+    io.dataWrite.req.bits.blockSelOH := addrToDCacheBlockOH(reqReg.addr)
+    val oldData = Mux(io.tasks.refill.resp.fire, io.tasks.refill.resp.bits.data, RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire))
+    io.dataWrite.req.bits.data := dcacheMergeData(oldData, reqReg.storeData, reqReg.storeMask) 
+    io.dataWrite.req.bits.set := addrToDCacheSet(reqReg.addr)
+    io.dataWrite.req.bits.way := reqReg.dirInfo.chosenWay
 
 
     io.resp.load.valid := !req.isStore && (state === sResp || willRespLoad)

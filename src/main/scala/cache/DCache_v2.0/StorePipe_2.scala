@@ -14,11 +14,11 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val store = new CacheWriteBus
         val dir = Flipped(new DirectoryIO)
-        val dataBank = Flipped(new DataBankArrayIO) 
+        val dataBank = Flipped(new DataBankArrayIO_1) 
+        // val dataBank = new DataBankArrayRead_1
         val mshr =  Decoupled(new MissReq)
     })
     // io <> DontCare
-
 
     val s0_valid = Wire(Bool())
     val s1_valid, s1_ready = Wire(Bool())
@@ -45,13 +45,11 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     io.dir.read.req.bits.addr := s0_wAddr
     // read databank
     io.dataBank.read.req.valid := s0_latch || s0_full
-    dontTouch(io.dataBank.read.req.valid)
     io.dataBank.read.req.bits.set := addrToDCacheSet(s0_wAddr)
-    io.dataBank.read.req.bits.blockSelOH := addrToDCacheBlockOH(s0_wAddr)
 
     val s0_dirInfo = io.dir.read.resp.bits
 
-    val s0_rdBlockData = io.dataBank.read.resp.bits.blockData
+    val s0_rdDataAll = io.dataBank.read.resp
 
     val s0_validReg = RegInit(false.B)
     when(s0_latch) { s0_validReg := true.B }
@@ -73,20 +71,20 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     val s1_dirInfo = RegEnable(s0_dirInfo, s1_latch)
     val s1_isHit = s1_dirInfo.hit
     val s1_chosenWayOH = s1_dirInfo.chosenWay
-    val s1_rdBlockData = RegEnable(s0_rdBlockData, s1_latch)
+    val s1_blockSel = addrToDCacheBlockOH(s1_wAddr)
+    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
+    val s1_rdBlockData = Mux1H(s1_dirInfo.chosenWay, s1_rdDataAll) // all blocks of data within a chosenWay
+    val s1_rdData = Mux1H(s1_blockSel, s1_rdBlockData)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B } 
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
-    val temp = s1_rdBlockData.map{ d => d.asTypeOf(Vec(dcacheWays, UInt((dcacheBlockBytes*8).W)))}
-    val s1_chosenRdBlockData = temp.map{ t => Mux1H(s1_chosenWayOH, t) }
-
     io.mshr.valid := !s1_isHit && s1_full
     io.mshr.bits <> DontCare
     io.mshr.bits.addr := s1_wAddr
     io.mshr.bits.dirInfo := s1_dirInfo
-    io.mshr.bits.data := s1_chosenRdBlockData
+    io.mshr.bits.data := s1_rdBlockData // writeback data
     io.mshr.bits.isStore := true.B
     io.mshr.bits.storeData := s1_reqReg.data
     io.mshr.bits.storeMask := s1_reqReg.mask
@@ -104,9 +102,10 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     io.dataBank.write.req.bits <> DontCare
     io.dataBank.write.req.bits.blockSelOH := s1_dataBlockSelOH
     io.dataBank.write.req.bits.set := s1_wSet
-    io.dataBank.write.req.bits.mask := s1_reqReg.mask
     io.dataBank.write.req.bits.way := s1_chosenWayOH
-    io.dataBank.write.req.bits.data := s1_reqReg.data
+    io.dataBank.write.req.bits.data := dcacheMergeData(s1_rdData, s1_reqReg.data, s1_reqReg.mask)
+
+
 
     s1_valid := s1_full && (
                     !s1_isHit && io.mshr.fire ||

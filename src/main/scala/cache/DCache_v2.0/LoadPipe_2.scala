@@ -11,12 +11,11 @@ import firrtl.passes.wiring.Wiring
 import mycpu.BusReq._
 import mycpu.BusMaster._
 
-
 class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val load = new CacheReadBus
         val dir = Flipped(new DirectoryReadBus)
-        val dataBank = Flipped(new DataBankArrayRead)
+        val dataBank = Flipped(new DataBankArrayRead_1)
         val mshr =  Decoupled(new MissReq)
     })
 
@@ -45,14 +44,10 @@ class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     io.dir.req.bits.addr := s0_rAddr
     // read databank
     io.dataBank.req.valid := s0_latch || s0_full
-    dontTouch(io.dataBank.req.valid)
     io.dataBank.req.bits.set := addrToDCacheSet(s0_rAddr)
-    io.dataBank.req.bits.blockSelOH := addrToDCacheBlockOH(s0_rAddr)
 
     val s0_dirInfo = io.dir.resp.bits
-
-    val s0_rdBlockData = io.dataBank.resp.bits.blockData
-    val s0_rdDataAll = io.dataBank.resp.bits.data
+    val s0_rdDataAll = io.dataBank.resp
 
     val s0_validReg = RegInit(false.B)
     when(s0_latch) { s0_validReg := true.B }
@@ -70,9 +65,10 @@ class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     val s1_dirInfo = RegEnable(s0_dirInfo, s1_latch)
     val s1_isHit = s1_dirInfo.hit
     val s1_chosenWayOH = s1_dirInfo.chosenWay
-    val s1_rdBlockData = RegEnable(s0_rdBlockData, s1_latch)
-    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch)
-    val s1_rdData = Mux1H(s1_chosenWayOH, s1_rdDataAll)
+    val s1_blockSel = addrToDCacheBlockOH(s1_rAddr)
+    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
+    val s1_rdBlockData = Mux1H(s1_dirInfo.chosenWay, s1_rdDataAll) // all blocks of data within a chosenWay
+    val s1_rdData = Mux1H(s1_blockSel, s1_rdBlockData)
     dontTouch(s1_rdData)
     dontTouch(s1_latch)
 
@@ -80,15 +76,12 @@ class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
-    val temp = s1_rdBlockData.map{ d => d.asTypeOf(Vec(dcacheWays, UInt((dcacheBlockBytes*8).W)))}
-    val s1_chosenRdBlockData = temp.map{ t => Mux1H(s1_chosenWayOH, t) }
-
     io.mshr.valid := !s1_isHit && s1_full
     io.mshr.bits <> DontCare
     io.mshr.bits.addr := s1_rAddr
     io.mshr.bits.isStore := false.B
     io.mshr.bits.dirInfo := s1_dirInfo
-    io.mshr.bits.data := s1_chosenRdBlockData
+    io.mshr.bits.data := s1_rdBlockData // writeback data
 
     io.load.resp.valid := s1_isHit && s1_full
     io.load.resp.bits <> DontCare

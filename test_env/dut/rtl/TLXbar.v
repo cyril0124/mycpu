@@ -171,7 +171,7 @@ module TLXbar(
     .io_choseOH_0(reqMux_io_choseOH_0),
     .io_choseOH_1(reqMux_io_choseOH_1)
   );
-  Queue_1 buf_ ( // @[Bus.scala 242:21]
+  Queue buf_ ( // @[Bus.scala 242:21]
     .clock(buf__clock),
     .reset(buf__reset),
     .io_enq_ready(buf__io_enq_ready),

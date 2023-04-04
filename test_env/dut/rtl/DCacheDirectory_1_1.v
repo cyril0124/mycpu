@@ -1,4 +1,4 @@
-module DCacheDirectory_1(
+module DCacheDirectory_1_1(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -6,16 +6,20 @@ module DCacheDirectory_1(
   input  [31:0] io_read_req_bits_addr,
   output        io_read_resp_bits_hit,
   output [7:0]  io_read_resp_bits_chosenWay,
+  output        io_read_resp_bits_isDirtyWay,
+  output [19:0] io_read_resp_bits_dirtyTag,
   output        io_write_req_ready,
   input         io_write_req_valid,
   input  [31:0] io_write_req_bits_addr,
-  input  [7:0]  io_write_req_bits_way
+  input  [7:0]  io_write_req_bits_way,
+  input  [1:0]  io_write_req_bits_meta
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
   wire  tagArray_clock; // @[SRAM_1.scala 255:31]
-  wire [6:0] tagArray_io_r_addr; // @[SRAM_1.scala 255:31]
+  wire  tagArray_reset; // @[SRAM_1.scala 255:31]
+  wire [7:0] tagArray_io_r_addr; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_0; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_1; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_2; // @[SRAM_1.scala 255:31]
@@ -25,7 +29,7 @@ module DCacheDirectory_1(
   wire [19:0] tagArray_io_r_data_6; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_7; // @[SRAM_1.scala 255:31]
   wire  tagArray_io_w_en; // @[SRAM_1.scala 255:31]
-  wire [6:0] tagArray_io_w_addr; // @[SRAM_1.scala 255:31]
+  wire [7:0] tagArray_io_w_addr; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_w_data_0; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_w_data_1; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_w_data_2; // @[SRAM_1.scala 255:31]
@@ -36,7 +40,8 @@ module DCacheDirectory_1(
   wire [19:0] tagArray_io_w_data_7; // @[SRAM_1.scala 255:31]
   wire [7:0] tagArray_io_w_maskOH; // @[SRAM_1.scala 255:31]
   wire  metaArray_clock; // @[SRAM_1.scala 255:31]
-  wire [6:0] metaArray_io_r_addr; // @[SRAM_1.scala 255:31]
+  wire  metaArray_reset; // @[SRAM_1.scala 255:31]
+  wire [7:0] metaArray_io_r_addr; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_0; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_1; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_2; // @[SRAM_1.scala 255:31]
@@ -46,7 +51,15 @@ module DCacheDirectory_1(
   wire [1:0] metaArray_io_r_data_6; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_7; // @[SRAM_1.scala 255:31]
   wire  metaArray_io_w_en; // @[SRAM_1.scala 255:31]
-  wire [6:0] metaArray_io_w_addr; // @[SRAM_1.scala 255:31]
+  wire [7:0] metaArray_io_w_addr; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_0; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_1; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_2; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_3; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_4; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_5; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_6; // @[SRAM_1.scala 255:31]
+  wire [1:0] metaArray_io_w_data_7; // @[SRAM_1.scala 255:31]
   wire [7:0] metaArray_io_w_maskOH; // @[SRAM_1.scala 255:31]
   wire  replaceWay_lfsr_prng_clock; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_reset; // @[PRNG.scala 91:22]
@@ -66,10 +79,10 @@ module DCacheDirectory_1(
   wire  replaceWay_lfsr_prng_io_out_13; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_io_out_14; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_io_out_15; // @[PRNG.scala 91:22]
-  wire [6:0] rSet = io_read_req_bits_addr[11:5]; // @[Parameters.scala 50:11]
+  wire [7:0] rSet = io_read_req_bits_addr[11:4]; // @[Parameters.scala 50:11]
   wire [19:0] rTag = io_read_req_bits_addr[31:12]; // @[Parameters.scala 46:11]
   wire  ren = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
-  wire [6:0] wSet = io_write_req_bits_addr[11:5]; // @[Parameters.scala 50:11]
+  wire [7:0] wSet = io_write_req_bits_addr[11:4]; // @[Parameters.scala 50:11]
   wire [19:0] wTag = io_write_req_bits_addr[31:12]; // @[Parameters.scala 46:11]
   wire  wen = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   wire [1:0] _T_8 = io_write_req_bits_way[0] + io_write_req_bits_way[1]; // @[Bitwise.scala 51:90]
@@ -168,6 +181,21 @@ module DCacheDirectory_1(
     metaRdVec_3_valid,metaRdVec_2_valid,metaRdVec_1_valid,metaRdVec_0_valid}; // @[Cat.scala 33:92]
   wire [7:0] _dirtyWayOH_T_2 = _dirtyWayOH_T & _dirtyWayOH_T_1; // @[Directory_1.scala 75:51]
   wire [7:0] dirtyWayOH = _dirtyWayOH_T_2 & choseWayOH; // @[Directory_1.scala 75:79]
+  wire [7:0] _isDirtyWay_T = choseWayOH & dirtyWayOH; // @[Directory_1.scala 76:38]
+  wire [19:0] _dirtyTag_T_8 = dirtyWayOH[0] ? rdata__0 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_9 = dirtyWayOH[1] ? rdata__1 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_10 = dirtyWayOH[2] ? rdata__2 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_11 = dirtyWayOH[3] ? rdata__3 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_12 = dirtyWayOH[4] ? rdata__4 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_13 = dirtyWayOH[5] ? rdata__5 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_14 = dirtyWayOH[6] ? rdata__6 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_15 = dirtyWayOH[7] ? rdata__7 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_16 = _dirtyTag_T_8 | _dirtyTag_T_9; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_17 = _dirtyTag_T_16 | _dirtyTag_T_10; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_18 = _dirtyTag_T_17 | _dirtyTag_T_11; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_19 = _dirtyTag_T_18 | _dirtyTag_T_12; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_20 = _dirtyTag_T_19 | _dirtyTag_T_13; // @[Mux.scala 27:73]
+  wire [19:0] _dirtyTag_T_21 = _dirtyTag_T_20 | _dirtyTag_T_14; // @[Mux.scala 27:73]
   wire [1:0] _T_73 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_75 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_77 = _T_73 + _T_75; // @[Bitwise.scala 51:90]
@@ -182,8 +210,9 @@ module DCacheDirectory_1(
   wire [1:0] _T_107 = dirtyWayOH[6] + dirtyWayOH[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_109 = _T_105 + _T_107; // @[Bitwise.scala 51:90]
   wire [3:0] _T_111 = _T_103 + _T_109; // @[Bitwise.scala 51:90]
-  SRAMArray_2P_8 tagArray ( // @[SRAM_1.scala 255:31]
+  SRAMArray_2P_18 tagArray ( // @[SRAM_1.scala 255:31]
     .clock(tagArray_clock),
+    .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
     .io_r_data_0(tagArray_io_r_data_0),
     .io_r_data_1(tagArray_io_r_data_1),
@@ -205,8 +234,9 @@ module DCacheDirectory_1(
     .io_w_data_7(tagArray_io_w_data_7),
     .io_w_maskOH(tagArray_io_w_maskOH)
   );
-  SRAMArray_2P_9 metaArray ( // @[SRAM_1.scala 255:31]
+  SRAMArray_2P_19 metaArray ( // @[SRAM_1.scala 255:31]
     .clock(metaArray_clock),
+    .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),
     .io_r_data_0(metaArray_io_r_data_0),
     .io_r_data_1(metaArray_io_r_data_1),
@@ -218,6 +248,14 @@ module DCacheDirectory_1(
     .io_r_data_7(metaArray_io_r_data_7),
     .io_w_en(metaArray_io_w_en),
     .io_w_addr(metaArray_io_w_addr),
+    .io_w_data_0(metaArray_io_w_data_0),
+    .io_w_data_1(metaArray_io_w_data_1),
+    .io_w_data_2(metaArray_io_w_data_2),
+    .io_w_data_3(metaArray_io_w_data_3),
+    .io_w_data_4(metaArray_io_w_data_4),
+    .io_w_data_5(metaArray_io_w_data_5),
+    .io_w_data_6(metaArray_io_w_data_6),
+    .io_w_data_7(metaArray_io_w_data_7),
     .io_w_maskOH(metaArray_io_w_maskOH)
   );
   MaxPeriodFibonacciLFSR replaceWay_lfsr_prng ( // @[PRNG.scala 91:22]
@@ -243,8 +281,11 @@ module DCacheDirectory_1(
   assign io_read_req_ready = 1'h1; // @[Directory_1.scala 44:29]
   assign io_read_resp_bits_hit = |matchWayOH; // @[Directory_1.scala 73:41]
   assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory_1.scala 74:28]
+  assign io_read_resp_bits_isDirtyWay = |_isDirtyWay_T; // @[Directory_1.scala 76:53]
+  assign io_read_resp_bits_dirtyTag = _dirtyTag_T_21 | _dirtyTag_T_15; // @[Mux.scala 27:73]
   assign io_write_req_ready = 1'h1; // @[Directory_1.scala 45:29]
   assign tagArray_clock = clock;
+  assign tagArray_reset = reset;
   assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   assign tagArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
@@ -258,9 +299,18 @@ module DCacheDirectory_1(
   assign tagArray_io_w_data_7 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
   assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
   assign metaArray_clock = clock;
+  assign metaArray_reset = reset;
   assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   assign metaArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
+  assign metaArray_io_w_data_0 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_1 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_2 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_3 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_4 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_5 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_6 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_7 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
   assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
   assign replaceWay_lfsr_prng_clock = clock;
   assign replaceWay_lfsr_prng_reset = reset;

@@ -44,8 +44,7 @@ module MSHR(
   output [31:0] io_dataWrite_req_bits_data,
   output [7:0]  io_dataWrite_req_bits_set,
   output [3:0]  io_dataWrite_req_bits_blockSelOH,
-  output [7:0]  io_dataWrite_req_bits_way,
-  output [3:0]  io_dataWrite_req_bits_mask
+  output [7:0]  io_dataWrite_req_bits_way
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -60,6 +59,7 @@ module MSHR(
   reg [31:0] _RAND_9;
   reg [31:0] _RAND_10;
   reg [31:0] _RAND_11;
+  reg [31:0] _RAND_12;
 `endif // RANDOMIZE_REG_INIT
   wire  _reqReg_T = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] reqReg_addr; // @[Reg.scala 19:16]
@@ -72,7 +72,6 @@ module MSHR(
   reg  reqReg_isStore; // @[Reg.scala 19:16]
   reg [31:0] reqReg_storeData; // @[Reg.scala 19:16]
   reg [3:0] reqReg_storeMask; // @[Reg.scala 19:16]
-  wire [31:0] _GEN_0 = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
   wire  _GEN_9 = _reqReg_T ? io_req_bits_isStore : reqReg_isStore; // @[Reg.scala 19:16 20:{18,22}]
   reg [2:0] state; // @[MSHR.scala 63:24]
   wire  _io_busy_T = state == 3'h0; // @[MSHR.scala 66:22]
@@ -102,6 +101,18 @@ module MSHR(
   wire  _willRespLoad_T_1 = ~_GEN_9; // @[MSHR.scala 128:49]
   wire  willRespLoad = _T_4 & ~_GEN_9 & _T_5; // @[MSHR.scala 128:62]
   wire  willRespStore = _T_9 & _T_10 & _T_11; // @[MSHR.scala 129:73]
+  reg [31:0] oldData_r; // @[Reg.scala 19:16]
+  wire [31:0] _GEN_27 = _T_5 ? io_tasks_refill_resp_bits_data : oldData_r; // @[Reg.scala 19:16 20:{18,22}]
+  wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_5 = reqReg_storeMask[0] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
+  wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_7 = reqReg_storeMask[1] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
+  wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_9 = reqReg_storeMask[2] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
+  wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_11 = reqReg_storeMask[3] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
+  wire [31:0] io_dataWrite_req_bits_data_tempMask = {_io_dataWrite_req_bits_data_tempMask_T_11,
+    _io_dataWrite_req_bits_data_tempMask_T_9,_io_dataWrite_req_bits_data_tempMask_T_7,
+    _io_dataWrite_req_bits_data_tempMask_T_5}; // @[Cat.scala 33:92]
+  wire [31:0] _io_dataWrite_req_bits_data_T = ~io_dataWrite_req_bits_data_tempMask; // @[Parameters.scala 67:8]
+  wire [31:0] _io_dataWrite_req_bits_data_T_1 = _io_dataWrite_req_bits_data_T & _GEN_27; // @[Parameters.scala 67:18]
+  wire [31:0] _io_dataWrite_req_bits_data_T_2 = io_dataWrite_req_bits_data_tempMask & reqReg_storeData; // @[Parameters.scala 67:41]
   reg [31:0] io_resp_load_bits_data_r; // @[Reg.scala 19:16]
   assign io_req_ready = state == 3'h0; // @[MSHR.scala 67:27]
   assign io_resp_load_valid = _willRespLoad_T_1 & (_T_14 | willRespLoad); // @[MSHR.scala 161:40]
@@ -120,14 +131,13 @@ module MSHR(
   assign io_tasks_writeback_req_bits_data_3 = _reqReg_T ? io_req_bits_data_3 : reqReg_data_3; // @[MSHR.scala 59:18]
   assign io_tasks_writeback_resp_ready = 1'h1; // @[MSHR.scala 141:35]
   assign io_dirWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 144:51]
-  assign io_dirWrite_req_bits_addr = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[MSHR.scala 59:18]
-  assign io_dirWrite_req_bits_way = _reqReg_T ? io_req_bits_dirInfo_chosenWay : reqReg_dirInfo_chosenWay; // @[MSHR.scala 59:18]
+  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[MSHR.scala 145:31]
+  assign io_dirWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 150:30]
   assign io_dataWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 153:52]
-  assign io_dataWrite_req_bits_data = _reqReg_T ? io_req_bits_storeData : reqReg_storeData; // @[MSHR.scala 59:18]
-  assign io_dataWrite_req_bits_set = _GEN_0[11:4]; // @[Parameters.scala 50:11]
-  assign io_dataWrite_req_bits_blockSelOH = 4'h1 << _GEN_0[3:2]; // @[OneHot.scala 57:35]
-  assign io_dataWrite_req_bits_way = _reqReg_T ? io_req_bits_dirInfo_chosenWay : reqReg_dirInfo_chosenWay; // @[MSHR.scala 59:18]
-  assign io_dataWrite_req_bits_mask = _reqReg_T ? io_req_bits_storeMask : reqReg_storeMask; // @[MSHR.scala 59:18]
+  assign io_dataWrite_req_bits_data = _io_dataWrite_req_bits_data_T_1 | _io_dataWrite_req_bits_data_T_2; // @[Parameters.scala 67:29]
+  assign io_dataWrite_req_bits_set = reqReg_addr[11:4]; // @[Parameters.scala 50:11]
+  assign io_dataWrite_req_bits_blockSelOH = 4'h1 << reqReg_addr[3:2]; // @[OneHot.scala 57:35]
+  assign io_dataWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 158:31]
   always @(posedge clock) begin
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_addr <= io_req_bits_addr; // @[Reg.scala 20:22]
@@ -177,6 +187,9 @@ module MSHR(
       state <= _GEN_20;
     end else begin
       state <= {{1'd0}, _GEN_17};
+    end
+    if (_T_5) begin // @[Reg.scala 20:18]
+      oldData_r <= io_tasks_refill_resp_bits_data; // @[Reg.scala 20:22]
     end
     if (_T_5) begin // @[Reg.scala 20:18]
       io_resp_load_bits_data_r <= io_tasks_refill_resp_bits_data; // @[Reg.scala 20:22]
@@ -241,7 +254,9 @@ initial begin
   _RAND_10 = {1{`RANDOM}};
   state = _RAND_10[2:0];
   _RAND_11 = {1{`RANDOM}};
-  io_resp_load_bits_data_r = _RAND_11[31:0];
+  oldData_r = _RAND_11[31:0];
+  _RAND_12 = {1{`RANDOM}};
+  io_resp_load_bits_data_r = _RAND_12[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

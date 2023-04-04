@@ -17,8 +17,8 @@ import chisel3.util.log2Ceil
 class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     behavior of "DCache"
     // val annos = Seq(VcsBackendAnnotation, WriteVcdAnnotation)
-    // val annos = Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)
-    val annos = Seq(WriteVcdAnnotation)
+    val annos = Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)
+    // val annos = Seq(WriteVcdAnnotation)
 
     // it should "test BankRam2P" in {
     //     test(new BankRam2P_1()) { c => 
@@ -515,7 +515,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
 
             var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
             var dirtyBoard: scala.collection.mutable.Map[Int, Boolean] = scala.collection.mutable.Map() // (addr, dirty)
-            val testCaseNum = 1000
+            val testCaseNum = 10000
 
             def tlValid: Boolean = c.io.tlbus.req.valid.peekBoolean()
             def tlOpcode: Int = c.io.tlbus.req.bits.opcode.peekInt().toInt

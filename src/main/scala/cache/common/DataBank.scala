@@ -121,3 +121,4 @@ class DataBankArray()(implicit val p: Parameters) extends MyModule {
     }
 
 }
+

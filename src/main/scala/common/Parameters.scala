@@ -62,6 +62,11 @@ trait HasMyCpuParameters {
       Cat(addr(xlen-1, dcacheBlockBits + dcacheByteOffsetBits), Fill(dcacheBlockBits + dcacheByteOffsetBits, 0.U))
     }
 
+    def dcacheMergeData(oldData: UInt, newData: UInt, mask: UInt): UInt = {
+      val tempMask = FillInterleaved(8, mask) 
+      (~tempMask & oldData) | (tempMask & newData)
+    }
+
     val icacheRdWays = myCpuParams.icacheRdWays
 
 
