@@ -447,7 +447,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     // }
 
     it should "test both write and read" in {
-        test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c =>
+        test(new DCache()(defaultConfig)).withAnnotations(annos) { c =>
 
             case class p()(implicit val p: Parameters) extends HasMyCpuParameters
             val param = p()(c.p)

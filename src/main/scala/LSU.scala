@@ -210,18 +210,11 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
     val s0_reqReg = RegEnable(io.req.bits, s0_latch)
     val s0_req = Mux(io.req.fire, io.req.bits, s0_reqReg)
     val s0_offset = s0_req.addr(blockOffsetBits-1, 0)
-    // val s0_valid = WireInit(false.B)
-    // val s1_ready  = RegInit(true.B)
     
-    // io.req.ready := s0_ready
-    io.req.ready := !s0_full // || s0_fire // TODO:
+    io.req.ready := !s0_full // || s0_fire
 
     when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) { s0_full := true.B }
     .elsewhen(s0_full && s0_fire) { s0_full := false.B }
-
-    // when(s0_latch && !(s0_req.lsuOp === LSU_NOP || s0_req.lsuOp === LSU_FENC)) {
-    //     s0_ready := false.B
-    // }
 
     val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
         ListLookup(s0_req.lsuOp, default, table)
@@ -270,6 +263,7 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
 
     // s0_valid := !s0_ready && ( (io.cache.read.req.fire && load) || (io.cache.write.req.fire && wen) )
     s0_valid := (Hold(true.B, io.cache.read.req.fire, s0_fire) && load) || (Hold(true.B, io.cache.write.req.fire, s0_fire) && wen)
+
     // --------------------------------------------------------------------------------
     // stage 1
     // --------------------------------------------------------------------------------
@@ -285,11 +279,6 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
     s1_ready := !s1_full //|| s1_fire
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
-    // when(s1_latch) {
-    //     s1_ready  := false.B
-    //     s0_ready := true.B
-    //     s0_reqSend := false.B
-    // }
 
     io.cache.read.resp.ready := true.B
     io.cache.write.resp.ready := true.B
@@ -314,16 +303,7 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
                             // TODO: consider xlen=64 
                         ))
 
-    // val s1_valid = !s1_ready && (s1_loadRespValid || s1_storeRespValid)
     s1_valid := s1_full && (s1_loadRespValid || s1_storeRespValid)
-    dontTouch(s1_loadRespValid)
-    dontTouch(s1_storeRespValid)
 
-    // io.resp.valid := s1_valid
     io.resp.valid := s1_fire
-    
-    // when(s1_valid) {
-    //     s1_ready := true.B
-    // }
-    
 }

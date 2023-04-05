@@ -47,7 +47,7 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     val req = Mux(io.req.fire, io.req.bits, reqReg)
     val reqValidReg = RegEnable(true.B, io.req.fire)
     val reqValid = Mux(io.req.fire, true.B, reqValidReg)
-    val dataBlockSelOH = addrToDCacheBlockOH(req.addr)
+    val dataBlockSelOH = addrToDCacheBlockOH(reqReg.addr)
 
     val beatCounter = Counter(dcacheBlockSize)
     val beatOH = UIntToOH(beatCounter.value)
@@ -117,19 +117,18 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     // writeback directory
     val refillSafe = refillFire && state === sRefillData
     io.dirWrite.req.valid := refillSafe && lastBeat
-    io.dirWrite.req.bits.addr := req.addr
+    io.dirWrite.req.bits.addr := reqReg.addr
     val meta = Wire(new DCacheMeta)
     meta.valid := true.B 
     meta.dirty := false.B
     io.dirWrite.req.bits.meta := meta.asUInt
-    io.dirWrite.req.bits.way := req.chosenWay
+    io.dirWrite.req.bits.way := reqReg.chosenWay
 
     // writeback databank
     io.dataWrite.req.valid := refillSafe
     io.dataWrite.req.bits.blockSelOH := beatOH
-    io.dataWrite.req.bits.way := req.chosenWay
-    io.dataWrite.req.bits.mask := Fill(dcacheBlockBytes, 1.U)
-    io.dataWrite.req.bits.set := addrToDCacheSet(req.addr)
+    io.dataWrite.req.bits.way := reqReg.chosenWay
+    io.dataWrite.req.bits.set := addrToDCacheSet(reqReg.addr)
     io.dataWrite.req.bits.data := refillResp.data
     
     // send refill resp

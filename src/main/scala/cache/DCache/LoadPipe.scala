@@ -11,11 +11,11 @@ import firrtl.passes.wiring.Wiring
 import mycpu.BusReq._
 import mycpu.BusMaster._
 
-class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
+class LoadPipe()(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val load = new CacheReadBus
         val dir = Flipped(new DirectoryReadBus)
-        val dataBank = Flipped(new DataBankArrayRead_1)
+        val dataBank = Flipped(new DataBankArrayRead)
         val mshr =  Decoupled(new MissReq)
     })
 
@@ -62,15 +62,13 @@ class LoadPipe_2()(implicit val p: Parameters) extends MyModule {
     val s1_latch = s0_valid && s1_ready
     val s1_fire = s1_valid
     val s1_rAddr = RegEnable(s0_rAddr, s1_latch)
+    val s1_blockSel = addrToDCacheBlockOH(s1_rAddr)
+    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
     val s1_dirInfo = RegEnable(s0_dirInfo, s1_latch)
     val s1_isHit = s1_dirInfo.hit
     val s1_chosenWayOH = s1_dirInfo.chosenWay
-    val s1_blockSel = addrToDCacheBlockOH(s1_rAddr)
-    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
     val s1_rdBlockData = Mux1H(s1_dirInfo.chosenWay, s1_rdDataAll) // all blocks of data within a chosenWay
     val s1_rdData = Mux1H(s1_blockSel, s1_rdBlockData)
-    dontTouch(s1_rdData)
-    dontTouch(s1_latch)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B }
@@ -102,5 +100,5 @@ object LoadPipe_2GenRTL extends App {
     })
 
     println("Generating the LoadPipe_2 hardware")
-    (new chisel3.stage.ChiselStage).emitVerilog(new LoadPipe_2()(defaultConfig), Array("--target-dir", "build"))
+    (new chisel3.stage.ChiselStage).emitVerilog(new LoadPipe()(defaultConfig), Array("--target-dir", "build"))
 }

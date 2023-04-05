@@ -89,7 +89,7 @@ class MSHRTest extends AnyFlatSpec with ChiselScalatestTester {
                 c.io.req.bits.addr.poke(addr)
                 c.io.req.bits.data.foreach( i => i.poke(randData))
                 c.io.req.bits.dirInfo.chosenWay.poke((chosenWay))
-                c.io.req.bits.dirInfo.dirtyTag.poke(dirtyTag)
+                // c.io.req.bits.dirInfo.dirtyTag.poke(dirtyTag)
                 c.io.req.bits.dirInfo.hit.poke(hit)
                 c.io.req.bits.isStore.poke(isStore)
                 c.io.req.bits.storeData.poke(storeData)

@@ -12,6 +12,7 @@ import os.stat
 class MissReq()(implicit val p: Parameters) extends MyBundle {
     val addr = UInt(xlen.W)
     val dirInfo = new DirectoryInfo
+    val dirtyTag = UInt(dcacheTagBits.W)
     val data = Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))
     val isStore = Bool()
     val storeData = UInt((dcacheBlockBytes*8).W)
@@ -40,7 +41,7 @@ class MSHRIO()(implicit val p: Parameters) extends MyBundle {
     val tasks = new MSHRTasks 
     val busy = Output(Bool())
     val dirWrite = Flipped(new DirectoryWriteBus)
-    val dataWrite = Flipped(new DataBankArrayWrite_1)
+    val dataWrite = Flipped(new DataBankArrayWrite)
 }
 
 object MSHR {
@@ -136,7 +137,7 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     // write back dirty block data into next level memory
     io.tasks.writeback.req.valid := state === sWriteback || willWriteback
     io.tasks.writeback.req.bits.addr := req.addr
-    io.tasks.writeback.req.bits.dirtyTag := req.dirInfo.dirtyTag
+    io.tasks.writeback.req.bits.dirtyTag := req.dirtyTag //req.dirInfo.dirtyTag
     io.tasks.writeback.req.bits.data := req.data
     io.tasks.writeback.resp.ready := true.B
 

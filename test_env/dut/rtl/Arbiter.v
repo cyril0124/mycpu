@@ -5,7 +5,6 @@ module Arbiter(
   input         io_in_0_bits_dirInfo_hit,
   input  [7:0]  io_in_0_bits_dirInfo_chosenWay,
   input         io_in_0_bits_dirInfo_isDirtyWay,
-  input  [19:0] io_in_0_bits_dirInfo_dirtyTag,
   input  [31:0] io_in_0_bits_data_0,
   input  [31:0] io_in_0_bits_data_1,
   input  [31:0] io_in_0_bits_data_2,
@@ -16,7 +15,7 @@ module Arbiter(
   input         io_in_1_bits_dirInfo_hit,
   input  [7:0]  io_in_1_bits_dirInfo_chosenWay,
   input         io_in_1_bits_dirInfo_isDirtyWay,
-  input  [19:0] io_in_1_bits_dirInfo_dirtyTag,
+  input  [19:0] io_in_1_bits_dirtyTag,
   input  [31:0] io_in_1_bits_data_0,
   input  [31:0] io_in_1_bits_data_1,
   input  [31:0] io_in_1_bits_data_2,
@@ -29,7 +28,7 @@ module Arbiter(
   output        io_out_bits_dirInfo_hit,
   output [7:0]  io_out_bits_dirInfo_chosenWay,
   output        io_out_bits_dirInfo_isDirtyWay,
-  output [19:0] io_out_bits_dirInfo_dirtyTag,
+  output [19:0] io_out_bits_dirtyTag,
   output [31:0] io_out_bits_data_0,
   output [31:0] io_out_bits_data_1,
   output [31:0] io_out_bits_data_2,
@@ -48,7 +47,7 @@ module Arbiter(
     ; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_dirInfo_isDirtyWay = io_in_0_valid ? io_in_0_bits_dirInfo_isDirtyWay :
     io_in_1_bits_dirInfo_isDirtyWay; // @[Arbiter.scala 136:15 138:26 140:19]
-  assign io_out_bits_dirInfo_dirtyTag = io_in_0_valid ? io_in_0_bits_dirInfo_dirtyTag : io_in_1_bits_dirInfo_dirtyTag; // @[Arbiter.scala 136:15 138:26 140:19]
+  assign io_out_bits_dirtyTag = io_in_0_valid ? 20'h0 : io_in_1_bits_dirtyTag; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_0 = io_in_0_valid ? io_in_0_bits_data_0 : io_in_1_bits_data_0; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_1 = io_in_0_valid ? io_in_0_bits_data_1 : io_in_1_bits_data_1; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_2 = io_in_0_valid ? io_in_0_bits_data_2 : io_in_1_bits_data_2; // @[Arbiter.scala 136:15 138:26 140:19]

@@ -181,7 +181,7 @@ module Mem(
     .io_cache_write_resp_ready(lsu_io_cache_write_resp_ready),
     .io_cache_write_resp_valid(lsu_io_cache_write_resp_valid)
   );
-  DCache_1 dcache ( // @[4_Mem.scala 165:24]
+  DCache dcache ( // @[4_Mem.scala 165:24]
     .clock(dcache_clock),
     .reset(dcache_reset),
     .io_read_req_ready(dcache_io_read_req_ready),

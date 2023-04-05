@@ -12,7 +12,7 @@ BankRAM_2P done! in line 96
 	find submodule => module_name:( BankRAM_2P          )  inst_name:( brams_7             ) in line [ 224    ]
 SRAMArray_2P done! in line 280
 
-[3] find module => DataBankArray_1 in line 281
+[3] find module => DataBankArray in line 281
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_0         ) in line [ 543    ]
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_1         ) in line [ 566    ]
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_2         ) in line [ 589    ]
@@ -21,7 +21,7 @@ SRAMArray_2P done! in line 280
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_5         ) in line [ 658    ]
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_6         ) in line [ 681    ]
 	find submodule => module_name:( SRAMArray_2P        )  inst_name:( dataBanks_7         ) in line [ 704    ]
-DataBankArray_1 done! in line 1091
+DataBankArray done! in line 1091
 
 [4] find module => BankRAM_2P_64 in line 1092
 BankRAM_2P_64 done! in line 1187
@@ -54,234 +54,234 @@ SRAMArray_2P_9 done! in line 1618
 [8] find module => MaxPeriodFibonacciLFSR in line 1619
 MaxPeriodFibonacciLFSR done! in line 1843
 
-[9] find module => DCacheDirectory_1 in line 1844
-	find submodule => module_name:( SRAMArray_2P_8      )  inst_name:( tagArray            ) in line [ 2028   ]
-	find submodule => module_name:( SRAMArray_2P_9      )  inst_name:( metaArray           ) in line [ 2051   ]
-	find submodule => module_name:( MaxPeriodFibonacciLFSR)  inst_name:( replaceWay_lfsr_prng) in line [ 2066   ]
-DCacheDirectory_1 done! in line 2280
+[9] find module => DCacheDirectory in line 1844
+	find submodule => module_name:( SRAMArray_2P_8      )  inst_name:( tagArray            ) in line [ 2007   ]
+	find submodule => module_name:( SRAMArray_2P_9      )  inst_name:( metaArray           ) in line [ 2030   ]
+	find submodule => module_name:( MaxPeriodFibonacciLFSR)  inst_name:( replaceWay_lfsr_prng) in line [ 2045   ]
+DCacheDirectory done! in line 2235
 
-[10] find module => RefillPipe_1 in line 2281
-RefillPipe_1 done! in line 2538
+[10] find module => RefillPipe in line 2236
+RefillPipe done! in line 2493
 
-[11] find module => RefillBuffer in line 2539
-RefillBuffer done! in line 3021
+[11] find module => RefillBuffer in line 2494
+RefillBuffer done! in line 2773
 
-[12] find module => ICache in line 3022
-	find submodule => module_name:( DataBankArray_1     )  inst_name:( db                  ) in line [ 3634   ]
-	find submodule => module_name:( DCacheDirectory_1   )  inst_name:( dir                 ) in line [ 3711   ]
-	find submodule => module_name:( RefillPipe_1        )  inst_name:( refillPipe          ) in line [ 3724   ]
-	find submodule => module_name:( RefillBuffer        )  inst_name:( refillBuffer        ) in line [ 3750   ]
-ICache done! in line 4259
+[12] find module => ICache in line 2774
+	find submodule => module_name:( DataBankArray       )  inst_name:( db                  ) in line [ 3344   ]
+	find submodule => module_name:( DCacheDirectory     )  inst_name:( dir                 ) in line [ 3421   ]
+	find submodule => module_name:( RefillPipe          )  inst_name:( refillPipe          ) in line [ 3434   ]
+	find submodule => module_name:( RefillBuffer        )  inst_name:( refillBuffer        ) in line [ 3460   ]
+ICache done! in line 3949
 
-[13] find module => Fetch_1 in line 4260
-	find submodule => module_name:( ICache              )  inst_name:( icache              ) in line [ 4332   ]
-Fetch_1 done! in line 4464
+[13] find module => Fetch_1 in line 3950
+	find submodule => module_name:( ICache              )  inst_name:( icache              ) in line [ 4022   ]
+Fetch_1 done! in line 4154
 
-[14] find module => Decoder in line 4465
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_115   ) in line [ 4531   ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_444   ) in line [ 4818   ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_478   ) in line [ 4837   ]
-	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_502   ) in line [ 4849   ]
-	find submodule => module_name:( (_decodeSigs_T_11   )  inst_name:( |                   ) in line [ 4957   ]
-Decoder done! in line 4962
+[14] find module => Decoder in line 4155
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_115   ) in line [ 4221   ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_444   ) in line [ 4508   ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_478   ) in line [ 4527   ]
+	find submodule => module_name:( wire                )  inst_name:( _decodeSigs_T_502   ) in line [ 4539   ]
+	find submodule => module_name:( (_decodeSigs_T_11   )  inst_name:( |                   ) in line [ 4647   ]
+Decoder done! in line 4652
 
-[15] find module => CtrlUnit in line 4963
-	find submodule => module_name:( Decoder             )  inst_name:( decoder             ) in line [ 4993   ]
-CtrlUnit done! in line 5021
+[15] find module => CtrlUnit in line 4653
+	find submodule => module_name:( Decoder             )  inst_name:( decoder             ) in line [ 4683   ]
+CtrlUnit done! in line 4711
 
-[16] find module => ImmGen in line 5022
-ImmGen done! in line 5074
+[16] find module => ImmGen in line 4712
+ImmGen done! in line 4764
 
-[17] find module => Decode in line 5075
-	find submodule => module_name:( CtrlUnit            )  inst_name:( ctrlUnit            ) in line [ 5163   ]
-	find submodule => module_name:( ImmGen              )  inst_name:( immGen              ) in line [ 5179   ]
-Decode done! in line 5316
+[17] find module => Decode in line 4765
+	find submodule => module_name:( CtrlUnit            )  inst_name:( ctrlUnit            ) in line [ 4853   ]
+	find submodule => module_name:( ImmGen              )  inst_name:( immGen              ) in line [ 4869   ]
+Decode done! in line 5006
 
-[18] find module => ALU in line 5317
-ALU done! in line 5363
+[18] find module => ALU in line 5007
+ALU done! in line 5053
 
-[19] find module => Execute in line 5364
-	find submodule => module_name:( ALU                 )  inst_name:( alu                 ) in line [ 5485   ]
-Execute done! in line 5834
+[19] find module => Execute in line 5054
+	find submodule => module_name:( ALU                 )  inst_name:( alu                 ) in line [ 5175   ]
+Execute done! in line 5524
 
-[20] find module => LSU_1 in line 5835
-LSU_1 done! in line 6133
+[20] find module => LSU_1 in line 5525
+LSU_1 done! in line 5823
 
-[21] find module => LoadPipe_2 in line 6134
-LoadPipe_2 done! in line 6649
+[21] find module => LoadPipe in line 5824
+LoadPipe done! in line 6327
 
-[22] find module => StorePipe_2 in line 6650
-StorePipe_2 done! in line 7235
+[22] find module => StorePipe in line 6328
+StorePipe done! in line 6983
 
-[23] find module => MSHR in line 7236
-MSHR done! in line 7502
+[23] find module => MSHR in line 6984
+MSHR done! in line 7250
 
-[24] find module => RefillPipe_1_1 in line 7503
-RefillPipe_1_1 done! in line 7709
+[24] find module => RefillPipe_1 in line 7251
+RefillPipe_1 done! in line 7457
 
-[25] find module => TLSerializer in line 7710
-TLSerializer done! in line 7798
+[25] find module => TLSerializer in line 7458
+TLSerializer done! in line 7546
 
-[26] find module => WritebackQueue in line 7799
-	find submodule => module_name:( TLSerializer        )  inst_name:( serializer          ) in line [ 7864   ]
-WritebackQueue done! in line 7995
+[26] find module => WritebackQueue in line 7547
+	find submodule => module_name:( TLSerializer        )  inst_name:( serializer          ) in line [ 7612   ]
+WritebackQueue done! in line 7743
 
-[27] find module => BankRAM_2P_80 in line 7996
-BankRAM_2P_80 done! in line 10908
+[27] find module => BankRAM_2P_80 in line 7744
+BankRAM_2P_80 done! in line 10656
 
-[28] find module => SRAMArray_2P_10 in line 10909
-	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_0             ) in line [ 10953  ]
-	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_1             ) in line [ 10962  ]
-	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_2             ) in line [ 10971  ]
-	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_3             ) in line [ 10980  ]
-SRAMArray_2P_10 done! in line 11017
+[28] find module => SRAMArray_2P_10 in line 10657
+	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_0             ) in line [ 10701  ]
+	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_1             ) in line [ 10710  ]
+	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_2             ) in line [ 10719  ]
+	find submodule => module_name:( BankRAM_2P_80       )  inst_name:( brams_3             ) in line [ 10728  ]
+SRAMArray_2P_10 done! in line 10765
 
-[29] find module => DataBankArray_1_1 in line 11018
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_0         ) in line [ 11188  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_1         ) in line [ 11204  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_2         ) in line [ 11220  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_3         ) in line [ 11236  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_4         ) in line [ 11252  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_5         ) in line [ 11268  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_6         ) in line [ 11284  ]
-	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_7         ) in line [ 11300  ]
-DataBankArray_1_1 done! in line 11624
+[29] find module => DataBankArray_1 in line 10766
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_0         ) in line [ 10936  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_1         ) in line [ 10952  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_2         ) in line [ 10968  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_3         ) in line [ 10984  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_4         ) in line [ 11000  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_5         ) in line [ 11016  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_6         ) in line [ 11032  ]
+	find submodule => module_name:( SRAMArray_2P_10     )  inst_name:( dataBanks_7         ) in line [ 11048  ]
+DataBankArray_1 done! in line 11372
 
-[30] find module => BankRAM_2P_112 in line 11625
-BankRAM_2P_112 done! in line 14537
+[30] find module => BankRAM_2P_112 in line 11373
+BankRAM_2P_112 done! in line 14285
 
-[31] find module => SRAMArray_2P_18 in line 14538
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_0             ) in line [ 14618  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_1             ) in line [ 14627  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_2             ) in line [ 14636  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_3             ) in line [ 14645  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_4             ) in line [ 14654  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_5             ) in line [ 14663  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_6             ) in line [ 14672  ]
-	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_7             ) in line [ 14681  ]
-SRAMArray_2P_18 done! in line 14746
+[31] find module => SRAMArray_2P_18 in line 14286
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_0             ) in line [ 14366  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_1             ) in line [ 14375  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_2             ) in line [ 14384  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_3             ) in line [ 14393  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_4             ) in line [ 14402  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_5             ) in line [ 14411  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_6             ) in line [ 14420  ]
+	find submodule => module_name:( BankRAM_2P_112      )  inst_name:( brams_7             ) in line [ 14429  ]
+SRAMArray_2P_18 done! in line 14494
 
-[32] find module => BankRAM_2P_120 in line 14747
-BankRAM_2P_120 done! in line 17659
+[32] find module => BankRAM_2P_120 in line 14495
+BankRAM_2P_120 done! in line 17407
 
-[33] find module => SRAMArray_2P_19 in line 17660
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_0             ) in line [ 17740  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_1             ) in line [ 17749  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_2             ) in line [ 17758  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_3             ) in line [ 17767  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_4             ) in line [ 17776  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_5             ) in line [ 17785  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_6             ) in line [ 17794  ]
-	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_7             ) in line [ 17803  ]
-SRAMArray_2P_19 done! in line 17868
+[33] find module => SRAMArray_2P_19 in line 17408
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_0             ) in line [ 17488  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_1             ) in line [ 17497  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_2             ) in line [ 17506  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_3             ) in line [ 17515  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_4             ) in line [ 17524  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_5             ) in line [ 17533  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_6             ) in line [ 17542  ]
+	find submodule => module_name:( BankRAM_2P_120      )  inst_name:( brams_7             ) in line [ 17551  ]
+SRAMArray_2P_19 done! in line 17616
 
-[34] find module => DCacheDirectory_1_1 in line 17869
-	find submodule => module_name:( SRAMArray_2P_18     )  inst_name:( tagArray            ) in line [ 18081  ]
-	find submodule => module_name:( SRAMArray_2P_19     )  inst_name:( metaArray           ) in line [ 18105  ]
-	find submodule => module_name:( MaxPeriodFibonacciLFSR)  inst_name:( replaceWay_lfsr_prng) in line [ 18129  ]
-DCacheDirectory_1_1 done! in line 18355
+[34] find module => DCacheDirectory_1 in line 17617
+	find submodule => module_name:( SRAMArray_2P_18     )  inst_name:( tagArray            ) in line [ 17811  ]
+	find submodule => module_name:( SRAMArray_2P_19     )  inst_name:( metaArray           ) in line [ 17835  ]
+	find submodule => module_name:( MaxPeriodFibonacciLFSR)  inst_name:( replaceWay_lfsr_prng) in line [ 17859  ]
+DCacheDirectory_1 done! in line 18068
 
-[35] find module => Arbiter in line 18356
-Arbiter done! in line 18414
+[35] find module => Arbiter in line 18069
+Arbiter done! in line 18126
 
-[36] find module => Arbiter_1 in line 18415
-Arbiter_1 done! in line 18436
+[36] find module => Arbiter_1 in line 18127
+Arbiter_1 done! in line 18148
 
-[37] find module => Arbiter_2 in line 18437
-Arbiter_2 done! in line 18450
+[37] find module => Arbiter_2 in line 18149
+Arbiter_2 done! in line 18162
 
-[38] find module => Arbiter_3 in line 18451
-Arbiter_3 done! in line 18460
+[38] find module => Arbiter_3 in line 18163
+Arbiter_3 done! in line 18172
 
-[39] find module => Arbiter_4 in line 18461
-Arbiter_4 done! in line 18474
+[39] find module => Arbiter_4 in line 18173
+Arbiter_4 done! in line 18186
 
-[40] find module => Arbiter_5 in line 18475
-Arbiter_5 done! in line 18488
+[40] find module => Arbiter_5 in line 18187
+Arbiter_5 done! in line 18200
 
-[41] find module => Arbiter_6 in line 18489
-Arbiter_6 done! in line 18525
+[41] find module => Arbiter_6 in line 18201
+Arbiter_6 done! in line 18237
 
-[42] find module => Arbiter_7 in line 18526
-Arbiter_7 done! in line 18553
+[42] find module => Arbiter_7 in line 18238
+Arbiter_7 done! in line 18265
 
-[43] find module => DCache_1 in line 18554
-	find submodule => module_name:( LoadPipe_2          )  inst_name:( loadPipe            ) in line [ 18963  ]
-	find submodule => module_name:( StorePipe_2         )  inst_name:( storePipe           ) in line [ 19025  ]
-	find submodule => module_name:( MSHR                )  inst_name:( mshr                ) in line [ 19096  ]
-	find submodule => module_name:( RefillPipe_1_1      )  inst_name:( refillPipe          ) in line [ 19144  ]
-	find submodule => module_name:( WritebackQueue      )  inst_name:( wb                  ) in line [ 19171  ]
-	find submodule => module_name:( DataBankArray_1_1   )  inst_name:( db                  ) in line [ 19190  ]
-	find submodule => module_name:( DCacheDirectory_1_1 )  inst_name:( dir                 ) in line [ 19235  ]
-	find submodule => module_name:( Arbiter             )  inst_name:( mshrReqArb          ) in line [ 19251  ]
-	find submodule => module_name:( Arbiter_1           )  inst_name:( tlbusReqArb         ) in line [ 19291  ]
-	find submodule => module_name:( Arbiter_2           )  inst_name:( loadRespArb         ) in line [ 19305  ]
-	find submodule => module_name:( Arbiter_3           )  inst_name:( storeRespArb        ) in line [ 19314  ]
-	find submodule => module_name:( Arbiter_4           )  inst_name:( dbRdReqArb          ) in line [ 19320  ]
-	find submodule => module_name:( Arbiter_5           )  inst_name:( dirRdReqArb         ) in line [ 19329  ]
-	find submodule => module_name:( Arbiter_6           )  inst_name:( dataBankWrArb       ) in line [ 19338  ]
-	find submodule => module_name:( Arbiter_7           )  inst_name:( dirWrArb            ) in line [ 19362  ]
-DCache_1 done! in line 19602
+[43] find module => DCache in line 18266
+	find submodule => module_name:( LoadPipe            )  inst_name:( loadPipe            ) in line [ 18686  ]
+	find submodule => module_name:( StorePipe           )  inst_name:( storePipe           ) in line [ 18746  ]
+	find submodule => module_name:( MSHR                )  inst_name:( mshr                ) in line [ 18824  ]
+	find submodule => module_name:( RefillPipe_1        )  inst_name:( refillPipe          ) in line [ 18872  ]
+	find submodule => module_name:( WritebackQueue      )  inst_name:( wb                  ) in line [ 18899  ]
+	find submodule => module_name:( DataBankArray_1     )  inst_name:( db                  ) in line [ 18918  ]
+	find submodule => module_name:( DCacheDirectory_1   )  inst_name:( dir                 ) in line [ 18963  ]
+	find submodule => module_name:( Arbiter             )  inst_name:( mshrReqArb          ) in line [ 18986  ]
+	find submodule => module_name:( Arbiter_1           )  inst_name:( tlbusReqArb         ) in line [ 19025  ]
+	find submodule => module_name:( Arbiter_2           )  inst_name:( loadRespArb         ) in line [ 19039  ]
+	find submodule => module_name:( Arbiter_3           )  inst_name:( storeRespArb        ) in line [ 19048  ]
+	find submodule => module_name:( Arbiter_4           )  inst_name:( dbRdReqArb          ) in line [ 19054  ]
+	find submodule => module_name:( Arbiter_5           )  inst_name:( dirRdReqArb         ) in line [ 19063  ]
+	find submodule => module_name:( Arbiter_6           )  inst_name:( dataBankWrArb       ) in line [ 19072  ]
+	find submodule => module_name:( Arbiter_7           )  inst_name:( dirWrArb            ) in line [ 19096  ]
+DCache done! in line 19341
 
-[44] find module => Mem in line 19603
-	find submodule => module_name:( LSU_1               )  inst_name:( lsu                 ) in line [ 19762  ]
-	find submodule => module_name:( DCache_1            )  inst_name:( dcache              ) in line [ 19786  ]
-Mem done! in line 20138
+[44] find module => Mem in line 19342
+	find submodule => module_name:( LSU_1               )  inst_name:( lsu                 ) in line [ 19501  ]
+	find submodule => module_name:( DCache              )  inst_name:( dcache              ) in line [ 19525  ]
+Mem done! in line 19877
 
-[45] find module => WriteBack in line 20139
-WriteBack done! in line 20400
+[45] find module => WriteBack in line 19878
+WriteBack done! in line 20139
 
-[46] find module => PipelineCtrl in line 20401
-PipelineCtrl done! in line 20411
+[46] find module => PipelineCtrl in line 20140
+PipelineCtrl done! in line 20150
 
-[47] find module => HazardUnit in line 20412
-HazardUnit done! in line 20445
+[47] find module => HazardUnit in line 20151
+HazardUnit done! in line 20184
 
-[48] find module => RegFile in line 20446
-RegFile done! in line 21139
+[48] find module => RegFile in line 20185
+RegFile done! in line 20878
 
-[49] find module => CsrFile in line 21140
-	find submodule => module_name:( |                   )  inst_name:( (_T_31              ) in line [ 21248  ]
-CsrFile done! in line 21586
+[49] find module => CsrFile in line 20879
+	find submodule => module_name:( |                   )  inst_name:( (_T_31              ) in line [ 20987  ]
+CsrFile done! in line 21325
 
-[50] find module => TLBusArbiter in line 21587
-TLBusArbiter done! in line 21653
+[50] find module => TLBusArbiter in line 21326
+TLBusArbiter done! in line 21392
 
-[51] find module => TLBusMux in line 21654
-TLBusMux done! in line 21687
+[51] find module => TLBusMux in line 21393
+TLBusMux done! in line 21426
 
-[52] find module => Queue in line 21688
-Queue done! in line 21919
+[52] find module => Queue in line 21427
+Queue done! in line 21658
 
-[53] find module => TLAddrDecode in line 21920
-TLAddrDecode done! in line 21930
+[53] find module => TLAddrDecode in line 21659
+TLAddrDecode done! in line 21669
 
-[54] find module => TLBusMux_1 in line 21931
-TLBusMux_1 done! in line 21946
+[54] find module => TLBusMux_1 in line 21670
+TLBusMux_1 done! in line 21685
 
-[55] find module => TLXbar in line 21947
-	find submodule => module_name:( TLBusArbiter        )  inst_name:( reqArb              ) in line [ 22095  ]
-	find submodule => module_name:( TLBusMux            )  inst_name:( reqMux              ) in line [ 22101  ]
-	find submodule => module_name:( Queue               )  inst_name:( buf_                ) in line [ 22120  ]
-	find submodule => module_name:( TLAddrDecode        )  inst_name:( addrDec             ) in line [ 22138  ]
-	find submodule => module_name:( TLBusMux_1          )  inst_name:( slaveMux            ) in line [ 22143  ]
-TLXbar done! in line 22334
+[55] find module => TLXbar in line 21686
+	find submodule => module_name:( TLBusArbiter        )  inst_name:( reqArb              ) in line [ 21834  ]
+	find submodule => module_name:( TLBusMux            )  inst_name:( reqMux              ) in line [ 21840  ]
+	find submodule => module_name:( Queue               )  inst_name:( buf_                ) in line [ 21859  ]
+	find submodule => module_name:( TLAddrDecode        )  inst_name:( addrDec             ) in line [ 21877  ]
+	find submodule => module_name:( TLBusMux_1          )  inst_name:( slaveMux            ) in line [ 21882  ]
+TLXbar done! in line 22073
 
-[56] find module => SingleROM in line 22335
-SingleROM done! in line 22548
+[56] find module => SingleROM in line 22074
+SingleROM done! in line 22287
 
-[57] find module => Core in line 22549
-	find submodule => module_name:( Fetch_1             )  inst_name:( ife                 ) in line [ 22938  ]
-	find submodule => module_name:( Decode              )  inst_name:( dec                 ) in line [ 22961  ]
-	find submodule => module_name:( Execute             )  inst_name:( exe                 ) in line [ 23001  ]
-	find submodule => module_name:( Mem                 )  inst_name:( mem                 ) in line [ 23060  ]
-	find submodule => module_name:( WriteBack           )  inst_name:( wb                  ) in line [ 23116  ]
-	find submodule => module_name:( PipelineCtrl        )  inst_name:( pipelineCtrl        ) in line [ 23148  ]
-	find submodule => module_name:( HazardUnit          )  inst_name:( hazardU             ) in line [ 23155  ]
-	find submodule => module_name:( RegFile             )  inst_name:( regFile             ) in line [ 23174  ]
-	find submodule => module_name:( CsrFile             )  inst_name:( csrFile             ) in line [ 23217  ]
-	find submodule => module_name:( TLXbar              )  inst_name:( xbar                ) in line [ 23241  ]
-	find submodule => module_name:( SingleROM           )  inst_name:( rom                 ) in line [ 23269  ]
-	find submodule => module_name:( SingleROM           )  inst_name:( ram                 ) in line [ 23284  ]
-Core done! in line 23555
+[57] find module => Core in line 22288
+	find submodule => module_name:( Fetch_1             )  inst_name:( ife                 ) in line [ 22677  ]
+	find submodule => module_name:( Decode              )  inst_name:( dec                 ) in line [ 22700  ]
+	find submodule => module_name:( Execute             )  inst_name:( exe                 ) in line [ 22740  ]
+	find submodule => module_name:( Mem                 )  inst_name:( mem                 ) in line [ 22799  ]
+	find submodule => module_name:( WriteBack           )  inst_name:( wb                  ) in line [ 22855  ]
+	find submodule => module_name:( PipelineCtrl        )  inst_name:( pipelineCtrl        ) in line [ 22887  ]
+	find submodule => module_name:( HazardUnit          )  inst_name:( hazardU             ) in line [ 22894  ]
+	find submodule => module_name:( RegFile             )  inst_name:( regFile             ) in line [ 22913  ]
+	find submodule => module_name:( CsrFile             )  inst_name:( csrFile             ) in line [ 22956  ]
+	find submodule => module_name:( TLXbar              )  inst_name:( xbar                ) in line [ 22980  ]
+	find submodule => module_name:( SingleROM           )  inst_name:( rom                 ) in line [ 23008  ]
+	find submodule => module_name:( SingleROM           )  inst_name:( ram                 ) in line [ 23023  ]
+Core done! in line 23294
 

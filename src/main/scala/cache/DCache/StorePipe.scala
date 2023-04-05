@@ -10,12 +10,11 @@ import mycpu.util._
 import mycpu.BusReq._
 import mycpu.BusMaster._
 
-class StorePipe_2()(implicit val p: Parameters) extends MyModule {
+class StorePipe()(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle{
         val store = new CacheWriteBus
         val dir = Flipped(new DirectoryIO)
-        val dataBank = Flipped(new DataBankArrayIO_1) 
-        // val dataBank = new DataBankArrayRead_1
+        val dataBank = Flipped(new DataBankArrayIO) 
         val mshr =  Decoupled(new MissReq)
     })
     // io <> DontCare
@@ -68,13 +67,15 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     val s1_wAddr = s1_reqReg.addr
     val s1_wSet = addrToDCacheSet(s1_wAddr)
     val s1_dataBlockSelOH = addrToDCacheBlockOH(s1_wAddr)
+    val s1_blockSel = addrToDCacheBlockOH(s1_wAddr)
+    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
     val s1_dirInfo = RegEnable(s0_dirInfo, s1_latch)
     val s1_isHit = s1_dirInfo.hit
     val s1_chosenWayOH = s1_dirInfo.chosenWay
-    val s1_blockSel = addrToDCacheBlockOH(s1_wAddr)
-    val s1_rdDataAll = RegEnable(s0_rdDataAll, s1_latch) // all ways of data
     val s1_rdBlockData = Mux1H(s1_dirInfo.chosenWay, s1_rdDataAll) // all blocks of data within a chosenWay
     val s1_rdData = Mux1H(s1_blockSel, s1_rdBlockData)
+    val s1_tagRdVec = RegEnable(io.dir.read.resp.bits.tagRdVec, s1_latch)
+    val s1_dirtyTag      = Mux1H(s1_chosenWayOH, s1_tagRdVec)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B } 
@@ -84,6 +85,7 @@ class StorePipe_2()(implicit val p: Parameters) extends MyModule {
     io.mshr.bits <> DontCare
     io.mshr.bits.addr := s1_wAddr
     io.mshr.bits.dirInfo := s1_dirInfo
+    io.mshr.bits.dirtyTag := s1_dirtyTag
     io.mshr.bits.data := s1_rdBlockData // writeback data
     io.mshr.bits.isStore := true.B
     io.mshr.bits.storeData := s1_reqReg.data

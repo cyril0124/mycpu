@@ -278,7 +278,7 @@ module SRAMArray_2P(
   assign brams_7_io_w_addr = io_w_addr; // @[SRAM_1.scala 209:28]
   assign brams_7_io_w_data = io_w_data_7; // @[SRAM_1.scala 210:28]
 endmodule
-module DataBankArray_1(
+module DataBankArray(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -525,7 +525,7 @@ module DataBankArray_1(
   wire [7:0] dataBanks_7_io_w_maskOH; // @[SRAM_1.scala 255:31]
   wire  ren = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
   wire  _wen_T_1 = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  wire  wen = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank_1.scala 51:44]
+  wire  wen = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank.scala 49:44]
   wire [1:0] _T_8 = io_write_req_bits_blockSelOH[0] + io_write_req_bits_blockSelOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_10 = io_write_req_bits_blockSelOH[2] + io_write_req_bits_blockSelOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_12 = _T_8 + _T_10; // @[Bitwise.scala 51:90]
@@ -533,13 +533,13 @@ module DataBankArray_1(
   wire [1:0] _T_16 = io_write_req_bits_blockSelOH[6] + io_write_req_bits_blockSelOH[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_18 = _T_14 + _T_16; // @[Bitwise.scala 51:90]
   wire [3:0] _T_20 = _T_12 + _T_18; // @[Bitwise.scala 51:90]
-  wire  wen_1 = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_2 = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_3 = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_4 = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_5 = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_6 = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_7 = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank_1.scala 51:44]
+  wire  wen_1 = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_2 = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_3 = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_4 = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_5 = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_6 = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_7 = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank.scala 49:44]
   SRAMArray_2P dataBanks_0 ( // @[SRAM_1.scala 255:31]
     .clock(dataBanks_0_clock),
     .io_r_addr(dataBanks_0_io_r_addr),
@@ -724,7 +724,7 @@ module DataBankArray_1(
     .io_w_data_7(dataBanks_7_io_w_data_7),
     .io_w_maskOH(dataBanks_7_io_w_maskOH)
   );
-  assign io_read_req_ready = 1'h1; // @[DataBank_1.scala 45:23]
+  assign io_read_req_ready = 1'h1; // @[DataBank.scala 43:23]
   assign io_read_resp_0_0 = ren ? dataBanks_0_io_r_data_0 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_0_1 = ren ? dataBanks_0_io_r_data_1 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_0_2 = ren ? dataBanks_0_io_r_data_2 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
@@ -789,111 +789,111 @@ module DataBankArray_1(
   assign io_read_resp_7_5 = ren ? dataBanks_7_io_r_data_5 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_7_6 = ren ? dataBanks_7_io_r_data_6 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_7_7 = ren ? dataBanks_7_io_r_data_7 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  assign io_write_req_ready = 1'h1; // @[DataBank_1.scala 53:28]
+  assign io_write_req_ready = 1'h1; // @[DataBank.scala 51:28]
   assign dataBanks_0_clock = clock;
   assign dataBanks_0_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_0_io_w_en = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_0_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_0_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_0_io_w_en = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_0_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_0_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_1_clock = clock;
   assign dataBanks_1_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_1_io_w_en = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_1_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_1_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_1_io_w_en = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_1_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_1_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_2_clock = clock;
   assign dataBanks_2_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_2_io_w_en = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_2_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_2_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_2_io_w_en = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_2_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_2_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_3_clock = clock;
   assign dataBanks_3_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_3_io_w_en = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_3_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_3_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_3_io_w_en = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_3_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_3_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_4_clock = clock;
   assign dataBanks_4_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_4_io_w_en = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_4_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_4_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_4_io_w_en = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_4_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_4_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_5_clock = clock;
   assign dataBanks_5_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_5_io_w_en = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_5_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_5_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_5_io_w_en = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_5_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_5_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_6_clock = clock;
   assign dataBanks_6_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_6_io_w_en = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_6_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_6_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_6_io_w_en = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_6_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_6_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_7_clock = clock;
   assign dataBanks_7_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_7_io_w_en = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_7_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_7_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_4 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_5 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_6 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_7 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_7_io_w_en = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_7_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_7_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_4 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_5 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_6 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_7 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   always @(posedge clock) begin
     `ifndef SYNTHESIS
     `ifdef PRINTF_COND
@@ -1841,7 +1841,7 @@ end // initial
 `endif
 `endif // SYNTHESIS
 endmodule
-module DCacheDirectory_1(
+module DCacheDirectory(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -1922,7 +1922,7 @@ module DCacheDirectory_1(
   wire [1:0] _T_16 = io_write_req_bits_way[6] + io_write_req_bits_way[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_18 = _T_14 + _T_16; // @[Bitwise.scala 51:90]
   wire [3:0] _T_20 = _T_12 + _T_18; // @[Bitwise.scala 51:90]
-  wire  _T_46 = ~reset; // @[Directory_1.scala 37:11]
+  wire  _T_46 = ~reset; // @[Directory.scala 69:11]
   wire [19:0] rdata__0 = ren ? tagArray_io_r_data_0 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [19:0] rdata__1 = ren ? tagArray_io_r_data_1 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [19:0] rdata__2 = ren ? tagArray_io_r_data_2 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
@@ -1939,49 +1939,41 @@ module DCacheDirectory_1(
   wire [1:0] rdata_1_5 = ren ? metaArray_io_r_data_5 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [1:0] rdata_1_6 = ren ? metaArray_io_r_data_6 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [1:0] rdata_1_7 = ren ? metaArray_io_r_data_7 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [15:0] _T_48 = {rdata_1_7,rdata_1_6,rdata_1_5,rdata_1_4,rdata_1_3,rdata_1_2,rdata_1_1,rdata_1_0}; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_0_valid = _T_48[0]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_0_dirty = _T_48[1]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_1_valid = _T_48[2]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_1_dirty = _T_48[3]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_2_valid = _T_48[4]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_2_dirty = _T_48[5]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_3_valid = _T_48[6]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_3_dirty = _T_48[7]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_4_valid = _T_48[8]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_4_dirty = _T_48[9]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_5_valid = _T_48[10]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_5_dirty = _T_48[11]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_6_valid = _T_48[12]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_6_dirty = _T_48[13]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_7_valid = _T_48[14]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_7_dirty = _T_48[15]; // @[Directory_1.scala 56:52]
-  wire  tagMatchVec_0 = rdata__0 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_1 = rdata__1 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_2 = rdata__2 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_3 = rdata__3 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_4 = rdata__4 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_5 = rdata__5 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_6 = rdata__6 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_7 = rdata__7 == rTag; // @[Directory_1.scala 63:46]
-  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_4 = tagMatchVec_4 & metaRdVec_4_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_5 = tagMatchVec_5 & metaRdVec_5_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_6 = tagMatchVec_6 & metaRdVec_6_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_7 = tagMatchVec_7 & metaRdVec_7_valid; // @[Directory_1.scala 66:80]
+  wire [15:0] _T_48 = {rdata_1_7,rdata_1_6,rdata_1_5,rdata_1_4,rdata_1_3,rdata_1_2,rdata_1_1,rdata_1_0}; // @[Directory.scala 82:52]
+  wire  metaRdVec_0_valid = _T_48[0]; // @[Directory.scala 82:52]
+  wire  metaRdVec_1_valid = _T_48[2]; // @[Directory.scala 82:52]
+  wire  metaRdVec_2_valid = _T_48[4]; // @[Directory.scala 82:52]
+  wire  metaRdVec_3_valid = _T_48[6]; // @[Directory.scala 82:52]
+  wire  metaRdVec_4_valid = _T_48[8]; // @[Directory.scala 82:52]
+  wire  metaRdVec_5_valid = _T_48[10]; // @[Directory.scala 82:52]
+  wire  metaRdVec_6_valid = _T_48[12]; // @[Directory.scala 82:52]
+  wire  metaRdVec_7_valid = _T_48[14]; // @[Directory.scala 82:52]
+  wire  tagMatchVec_0 = rdata__0 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_1 = rdata__1 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_2 = rdata__2 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_3 = rdata__3 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_4 = rdata__4 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_5 = rdata__5 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_6 = rdata__6 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_7 = rdata__7 == rTag; // @[Directory.scala 85:46]
+  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_4 = tagMatchVec_4 & metaRdVec_4_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_5 = tagMatchVec_5 & metaRdVec_5_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_6 = tagMatchVec_6 & metaRdVec_6_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_7 = tagMatchVec_7 & metaRdVec_7_valid; // @[Directory.scala 88:80]
   wire [7:0] matchWayOH = {_matchWayOH_T_7,_matchWayOH_T_6,_matchWayOH_T_5,_matchWayOH_T_4,_matchWayOH_T_3,
     _matchWayOH_T_2,_matchWayOH_T_1,_matchWayOH_T}; // @[Cat.scala 33:92]
-  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_4 = ~metaRdVec_4_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_5 = ~metaRdVec_5_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_6 = ~metaRdVec_6_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_7 = ~metaRdVec_7_valid; // @[Directory_1.scala 67:53]
+  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_4 = ~metaRdVec_4_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_5 = ~metaRdVec_5_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_6 = ~metaRdVec_6_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_7 = ~metaRdVec_7_valid; // @[Directory.scala 89:53]
   wire [7:0] _invalidWayOH_T_16 = invalidWayVec_6 ? 8'h40 : 8'h80; // @[Mux.scala 47:70]
   wire [7:0] _invalidWayOH_T_17 = invalidWayVec_5 ? 8'h20 : _invalidWayOH_T_16; // @[Mux.scala 47:70]
   wire [7:0] _invalidWayOH_T_18 = invalidWayVec_4 ? 8'h10 : _invalidWayOH_T_17; // @[Mux.scala 47:70]
@@ -1991,26 +1983,20 @@ module DCacheDirectory_1(
   wire [7:0] invalidWayOH = invalidWayVec_0 ? 8'h1 : _invalidWayOH_T_21; // @[Mux.scala 47:70]
   wire [7:0] _hasInvalidWay_T = {invalidWayVec_0,invalidWayVec_1,invalidWayVec_2,invalidWayVec_3,invalidWayVec_4,
     invalidWayVec_5,invalidWayVec_6,invalidWayVec_7}; // @[Cat.scala 33:92]
-  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory_1.scala 69:44]
+  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory.scala 91:44]
   wire [7:0] replaceWay_lfsr_lo = {replaceWay_lfsr_prng_io_out_7,replaceWay_lfsr_prng_io_out_6,
     replaceWay_lfsr_prng_io_out_5,replaceWay_lfsr_prng_io_out_4,replaceWay_lfsr_prng_io_out_3,
     replaceWay_lfsr_prng_io_out_2,replaceWay_lfsr_prng_io_out_1,replaceWay_lfsr_prng_io_out_0}; // @[PRNG.scala 95:17]
   wire [15:0] replaceWay_lfsr = {replaceWay_lfsr_prng_io_out_15,replaceWay_lfsr_prng_io_out_14,
     replaceWay_lfsr_prng_io_out_13,replaceWay_lfsr_prng_io_out_12,replaceWay_lfsr_prng_io_out_11,
     replaceWay_lfsr_prng_io_out_10,replaceWay_lfsr_prng_io_out_9,replaceWay_lfsr_prng_io_out_8,replaceWay_lfsr_lo}; // @[PRNG.scala 95:17]
-  wire [2:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[2:0]; // @[DCache.scala 60:39]
+  wire [2:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[2:0]; // @[DCache.scala 61:39]
   wire [7:0] replaceWay = 8'h1 << replaceWay_outputWay_shiftAmount; // @[OneHot.scala 64:12]
-  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory_1.scala 71:65]
+  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory.scala 93:65]
   reg [7:0] replaceWayReg; // @[Reg.scala 19:16]
-  wire  isHit = |matchWayOH; // @[Directory_1.scala 73:41]
-  wire [7:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory_1.scala 74:51]
-  wire [7:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory_1.scala 74:28]
-  wire [7:0] _dirtyWayOH_T = {metaRdVec_7_dirty,metaRdVec_6_dirty,metaRdVec_5_dirty,metaRdVec_4_dirty,metaRdVec_3_dirty,
-    metaRdVec_2_dirty,metaRdVec_1_dirty,metaRdVec_0_dirty}; // @[Cat.scala 33:92]
-  wire [7:0] _dirtyWayOH_T_1 = {metaRdVec_7_valid,metaRdVec_6_valid,metaRdVec_5_valid,metaRdVec_4_valid,
-    metaRdVec_3_valid,metaRdVec_2_valid,metaRdVec_1_valid,metaRdVec_0_valid}; // @[Cat.scala 33:92]
-  wire [7:0] _dirtyWayOH_T_2 = _dirtyWayOH_T & _dirtyWayOH_T_1; // @[Directory_1.scala 75:51]
-  wire [7:0] dirtyWayOH = _dirtyWayOH_T_2 & choseWayOH; // @[Directory_1.scala 75:79]
+  wire  isHit = |matchWayOH; // @[Directory.scala 95:41]
+  wire [7:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory.scala 96:51]
+  wire [7:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
   wire [1:0] _T_73 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_75 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_77 = _T_73 + _T_75; // @[Bitwise.scala 51:90]
@@ -2018,13 +2004,6 @@ module DCacheDirectory_1(
   wire [1:0] _T_81 = choseWayOH[6] + choseWayOH[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_83 = _T_79 + _T_81; // @[Bitwise.scala 51:90]
   wire [3:0] _T_85 = _T_77 + _T_83; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_99 = dirtyWayOH[0] + dirtyWayOH[1]; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_101 = dirtyWayOH[2] + dirtyWayOH[3]; // @[Bitwise.scala 51:90]
-  wire [2:0] _T_103 = _T_99 + _T_101; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_105 = dirtyWayOH[4] + dirtyWayOH[5]; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_107 = dirtyWayOH[6] + dirtyWayOH[7]; // @[Bitwise.scala 51:90]
-  wire [2:0] _T_109 = _T_105 + _T_107; // @[Bitwise.scala 51:90]
-  wire [3:0] _T_111 = _T_103 + _T_109; // @[Bitwise.scala 51:90]
   SRAMArray_2P_8 tagArray ( // @[SRAM_1.scala 255:31]
     .clock(tagArray_clock),
     .io_r_addr(tagArray_io_r_addr),
@@ -2083,28 +2062,28 @@ module DCacheDirectory_1(
     .io_out_14(replaceWay_lfsr_prng_io_out_14),
     .io_out_15(replaceWay_lfsr_prng_io_out_15)
   );
-  assign io_read_req_ready = 1'h1; // @[Directory_1.scala 44:29]
-  assign io_read_resp_bits_hit = |matchWayOH; // @[Directory_1.scala 73:41]
-  assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory_1.scala 74:28]
-  assign io_write_req_ready = 1'h1; // @[Directory_1.scala 45:29]
+  assign io_read_req_ready = 1'h1; // @[Directory.scala 75:29]
+  assign io_read_resp_bits_hit = |matchWayOH; // @[Directory.scala 95:41]
+  assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
+  assign io_write_req_ready = 1'h1; // @[Directory.scala 76:29]
   assign tagArray_clock = clock;
   assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign tagArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
-  assign tagArray_io_w_data_0 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_1 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_2 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_3 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_4 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_5 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_6 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_7 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
+  assign tagArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
+  assign tagArray_io_w_data_0 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_1 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_2 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_3 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_4 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_5 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_6 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_7 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
   assign metaArray_clock = clock;
   assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign metaArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
-  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
+  assign metaArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
+  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
   assign replaceWay_lfsr_prng_clock = clock;
   assign replaceWay_lfsr_prng_reset = reset;
   always @(posedge clock) begin
@@ -2117,8 +2096,8 @@ module DCacheDirectory_1(
     `endif
         if (~reset & ~(_T_20 < 4'h2)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory_1.scala:37 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
-            ,_T_20); // @[Directory_1.scala 37:11]
+            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory.scala:69 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
+            ,_T_20); // @[Directory.scala 69:11]
         end
     `ifdef PRINTF_COND
       end
@@ -2129,7 +2108,7 @@ module DCacheDirectory_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_20 < 4'h2) & ~reset) begin
-          $fatal; // @[Directory_1.scala 37:11]
+          $fatal; // @[Directory.scala 69:11]
         end
     `ifdef STOP_COND
       end
@@ -2141,8 +2120,8 @@ module DCacheDirectory_1(
     `endif
         if (_T_46 & ~(_T_85 == 4'h1)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory_1.scala:79 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
-            ); // @[Directory_1.scala 79:11]
+            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory.scala:101 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
+            ); // @[Directory.scala 101:11]
         end
     `ifdef PRINTF_COND
       end
@@ -2153,31 +2132,7 @@ module DCacheDirectory_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_85 == 4'h1) & _T_46) begin
-          $fatal; // @[Directory_1.scala 79:11]
-        end
-    `ifdef STOP_COND
-      end
-    `endif
-    `endif // SYNTHESIS
-    `ifndef SYNTHESIS
-    `ifdef PRINTF_COND
-      if (`PRINTF_COND) begin
-    `endif
-        if (_T_46 & ~(_T_111 <= 4'h1)) begin
-          $fwrite(32'h80000002,
-            "Assertion failed: Error dirtyWay has multiple valid bit!\n    at Directory_1.scala:80 assert(PopCount(dirtyWayOH) <= 1.U, \"Error dirtyWay has multiple valid bit!\")\n"
-            ); // @[Directory_1.scala 80:11]
-        end
-    `ifdef PRINTF_COND
-      end
-    `endif
-    `endif // SYNTHESIS
-    `ifndef SYNTHESIS
-    `ifdef STOP_COND
-      if (`STOP_COND) begin
-    `endif
-        if (~(_T_111 <= 4'h1) & _T_46) begin
-          $fatal; // @[Directory_1.scala 80:11]
+          $fatal; // @[Directory.scala 101:11]
         end
     `ifdef STOP_COND
       end
@@ -2278,7 +2233,7 @@ end // initial
 `endif
 `endif // SYNTHESIS
 endmodule
-module RefillPipe_1(
+module RefillPipe(
   input         clock,
   input         reset,
   output        io_req_ready,
@@ -2318,8 +2273,8 @@ module RefillPipe_1(
   reg [31:0] _RAND_10;
   reg [31:0] _RAND_11;
 `endif // RANDOMIZE_REG_INIT
-  reg [1:0] state; // @[RefillPipe_1.scala 41:24]
-  wire  _io_req_ready_T = state == 2'h0; // @[RefillPipe_1.scala 44:27]
+  reg [1:0] state; // @[RefillPipe.scala 41:24]
+  wire  _io_req_ready_T = state == 2'h0; // @[RefillPipe.scala 44:27]
   wire  _reqReg_T = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] reqReg_addr; // @[Reg.scala 19:16]
   reg [7:0] reqReg_chosenWay; // @[Reg.scala 19:16]
@@ -2328,17 +2283,17 @@ module RefillPipe_1(
   wire  _GEN_2 = _reqReg_T | reqValidReg; // @[Reg.scala 19:16 20:{18,22}]
   wire [7:0] dataBlockSelOH = 8'h1 << reqReg_addr[4:2]; // @[OneHot.scala 57:35]
   reg [2:0] beatCounter_value; // @[Counter.scala 61:40]
-  wire  lastBeat = beatCounter_value == 3'h7; // @[RefillPipe_1.scala 55:38]
+  wire  lastBeat = beatCounter_value == 3'h7; // @[RefillPipe.scala 54:38]
   wire  _refillFire_T = io_tlbus_resp_ready & io_tlbus_resp_valid; // @[Decoupled.scala 51:35]
-  wire  refillFire = _refillFire_T & io_tlbus_resp_bits_opcode == 3'h1; // @[RefillPipe_1.scala 56:41]
-  wire  refillLastBeat = refillFire & lastBeat; // @[RefillPipe_1.scala 57:37]
-  reg [31:0] refillBlockDataArray_0; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_1; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_2; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_3; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_4; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_5; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_6; // @[RefillPipe_1.scala 62:39]
+  wire  refillFire = _refillFire_T & io_tlbus_resp_bits_opcode == 3'h1; // @[RefillPipe.scala 55:41]
+  wire  refillLastBeat = refillFire & lastBeat; // @[RefillPipe.scala 56:37]
+  reg [31:0] refillBlockDataArray_0; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_1; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_2; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_3; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_4; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_5; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_6; // @[RefillPipe.scala 61:39]
   wire [31:0] _readRespData_T_8 = dataBlockSelOH[0] ? refillBlockDataArray_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_9 = dataBlockSelOH[1] ? refillBlockDataArray_1 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_10 = dataBlockSelOH[2] ? refillBlockDataArray_2 : 32'h0; // @[Mux.scala 27:73]
@@ -2354,42 +2309,42 @@ module RefillPipe_1(
   wire [31:0] _readRespData_T_20 = _readRespData_T_19 | _readRespData_T_13; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_21 = _readRespData_T_20 | _readRespData_T_14; // @[Mux.scala 27:73]
   wire  _T_2 = io_tlbus_req_ready & io_tlbus_req_valid; // @[Decoupled.scala 51:35]
-  wire [1:0] _GEN_20 = _T_2 ? 2'h2 : {{1'd0}, _reqReg_T}; // @[RefillPipe_1.scala 75:33 76:23]
-  wire  _GEN_21 = _T_2 ? 1'h0 : _GEN_2; // @[RefillPipe_1.scala 75:33 77:25]
-  wire [1:0] _GEN_22 = _io_req_ready_T ? _GEN_20 : 2'h0; // @[RefillPipe_1.scala 70:27 42:29]
-  wire  _GEN_23 = _io_req_ready_T ? _GEN_21 : _GEN_2; // @[RefillPipe_1.scala 70:27]
-  wire [1:0] _GEN_24 = _T_2 ? 2'h2 : 2'h1; // @[RefillPipe_1.scala 84:19 85:33 86:23]
-  wire  _T_5 = state == 2'h2; // @[RefillPipe_1.scala 93:16]
-  wire [1:0] _GEN_28 = io_resp_valid ? 2'h0 : 2'h3; // @[RefillPipe_1.scala 96:23 97:32 98:27]
+  wire [1:0] _GEN_20 = _T_2 ? 2'h2 : {{1'd0}, _reqReg_T}; // @[RefillPipe.scala 74:33 75:23]
+  wire  _GEN_21 = _T_2 ? 1'h0 : _GEN_2; // @[RefillPipe.scala 74:33 76:25]
+  wire [1:0] _GEN_22 = _io_req_ready_T ? _GEN_20 : 2'h0; // @[RefillPipe.scala 69:27 42:29]
+  wire  _GEN_23 = _io_req_ready_T ? _GEN_21 : _GEN_2; // @[RefillPipe.scala 69:27]
+  wire [1:0] _GEN_24 = _T_2 ? 2'h2 : 2'h1; // @[RefillPipe.scala 83:19 84:33 85:23]
+  wire  _T_5 = state == 2'h2; // @[RefillPipe.scala 92:16]
+  wire [1:0] _GEN_28 = io_resp_valid ? 2'h0 : 2'h3; // @[RefillPipe.scala 95:23 96:32 97:27]
   wire [2:0] _value_T_1 = beatCounter_value + 3'h1; // @[Counter.scala 77:24]
-  wire  _T_7 = state == 2'h3; // @[RefillPipe_1.scala 109:16]
-  wire  refillSafe = refillFire & _T_5; // @[RefillPipe_1.scala 119:33]
-  assign io_req_ready = state == 2'h0; // @[RefillPipe_1.scala 44:27]
-  assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe_1.scala 137:38]
+  wire  _T_7 = state == 2'h3; // @[RefillPipe.scala 108:16]
+  wire  refillSafe = refillFire & _T_5; // @[RefillPipe.scala 118:33]
+  assign io_req_ready = state == 2'h0; // @[RefillPipe.scala 44:27]
+  assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe.scala 135:38]
   assign io_resp_bits_data = _readRespData_T_21 | _readRespData_T_15; // @[Mux.scala 27:73]
-  assign io_tlbus_req_valid = _reqReg_T | reqValidReg; // @[RefillPipe_1.scala 49:23]
+  assign io_tlbus_req_valid = _reqReg_T | reqValidReg; // @[RefillPipe.scala 49:23]
   assign io_tlbus_req_bits_address = {_GEN_0[31:5],5'h0}; // @[Cat.scala 33:92]
-  assign io_tlbus_resp_ready = 1'h1; // @[RefillPipe_1.scala 59:51]
-  assign io_dirWrite_req_valid = refillSafe & lastBeat; // @[RefillPipe_1.scala 120:41]
-  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[RefillPipe_1.scala 121:31]
-  assign io_dirWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe_1.scala 126:30]
-  assign io_dataWrite_req_valid = refillFire & _T_5; // @[RefillPipe_1.scala 119:33]
-  assign io_dataWrite_req_bits_data = io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 134:32]
+  assign io_tlbus_resp_ready = 1'h1; // @[RefillPipe.scala 58:51]
+  assign io_dirWrite_req_valid = refillSafe & lastBeat; // @[RefillPipe.scala 119:41]
+  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[RefillPipe.scala 120:31]
+  assign io_dirWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe.scala 125:30]
+  assign io_dataWrite_req_valid = refillFire & _T_5; // @[RefillPipe.scala 118:33]
+  assign io_dataWrite_req_bits_data = io_tlbus_resp_bits_data; // @[RefillPipe.scala 132:32]
   assign io_dataWrite_req_bits_set = reqReg_addr[11:5]; // @[Parameters.scala 50:11]
   assign io_dataWrite_req_bits_blockSelOH = 8'h1 << beatCounter_value; // @[OneHot.scala 57:35]
-  assign io_dataWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe_1.scala 131:31]
+  assign io_dataWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe.scala 130:31]
   always @(posedge clock) begin
-    if (reset) begin // @[RefillPipe_1.scala 41:24]
-      state <= 2'h0; // @[RefillPipe_1.scala 41:24]
-    end else if (state == 2'h3) begin // @[RefillPipe_1.scala 109:27]
+    if (reset) begin // @[RefillPipe.scala 41:24]
+      state <= 2'h0; // @[RefillPipe.scala 41:24]
+    end else if (state == 2'h3) begin // @[RefillPipe.scala 108:27]
       state <= _GEN_28;
-    end else if (state == 2'h2) begin // @[RefillPipe_1.scala 93:33]
-      if (refillLastBeat) begin // @[RefillPipe_1.scala 95:30]
+    end else if (state == 2'h2) begin // @[RefillPipe.scala 92:33]
+      if (refillLastBeat) begin // @[RefillPipe.scala 94:30]
         state <= _GEN_28;
       end else begin
         state <= 2'h2;
       end
-    end else if (state == 2'h1) begin // @[RefillPipe_1.scala 83:26]
+    end else if (state == 2'h1) begin // @[RefillPipe.scala 82:26]
       state <= _GEN_24;
     end else begin
       state <= _GEN_22;
@@ -2400,9 +2355,9 @@ module RefillPipe_1(
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_chosenWay <= io_req_bits_chosenWay; // @[Reg.scala 20:22]
     end
-    if (state == 2'h1) begin // @[RefillPipe_1.scala 83:26]
-      if (_T_2) begin // @[RefillPipe_1.scala 85:33]
-        reqValidReg <= 1'h0; // @[RefillPipe_1.scala 87:25]
+    if (state == 2'h1) begin // @[RefillPipe.scala 82:26]
+      if (_T_2) begin // @[RefillPipe.scala 84:33]
+        reqValidReg <= 1'h0; // @[RefillPipe.scala 86:25]
       end else begin
         reqValidReg <= _GEN_23;
       end
@@ -2411,60 +2366,60 @@ module RefillPipe_1(
     end
     if (reset) begin // @[Counter.scala 61:40]
       beatCounter_value <= 3'h0; // @[Counter.scala 61:40]
-    end else if (state == 2'h2) begin // @[RefillPipe_1.scala 93:33]
-      if (refillLastBeat) begin // @[RefillPipe_1.scala 95:30]
+    end else if (state == 2'h2) begin // @[RefillPipe.scala 92:33]
+      if (refillLastBeat) begin // @[RefillPipe.scala 94:30]
         beatCounter_value <= 3'h0; // @[Counter.scala 98:11]
-      end else if (refillFire) begin // @[RefillPipe_1.scala 101:32]
+      end else if (refillFire) begin // @[RefillPipe.scala 100:32]
         beatCounter_value <= _value_T_1; // @[Counter.scala 77:15]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_0 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h0 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_0 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_0 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h0 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_0 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_1 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h1 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_1 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_1 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h1 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_1 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_2 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h2 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_2 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_2 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h2 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_2 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_3 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h3 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_3 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_3 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h3 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_3 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_4 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h4 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_4 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_4 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h4 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_4 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_5 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h5 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_5 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_5 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h5 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_5 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_6 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (3'h6 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_6 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_6 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (3'h6 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_6 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
   end
@@ -2544,8 +2499,6 @@ module RefillBuffer(
   input  [31:0] io_write_bits_data,
   output [31:0] io_read_cacheLineAddr_0,
   output [31:0] io_read_cacheLineAddr_1,
-  output [31:0] io_read_cacheLineAddr_2,
-  output [31:0] io_read_cacheLineAddr_3,
   output [31:0] io_read_cacheLineData_0_0,
   output [31:0] io_read_cacheLineData_0_1,
   output [31:0] io_read_cacheLineData_0_2,
@@ -2562,26 +2515,8 @@ module RefillBuffer(
   output [31:0] io_read_cacheLineData_1_5,
   output [31:0] io_read_cacheLineData_1_6,
   output [31:0] io_read_cacheLineData_1_7,
-  output [31:0] io_read_cacheLineData_2_0,
-  output [31:0] io_read_cacheLineData_2_1,
-  output [31:0] io_read_cacheLineData_2_2,
-  output [31:0] io_read_cacheLineData_2_3,
-  output [31:0] io_read_cacheLineData_2_4,
-  output [31:0] io_read_cacheLineData_2_5,
-  output [31:0] io_read_cacheLineData_2_6,
-  output [31:0] io_read_cacheLineData_2_7,
-  output [31:0] io_read_cacheLineData_3_0,
-  output [31:0] io_read_cacheLineData_3_1,
-  output [31:0] io_read_cacheLineData_3_2,
-  output [31:0] io_read_cacheLineData_3_3,
-  output [31:0] io_read_cacheLineData_3_4,
-  output [31:0] io_read_cacheLineData_3_5,
-  output [31:0] io_read_cacheLineData_3_6,
-  output [31:0] io_read_cacheLineData_3_7,
   output        io_read_valids_0,
-  output        io_read_valids_1,
-  output        io_read_valids_2,
-  output        io_read_valids_3
+  output        io_read_valids_1
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -2604,24 +2539,6 @@ module RefillBuffer(
   reg [31:0] _RAND_17;
   reg [31:0] _RAND_18;
   reg [31:0] _RAND_19;
-  reg [31:0] _RAND_20;
-  reg [31:0] _RAND_21;
-  reg [31:0] _RAND_22;
-  reg [31:0] _RAND_23;
-  reg [31:0] _RAND_24;
-  reg [31:0] _RAND_25;
-  reg [31:0] _RAND_26;
-  reg [31:0] _RAND_27;
-  reg [31:0] _RAND_28;
-  reg [31:0] _RAND_29;
-  reg [31:0] _RAND_30;
-  reg [31:0] _RAND_31;
-  reg [31:0] _RAND_32;
-  reg [31:0] _RAND_33;
-  reg [31:0] _RAND_34;
-  reg [31:0] _RAND_35;
-  reg [31:0] _RAND_36;
-  reg [31:0] _RAND_37;
 `endif // RANDOMIZE_REG_INIT
   reg [31:0] buf_0_0; // @[RefillBuffer.scala 23:18]
   reg [31:0] buf_0_1; // @[RefillBuffer.scala 23:18]
@@ -2639,36 +2556,15 @@ module RefillBuffer(
   reg [31:0] buf_1_5; // @[RefillBuffer.scala 23:18]
   reg [31:0] buf_1_6; // @[RefillBuffer.scala 23:18]
   reg [31:0] buf_1_7; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_0; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_1; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_2; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_3; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_4; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_5; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_6; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_2_7; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_0; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_1; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_2; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_3; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_4; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_5; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_6; // @[RefillBuffer.scala 23:18]
-  reg [31:0] buf_3_7; // @[RefillBuffer.scala 23:18]
   reg [31:0] addr_0; // @[RefillBuffer.scala 24:19]
   reg [31:0] addr_1; // @[RefillBuffer.scala 24:19]
-  reg [31:0] addr_2; // @[RefillBuffer.scala 24:19]
-  reg [31:0] addr_3; // @[RefillBuffer.scala 24:19]
-  reg [1:0] wrPtr_value; // @[Counter.scala 61:40]
+  reg  wrPtr_value; // @[Counter.scala 61:40]
   reg [2:0] beatCounter_value; // @[Counter.scala 61:40]
   wire  lastBeat = beatCounter_value == 3'h7; // @[RefillBuffer.scala 29:38]
-  wire [1:0] _value_T_1 = wrPtr_value + 2'h1; // @[Counter.scala 77:24]
   wire [31:0] _addr_T_2 = {io_write_bits_cacheLineAddr[31:5],5'h0}; // @[Cat.scala 33:92]
   wire [2:0] _value_T_3 = beatCounter_value + 3'h1; // @[Counter.scala 77:24]
   assign io_read_cacheLineAddr_0 = addr_0; // @[RefillBuffer.scala 43:27]
   assign io_read_cacheLineAddr_1 = addr_1; // @[RefillBuffer.scala 43:27]
-  assign io_read_cacheLineAddr_2 = addr_2; // @[RefillBuffer.scala 43:27]
-  assign io_read_cacheLineAddr_3 = addr_3; // @[RefillBuffer.scala 43:27]
   assign io_read_cacheLineData_0_0 = buf_0_0; // @[RefillBuffer.scala 44:27]
   assign io_read_cacheLineData_0_1 = buf_0_1; // @[RefillBuffer.scala 44:27]
   assign io_read_cacheLineData_0_2 = buf_0_2; // @[RefillBuffer.scala 44:27]
@@ -2685,211 +2581,103 @@ module RefillBuffer(
   assign io_read_cacheLineData_1_5 = buf_1_5; // @[RefillBuffer.scala 44:27]
   assign io_read_cacheLineData_1_6 = buf_1_6; // @[RefillBuffer.scala 44:27]
   assign io_read_cacheLineData_1_7 = buf_1_7; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_0 = buf_2_0; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_1 = buf_2_1; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_2 = buf_2_2; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_3 = buf_2_3; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_4 = buf_2_4; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_5 = buf_2_5; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_6 = buf_2_6; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_2_7 = buf_2_7; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_0 = buf_3_0; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_1 = buf_3_1; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_2 = buf_3_2; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_3 = buf_3_3; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_4 = buf_3_4; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_5 = buf_3_5; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_6 = buf_3_6; // @[RefillBuffer.scala 44:27]
-  assign io_read_cacheLineData_3_7 = buf_3_7; // @[RefillBuffer.scala 44:27]
   assign io_read_valids_0 = 1'h0; // @[RefillBuffer.scala 45:20]
   assign io_read_valids_1 = 1'h0; // @[RefillBuffer.scala 45:20]
-  assign io_read_valids_2 = 1'h0; // @[RefillBuffer.scala 45:20]
-  assign io_read_valids_3 = 1'h0; // @[RefillBuffer.scala 45:20]
   always @(posedge clock) begin
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_0 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_1 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_2 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_3 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_4 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_5 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_6 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h0 == wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (~wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_0_7 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_0 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_1 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_2 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_3 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_4 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_5 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_6 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
     if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h1 == wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
+      if (wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
         buf_1_7 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
       end
     end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_0 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_1 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_2 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_3 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_4 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_5 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_6 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h2 == wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_2_7 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h0 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_0 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h1 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_1 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h2 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_2 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h3 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_3 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h4 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_4 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h5 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_5 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h6 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_6 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
-    if (io_write_valid) begin // @[RefillBuffer.scala 39:25]
-      if (2'h3 == wrPtr_value & 3'h7 == beatCounter_value) begin // @[RefillBuffer.scala 40:45]
-        buf_3_7 <= io_write_bits_data; // @[RefillBuffer.scala 40:45]
-      end
-    end
     if (io_write_valid & lastBeat) begin // @[RefillBuffer.scala 31:37]
-      if (2'h0 == wrPtr_value) begin // @[RefillBuffer.scala 34:27]
+      if (~wrPtr_value) begin // @[RefillBuffer.scala 34:27]
         addr_0 <= _addr_T_2; // @[RefillBuffer.scala 34:27]
       end
     end
     if (io_write_valid & lastBeat) begin // @[RefillBuffer.scala 31:37]
-      if (2'h1 == wrPtr_value) begin // @[RefillBuffer.scala 34:27]
+      if (wrPtr_value) begin // @[RefillBuffer.scala 34:27]
         addr_1 <= _addr_T_2; // @[RefillBuffer.scala 34:27]
       end
     end
-    if (io_write_valid & lastBeat) begin // @[RefillBuffer.scala 31:37]
-      if (2'h2 == wrPtr_value) begin // @[RefillBuffer.scala 34:27]
-        addr_2 <= _addr_T_2; // @[RefillBuffer.scala 34:27]
-      end
-    end
-    if (io_write_valid & lastBeat) begin // @[RefillBuffer.scala 31:37]
-      if (2'h3 == wrPtr_value) begin // @[RefillBuffer.scala 34:27]
-        addr_3 <= _addr_T_2; // @[RefillBuffer.scala 34:27]
-      end
-    end
     if (reset) begin // @[Counter.scala 61:40]
-      wrPtr_value <= 2'h0; // @[Counter.scala 61:40]
+      wrPtr_value <= 1'h0; // @[Counter.scala 61:40]
     end else if (io_write_valid & lastBeat) begin // @[RefillBuffer.scala 31:37]
-      wrPtr_value <= _value_T_1; // @[Counter.scala 77:15]
+      wrPtr_value <= wrPtr_value + 1'h1; // @[Counter.scala 77:15]
     end
     if (reset) begin // @[Counter.scala 61:40]
       beatCounter_value <= 3'h0; // @[Counter.scala 61:40]
@@ -2968,49 +2756,13 @@ initial begin
   _RAND_15 = {1{`RANDOM}};
   buf_1_7 = _RAND_15[31:0];
   _RAND_16 = {1{`RANDOM}};
-  buf_2_0 = _RAND_16[31:0];
+  addr_0 = _RAND_16[31:0];
   _RAND_17 = {1{`RANDOM}};
-  buf_2_1 = _RAND_17[31:0];
+  addr_1 = _RAND_17[31:0];
   _RAND_18 = {1{`RANDOM}};
-  buf_2_2 = _RAND_18[31:0];
+  wrPtr_value = _RAND_18[0:0];
   _RAND_19 = {1{`RANDOM}};
-  buf_2_3 = _RAND_19[31:0];
-  _RAND_20 = {1{`RANDOM}};
-  buf_2_4 = _RAND_20[31:0];
-  _RAND_21 = {1{`RANDOM}};
-  buf_2_5 = _RAND_21[31:0];
-  _RAND_22 = {1{`RANDOM}};
-  buf_2_6 = _RAND_22[31:0];
-  _RAND_23 = {1{`RANDOM}};
-  buf_2_7 = _RAND_23[31:0];
-  _RAND_24 = {1{`RANDOM}};
-  buf_3_0 = _RAND_24[31:0];
-  _RAND_25 = {1{`RANDOM}};
-  buf_3_1 = _RAND_25[31:0];
-  _RAND_26 = {1{`RANDOM}};
-  buf_3_2 = _RAND_26[31:0];
-  _RAND_27 = {1{`RANDOM}};
-  buf_3_3 = _RAND_27[31:0];
-  _RAND_28 = {1{`RANDOM}};
-  buf_3_4 = _RAND_28[31:0];
-  _RAND_29 = {1{`RANDOM}};
-  buf_3_5 = _RAND_29[31:0];
-  _RAND_30 = {1{`RANDOM}};
-  buf_3_6 = _RAND_30[31:0];
-  _RAND_31 = {1{`RANDOM}};
-  buf_3_7 = _RAND_31[31:0];
-  _RAND_32 = {1{`RANDOM}};
-  addr_0 = _RAND_32[31:0];
-  _RAND_33 = {1{`RANDOM}};
-  addr_1 = _RAND_33[31:0];
-  _RAND_34 = {1{`RANDOM}};
-  addr_2 = _RAND_34[31:0];
-  _RAND_35 = {1{`RANDOM}};
-  addr_3 = _RAND_35[31:0];
-  _RAND_36 = {1{`RANDOM}};
-  wrPtr_value = _RAND_36[1:0];
-  _RAND_37 = {1{`RANDOM}};
-  beatCounter_value = _RAND_37[2:0];
+  beatCounter_value = _RAND_19[2:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -3222,84 +2974,62 @@ module ICache(
   wire [6:0] refillPipe_io_dataWrite_req_bits_set; // @[ICache.scala 58:28]
   wire [7:0] refillPipe_io_dataWrite_req_bits_blockSelOH; // @[ICache.scala 58:28]
   wire [7:0] refillPipe_io_dataWrite_req_bits_way; // @[ICache.scala 58:28]
-  wire  refillBuffer_clock; // @[ICache.scala 67:30]
-  wire  refillBuffer_reset; // @[ICache.scala 67:30]
-  wire  refillBuffer_io_write_valid; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_write_bits_cacheLineAddr; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_write_bits_data; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineAddr_0; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineAddr_1; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineAddr_2; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineAddr_3; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_0; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_1; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_2; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_3; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_4; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_5; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_6; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_0_7; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_0; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_1; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_2; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_3; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_4; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_5; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_6; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_1_7; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_0; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_1; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_2; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_3; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_4; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_5; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_6; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_2_7; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_0; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_1; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_2; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_3; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_4; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_5; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_6; // @[ICache.scala 67:30]
-  wire [31:0] refillBuffer_io_read_cacheLineData_3_7; // @[ICache.scala 67:30]
-  wire  refillBuffer_io_read_valids_0; // @[ICache.scala 67:30]
-  wire  refillBuffer_io_read_valids_1; // @[ICache.scala 67:30]
-  wire  refillBuffer_io_read_valids_2; // @[ICache.scala 67:30]
-  wire  refillBuffer_io_read_valids_3; // @[ICache.scala 67:30]
-  reg  s0_full; // @[ICache.scala 77:26]
+  wire  refillBuffer_clock; // @[ICache.scala 65:30]
+  wire  refillBuffer_reset; // @[ICache.scala 65:30]
+  wire  refillBuffer_io_write_valid; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_write_bits_cacheLineAddr; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_write_bits_data; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineAddr_0; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineAddr_1; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_0; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_1; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_2; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_3; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_4; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_5; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_6; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_0_7; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_0; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_1; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_2; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_3; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_4; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_5; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_6; // @[ICache.scala 65:30]
+  wire [31:0] refillBuffer_io_read_cacheLineData_1_7; // @[ICache.scala 65:30]
+  wire  refillBuffer_io_read_valids_0; // @[ICache.scala 65:30]
+  wire  refillBuffer_io_read_valids_1; // @[ICache.scala 65:30]
+  reg  s0_full; // @[ICache.scala 75:26]
   wire  s0_latch = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
-  reg  s1_full; // @[ICache.scala 123:26]
+  reg  s1_full; // @[ICache.scala 112:26]
   reg  s1_info_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s1_valid_T_2 = ~s1_info_dirInfo_hit; // @[ICache.scala 146:25]
+  wire  _s1_valid_T_2 = ~s1_info_dirInfo_hit; // @[ICache.scala 133:25]
   wire  _s1_valid_T_3 = refillPipe_io_req_ready & refillPipe_io_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] s1_info_req_addr; // @[Reg.scala 19:16]
   wire [31:0] _bypassVec_T_2 = {s1_info_req_addr[31:5],5'h0}; // @[Cat.scala 33:92]
-  wire  bypassVec_0 = refillBuffer_io_read_cacheLineAddr_0 == _bypassVec_T_2 & refillBuffer_io_read_valids_0; // @[ICache.scala 135:154]
-  wire  bypassVec_1 = refillBuffer_io_read_cacheLineAddr_1 == _bypassVec_T_2 & refillBuffer_io_read_valids_1; // @[ICache.scala 135:154]
-  wire  bypassVec_2 = refillBuffer_io_read_cacheLineAddr_2 == _bypassVec_T_2 & refillBuffer_io_read_valids_2; // @[ICache.scala 135:154]
-  wire  bypassVec_3 = refillBuffer_io_read_cacheLineAddr_3 == _bypassVec_T_2 & refillBuffer_io_read_valids_3; // @[ICache.scala 135:154]
-  wire [3:0] _s1_bypass_T = {bypassVec_0,bypassVec_1,bypassVec_2,bypassVec_3}; // @[Cat.scala 33:92]
-  wire  s1_bypass = |_s1_bypass_T & s1_full & _s1_valid_T_2; // @[ICache.scala 136:51]
-  wire  _s1_valid_T_5 = ~s1_bypass; // @[ICache.scala 146:75]
-  wire  _s1_valid_T_6 = ~s1_info_dirInfo_hit & _s1_valid_T_3 & ~s1_bypass; // @[ICache.scala 146:72]
-  wire  _s1_valid_T_7 = s1_info_dirInfo_hit & io_read_resp_valid | _s1_valid_T_6; // @[ICache.scala 145:71]
-  wire  _s1_valid_T_11 = _s1_valid_T_2 & s1_bypass & io_read_resp_valid; // @[ICache.scala 147:59]
-  wire  _s1_valid_T_12 = _s1_valid_T_7 | _s1_valid_T_11; // @[ICache.scala 146:86]
-  wire  s1_valid = s1_full & _s1_valid_T_12; // @[ICache.scala 145:25]
-  reg  s2_full; // @[ICache.scala 153:26]
+  wire  bypassVec_0 = refillBuffer_io_read_cacheLineAddr_0 == _bypassVec_T_2 & refillBuffer_io_read_valids_0; // @[ICache.scala 122:154]
+  wire  bypassVec_1 = refillBuffer_io_read_cacheLineAddr_1 == _bypassVec_T_2 & refillBuffer_io_read_valids_1; // @[ICache.scala 122:154]
+  wire [1:0] _s1_bypass_T = {bypassVec_0,bypassVec_1}; // @[Cat.scala 33:92]
+  wire  s1_bypass = |_s1_bypass_T & s1_full & _s1_valid_T_2; // @[ICache.scala 123:51]
+  wire  _s1_valid_T_5 = ~s1_bypass; // @[ICache.scala 133:75]
+  wire  _s1_valid_T_6 = ~s1_info_dirInfo_hit & _s1_valid_T_3 & ~s1_bypass; // @[ICache.scala 133:72]
+  wire  _s1_valid_T_7 = s1_info_dirInfo_hit & io_read_resp_valid | _s1_valid_T_6; // @[ICache.scala 132:71]
+  wire  _s1_valid_T_11 = _s1_valid_T_2 & s1_bypass & io_read_resp_valid; // @[ICache.scala 134:59]
+  wire  _s1_valid_T_12 = _s1_valid_T_7 | _s1_valid_T_11; // @[ICache.scala 133:86]
+  wire  s1_valid = s1_full & _s1_valid_T_12; // @[ICache.scala 132:25]
+  reg  s2_full; // @[ICache.scala 140:26]
   reg  s2_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s2_valid_T = ~s2_dirInfo_hit; // @[ICache.scala 170:47]
+  wire  _s2_valid_T = ~s2_dirInfo_hit; // @[ICache.scala 157:47]
   reg  s2_bypass; // @[Reg.scala 19:16]
-  wire  s2_fire = s2_full & (s2_dirInfo_hit | ~s2_dirInfo_hit & io_read_resp_valid | s2_bypass); // @[ICache.scala 170:25]
-  wire  s2_ready = ~s2_full | s2_fire; // @[ICache.scala 159:26]
-  wire  s1_fire = s1_valid & s2_ready; // @[ICache.scala 126:28]
-  wire  s1_ready = ~s1_full | s1_fire; // @[ICache.scala 130:26]
-  wire  s0_fire = s0_full & s1_ready; // @[ICache.scala 80:28]
+  wire  s2_fire = s2_full & (s2_dirInfo_hit | ~s2_dirInfo_hit & io_read_resp_valid | s2_bypass); // @[ICache.scala 157:25]
+  wire  s2_ready = ~s2_full | s2_fire; // @[ICache.scala 146:26]
+  wire  s1_fire = s1_valid & s2_ready; // @[ICache.scala 114:28]
+  wire  s1_ready = ~s1_full | s1_fire; // @[ICache.scala 117:26]
+  wire  s0_fire = s0_full & s1_ready; // @[ICache.scala 77:28]
   reg [31:0] s0_req_r_addr; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = s0_latch ? io_read_req_bits_addr : s0_req_r_addr; // @[Reg.scala 19:16 20:{18,22}]
-  wire  _GEN_1 = s0_full & s0_fire ? 1'h0 : s0_full; // @[ICache.scala 77:26 87:{35,45}]
-  wire  _GEN_2 = s0_latch | _GEN_1; // @[ICache.scala 86:{20,30}]
+  wire  _GEN_1 = s0_full & s0_fire ? 1'h0 : s0_full; // @[ICache.scala 75:26 83:{35,45}]
+  wire  _GEN_2 = s0_latch | _GEN_1; // @[ICache.scala 82:{20,30}]
   reg [7:0] s1_info_dirInfo_chosenWay; // @[Reg.scala 19:16]
   reg [31:0] s1_info_rdData_0_0; // @[Reg.scala 19:16]
   reg [31:0] s1_info_rdData_0_1; // @[Reg.scala 19:16]
@@ -3365,121 +3095,101 @@ module ICache(
   reg [31:0] s1_info_rdData_7_5; // @[Reg.scala 19:16]
   reg [31:0] s1_info_rdData_7_6; // @[Reg.scala 19:16]
   reg [31:0] s1_info_rdData_7_7; // @[Reg.scala 19:16]
-  wire [31:0] s0_info_rdData_0_0 = db_io_read_resp_0_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_1 = db_io_read_resp_0_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_2 = db_io_read_resp_0_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_3 = db_io_read_resp_0_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_4 = db_io_read_resp_0_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_5 = db_io_read_resp_0_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_6 = db_io_read_resp_0_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_0_7 = db_io_read_resp_0_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_0 = db_io_read_resp_1_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_1 = db_io_read_resp_1_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_2 = db_io_read_resp_1_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_3 = db_io_read_resp_1_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_4 = db_io_read_resp_1_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_5 = db_io_read_resp_1_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_6 = db_io_read_resp_1_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_1_7 = db_io_read_resp_1_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_0 = db_io_read_resp_2_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_1 = db_io_read_resp_2_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_2 = db_io_read_resp_2_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_3 = db_io_read_resp_2_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_4 = db_io_read_resp_2_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_5 = db_io_read_resp_2_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_6 = db_io_read_resp_2_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_2_7 = db_io_read_resp_2_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_0 = db_io_read_resp_3_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_1 = db_io_read_resp_3_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_2 = db_io_read_resp_3_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_3 = db_io_read_resp_3_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_4 = db_io_read_resp_3_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_5 = db_io_read_resp_3_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_6 = db_io_read_resp_3_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_3_7 = db_io_read_resp_3_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_0 = db_io_read_resp_4_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_1 = db_io_read_resp_4_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_2 = db_io_read_resp_4_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_3 = db_io_read_resp_4_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_4 = db_io_read_resp_4_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_5 = db_io_read_resp_4_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_6 = db_io_read_resp_4_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_4_7 = db_io_read_resp_4_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_0 = db_io_read_resp_5_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_1 = db_io_read_resp_5_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_2 = db_io_read_resp_5_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_3 = db_io_read_resp_5_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_4 = db_io_read_resp_5_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_5 = db_io_read_resp_5_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_6 = db_io_read_resp_5_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_5_7 = db_io_read_resp_5_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_0 = db_io_read_resp_6_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_1 = db_io_read_resp_6_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_2 = db_io_read_resp_6_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_3 = db_io_read_resp_6_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_4 = db_io_read_resp_6_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_5 = db_io_read_resp_6_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_6 = db_io_read_resp_6_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_6_7 = db_io_read_resp_6_7; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_0 = db_io_read_resp_7_0; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_1 = db_io_read_resp_7_1; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_2 = db_io_read_resp_7_2; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_3 = db_io_read_resp_7_3; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_4 = db_io_read_resp_7_4; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_5 = db_io_read_resp_7_5; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_6 = db_io_read_resp_7_6; // @[ICache.scala 111:23 114:20]
-  wire [31:0] s0_info_rdData_7_7 = db_io_read_resp_7_7; // @[ICache.scala 111:23 114:20]
-  wire  s0_info_dirInfo_hit = dir_io_read_resp_bits_hit; // @[ICache.scala 111:23 112:21]
-  wire [7:0] s0_info_dirInfo_chosenWay = dir_io_read_resp_bits_chosenWay; // @[ICache.scala 111:23 112:21]
+  wire [31:0] s0_info_rdData_0_0 = db_io_read_resp_0_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_1 = db_io_read_resp_0_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_2 = db_io_read_resp_0_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_3 = db_io_read_resp_0_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_4 = db_io_read_resp_0_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_5 = db_io_read_resp_0_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_6 = db_io_read_resp_0_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_0_7 = db_io_read_resp_0_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_0 = db_io_read_resp_1_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_1 = db_io_read_resp_1_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_2 = db_io_read_resp_1_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_3 = db_io_read_resp_1_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_4 = db_io_read_resp_1_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_5 = db_io_read_resp_1_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_6 = db_io_read_resp_1_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_1_7 = db_io_read_resp_1_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_0 = db_io_read_resp_2_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_1 = db_io_read_resp_2_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_2 = db_io_read_resp_2_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_3 = db_io_read_resp_2_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_4 = db_io_read_resp_2_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_5 = db_io_read_resp_2_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_6 = db_io_read_resp_2_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_2_7 = db_io_read_resp_2_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_0 = db_io_read_resp_3_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_1 = db_io_read_resp_3_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_2 = db_io_read_resp_3_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_3 = db_io_read_resp_3_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_4 = db_io_read_resp_3_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_5 = db_io_read_resp_3_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_6 = db_io_read_resp_3_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_3_7 = db_io_read_resp_3_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_0 = db_io_read_resp_4_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_1 = db_io_read_resp_4_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_2 = db_io_read_resp_4_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_3 = db_io_read_resp_4_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_4 = db_io_read_resp_4_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_5 = db_io_read_resp_4_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_6 = db_io_read_resp_4_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_4_7 = db_io_read_resp_4_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_0 = db_io_read_resp_5_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_1 = db_io_read_resp_5_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_2 = db_io_read_resp_5_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_3 = db_io_read_resp_5_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_4 = db_io_read_resp_5_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_5 = db_io_read_resp_5_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_6 = db_io_read_resp_5_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_5_7 = db_io_read_resp_5_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_0 = db_io_read_resp_6_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_1 = db_io_read_resp_6_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_2 = db_io_read_resp_6_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_3 = db_io_read_resp_6_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_4 = db_io_read_resp_6_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_5 = db_io_read_resp_6_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_6 = db_io_read_resp_6_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_6_7 = db_io_read_resp_6_7; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_0 = db_io_read_resp_7_0; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_1 = db_io_read_resp_7_1; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_2 = db_io_read_resp_7_2; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_3 = db_io_read_resp_7_3; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_4 = db_io_read_resp_7_4; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_5 = db_io_read_resp_7_5; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_6 = db_io_read_resp_7_6; // @[ICache.scala 103:23 106:20]
+  wire [31:0] s0_info_rdData_7_7 = db_io_read_resp_7_7; // @[ICache.scala 103:23 106:20]
+  wire  s0_info_dirInfo_hit = dir_io_read_resp_bits_hit; // @[ICache.scala 103:23 104:21]
+  wire [7:0] s0_info_dirInfo_chosenWay = dir_io_read_resp_bits_chosenWay; // @[ICache.scala 103:23 104:21]
   wire [7:0] s1_blockSel = 8'h1 << s1_info_req_addr[4:2]; // @[OneHot.scala 57:35]
-  wire  _GEN_72 = s1_full & s1_fire ? 1'h0 : s1_full; // @[ICache.scala 123:26 133:{35,45}]
-  wire  _GEN_73 = s0_fire | _GEN_72; // @[ICache.scala 132:{20,30}]
-  wire [3:0] _s1_bypassIdx_T = {bypassVec_3,bypassVec_2,bypassVec_1,bypassVec_0}; // @[Cat.scala 33:92]
-  wire [1:0] s1_bypassIdx_hi_1 = _s1_bypassIdx_T[3:2]; // @[OneHot.scala 30:18]
-  wire [1:0] s1_bypassIdx_lo_1 = _s1_bypassIdx_T[1:0]; // @[OneHot.scala 31:18]
-  wire  _s1_bypassIdx_T_1 = |s1_bypassIdx_hi_1; // @[OneHot.scala 32:14]
-  wire [1:0] _s1_bypassIdx_T_2 = s1_bypassIdx_hi_1 | s1_bypassIdx_lo_1; // @[OneHot.scala 32:28]
-  wire [1:0] s1_bypassIdx = {_s1_bypassIdx_T_1,_s1_bypassIdx_T_2[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_74 = refillBuffer_io_read_cacheLineData_0_0; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_75 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_0 : _GEN_74; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_76 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_0 : _GEN_75; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_77 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_0 : _GEN_76; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_10 = s1_blockSel[0] ? _GEN_77 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_78 = refillBuffer_io_read_cacheLineData_0_1; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_79 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_1 : _GEN_78; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_80 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_1 : _GEN_79; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_81 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_1 : _GEN_80; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_11 = s1_blockSel[1] ? _GEN_81 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_82 = refillBuffer_io_read_cacheLineData_0_2; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_83 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_2 : _GEN_82; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_84 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_2 : _GEN_83; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_85 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_2 : _GEN_84; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_12 = s1_blockSel[2] ? _GEN_85 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_86 = refillBuffer_io_read_cacheLineData_0_3; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_87 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_3 : _GEN_86; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_88 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_3 : _GEN_87; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_89 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_3 : _GEN_88; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_13 = s1_blockSel[3] ? _GEN_89 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_90 = refillBuffer_io_read_cacheLineData_0_4; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_91 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_4 : _GEN_90; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_92 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_4 : _GEN_91; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_93 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_4 : _GEN_92; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_14 = s1_blockSel[4] ? _GEN_93 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_94 = refillBuffer_io_read_cacheLineData_0_5; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_95 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_5 : _GEN_94; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_96 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_5 : _GEN_95; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_97 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_5 : _GEN_96; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_15 = s1_blockSel[5] ? _GEN_97 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_98 = refillBuffer_io_read_cacheLineData_0_6; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_99 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_6 : _GEN_98; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_100 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_6 : _GEN_99; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_101 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_6 : _GEN_100; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_16 = s1_blockSel[6] ? _GEN_101 : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _GEN_102 = refillBuffer_io_read_cacheLineData_0_7; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_103 = 2'h1 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_7 : _GEN_102; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_104 = 2'h2 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_2_7 : _GEN_103; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _GEN_105 = 2'h3 == s1_bypassIdx ? refillBuffer_io_read_cacheLineData_3_7 : _GEN_104; // @[Mux.scala 27:{73,73}]
-  wire [31:0] _s1_bypassData_T_17 = s1_blockSel[7] ? _GEN_105 : 32'h0; // @[Mux.scala 27:73]
+  wire  _GEN_79 = s1_full & s1_fire ? 1'h0 : s1_full; // @[ICache.scala 112:26 120:{35,45}]
+  wire  _GEN_80 = s0_fire | _GEN_79; // @[ICache.scala 119:{20,30}]
+  wire [1:0] _s1_bypassIdx_T = {bypassVec_1,bypassVec_0}; // @[Cat.scala 33:92]
+  wire  s1_bypassIdx = _s1_bypassIdx_T[1]; // @[CircuitMath.scala 28:8]
+  wire [31:0] _GEN_81 = refillBuffer_io_read_cacheLineData_0_0; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_82 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_0 : _GEN_81; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_10 = s1_blockSel[0] ? _GEN_82 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_83 = refillBuffer_io_read_cacheLineData_0_1; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_84 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_1 : _GEN_83; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_11 = s1_blockSel[1] ? _GEN_84 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_85 = refillBuffer_io_read_cacheLineData_0_2; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_86 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_2 : _GEN_85; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_12 = s1_blockSel[2] ? _GEN_86 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_87 = refillBuffer_io_read_cacheLineData_0_3; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_88 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_3 : _GEN_87; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_13 = s1_blockSel[3] ? _GEN_88 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_89 = refillBuffer_io_read_cacheLineData_0_4; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_90 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_4 : _GEN_89; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_14 = s1_blockSel[4] ? _GEN_90 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_91 = refillBuffer_io_read_cacheLineData_0_5; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_92 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_5 : _GEN_91; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_15 = s1_blockSel[5] ? _GEN_92 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_93 = refillBuffer_io_read_cacheLineData_0_6; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_94 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_6 : _GEN_93; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_16 = s1_blockSel[6] ? _GEN_94 : 32'h0; // @[Mux.scala 27:73]
+  wire [31:0] _GEN_95 = refillBuffer_io_read_cacheLineData_0_7; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _GEN_96 = s1_bypassIdx ? refillBuffer_io_read_cacheLineData_1_7 : _GEN_95; // @[Mux.scala 27:{73,73}]
+  wire [31:0] _s1_bypassData_T_17 = s1_blockSel[7] ? _GEN_96 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_bypassData_T_18 = _s1_bypassData_T_10 | _s1_bypassData_T_11; // @[Mux.scala 27:73]
   wire [31:0] _s1_bypassData_T_19 = _s1_bypassData_T_18 | _s1_bypassData_T_12; // @[Mux.scala 27:73]
   wire [31:0] _s1_bypassData_T_20 = _s1_bypassData_T_19 | _s1_bypassData_T_13; // @[Mux.scala 27:73]
@@ -3487,13 +3197,13 @@ module ICache(
   wire [31:0] _s1_bypassData_T_22 = _s1_bypassData_T_21 | _s1_bypassData_T_15; // @[Mux.scala 27:73]
   wire [31:0] _s1_bypassData_T_23 = _s1_bypassData_T_22 | _s1_bypassData_T_16; // @[Mux.scala 27:73]
   reg [31:0] s2_addr; // @[Reg.scala 19:16]
-  wire  _GEN_112 = s2_full & s2_fire ? 1'h0 : s2_full; // @[ICache.scala 153:26 162:{35,45}]
-  wire  _GEN_113 = s1_fire | _GEN_112; // @[ICache.scala 161:{20,30}]
+  wire  _GEN_110 = s2_full & s2_fire ? 1'h0 : s2_full; // @[ICache.scala 140:26 149:{35,45}]
+  wire  _GEN_111 = s1_fire | _GEN_110; // @[ICache.scala 148:{20,30}]
   wire  _refillBuffer_io_write_valid_T = io_tlbus_resp_ready & io_tlbus_resp_valid; // @[Decoupled.scala 51:35]
   wire  _io_read_resp_valid_T_3 = refillPipe_io_resp_ready & refillPipe_io_resp_valid; // @[Decoupled.scala 51:35]
-  wire  _io_read_resp_valid_T_4 = _s2_valid_T & s2_full & _io_read_resp_valid_T_3; // @[ICache.scala 173:56]
-  wire  _io_read_resp_valid_T_5 = s1_info_dirInfo_hit & s1_full | _io_read_resp_valid_T_4; // @[ICache.scala 172:58]
-  wire  _io_read_resp_valid_T_8 = s1_bypass & _s1_valid_T_2 & s1_full; // @[ICache.scala 174:63]
+  wire  _io_read_resp_valid_T_4 = _s2_valid_T & s2_full & _io_read_resp_valid_T_3; // @[ICache.scala 160:56]
+  wire  _io_read_resp_valid_T_5 = s1_info_dirInfo_hit & s1_full | _io_read_resp_valid_T_4; // @[ICache.scala 159:58]
+  wire  _io_read_resp_valid_T_8 = s1_bypass & _s1_valid_T_2 & s1_full; // @[ICache.scala 161:63]
   wire [31:0] _io_read_resp_bits_data_T_8 = s1_info_dirInfo_chosenWay[0] ? s1_info_rdData_0_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _io_read_resp_bits_data_T_9 = s1_info_dirInfo_chosenWay[1] ? s1_info_rdData_1_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _io_read_resp_bits_data_T_10 = s1_info_dirInfo_chosenWay[2] ? s1_info_rdData_2_0 : 32'h0; // @[Mux.scala 27:73]
@@ -3630,8 +3340,8 @@ module ICache(
   wire [31:0] _io_read_resp_bits_data_T_149 = _io_read_resp_bits_data_T_148 | _io_read_resp_bits_data_T_142; // @[Mux.scala 27:73]
   wire [31:0] _io_read_resp_bits_data_T_150 = _io_read_resp_bits_data_T_149 | _io_read_resp_bits_data_T_143; // @[Mux.scala 27:73]
   wire [31:0] s1_bypassData = _s1_bypassData_T_23 | _s1_bypassData_T_17; // @[Mux.scala 27:73]
-  wire [31:0] _io_read_resp_bits_data_T_151 = s1_bypass ? s1_bypassData : refillPipe_io_resp_bits_data; // @[ICache.scala 177:40]
-  DataBankArray_1 db ( // @[ICache.scala 56:20]
+  wire [31:0] _io_read_resp_bits_data_T_151 = s1_bypass ? s1_bypassData : refillPipe_io_resp_bits_data; // @[ICache.scala 164:40]
+  DataBankArray db ( // @[ICache.scala 56:20]
     .clock(db_clock),
     .reset(db_reset),
     .io_read_req_ready(db_io_read_req_ready),
@@ -3708,7 +3418,7 @@ module ICache(
     .io_write_req_bits_blockSelOH(db_io_write_req_bits_blockSelOH),
     .io_write_req_bits_way(db_io_write_req_bits_way)
   );
-  DCacheDirectory_1 dir ( // @[ICache.scala 57:21]
+  DCacheDirectory dir ( // @[ICache.scala 57:21]
     .clock(dir_clock),
     .reset(dir_reset),
     .io_read_req_ready(dir_io_read_req_ready),
@@ -3721,7 +3431,7 @@ module ICache(
     .io_write_req_bits_addr(dir_io_write_req_bits_addr),
     .io_write_req_bits_way(dir_io_write_req_bits_way)
   );
-  RefillPipe_1 refillPipe ( // @[ICache.scala 58:28]
+  RefillPipe refillPipe ( // @[ICache.scala 58:28]
     .clock(refillPipe_clock),
     .reset(refillPipe_reset),
     .io_req_ready(refillPipe_io_req_ready),
@@ -3747,7 +3457,7 @@ module ICache(
     .io_dataWrite_req_bits_blockSelOH(refillPipe_io_dataWrite_req_bits_blockSelOH),
     .io_dataWrite_req_bits_way(refillPipe_io_dataWrite_req_bits_way)
   );
-  RefillBuffer refillBuffer ( // @[ICache.scala 67:30]
+  RefillBuffer refillBuffer ( // @[ICache.scala 65:30]
     .clock(refillBuffer_clock),
     .reset(refillBuffer_reset),
     .io_write_valid(refillBuffer_io_write_valid),
@@ -3755,8 +3465,6 @@ module ICache(
     .io_write_bits_data(refillBuffer_io_write_bits_data),
     .io_read_cacheLineAddr_0(refillBuffer_io_read_cacheLineAddr_0),
     .io_read_cacheLineAddr_1(refillBuffer_io_read_cacheLineAddr_1),
-    .io_read_cacheLineAddr_2(refillBuffer_io_read_cacheLineAddr_2),
-    .io_read_cacheLineAddr_3(refillBuffer_io_read_cacheLineAddr_3),
     .io_read_cacheLineData_0_0(refillBuffer_io_read_cacheLineData_0_0),
     .io_read_cacheLineData_0_1(refillBuffer_io_read_cacheLineData_0_1),
     .io_read_cacheLineData_0_2(refillBuffer_io_read_cacheLineData_0_2),
@@ -3773,36 +3481,18 @@ module ICache(
     .io_read_cacheLineData_1_5(refillBuffer_io_read_cacheLineData_1_5),
     .io_read_cacheLineData_1_6(refillBuffer_io_read_cacheLineData_1_6),
     .io_read_cacheLineData_1_7(refillBuffer_io_read_cacheLineData_1_7),
-    .io_read_cacheLineData_2_0(refillBuffer_io_read_cacheLineData_2_0),
-    .io_read_cacheLineData_2_1(refillBuffer_io_read_cacheLineData_2_1),
-    .io_read_cacheLineData_2_2(refillBuffer_io_read_cacheLineData_2_2),
-    .io_read_cacheLineData_2_3(refillBuffer_io_read_cacheLineData_2_3),
-    .io_read_cacheLineData_2_4(refillBuffer_io_read_cacheLineData_2_4),
-    .io_read_cacheLineData_2_5(refillBuffer_io_read_cacheLineData_2_5),
-    .io_read_cacheLineData_2_6(refillBuffer_io_read_cacheLineData_2_6),
-    .io_read_cacheLineData_2_7(refillBuffer_io_read_cacheLineData_2_7),
-    .io_read_cacheLineData_3_0(refillBuffer_io_read_cacheLineData_3_0),
-    .io_read_cacheLineData_3_1(refillBuffer_io_read_cacheLineData_3_1),
-    .io_read_cacheLineData_3_2(refillBuffer_io_read_cacheLineData_3_2),
-    .io_read_cacheLineData_3_3(refillBuffer_io_read_cacheLineData_3_3),
-    .io_read_cacheLineData_3_4(refillBuffer_io_read_cacheLineData_3_4),
-    .io_read_cacheLineData_3_5(refillBuffer_io_read_cacheLineData_3_5),
-    .io_read_cacheLineData_3_6(refillBuffer_io_read_cacheLineData_3_6),
-    .io_read_cacheLineData_3_7(refillBuffer_io_read_cacheLineData_3_7),
     .io_read_valids_0(refillBuffer_io_read_valids_0),
-    .io_read_valids_1(refillBuffer_io_read_valids_1),
-    .io_read_valids_2(refillBuffer_io_read_valids_2),
-    .io_read_valids_3(refillBuffer_io_read_valids_3)
+    .io_read_valids_1(refillBuffer_io_read_valids_1)
   );
-  assign io_read_req_ready = ~s0_full | s0_fire; // @[ICache.scala 84:35]
-  assign io_read_resp_valid = _io_read_resp_valid_T_5 | _io_read_resp_valid_T_8; // @[ICache.scala 173:83]
-  assign io_read_resp_bits_data = s1_info_dirInfo_hit ? _io_read_resp_bits_data_T_150 : _io_read_resp_bits_data_T_151; // @[ICache.scala 175:34]
+  assign io_read_req_ready = ~s0_full | s0_fire; // @[ICache.scala 80:35]
+  assign io_read_resp_valid = _io_read_resp_valid_T_5 | _io_read_resp_valid_T_8; // @[ICache.scala 160:83]
+  assign io_read_resp_bits_data = s1_info_dirInfo_hit ? _io_read_resp_bits_data_T_150 : _io_read_resp_bits_data_T_151; // @[ICache.scala 162:34]
   assign io_tlbus_req_valid = refillPipe_io_tlbus_req_valid; // @[ICache.scala 63:25]
   assign io_tlbus_req_bits_address = refillPipe_io_tlbus_req_bits_address; // @[ICache.scala 63:25]
-  assign io_tlbus_resp_ready = 1'h1; // @[ICache.scala 185:25]
+  assign io_tlbus_resp_ready = 1'h1; // @[ICache.scala 172:25]
   assign db_clock = clock;
   assign db_reset = reset;
-  assign db_io_read_req_valid = s0_latch | s0_full; // @[ICache.scala 89:38]
+  assign db_io_read_req_valid = s0_latch | s0_full; // @[ICache.scala 85:38]
   assign db_io_read_req_bits_set = _GEN_0[11:5]; // @[Parameters.scala 50:11]
   assign db_io_write_req_valid = refillPipe_io_dataWrite_req_valid; // @[ICache.scala 61:33]
   assign db_io_write_req_bits_data = refillPipe_io_dataWrite_req_bits_data; // @[ICache.scala 61:33]
@@ -3811,36 +3501,36 @@ module ICache(
   assign db_io_write_req_bits_way = refillPipe_io_dataWrite_req_bits_way; // @[ICache.scala 61:33]
   assign dir_clock = clock;
   assign dir_reset = reset;
-  assign dir_io_read_req_valid = s0_latch | s0_full; // @[ICache.scala 92:39]
-  assign dir_io_read_req_bits_addr = s0_latch ? io_read_req_bits_addr : s0_req_r_addr; // @[ICache.scala 81:21]
+  assign dir_io_read_req_valid = s0_latch | s0_full; // @[ICache.scala 88:39]
+  assign dir_io_read_req_bits_addr = s0_latch ? io_read_req_bits_addr : s0_req_r_addr; // @[ICache.scala 78:21]
   assign dir_io_write_req_valid = refillPipe_io_dirWrite_req_valid; // @[ICache.scala 62:32]
   assign dir_io_write_req_bits_addr = refillPipe_io_dirWrite_req_bits_addr; // @[ICache.scala 62:32]
   assign dir_io_write_req_bits_way = refillPipe_io_dirWrite_req_bits_way; // @[ICache.scala 62:32]
   assign refillPipe_clock = clock;
   assign refillPipe_reset = reset;
-  assign refillPipe_io_req_valid = _s1_valid_T_2 & s1_full & _s1_valid_T_5; // @[ICache.scala 141:64]
-  assign refillPipe_io_req_bits_addr = s1_info_req_addr; // @[ICache.scala 142:33]
-  assign refillPipe_io_req_bits_chosenWay = s1_info_dirInfo_chosenWay; // @[ICache.scala 143:38]
-  assign refillPipe_io_resp_ready = 1'h1; // @[ICache.scala 183:30]
+  assign refillPipe_io_req_valid = _s1_valid_T_2 & s1_full & _s1_valid_T_5; // @[ICache.scala 128:64]
+  assign refillPipe_io_req_bits_addr = s1_info_req_addr; // @[ICache.scala 129:33]
+  assign refillPipe_io_req_bits_chosenWay = s1_info_dirInfo_chosenWay; // @[ICache.scala 130:38]
+  assign refillPipe_io_resp_ready = 1'h1; // @[ICache.scala 170:30]
   assign refillPipe_io_tlbus_req_ready = io_tlbus_req_ready; // @[ICache.scala 63:25]
   assign refillPipe_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[ICache.scala 63:25]
   assign refillPipe_io_tlbus_resp_bits_opcode = io_tlbus_resp_bits_opcode; // @[ICache.scala 63:25]
   assign refillPipe_io_tlbus_resp_bits_data = io_tlbus_resp_bits_data; // @[ICache.scala 63:25]
   assign refillBuffer_clock = clock;
   assign refillBuffer_reset = reset;
-  assign refillBuffer_io_write_valid = _refillBuffer_io_write_valid_T & io_tlbus_resp_bits_opcode == 3'h1; // @[ICache.scala 165:55]
-  assign refillBuffer_io_write_bits_cacheLineAddr = s2_addr; // @[ICache.scala 167:46]
-  assign refillBuffer_io_write_bits_data = io_tlbus_resp_bits_data; // @[ICache.scala 166:37]
+  assign refillBuffer_io_write_valid = _refillBuffer_io_write_valid_T & io_tlbus_resp_bits_opcode == 3'h1; // @[ICache.scala 152:55]
+  assign refillBuffer_io_write_bits_cacheLineAddr = s2_addr; // @[ICache.scala 154:46]
+  assign refillBuffer_io_write_bits_data = io_tlbus_resp_bits_data; // @[ICache.scala 153:37]
   always @(posedge clock) begin
-    if (reset) begin // @[ICache.scala 77:26]
-      s0_full <= 1'h0; // @[ICache.scala 77:26]
+    if (reset) begin // @[ICache.scala 75:26]
+      s0_full <= 1'h0; // @[ICache.scala 75:26]
     end else begin
       s0_full <= _GEN_2;
     end
-    if (reset) begin // @[ICache.scala 123:26]
-      s1_full <= 1'h0; // @[ICache.scala 123:26]
+    if (reset) begin // @[ICache.scala 112:26]
+      s1_full <= 1'h0; // @[ICache.scala 112:26]
     end else begin
-      s1_full <= _GEN_73;
+      s1_full <= _GEN_80;
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_info_dirInfo_hit <= s0_info_dirInfo_hit; // @[Reg.scala 20:22]
@@ -3852,10 +3542,10 @@ module ICache(
         s1_info_req_addr <= s0_req_r_addr; // @[Reg.scala 19:16]
       end
     end
-    if (reset) begin // @[ICache.scala 153:26]
-      s2_full <= 1'h0; // @[ICache.scala 153:26]
+    if (reset) begin // @[ICache.scala 140:26]
+      s2_full <= 1'h0; // @[ICache.scala 140:26]
     end else begin
-      s2_full <= _GEN_113;
+      s2_full <= _GEN_111;
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_dirInfo_hit <= s1_info_dirInfo_hit; // @[Reg.scala 20:22]
@@ -6131,7 +5821,7 @@ end // initial
 `endif
 `endif // SYNTHESIS
 endmodule
-module LoadPipe_2(
+module LoadPipe(
   input         clock,
   input         reset,
   output        io_load_req_ready,
@@ -6145,7 +5835,6 @@ module LoadPipe_2(
   input         io_dir_resp_bits_hit,
   input  [7:0]  io_dir_resp_bits_chosenWay,
   input         io_dir_resp_bits_isDirtyWay,
-  input  [19:0] io_dir_resp_bits_dirtyTag,
   input         io_dataBank_req_ready,
   output        io_dataBank_req_valid,
   output [7:0]  io_dataBank_req_bits_set,
@@ -6187,7 +5876,6 @@ module LoadPipe_2(
   output        io_mshr_bits_dirInfo_hit,
   output [7:0]  io_mshr_bits_dirInfo_chosenWay,
   output        io_mshr_bits_dirInfo_isDirtyWay,
-  output [19:0] io_mshr_bits_dirInfo_dirtyTag,
   output [31:0] io_mshr_bits_data_0,
   output [31:0] io_mshr_bits_data_1,
   output [31:0] io_mshr_bits_data_2,
@@ -6235,35 +5923,30 @@ module LoadPipe_2(
   reg [31:0] _RAND_38;
   reg [31:0] _RAND_39;
   reg [31:0] _RAND_40;
-  reg [31:0] _RAND_41;
 `endif // RANDOMIZE_REG_INIT
-  reg  s0_full; // @[LoadPipe_2.scala 31:26]
+  reg  s0_full; // @[LoadPipe.scala 31:26]
   wire  s0_latch = io_load_req_ready & io_load_req_valid; // @[Decoupled.scala 51:35]
-  reg  s0_valid_REG; // @[LoadPipe_2.scala 55:25]
-  reg  s0_validReg; // @[LoadPipe_2.scala 52:30]
+  reg  s0_valid_REG; // @[LoadPipe.scala 55:25]
+  reg  s0_validReg; // @[LoadPipe.scala 52:30]
   wire  _s0_valid_T_1 = io_dir_req_ready & io_dir_req_valid; // @[Decoupled.scala 51:35]
   wire  _s0_valid_T_3 = io_dataBank_req_ready & io_dataBank_req_valid; // @[Decoupled.scala 51:35]
-  wire  s0_valid = (s0_valid_REG | s0_validReg) & _s0_valid_T_1 & _s0_valid_T_3; // @[LoadPipe_2.scala 55:71]
-  reg  s1_full; // @[LoadPipe_2.scala 61:26]
+  wire  s0_valid = (s0_valid_REG | s0_validReg) & _s0_valid_T_1 & _s0_valid_T_3; // @[LoadPipe.scala 55:71]
+  reg  s1_full; // @[LoadPipe.scala 61:26]
   reg  s1_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[LoadPipe_2.scala 95:21]
+  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[LoadPipe.scala 116:21]
   wire  _s1_valid_T_1 = io_mshr_ready & io_mshr_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_4 = s1_dirInfo_hit & io_load_resp_valid; // @[LoadPipe_2.scala 96:30]
-  wire  _s1_valid_T_5 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_4; // @[LoadPipe_2.scala 95:47]
-  wire  s1_fire = s1_full & _s1_valid_T_5; // @[LoadPipe_2.scala 94:25]
-  wire  s1_ready = ~s1_full | s1_fire; // @[LoadPipe_2.scala 76:26]
-  wire  s0_fire = s0_valid & s1_ready; // @[LoadPipe_2.scala 33:28]
+  wire  _s1_valid_T_4 = s1_dirInfo_hit & io_load_resp_valid; // @[LoadPipe.scala 117:30]
+  wire  _s1_valid_T_5 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_4; // @[LoadPipe.scala 116:47]
+  wire  s1_fire = s1_full & _s1_valid_T_5; // @[LoadPipe.scala 115:25]
+  wire  s1_ready = ~s1_full | s1_fire; // @[LoadPipe.scala 100:26]
+  wire  s0_fire = s0_valid & s1_ready; // @[LoadPipe.scala 33:28]
   reg [31:0] s0_reqReg_addr; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = s0_latch ? io_load_req_bits_addr : s0_reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
-  wire  _GEN_1 = s0_full & s0_fire ? 1'h0 : s0_full; // @[LoadPipe_2.scala 31:26 40:{35,45}]
-  wire  _GEN_2 = s0_latch | _GEN_1; // @[LoadPipe_2.scala 39:{20,30}]
-  wire  _GEN_3 = s0_fire ? 1'h0 : s0_validReg; // @[LoadPipe_2.scala 54:24 52:30 54:38]
-  wire  _GEN_4 = s0_latch | _GEN_3; // @[LoadPipe_2.scala 53:{20,34}]
-  wire  s1_latch = s0_valid & s1_ready; // @[LoadPipe_2.scala 62:29]
+  wire  _GEN_1 = s0_full & s0_fire ? 1'h0 : s0_full; // @[LoadPipe.scala 31:26 40:{35,45}]
+  wire  _GEN_2 = s0_latch | _GEN_1; // @[LoadPipe.scala 39:{20,30}]
+  wire  _GEN_3 = s0_fire ? 1'h0 : s0_validReg; // @[LoadPipe.scala 54:24 52:30 54:38]
+  wire  _GEN_4 = s0_latch | _GEN_3; // @[LoadPipe.scala 53:{20,34}]
   reg [31:0] s1_rAddr; // @[Reg.scala 19:16]
-  reg [7:0] s1_dirInfo_chosenWay; // @[Reg.scala 19:16]
-  reg  s1_dirInfo_isDirtyWay; // @[Reg.scala 19:16]
-  reg [19:0] s1_dirInfo_dirtyTag; // @[Reg.scala 19:16]
   wire [3:0] s1_blockSel = 4'h1 << s1_rAddr[3:2]; // @[OneHot.scala 57:35]
   reg [31:0] s1_rdDataAll_0_0; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_0_1; // @[Reg.scala 19:16]
@@ -6297,6 +5980,8 @@ module LoadPipe_2(
   reg [31:0] s1_rdDataAll_7_1; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_7_2; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_7_3; // @[Reg.scala 19:16]
+  reg [7:0] s1_dirInfo_chosenWay; // @[Reg.scala 19:16]
+  reg  s1_dirInfo_isDirtyWay; // @[Reg.scala 19:16]
   wire [31:0] _s1_rdBlockData_T_8 = s1_dirInfo_chosenWay[0] ? s1_rdDataAll_0_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdBlockData_T_9 = s1_dirInfo_chosenWay[1] ? s1_rdDataAll_1_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdBlockData_T_10 = s1_dirInfo_chosenWay[2] ? s1_rdDataAll_2_0 : 32'h0; // @[Mux.scala 27:73]
@@ -6363,42 +6048,40 @@ module LoadPipe_2(
   wire [31:0] _s1_rdData_T_7 = s1_blockSel[3] ? s1_rdBlockData_3 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdData_T_8 = _s1_rdData_T_4 | _s1_rdData_T_5; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdData_T_9 = _s1_rdData_T_8 | _s1_rdData_T_6; // @[Mux.scala 27:73]
-  wire  _GEN_42 = s1_full & s1_fire ? 1'h0 : s1_full; // @[LoadPipe_2.scala 61:26 78:{35,45}]
-  wire  _GEN_43 = s0_fire | _GEN_42; // @[LoadPipe_2.scala 77:{20,30}]
-  wire [31:0] s1_rdData = _s1_rdData_T_9 | _s1_rdData_T_7; // @[Mux.scala 27:73]
-  assign io_load_req_ready = ~s0_full; // @[LoadPipe_2.scala 37:26]
-  assign io_load_resp_valid = s1_dirInfo_hit & s1_full; // @[LoadPipe_2.scala 90:36]
-  assign io_load_resp_bits_data = s1_rdData; // @[LoadPipe_2.scala 92:28]
-  assign io_dir_req_valid = s0_latch | s0_full; // @[LoadPipe_2.scala 43:34]
-  assign io_dir_req_bits_addr = s0_latch ? io_load_req_bits_addr : s0_reqReg_addr; // @[LoadPipe_2.scala 35:23]
-  assign io_dataBank_req_valid = s0_latch | s0_full; // @[LoadPipe_2.scala 46:39]
+  wire  _GEN_49 = s1_full & s1_fire ? 1'h0 : s1_full; // @[LoadPipe.scala 102:{35,45} 61:26]
+  wire  _GEN_50 = s0_fire | _GEN_49; // @[LoadPipe.scala 101:{20,30}]
+  assign io_load_req_ready = ~s0_full; // @[LoadPipe.scala 37:26]
+  assign io_load_resp_valid = s1_dirInfo_hit & s1_full; // @[LoadPipe.scala 111:36]
+  assign io_load_resp_bits_data = _s1_rdData_T_9 | _s1_rdData_T_7; // @[Mux.scala 27:73]
+  assign io_dir_req_valid = s0_latch | s0_full; // @[LoadPipe.scala 43:34]
+  assign io_dir_req_bits_addr = s0_latch ? io_load_req_bits_addr : s0_reqReg_addr; // @[LoadPipe.scala 35:23]
+  assign io_dataBank_req_valid = s0_latch | s0_full; // @[LoadPipe.scala 46:39]
   assign io_dataBank_req_bits_set = _GEN_0[11:4]; // @[Parameters.scala 50:11]
-  assign io_mshr_valid = _s1_valid_T & s1_full; // @[LoadPipe_2.scala 83:32]
-  assign io_mshr_bits_addr = s1_rAddr; // @[LoadPipe_2.scala 85:23]
-  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[LoadPipe_2.scala 87:26]
-  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[LoadPipe_2.scala 87:26]
-  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[LoadPipe_2.scala 87:26]
-  assign io_mshr_bits_dirInfo_dirtyTag = s1_dirInfo_dirtyTag; // @[LoadPipe_2.scala 87:26]
+  assign io_mshr_valid = _s1_valid_T & s1_full; // @[LoadPipe.scala 104:32]
+  assign io_mshr_bits_addr = s1_rAddr; // @[LoadPipe.scala 106:23]
+  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[LoadPipe.scala 108:26]
+  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[LoadPipe.scala 108:26]
+  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[LoadPipe.scala 108:26]
   assign io_mshr_bits_data_0 = _s1_rdBlockData_T_21 | _s1_rdBlockData_T_15; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_1 = _s1_rdBlockData_T_36 | _s1_rdBlockData_T_30; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_2 = _s1_rdBlockData_T_51 | _s1_rdBlockData_T_45; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_3 = _s1_rdBlockData_T_66 | _s1_rdBlockData_T_60; // @[Mux.scala 27:73]
   always @(posedge clock) begin
-    if (reset) begin // @[LoadPipe_2.scala 31:26]
-      s0_full <= 1'h0; // @[LoadPipe_2.scala 31:26]
+    if (reset) begin // @[LoadPipe.scala 31:26]
+      s0_full <= 1'h0; // @[LoadPipe.scala 31:26]
     end else begin
       s0_full <= _GEN_2;
     end
     s0_valid_REG <= io_load_req_ready & io_load_req_valid; // @[Decoupled.scala 51:35]
-    if (reset) begin // @[LoadPipe_2.scala 52:30]
-      s0_validReg <= 1'h0; // @[LoadPipe_2.scala 52:30]
+    if (reset) begin // @[LoadPipe.scala 52:30]
+      s0_validReg <= 1'h0; // @[LoadPipe.scala 52:30]
     end else begin
       s0_validReg <= _GEN_4;
     end
-    if (reset) begin // @[LoadPipe_2.scala 61:26]
-      s1_full <= 1'h0; // @[LoadPipe_2.scala 61:26]
+    if (reset) begin // @[LoadPipe.scala 61:26]
+      s1_full <= 1'h0; // @[LoadPipe.scala 61:26]
     end else begin
-      s1_full <= _GEN_43;
+      s1_full <= _GEN_50;
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_dirInfo_hit <= io_dir_resp_bits_hit; // @[Reg.scala 20:22]
@@ -6412,15 +6095,6 @@ module LoadPipe_2(
       end else begin
         s1_rAddr <= s0_reqReg_addr; // @[Reg.scala 19:16]
       end
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_chosenWay <= io_dir_resp_bits_chosenWay; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_isDirtyWay <= io_dir_resp_bits_isDirtyWay; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_dirtyTag <= io_dir_resp_bits_dirtyTag; // @[Reg.scala 20:22]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_rdDataAll_0_0 <= io_dataBank_resp_0_0; // @[Reg.scala 20:22]
@@ -6518,6 +6192,12 @@ module LoadPipe_2(
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_rdDataAll_7_3 <= io_dataBank_resp_7_3; // @[Reg.scala 20:22]
     end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_dirInfo_chosenWay <= io_dir_resp_bits_chosenWay; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_dirInfo_isDirtyWay <= io_dir_resp_bits_isDirtyWay; // @[Reg.scala 20:22]
+    end
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -6570,75 +6250,73 @@ initial begin
   _RAND_6 = {1{`RANDOM}};
   s1_rAddr = _RAND_6[31:0];
   _RAND_7 = {1{`RANDOM}};
-  s1_dirInfo_chosenWay = _RAND_7[7:0];
+  s1_rdDataAll_0_0 = _RAND_7[31:0];
   _RAND_8 = {1{`RANDOM}};
-  s1_dirInfo_isDirtyWay = _RAND_8[0:0];
+  s1_rdDataAll_0_1 = _RAND_8[31:0];
   _RAND_9 = {1{`RANDOM}};
-  s1_dirInfo_dirtyTag = _RAND_9[19:0];
+  s1_rdDataAll_0_2 = _RAND_9[31:0];
   _RAND_10 = {1{`RANDOM}};
-  s1_rdDataAll_0_0 = _RAND_10[31:0];
+  s1_rdDataAll_0_3 = _RAND_10[31:0];
   _RAND_11 = {1{`RANDOM}};
-  s1_rdDataAll_0_1 = _RAND_11[31:0];
+  s1_rdDataAll_1_0 = _RAND_11[31:0];
   _RAND_12 = {1{`RANDOM}};
-  s1_rdDataAll_0_2 = _RAND_12[31:0];
+  s1_rdDataAll_1_1 = _RAND_12[31:0];
   _RAND_13 = {1{`RANDOM}};
-  s1_rdDataAll_0_3 = _RAND_13[31:0];
+  s1_rdDataAll_1_2 = _RAND_13[31:0];
   _RAND_14 = {1{`RANDOM}};
-  s1_rdDataAll_1_0 = _RAND_14[31:0];
+  s1_rdDataAll_1_3 = _RAND_14[31:0];
   _RAND_15 = {1{`RANDOM}};
-  s1_rdDataAll_1_1 = _RAND_15[31:0];
+  s1_rdDataAll_2_0 = _RAND_15[31:0];
   _RAND_16 = {1{`RANDOM}};
-  s1_rdDataAll_1_2 = _RAND_16[31:0];
+  s1_rdDataAll_2_1 = _RAND_16[31:0];
   _RAND_17 = {1{`RANDOM}};
-  s1_rdDataAll_1_3 = _RAND_17[31:0];
+  s1_rdDataAll_2_2 = _RAND_17[31:0];
   _RAND_18 = {1{`RANDOM}};
-  s1_rdDataAll_2_0 = _RAND_18[31:0];
+  s1_rdDataAll_2_3 = _RAND_18[31:0];
   _RAND_19 = {1{`RANDOM}};
-  s1_rdDataAll_2_1 = _RAND_19[31:0];
+  s1_rdDataAll_3_0 = _RAND_19[31:0];
   _RAND_20 = {1{`RANDOM}};
-  s1_rdDataAll_2_2 = _RAND_20[31:0];
+  s1_rdDataAll_3_1 = _RAND_20[31:0];
   _RAND_21 = {1{`RANDOM}};
-  s1_rdDataAll_2_3 = _RAND_21[31:0];
+  s1_rdDataAll_3_2 = _RAND_21[31:0];
   _RAND_22 = {1{`RANDOM}};
-  s1_rdDataAll_3_0 = _RAND_22[31:0];
+  s1_rdDataAll_3_3 = _RAND_22[31:0];
   _RAND_23 = {1{`RANDOM}};
-  s1_rdDataAll_3_1 = _RAND_23[31:0];
+  s1_rdDataAll_4_0 = _RAND_23[31:0];
   _RAND_24 = {1{`RANDOM}};
-  s1_rdDataAll_3_2 = _RAND_24[31:0];
+  s1_rdDataAll_4_1 = _RAND_24[31:0];
   _RAND_25 = {1{`RANDOM}};
-  s1_rdDataAll_3_3 = _RAND_25[31:0];
+  s1_rdDataAll_4_2 = _RAND_25[31:0];
   _RAND_26 = {1{`RANDOM}};
-  s1_rdDataAll_4_0 = _RAND_26[31:0];
+  s1_rdDataAll_4_3 = _RAND_26[31:0];
   _RAND_27 = {1{`RANDOM}};
-  s1_rdDataAll_4_1 = _RAND_27[31:0];
+  s1_rdDataAll_5_0 = _RAND_27[31:0];
   _RAND_28 = {1{`RANDOM}};
-  s1_rdDataAll_4_2 = _RAND_28[31:0];
+  s1_rdDataAll_5_1 = _RAND_28[31:0];
   _RAND_29 = {1{`RANDOM}};
-  s1_rdDataAll_4_3 = _RAND_29[31:0];
+  s1_rdDataAll_5_2 = _RAND_29[31:0];
   _RAND_30 = {1{`RANDOM}};
-  s1_rdDataAll_5_0 = _RAND_30[31:0];
+  s1_rdDataAll_5_3 = _RAND_30[31:0];
   _RAND_31 = {1{`RANDOM}};
-  s1_rdDataAll_5_1 = _RAND_31[31:0];
+  s1_rdDataAll_6_0 = _RAND_31[31:0];
   _RAND_32 = {1{`RANDOM}};
-  s1_rdDataAll_5_2 = _RAND_32[31:0];
+  s1_rdDataAll_6_1 = _RAND_32[31:0];
   _RAND_33 = {1{`RANDOM}};
-  s1_rdDataAll_5_3 = _RAND_33[31:0];
+  s1_rdDataAll_6_2 = _RAND_33[31:0];
   _RAND_34 = {1{`RANDOM}};
-  s1_rdDataAll_6_0 = _RAND_34[31:0];
+  s1_rdDataAll_6_3 = _RAND_34[31:0];
   _RAND_35 = {1{`RANDOM}};
-  s1_rdDataAll_6_1 = _RAND_35[31:0];
+  s1_rdDataAll_7_0 = _RAND_35[31:0];
   _RAND_36 = {1{`RANDOM}};
-  s1_rdDataAll_6_2 = _RAND_36[31:0];
+  s1_rdDataAll_7_1 = _RAND_36[31:0];
   _RAND_37 = {1{`RANDOM}};
-  s1_rdDataAll_6_3 = _RAND_37[31:0];
+  s1_rdDataAll_7_2 = _RAND_37[31:0];
   _RAND_38 = {1{`RANDOM}};
-  s1_rdDataAll_7_0 = _RAND_38[31:0];
+  s1_rdDataAll_7_3 = _RAND_38[31:0];
   _RAND_39 = {1{`RANDOM}};
-  s1_rdDataAll_7_1 = _RAND_39[31:0];
+  s1_dirInfo_chosenWay = _RAND_39[7:0];
   _RAND_40 = {1{`RANDOM}};
-  s1_rdDataAll_7_2 = _RAND_40[31:0];
-  _RAND_41 = {1{`RANDOM}};
-  s1_rdDataAll_7_3 = _RAND_41[31:0];
+  s1_dirInfo_isDirtyWay = _RAND_40[0:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -6647,7 +6325,7 @@ end // initial
 `endif
 `endif // SYNTHESIS
 endmodule
-module StorePipe_2(
+module StorePipe(
   input         clock,
   input         reset,
   output        io_store_req_ready,
@@ -6661,7 +6339,14 @@ module StorePipe_2(
   input         io_dir_read_resp_bits_hit,
   input  [7:0]  io_dir_read_resp_bits_chosenWay,
   input         io_dir_read_resp_bits_isDirtyWay,
-  input  [19:0] io_dir_read_resp_bits_dirtyTag,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_0,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_1,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_2,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_3,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_4,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_5,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_6,
+  input  [19:0] io_dir_read_resp_bits_tagRdVec_7,
   output        io_dir_write_req_valid,
   output [31:0] io_dir_write_req_bits_addr,
   output [7:0]  io_dir_write_req_bits_way,
@@ -6710,7 +6395,7 @@ module StorePipe_2(
   output        io_mshr_bits_dirInfo_hit,
   output [7:0]  io_mshr_bits_dirInfo_chosenWay,
   output        io_mshr_bits_dirInfo_isDirtyWay,
-  output [19:0] io_mshr_bits_dirInfo_dirtyTag,
+  output [19:0] io_mshr_bits_dirtyTag,
   output [31:0] io_mshr_bits_data_0,
   output [31:0] io_mshr_bits_data_1,
   output [31:0] io_mshr_bits_data_2,
@@ -6767,41 +6452,45 @@ module StorePipe_2(
   reg [31:0] _RAND_45;
   reg [31:0] _RAND_46;
   reg [31:0] _RAND_47;
+  reg [31:0] _RAND_48;
+  reg [31:0] _RAND_49;
+  reg [31:0] _RAND_50;
+  reg [31:0] _RAND_51;
+  reg [31:0] _RAND_52;
+  reg [31:0] _RAND_53;
+  reg [31:0] _RAND_54;
 `endif // RANDOMIZE_REG_INIT
-  reg  s0_full; // @[StorePipe_2.scala 31:26]
+  reg  s0_full; // @[StorePipe.scala 30:26]
   wire  s0_latch = io_store_req_ready & io_store_req_valid; // @[Decoupled.scala 51:35]
-  reg  s0_valid_REG; // @[StorePipe_2.scala 57:25]
-  reg  s0_validReg; // @[StorePipe_2.scala 54:30]
-  wire  s0_valid = (s0_valid_REG | s0_validReg) & io_dir_read_req_valid & io_dataBank_read_req_valid; // @[StorePipe_2.scala 57:77]
-  reg  s1_full; // @[StorePipe_2.scala 64:26]
+  reg  s0_valid_REG; // @[StorePipe.scala 56:25]
+  reg  s0_validReg; // @[StorePipe.scala 53:30]
+  wire  s0_valid = (s0_valid_REG | s0_validReg) & io_dir_read_req_valid & io_dataBank_read_req_valid; // @[StorePipe.scala 56:77]
+  reg  s1_full; // @[StorePipe.scala 63:26]
   reg  s1_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[StorePipe_2.scala 115:21]
+  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[StorePipe.scala 133:21]
   wire  _s1_valid_T_1 = io_mshr_ready & io_mshr_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_6 = s1_dirInfo_hit & io_dataBank_write_req_valid & io_dir_write_req_valid; // @[StorePipe_2.scala 116:60]
-  wire  _s1_valid_T_7 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_6; // @[StorePipe_2.scala 115:47]
-  wire  s1_valid = s1_full & _s1_valid_T_7; // @[StorePipe_2.scala 114:25]
-  reg  s2_full; // @[StorePipe_2.scala 122:26]
+  wire  _s1_valid_T_6 = s1_dirInfo_hit & io_dataBank_write_req_valid & io_dir_write_req_valid; // @[StorePipe.scala 134:60]
+  wire  _s1_valid_T_7 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_6; // @[StorePipe.scala 133:47]
+  wire  s1_valid = s1_full & _s1_valid_T_7; // @[StorePipe.scala 132:25]
+  reg  s2_full; // @[StorePipe.scala 140:26]
   reg  s2_isHit; // @[Reg.scala 19:16]
-  wire  s2_fire = io_store_resp_valid & s2_full & s2_isHit | ~s2_isHit; // @[StorePipe_2.scala 134:59]
-  wire  s2_ready = ~s2_full | s2_fire; // @[StorePipe_2.scala 127:26]
-  wire  s1_fire = s1_valid & s2_ready; // @[StorePipe_2.scala 66:28]
-  wire  s1_ready = ~s1_full | s1_fire; // @[StorePipe_2.scala 79:26]
-  wire  s0_fire = s0_valid & s1_ready; // @[StorePipe_2.scala 33:28]
+  wire  s2_fire = io_store_resp_valid & s2_full & s2_isHit | ~s2_isHit; // @[StorePipe.scala 152:59]
+  wire  s2_ready = ~s2_full | s2_fire; // @[StorePipe.scala 145:26]
+  wire  s1_fire = s1_valid & s2_ready; // @[StorePipe.scala 65:28]
+  wire  s1_ready = ~s1_full | s1_fire; // @[StorePipe.scala 100:26]
+  wire  s0_fire = s0_valid & s1_ready; // @[StorePipe.scala 32:28]
   reg [31:0] s0_reqReg_addr; // @[Reg.scala 19:16]
   reg [31:0] s0_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s0_reqReg_mask; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
-  wire  _GEN_3 = s0_full & s0_fire ? 1'h0 : s0_full; // @[StorePipe_2.scala 31:26 41:{35,45}]
-  wire  _GEN_4 = s0_latch | _GEN_3; // @[StorePipe_2.scala 40:{20,30}]
-  wire  _GEN_5 = s0_fire ? 1'h0 : s0_validReg; // @[StorePipe_2.scala 56:24 54:30 56:38]
-  wire  _GEN_6 = s0_latch | _GEN_5; // @[StorePipe_2.scala 55:{20,34}]
+  wire  _GEN_3 = s0_full & s0_fire ? 1'h0 : s0_full; // @[StorePipe.scala 30:26 40:{35,45}]
+  wire  _GEN_4 = s0_latch | _GEN_3; // @[StorePipe.scala 39:{20,30}]
+  wire  _GEN_5 = s0_fire ? 1'h0 : s0_validReg; // @[StorePipe.scala 55:24 53:30 55:38]
+  wire  _GEN_6 = s0_latch | _GEN_5; // @[StorePipe.scala 54:{20,34}]
   reg [31:0] s1_reqReg_addr; // @[Reg.scala 19:16]
   reg [31:0] s1_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s1_reqReg_mask; // @[Reg.scala 19:16]
   wire [3:0] s1_dataBlockSelOH = 4'h1 << s1_reqReg_addr[3:2]; // @[OneHot.scala 57:35]
-  reg [7:0] s1_dirInfo_chosenWay; // @[Reg.scala 19:16]
-  reg  s1_dirInfo_isDirtyWay; // @[Reg.scala 19:16]
-  reg [19:0] s1_dirInfo_dirtyTag; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_0_0; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_0_1; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_0_2; // @[Reg.scala 19:16]
@@ -6834,6 +6523,8 @@ module StorePipe_2(
   reg [31:0] s1_rdDataAll_7_1; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_7_2; // @[Reg.scala 19:16]
   reg [31:0] s1_rdDataAll_7_3; // @[Reg.scala 19:16]
+  reg [7:0] s1_dirInfo_chosenWay; // @[Reg.scala 19:16]
+  reg  s1_dirInfo_isDirtyWay; // @[Reg.scala 19:16]
   wire [31:0] _s1_rdBlockData_T_8 = s1_dirInfo_chosenWay[0] ? s1_rdDataAll_0_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdBlockData_T_9 = s1_dirInfo_chosenWay[1] ? s1_rdDataAll_1_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdBlockData_T_10 = s1_dirInfo_chosenWay[2] ? s1_rdDataAll_2_0 : 32'h0; // @[Mux.scala 27:73]
@@ -6901,8 +6592,30 @@ module StorePipe_2(
   wire [31:0] _s1_rdData_T_8 = _s1_rdData_T_4 | _s1_rdData_T_5; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdData_T_9 = _s1_rdData_T_8 | _s1_rdData_T_6; // @[Mux.scala 27:73]
   wire [31:0] s1_rdData = _s1_rdData_T_9 | _s1_rdData_T_7; // @[Mux.scala 27:73]
-  wire  _GEN_46 = s1_full & s1_fire ? 1'h0 : s1_full; // @[StorePipe_2.scala 64:26 81:{35,45}]
-  wire  _GEN_47 = s0_fire | _GEN_46; // @[StorePipe_2.scala 80:{20,30}]
+  reg [19:0] s1_tagRdVec_0; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_1; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_2; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_3; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_4; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_5; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_6; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_7; // @[Reg.scala 19:16]
+  wire [19:0] _s1_dirtyTag_T_8 = s1_dirInfo_chosenWay[0] ? s1_tagRdVec_0 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_9 = s1_dirInfo_chosenWay[1] ? s1_tagRdVec_1 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_10 = s1_dirInfo_chosenWay[2] ? s1_tagRdVec_2 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_11 = s1_dirInfo_chosenWay[3] ? s1_tagRdVec_3 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_12 = s1_dirInfo_chosenWay[4] ? s1_tagRdVec_4 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_13 = s1_dirInfo_chosenWay[5] ? s1_tagRdVec_5 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_14 = s1_dirInfo_chosenWay[6] ? s1_tagRdVec_6 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_15 = s1_dirInfo_chosenWay[7] ? s1_tagRdVec_7 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_16 = _s1_dirtyTag_T_8 | _s1_dirtyTag_T_9; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_17 = _s1_dirtyTag_T_16 | _s1_dirtyTag_T_10; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_18 = _s1_dirtyTag_T_17 | _s1_dirtyTag_T_11; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_19 = _s1_dirtyTag_T_18 | _s1_dirtyTag_T_12; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_20 = _s1_dirtyTag_T_19 | _s1_dirtyTag_T_13; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_21 = _s1_dirtyTag_T_20 | _s1_dirtyTag_T_14; // @[Mux.scala 27:73]
+  wire  _GEN_61 = s1_full & s1_fire ? 1'h0 : s1_full; // @[StorePipe.scala 102:{35,45} 63:26]
+  wire  _GEN_62 = s0_fire | _GEN_61; // @[StorePipe.scala 101:{20,30}]
   wire [7:0] _io_dataBank_write_req_bits_data_tempMask_T_5 = s1_reqReg_mask[0] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
   wire [7:0] _io_dataBank_write_req_bits_data_tempMask_T_7 = s1_reqReg_mask[1] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
   wire [7:0] _io_dataBank_write_req_bits_data_tempMask_T_9 = s1_reqReg_mask[2] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
@@ -6913,58 +6626,58 @@ module StorePipe_2(
   wire [31:0] _io_dataBank_write_req_bits_data_T = ~io_dataBank_write_req_bits_data_tempMask; // @[Parameters.scala 67:8]
   wire [31:0] _io_dataBank_write_req_bits_data_T_1 = _io_dataBank_write_req_bits_data_T & s1_rdData; // @[Parameters.scala 67:18]
   wire [31:0] _io_dataBank_write_req_bits_data_T_2 = io_dataBank_write_req_bits_data_tempMask & s1_reqReg_data; // @[Parameters.scala 67:41]
-  wire  _GEN_49 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe_2.scala 122:26 129:{35,45}]
-  wire  _GEN_50 = s1_fire | _GEN_49; // @[StorePipe_2.scala 128:{20,30}]
-  assign io_store_req_ready = ~s0_full; // @[StorePipe_2.scala 39:27]
-  assign io_store_resp_valid = s2_isHit & s2_full; // @[StorePipe_2.scala 131:37]
-  assign io_dir_read_req_valid = s0_latch | s0_full; // @[StorePipe_2.scala 44:39]
-  assign io_dir_read_req_bits_addr = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[StorePipe_2.scala 35:23]
-  assign io_dir_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe_2.scala 96:40]
-  assign io_dir_write_req_bits_addr = s1_reqReg_addr; // @[StorePipe_2.scala 98:32]
-  assign io_dir_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe_2.scala 103:31]
-  assign io_dataBank_read_req_valid = s0_latch | s0_full; // @[StorePipe_2.scala 47:44]
+  wire  _GEN_64 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe.scala 140:26 147:{35,45}]
+  wire  _GEN_65 = s1_fire | _GEN_64; // @[StorePipe.scala 146:{20,30}]
+  assign io_store_req_ready = ~s0_full; // @[StorePipe.scala 38:27]
+  assign io_store_resp_valid = s2_isHit & s2_full; // @[StorePipe.scala 149:37]
+  assign io_dir_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 43:39]
+  assign io_dir_read_req_bits_addr = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[StorePipe.scala 34:23]
+  assign io_dir_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 114:40]
+  assign io_dir_write_req_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 116:32]
+  assign io_dir_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 121:31]
+  assign io_dataBank_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 46:44]
   assign io_dataBank_read_req_bits_set = _GEN_0[11:4]; // @[Parameters.scala 50:11]
-  assign io_dataBank_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe_2.scala 105:45]
+  assign io_dataBank_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 123:45]
   assign io_dataBank_write_req_bits_data = _io_dataBank_write_req_bits_data_T_1 | _io_dataBank_write_req_bits_data_T_2; // @[Parameters.scala 67:29]
   assign io_dataBank_write_req_bits_set = s1_reqReg_addr[11:4]; // @[Parameters.scala 50:11]
   assign io_dataBank_write_req_bits_blockSelOH = 4'h1 << s1_reqReg_addr[3:2]; // @[OneHot.scala 57:35]
-  assign io_dataBank_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe_2.scala 109:36]
-  assign io_mshr_valid = _s1_valid_T & s1_full; // @[StorePipe_2.scala 87:32]
-  assign io_mshr_bits_addr = s1_reqReg_addr; // @[StorePipe_2.scala 89:23]
-  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[StorePipe_2.scala 90:26]
-  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[StorePipe_2.scala 90:26]
-  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[StorePipe_2.scala 90:26]
-  assign io_mshr_bits_dirInfo_dirtyTag = s1_dirInfo_dirtyTag; // @[StorePipe_2.scala 90:26]
+  assign io_dataBank_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 127:36]
+  assign io_mshr_valid = _s1_valid_T & s1_full; // @[StorePipe.scala 104:32]
+  assign io_mshr_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 106:23]
+  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[StorePipe.scala 107:26]
+  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[StorePipe.scala 107:26]
+  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[StorePipe.scala 107:26]
+  assign io_mshr_bits_dirtyTag = _s1_dirtyTag_T_21 | _s1_dirtyTag_T_15; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_0 = _s1_rdBlockData_T_21 | _s1_rdBlockData_T_15; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_1 = _s1_rdBlockData_T_36 | _s1_rdBlockData_T_30; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_2 = _s1_rdBlockData_T_51 | _s1_rdBlockData_T_45; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_3 = _s1_rdBlockData_T_66 | _s1_rdBlockData_T_60; // @[Mux.scala 27:73]
-  assign io_mshr_bits_storeData = s1_reqReg_data; // @[StorePipe_2.scala 93:28]
-  assign io_mshr_bits_storeMask = s1_reqReg_mask; // @[StorePipe_2.scala 94:28]
+  assign io_mshr_bits_storeData = s1_reqReg_data; // @[StorePipe.scala 111:28]
+  assign io_mshr_bits_storeMask = s1_reqReg_mask; // @[StorePipe.scala 112:28]
   always @(posedge clock) begin
-    if (reset) begin // @[StorePipe_2.scala 31:26]
-      s0_full <= 1'h0; // @[StorePipe_2.scala 31:26]
+    if (reset) begin // @[StorePipe.scala 30:26]
+      s0_full <= 1'h0; // @[StorePipe.scala 30:26]
     end else begin
       s0_full <= _GEN_4;
     end
     s0_valid_REG <= io_store_req_ready & io_store_req_valid; // @[Decoupled.scala 51:35]
-    if (reset) begin // @[StorePipe_2.scala 54:30]
-      s0_validReg <= 1'h0; // @[StorePipe_2.scala 54:30]
+    if (reset) begin // @[StorePipe.scala 53:30]
+      s0_validReg <= 1'h0; // @[StorePipe.scala 53:30]
     end else begin
       s0_validReg <= _GEN_6;
     end
-    if (reset) begin // @[StorePipe_2.scala 64:26]
-      s1_full <= 1'h0; // @[StorePipe_2.scala 64:26]
+    if (reset) begin // @[StorePipe.scala 63:26]
+      s1_full <= 1'h0; // @[StorePipe.scala 63:26]
     end else begin
-      s1_full <= _GEN_47;
+      s1_full <= _GEN_62;
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_dirInfo_hit <= io_dir_read_resp_bits_hit; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[StorePipe_2.scala 122:26]
-      s2_full <= 1'h0; // @[StorePipe_2.scala 122:26]
+    if (reset) begin // @[StorePipe.scala 140:26]
+      s2_full <= 1'h0; // @[StorePipe.scala 140:26]
     end else begin
-      s2_full <= _GEN_50;
+      s2_full <= _GEN_65;
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_isHit <= s1_dirInfo_hit; // @[Reg.scala 20:22]
@@ -6986,15 +6699,6 @@ module StorePipe_2(
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_reqReg_mask <= s0_reqReg_mask; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_chosenWay <= io_dir_read_resp_bits_chosenWay; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_isDirtyWay <= io_dir_read_resp_bits_isDirtyWay; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_dirInfo_dirtyTag <= io_dir_read_resp_bits_dirtyTag; // @[Reg.scala 20:22]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_rdDataAll_0_0 <= io_dataBank_read_resp_0_0; // @[Reg.scala 20:22]
@@ -7092,6 +6796,36 @@ module StorePipe_2(
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_rdDataAll_7_3 <= io_dataBank_read_resp_7_3; // @[Reg.scala 20:22]
     end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_dirInfo_chosenWay <= io_dir_read_resp_bits_chosenWay; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_dirInfo_isDirtyWay <= io_dir_read_resp_bits_isDirtyWay; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_0 <= io_dir_read_resp_bits_tagRdVec_0; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_1 <= io_dir_read_resp_bits_tagRdVec_1; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_2 <= io_dir_read_resp_bits_tagRdVec_2; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_3 <= io_dir_read_resp_bits_tagRdVec_3; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_4 <= io_dir_read_resp_bits_tagRdVec_4; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_5 <= io_dir_read_resp_bits_tagRdVec_5; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_6 <= io_dir_read_resp_bits_tagRdVec_6; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_7 <= io_dir_read_resp_bits_tagRdVec_7; // @[Reg.scala 20:22]
+    end
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN
@@ -7156,75 +6890,89 @@ initial begin
   _RAND_12 = {1{`RANDOM}};
   s1_reqReg_mask = _RAND_12[3:0];
   _RAND_13 = {1{`RANDOM}};
-  s1_dirInfo_chosenWay = _RAND_13[7:0];
+  s1_rdDataAll_0_0 = _RAND_13[31:0];
   _RAND_14 = {1{`RANDOM}};
-  s1_dirInfo_isDirtyWay = _RAND_14[0:0];
+  s1_rdDataAll_0_1 = _RAND_14[31:0];
   _RAND_15 = {1{`RANDOM}};
-  s1_dirInfo_dirtyTag = _RAND_15[19:0];
+  s1_rdDataAll_0_2 = _RAND_15[31:0];
   _RAND_16 = {1{`RANDOM}};
-  s1_rdDataAll_0_0 = _RAND_16[31:0];
+  s1_rdDataAll_0_3 = _RAND_16[31:0];
   _RAND_17 = {1{`RANDOM}};
-  s1_rdDataAll_0_1 = _RAND_17[31:0];
+  s1_rdDataAll_1_0 = _RAND_17[31:0];
   _RAND_18 = {1{`RANDOM}};
-  s1_rdDataAll_0_2 = _RAND_18[31:0];
+  s1_rdDataAll_1_1 = _RAND_18[31:0];
   _RAND_19 = {1{`RANDOM}};
-  s1_rdDataAll_0_3 = _RAND_19[31:0];
+  s1_rdDataAll_1_2 = _RAND_19[31:0];
   _RAND_20 = {1{`RANDOM}};
-  s1_rdDataAll_1_0 = _RAND_20[31:0];
+  s1_rdDataAll_1_3 = _RAND_20[31:0];
   _RAND_21 = {1{`RANDOM}};
-  s1_rdDataAll_1_1 = _RAND_21[31:0];
+  s1_rdDataAll_2_0 = _RAND_21[31:0];
   _RAND_22 = {1{`RANDOM}};
-  s1_rdDataAll_1_2 = _RAND_22[31:0];
+  s1_rdDataAll_2_1 = _RAND_22[31:0];
   _RAND_23 = {1{`RANDOM}};
-  s1_rdDataAll_1_3 = _RAND_23[31:0];
+  s1_rdDataAll_2_2 = _RAND_23[31:0];
   _RAND_24 = {1{`RANDOM}};
-  s1_rdDataAll_2_0 = _RAND_24[31:0];
+  s1_rdDataAll_2_3 = _RAND_24[31:0];
   _RAND_25 = {1{`RANDOM}};
-  s1_rdDataAll_2_1 = _RAND_25[31:0];
+  s1_rdDataAll_3_0 = _RAND_25[31:0];
   _RAND_26 = {1{`RANDOM}};
-  s1_rdDataAll_2_2 = _RAND_26[31:0];
+  s1_rdDataAll_3_1 = _RAND_26[31:0];
   _RAND_27 = {1{`RANDOM}};
-  s1_rdDataAll_2_3 = _RAND_27[31:0];
+  s1_rdDataAll_3_2 = _RAND_27[31:0];
   _RAND_28 = {1{`RANDOM}};
-  s1_rdDataAll_3_0 = _RAND_28[31:0];
+  s1_rdDataAll_3_3 = _RAND_28[31:0];
   _RAND_29 = {1{`RANDOM}};
-  s1_rdDataAll_3_1 = _RAND_29[31:0];
+  s1_rdDataAll_4_0 = _RAND_29[31:0];
   _RAND_30 = {1{`RANDOM}};
-  s1_rdDataAll_3_2 = _RAND_30[31:0];
+  s1_rdDataAll_4_1 = _RAND_30[31:0];
   _RAND_31 = {1{`RANDOM}};
-  s1_rdDataAll_3_3 = _RAND_31[31:0];
+  s1_rdDataAll_4_2 = _RAND_31[31:0];
   _RAND_32 = {1{`RANDOM}};
-  s1_rdDataAll_4_0 = _RAND_32[31:0];
+  s1_rdDataAll_4_3 = _RAND_32[31:0];
   _RAND_33 = {1{`RANDOM}};
-  s1_rdDataAll_4_1 = _RAND_33[31:0];
+  s1_rdDataAll_5_0 = _RAND_33[31:0];
   _RAND_34 = {1{`RANDOM}};
-  s1_rdDataAll_4_2 = _RAND_34[31:0];
+  s1_rdDataAll_5_1 = _RAND_34[31:0];
   _RAND_35 = {1{`RANDOM}};
-  s1_rdDataAll_4_3 = _RAND_35[31:0];
+  s1_rdDataAll_5_2 = _RAND_35[31:0];
   _RAND_36 = {1{`RANDOM}};
-  s1_rdDataAll_5_0 = _RAND_36[31:0];
+  s1_rdDataAll_5_3 = _RAND_36[31:0];
   _RAND_37 = {1{`RANDOM}};
-  s1_rdDataAll_5_1 = _RAND_37[31:0];
+  s1_rdDataAll_6_0 = _RAND_37[31:0];
   _RAND_38 = {1{`RANDOM}};
-  s1_rdDataAll_5_2 = _RAND_38[31:0];
+  s1_rdDataAll_6_1 = _RAND_38[31:0];
   _RAND_39 = {1{`RANDOM}};
-  s1_rdDataAll_5_3 = _RAND_39[31:0];
+  s1_rdDataAll_6_2 = _RAND_39[31:0];
   _RAND_40 = {1{`RANDOM}};
-  s1_rdDataAll_6_0 = _RAND_40[31:0];
+  s1_rdDataAll_6_3 = _RAND_40[31:0];
   _RAND_41 = {1{`RANDOM}};
-  s1_rdDataAll_6_1 = _RAND_41[31:0];
+  s1_rdDataAll_7_0 = _RAND_41[31:0];
   _RAND_42 = {1{`RANDOM}};
-  s1_rdDataAll_6_2 = _RAND_42[31:0];
+  s1_rdDataAll_7_1 = _RAND_42[31:0];
   _RAND_43 = {1{`RANDOM}};
-  s1_rdDataAll_6_3 = _RAND_43[31:0];
+  s1_rdDataAll_7_2 = _RAND_43[31:0];
   _RAND_44 = {1{`RANDOM}};
-  s1_rdDataAll_7_0 = _RAND_44[31:0];
+  s1_rdDataAll_7_3 = _RAND_44[31:0];
   _RAND_45 = {1{`RANDOM}};
-  s1_rdDataAll_7_1 = _RAND_45[31:0];
+  s1_dirInfo_chosenWay = _RAND_45[7:0];
   _RAND_46 = {1{`RANDOM}};
-  s1_rdDataAll_7_2 = _RAND_46[31:0];
+  s1_dirInfo_isDirtyWay = _RAND_46[0:0];
   _RAND_47 = {1{`RANDOM}};
-  s1_rdDataAll_7_3 = _RAND_47[31:0];
+  s1_tagRdVec_0 = _RAND_47[19:0];
+  _RAND_48 = {1{`RANDOM}};
+  s1_tagRdVec_1 = _RAND_48[19:0];
+  _RAND_49 = {1{`RANDOM}};
+  s1_tagRdVec_2 = _RAND_49[19:0];
+  _RAND_50 = {1{`RANDOM}};
+  s1_tagRdVec_3 = _RAND_50[19:0];
+  _RAND_51 = {1{`RANDOM}};
+  s1_tagRdVec_4 = _RAND_51[19:0];
+  _RAND_52 = {1{`RANDOM}};
+  s1_tagRdVec_5 = _RAND_52[19:0];
+  _RAND_53 = {1{`RANDOM}};
+  s1_tagRdVec_6 = _RAND_53[19:0];
+  _RAND_54 = {1{`RANDOM}};
+  s1_tagRdVec_7 = _RAND_54[19:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
@@ -7242,7 +6990,7 @@ module MSHR(
   input         io_req_bits_dirInfo_hit,
   input  [7:0]  io_req_bits_dirInfo_chosenWay,
   input         io_req_bits_dirInfo_isDirtyWay,
-  input  [19:0] io_req_bits_dirInfo_dirtyTag,
+  input  [19:0] io_req_bits_dirtyTag,
   input  [31:0] io_req_bits_data_0,
   input  [31:0] io_req_bits_data_1,
   input  [31:0] io_req_bits_data_2,
@@ -7299,7 +7047,7 @@ module MSHR(
   wire  _reqReg_T = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] reqReg_addr; // @[Reg.scala 19:16]
   reg [7:0] reqReg_dirInfo_chosenWay; // @[Reg.scala 19:16]
-  reg [19:0] reqReg_dirInfo_dirtyTag; // @[Reg.scala 19:16]
+  reg [19:0] reqReg_dirtyTag; // @[Reg.scala 19:16]
   reg [31:0] reqReg_data_0; // @[Reg.scala 19:16]
   reg [31:0] reqReg_data_1; // @[Reg.scala 19:16]
   reg [31:0] reqReg_data_2; // @[Reg.scala 19:16]
@@ -7307,37 +7055,37 @@ module MSHR(
   reg  reqReg_isStore; // @[Reg.scala 19:16]
   reg [31:0] reqReg_storeData; // @[Reg.scala 19:16]
   reg [3:0] reqReg_storeMask; // @[Reg.scala 19:16]
-  wire  _GEN_9 = _reqReg_T ? io_req_bits_isStore : reqReg_isStore; // @[Reg.scala 19:16 20:{18,22}]
-  reg [2:0] state; // @[MSHR.scala 63:24]
-  wire  _io_busy_T = state == 3'h0; // @[MSHR.scala 66:22]
-  wire [1:0] _GEN_13 = io_req_bits_dirInfo_isDirtyWay ? 2'h1 : 2'h2; // @[MSHR.scala 73:50 74:27 76:27]
-  wire [1:0] _GEN_14 = _reqReg_T ? _GEN_13 : 2'h0; // @[MSHR.scala 71:19 72:27]
-  wire [1:0] _GEN_15 = _io_busy_T ? _GEN_14 : 2'h0; // @[MSHR.scala 70:27 64:29]
-  wire  _T_2 = state == 3'h1; // @[MSHR.scala 82:16]
+  wire  _GEN_17 = _reqReg_T ? io_req_bits_isStore : reqReg_isStore; // @[Reg.scala 19:16 20:{18,22}]
+  reg [2:0] state; // @[MSHR.scala 64:24]
+  wire  _io_busy_T = state == 3'h0; // @[MSHR.scala 67:22]
+  wire [1:0] _GEN_21 = io_req_bits_dirInfo_isDirtyWay ? 2'h1 : 2'h2; // @[MSHR.scala 74:50 75:27 77:27]
+  wire [1:0] _GEN_22 = _reqReg_T ? _GEN_21 : 2'h0; // @[MSHR.scala 72:19 73:27]
+  wire [1:0] _GEN_23 = _io_busy_T ? _GEN_22 : 2'h0; // @[MSHR.scala 71:27 65:29]
+  wire  _T_2 = state == 3'h1; // @[MSHR.scala 83:16]
   wire  _T_3 = io_tasks_writeback_resp_ready & io_tasks_writeback_resp_valid; // @[Decoupled.scala 51:35]
-  wire [1:0] _GEN_16 = _T_3 ? 2'h2 : 2'h1; // @[MSHR.scala 83:19 84:44 85:23]
-  wire [1:0] _GEN_17 = state == 3'h1 ? _GEN_16 : _GEN_15; // @[MSHR.scala 82:32]
-  wire  _T_4 = state == 3'h2; // @[MSHR.scala 90:16]
+  wire [1:0] _GEN_24 = _T_3 ? 2'h2 : 2'h1; // @[MSHR.scala 84:19 85:44 86:23]
+  wire [1:0] _GEN_25 = state == 3'h1 ? _GEN_24 : _GEN_23; // @[MSHR.scala 83:32]
+  wire  _T_4 = state == 3'h2; // @[MSHR.scala 91:16]
   wire  _T_5 = io_tasks_refill_resp_ready & io_tasks_refill_resp_valid; // @[Decoupled.scala 51:35]
-  wire [2:0] _GEN_18 = _T_5 ? 3'h4 : 3'h2; // @[MSHR.scala 91:19 94:47 95:23]
-  wire [2:0] _GEN_19 = _T_5 & _GEN_9 ? 3'h3 : _GEN_18; // @[MSHR.scala 92:56 93:23]
+  wire [2:0] _GEN_26 = _T_5 ? 3'h4 : 3'h2; // @[MSHR.scala 92:19 95:47 96:23]
+  wire [2:0] _GEN_27 = _T_5 & _GEN_17 ? 3'h3 : _GEN_26; // @[MSHR.scala 93:56 94:23]
   wire  _T_8 = io_resp_load_ready & io_resp_load_valid; // @[Decoupled.scala 51:35]
-  wire [2:0] _GEN_20 = _T_8 ? 3'h0 : _GEN_19; // @[MSHR.scala 98:33 99:23]
-  wire  _T_9 = state == 3'h3; // @[MSHR.scala 104:16]
+  wire [2:0] _GEN_28 = _T_8 ? 3'h0 : _GEN_27; // @[MSHR.scala 100:23 99:33]
+  wire  _T_9 = state == 3'h3; // @[MSHR.scala 105:16]
   wire  _T_10 = io_dirWrite_req_ready & io_dirWrite_req_valid; // @[Decoupled.scala 51:35]
   wire  _T_11 = io_dataWrite_req_ready & io_dataWrite_req_valid; // @[Decoupled.scala 51:35]
-  wire [2:0] _GEN_22 = _T_10 & _T_11 ? 3'h4 : 3'h3; // @[MSHR.scala 105:19 106:61 107:23]
+  wire [2:0] _GEN_30 = _T_10 & _T_11 ? 3'h4 : 3'h3; // @[MSHR.scala 106:19 107:61 108:23]
   wire  _T_13 = io_resp_store_ready & io_resp_store_valid; // @[Decoupled.scala 51:35]
-  wire  _T_14 = state == 3'h4; // @[MSHR.scala 116:16]
-  wire  _willRefill_T_1 = ~io_req_bits_dirInfo_hit; // @[MSHR.scala 125:63]
-  wire  willRefill = ~io_req_bits_dirInfo_isDirtyWay & ~io_req_bits_dirInfo_hit & _reqReg_T; // @[MSHR.scala 125:88]
-  wire  willWriteback = io_req_bits_dirInfo_isDirtyWay & _willRefill_T_1 & _reqReg_T; // @[MSHR.scala 126:87]
-  wire  willWriteStore = _T_4 & _GEN_9 & _T_5; // @[MSHR.scala 127:61]
-  wire  _willRespLoad_T_1 = ~_GEN_9; // @[MSHR.scala 128:49]
-  wire  willRespLoad = _T_4 & ~_GEN_9 & _T_5; // @[MSHR.scala 128:62]
-  wire  willRespStore = _T_9 & _T_10 & _T_11; // @[MSHR.scala 129:73]
+  wire  _T_14 = state == 3'h4; // @[MSHR.scala 117:16]
+  wire  _willRefill_T_1 = ~io_req_bits_dirInfo_hit; // @[MSHR.scala 126:63]
+  wire  willRefill = ~io_req_bits_dirInfo_isDirtyWay & ~io_req_bits_dirInfo_hit & _reqReg_T; // @[MSHR.scala 126:88]
+  wire  willWriteback = io_req_bits_dirInfo_isDirtyWay & _willRefill_T_1 & _reqReg_T; // @[MSHR.scala 127:87]
+  wire  willWriteStore = _T_4 & _GEN_17 & _T_5; // @[MSHR.scala 128:61]
+  wire  _willRespLoad_T_1 = ~_GEN_17; // @[MSHR.scala 129:49]
+  wire  willRespLoad = _T_4 & ~_GEN_17 & _T_5; // @[MSHR.scala 129:62]
+  wire  willRespStore = _T_9 & _T_10 & _T_11; // @[MSHR.scala 130:73]
   reg [31:0] oldData_r; // @[Reg.scala 19:16]
-  wire [31:0] _GEN_27 = _T_5 ? io_tasks_refill_resp_bits_data : oldData_r; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _GEN_35 = _T_5 ? io_tasks_refill_resp_bits_data : oldData_r; // @[Reg.scala 19:16 20:{18,22}]
   wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_5 = reqReg_storeMask[0] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
   wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_7 = reqReg_storeMask[1] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
   wire [7:0] _io_dataWrite_req_bits_data_tempMask_T_9 = reqReg_storeMask[2] ? 8'hff : 8'h0; // @[Bitwise.scala 77:12]
@@ -7346,33 +7094,33 @@ module MSHR(
     _io_dataWrite_req_bits_data_tempMask_T_9,_io_dataWrite_req_bits_data_tempMask_T_7,
     _io_dataWrite_req_bits_data_tempMask_T_5}; // @[Cat.scala 33:92]
   wire [31:0] _io_dataWrite_req_bits_data_T = ~io_dataWrite_req_bits_data_tempMask; // @[Parameters.scala 67:8]
-  wire [31:0] _io_dataWrite_req_bits_data_T_1 = _io_dataWrite_req_bits_data_T & _GEN_27; // @[Parameters.scala 67:18]
+  wire [31:0] _io_dataWrite_req_bits_data_T_1 = _io_dataWrite_req_bits_data_T & _GEN_35; // @[Parameters.scala 67:18]
   wire [31:0] _io_dataWrite_req_bits_data_T_2 = io_dataWrite_req_bits_data_tempMask & reqReg_storeData; // @[Parameters.scala 67:41]
   reg [31:0] io_resp_load_bits_data_r; // @[Reg.scala 19:16]
-  assign io_req_ready = state == 3'h0; // @[MSHR.scala 67:27]
-  assign io_resp_load_valid = _willRespLoad_T_1 & (_T_14 | willRespLoad); // @[MSHR.scala 161:40]
-  assign io_resp_load_bits_data = _T_5 ? io_tasks_refill_resp_bits_data : io_resp_load_bits_data_r; // @[MSHR.scala 162:34]
-  assign io_resp_store_valid = _GEN_9 & (_T_14 | willRespStore); // @[MSHR.scala 167:40]
-  assign io_tasks_refill_req_valid = _T_4 | willRefill; // @[MSHR.scala 131:52]
-  assign io_tasks_refill_req_bits_addr = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[MSHR.scala 59:18]
-  assign io_tasks_refill_req_bits_chosenWay = _reqReg_T ? io_req_bits_dirInfo_chosenWay : reqReg_dirInfo_chosenWay; // @[MSHR.scala 59:18]
-  assign io_tasks_refill_resp_ready = 1'h1; // @[MSHR.scala 134:32]
-  assign io_tasks_writeback_req_valid = _T_2 | willWriteback; // @[MSHR.scala 137:58]
-  assign io_tasks_writeback_req_bits_addr = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_req_bits_dirtyTag = _reqReg_T ? io_req_bits_dirInfo_dirtyTag : reqReg_dirInfo_dirtyTag; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_req_bits_data_0 = _reqReg_T ? io_req_bits_data_0 : reqReg_data_0; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_req_bits_data_1 = _reqReg_T ? io_req_bits_data_1 : reqReg_data_1; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_req_bits_data_2 = _reqReg_T ? io_req_bits_data_2 : reqReg_data_2; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_req_bits_data_3 = _reqReg_T ? io_req_bits_data_3 : reqReg_data_3; // @[MSHR.scala 59:18]
-  assign io_tasks_writeback_resp_ready = 1'h1; // @[MSHR.scala 141:35]
-  assign io_dirWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 144:51]
-  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[MSHR.scala 145:31]
-  assign io_dirWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 150:30]
-  assign io_dataWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 153:52]
+  assign io_req_ready = state == 3'h0; // @[MSHR.scala 68:27]
+  assign io_resp_load_valid = _willRespLoad_T_1 & (_T_14 | willRespLoad); // @[MSHR.scala 162:40]
+  assign io_resp_load_bits_data = _T_5 ? io_tasks_refill_resp_bits_data : io_resp_load_bits_data_r; // @[MSHR.scala 163:34]
+  assign io_resp_store_valid = _GEN_17 & (_T_14 | willRespStore); // @[MSHR.scala 168:40]
+  assign io_tasks_refill_req_valid = _T_4 | willRefill; // @[MSHR.scala 132:52]
+  assign io_tasks_refill_req_bits_addr = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[MSHR.scala 60:18]
+  assign io_tasks_refill_req_bits_chosenWay = _reqReg_T ? io_req_bits_dirInfo_chosenWay : reqReg_dirInfo_chosenWay; // @[MSHR.scala 60:18]
+  assign io_tasks_refill_resp_ready = 1'h1; // @[MSHR.scala 135:32]
+  assign io_tasks_writeback_req_valid = _T_2 | willWriteback; // @[MSHR.scala 138:58]
+  assign io_tasks_writeback_req_bits_addr = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_req_bits_dirtyTag = _reqReg_T ? io_req_bits_dirtyTag : reqReg_dirtyTag; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_req_bits_data_0 = _reqReg_T ? io_req_bits_data_0 : reqReg_data_0; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_req_bits_data_1 = _reqReg_T ? io_req_bits_data_1 : reqReg_data_1; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_req_bits_data_2 = _reqReg_T ? io_req_bits_data_2 : reqReg_data_2; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_req_bits_data_3 = _reqReg_T ? io_req_bits_data_3 : reqReg_data_3; // @[MSHR.scala 60:18]
+  assign io_tasks_writeback_resp_ready = 1'h1; // @[MSHR.scala 142:35]
+  assign io_dirWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 145:51]
+  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[MSHR.scala 146:31]
+  assign io_dirWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 151:30]
+  assign io_dataWrite_req_valid = _T_9 | willWriteStore; // @[MSHR.scala 154:52]
   assign io_dataWrite_req_bits_data = _io_dataWrite_req_bits_data_T_1 | _io_dataWrite_req_bits_data_T_2; // @[Parameters.scala 67:29]
   assign io_dataWrite_req_bits_set = reqReg_addr[11:4]; // @[Parameters.scala 50:11]
   assign io_dataWrite_req_bits_blockSelOH = 4'h1 << reqReg_addr[3:2]; // @[OneHot.scala 57:35]
-  assign io_dataWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 158:31]
+  assign io_dataWrite_req_bits_way = reqReg_dirInfo_chosenWay; // @[MSHR.scala 159:31]
   always @(posedge clock) begin
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_addr <= io_req_bits_addr; // @[Reg.scala 20:22]
@@ -7381,7 +7129,7 @@ module MSHR(
       reqReg_dirInfo_chosenWay <= io_req_bits_dirInfo_chosenWay; // @[Reg.scala 20:22]
     end
     if (_reqReg_T) begin // @[Reg.scala 20:18]
-      reqReg_dirInfo_dirtyTag <= io_req_bits_dirInfo_dirtyTag; // @[Reg.scala 20:22]
+      reqReg_dirtyTag <= io_req_bits_dirtyTag; // @[Reg.scala 20:22]
     end
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_data_0 <= io_req_bits_data_0; // @[Reg.scala 20:22]
@@ -7404,24 +7152,24 @@ module MSHR(
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_storeMask <= io_req_bits_storeMask; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[MSHR.scala 63:24]
-      state <= 3'h0; // @[MSHR.scala 63:24]
-    end else if (state == 3'h4) begin // @[MSHR.scala 116:27]
-      if (_T_8 | _T_13) begin // @[MSHR.scala 118:55]
-        state <= 3'h0; // @[MSHR.scala 119:23]
+    if (reset) begin // @[MSHR.scala 64:24]
+      state <= 3'h0; // @[MSHR.scala 64:24]
+    end else if (state == 3'h4) begin // @[MSHR.scala 117:27]
+      if (_T_8 | _T_13) begin // @[MSHR.scala 119:55]
+        state <= 3'h0; // @[MSHR.scala 120:23]
       end else begin
-        state <= 3'h4; // @[MSHR.scala 117:19]
+        state <= 3'h4; // @[MSHR.scala 118:19]
       end
-    end else if (state == 3'h3) begin // @[MSHR.scala 104:32]
-      if (_T_13) begin // @[MSHR.scala 110:34]
-        state <= 3'h0; // @[MSHR.scala 111:23]
+    end else if (state == 3'h3) begin // @[MSHR.scala 105:32]
+      if (_T_13) begin // @[MSHR.scala 111:34]
+        state <= 3'h0; // @[MSHR.scala 112:23]
       end else begin
-        state <= _GEN_22;
+        state <= _GEN_30;
       end
-    end else if (state == 3'h2) begin // @[MSHR.scala 90:29]
-      state <= _GEN_20;
+    end else if (state == 3'h2) begin // @[MSHR.scala 91:29]
+      state <= _GEN_28;
     end else begin
-      state <= {{1'd0}, _GEN_17};
+      state <= {{1'd0}, _GEN_25};
     end
     if (_T_5) begin // @[Reg.scala 20:18]
       oldData_r <= io_tasks_refill_resp_bits_data; // @[Reg.scala 20:22]
@@ -7471,7 +7219,7 @@ initial begin
   _RAND_1 = {1{`RANDOM}};
   reqReg_dirInfo_chosenWay = _RAND_1[7:0];
   _RAND_2 = {1{`RANDOM}};
-  reqReg_dirInfo_dirtyTag = _RAND_2[19:0];
+  reqReg_dirtyTag = _RAND_2[19:0];
   _RAND_3 = {1{`RANDOM}};
   reqReg_data_0 = _RAND_3[31:0];
   _RAND_4 = {1{`RANDOM}};
@@ -7500,7 +7248,7 @@ end // initial
 `endif
 `endif // SYNTHESIS
 endmodule
-module RefillPipe_1_1(
+module RefillPipe_1(
   input         clock,
   input         reset,
   output        io_req_ready,
@@ -7537,8 +7285,8 @@ module RefillPipe_1_1(
   reg [31:0] _RAND_6;
   reg [31:0] _RAND_7;
 `endif // RANDOMIZE_REG_INIT
-  reg [1:0] state; // @[RefillPipe_1.scala 41:24]
-  wire  _io_req_ready_T = state == 2'h0; // @[RefillPipe_1.scala 44:27]
+  reg [1:0] state; // @[RefillPipe.scala 41:24]
+  wire  _io_req_ready_T = state == 2'h0; // @[RefillPipe.scala 44:27]
   wire  _reqReg_T = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   reg [31:0] reqReg_addr; // @[Reg.scala 19:16]
   reg [7:0] reqReg_chosenWay; // @[Reg.scala 19:16]
@@ -7547,13 +7295,13 @@ module RefillPipe_1_1(
   wire  _GEN_2 = _reqReg_T | reqValidReg; // @[Reg.scala 19:16 20:{18,22}]
   wire [3:0] dataBlockSelOH = 4'h1 << reqReg_addr[3:2]; // @[OneHot.scala 57:35]
   reg [1:0] beatCounter_value; // @[Counter.scala 61:40]
-  wire  lastBeat = beatCounter_value == 2'h3; // @[RefillPipe_1.scala 55:38]
+  wire  lastBeat = beatCounter_value == 2'h3; // @[RefillPipe.scala 54:38]
   wire  _refillFire_T = io_tlbus_resp_ready & io_tlbus_resp_valid; // @[Decoupled.scala 51:35]
-  wire  refillFire = _refillFire_T & io_tlbus_resp_bits_opcode == 3'h1; // @[RefillPipe_1.scala 56:41]
-  wire  refillLastBeat = refillFire & lastBeat; // @[RefillPipe_1.scala 57:37]
-  reg [31:0] refillBlockDataArray_0; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_1; // @[RefillPipe_1.scala 62:39]
-  reg [31:0] refillBlockDataArray_2; // @[RefillPipe_1.scala 62:39]
+  wire  refillFire = _refillFire_T & io_tlbus_resp_bits_opcode == 3'h1; // @[RefillPipe.scala 55:41]
+  wire  refillLastBeat = refillFire & lastBeat; // @[RefillPipe.scala 56:37]
+  reg [31:0] refillBlockDataArray_0; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_1; // @[RefillPipe.scala 61:39]
+  reg [31:0] refillBlockDataArray_2; // @[RefillPipe.scala 61:39]
   wire [31:0] _readRespData_T_4 = dataBlockSelOH[0] ? refillBlockDataArray_0 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_5 = dataBlockSelOH[1] ? refillBlockDataArray_1 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_6 = dataBlockSelOH[2] ? refillBlockDataArray_2 : 32'h0; // @[Mux.scala 27:73]
@@ -7561,42 +7309,42 @@ module RefillPipe_1_1(
   wire [31:0] _readRespData_T_8 = _readRespData_T_4 | _readRespData_T_5; // @[Mux.scala 27:73]
   wire [31:0] _readRespData_T_9 = _readRespData_T_8 | _readRespData_T_6; // @[Mux.scala 27:73]
   wire  _T_2 = io_tlbus_req_ready & io_tlbus_req_valid; // @[Decoupled.scala 51:35]
-  wire [1:0] _GEN_12 = _T_2 ? 2'h2 : {{1'd0}, _reqReg_T}; // @[RefillPipe_1.scala 75:33 76:23]
-  wire  _GEN_13 = _T_2 ? 1'h0 : _GEN_2; // @[RefillPipe_1.scala 75:33 77:25]
-  wire [1:0] _GEN_14 = _io_req_ready_T ? _GEN_12 : 2'h0; // @[RefillPipe_1.scala 70:27 42:29]
-  wire  _GEN_15 = _io_req_ready_T ? _GEN_13 : _GEN_2; // @[RefillPipe_1.scala 70:27]
-  wire [1:0] _GEN_16 = _T_2 ? 2'h2 : 2'h1; // @[RefillPipe_1.scala 84:19 85:33 86:23]
-  wire  _T_5 = state == 2'h2; // @[RefillPipe_1.scala 93:16]
-  wire [1:0] _GEN_20 = io_resp_valid ? 2'h0 : 2'h3; // @[RefillPipe_1.scala 96:23 97:32 98:27]
+  wire [1:0] _GEN_12 = _T_2 ? 2'h2 : {{1'd0}, _reqReg_T}; // @[RefillPipe.scala 74:33 75:23]
+  wire  _GEN_13 = _T_2 ? 1'h0 : _GEN_2; // @[RefillPipe.scala 74:33 76:25]
+  wire [1:0] _GEN_14 = _io_req_ready_T ? _GEN_12 : 2'h0; // @[RefillPipe.scala 69:27 42:29]
+  wire  _GEN_15 = _io_req_ready_T ? _GEN_13 : _GEN_2; // @[RefillPipe.scala 69:27]
+  wire [1:0] _GEN_16 = _T_2 ? 2'h2 : 2'h1; // @[RefillPipe.scala 83:19 84:33 85:23]
+  wire  _T_5 = state == 2'h2; // @[RefillPipe.scala 92:16]
+  wire [1:0] _GEN_20 = io_resp_valid ? 2'h0 : 2'h3; // @[RefillPipe.scala 95:23 96:32 97:27]
   wire [1:0] _value_T_1 = beatCounter_value + 2'h1; // @[Counter.scala 77:24]
-  wire  _T_7 = state == 2'h3; // @[RefillPipe_1.scala 109:16]
-  wire  refillSafe = refillFire & _T_5; // @[RefillPipe_1.scala 119:33]
-  assign io_req_ready = state == 2'h0; // @[RefillPipe_1.scala 44:27]
-  assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe_1.scala 137:38]
+  wire  _T_7 = state == 2'h3; // @[RefillPipe.scala 108:16]
+  wire  refillSafe = refillFire & _T_5; // @[RefillPipe.scala 118:33]
+  assign io_req_ready = state == 2'h0; // @[RefillPipe.scala 44:27]
+  assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe.scala 135:38]
   assign io_resp_bits_data = _readRespData_T_9 | _readRespData_T_7; // @[Mux.scala 27:73]
-  assign io_tlbus_req_valid = _reqReg_T | reqValidReg; // @[RefillPipe_1.scala 49:23]
+  assign io_tlbus_req_valid = _reqReg_T | reqValidReg; // @[RefillPipe.scala 49:23]
   assign io_tlbus_req_bits_address = {_GEN_0[31:4],4'h0}; // @[Cat.scala 33:92]
-  assign io_tlbus_resp_ready = io_dataWrite_req_ready & io_dirWrite_req_ready; // @[RefillPipe_1.scala 59:51]
-  assign io_dirWrite_req_valid = refillSafe & lastBeat; // @[RefillPipe_1.scala 120:41]
-  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[RefillPipe_1.scala 121:31]
-  assign io_dirWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe_1.scala 126:30]
-  assign io_dataWrite_req_valid = refillFire & _T_5; // @[RefillPipe_1.scala 119:33]
-  assign io_dataWrite_req_bits_data = io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 134:32]
+  assign io_tlbus_resp_ready = io_dataWrite_req_ready & io_dirWrite_req_ready; // @[RefillPipe.scala 58:51]
+  assign io_dirWrite_req_valid = refillSafe & lastBeat; // @[RefillPipe.scala 119:41]
+  assign io_dirWrite_req_bits_addr = reqReg_addr; // @[RefillPipe.scala 120:31]
+  assign io_dirWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe.scala 125:30]
+  assign io_dataWrite_req_valid = refillFire & _T_5; // @[RefillPipe.scala 118:33]
+  assign io_dataWrite_req_bits_data = io_tlbus_resp_bits_data; // @[RefillPipe.scala 132:32]
   assign io_dataWrite_req_bits_set = reqReg_addr[11:4]; // @[Parameters.scala 50:11]
   assign io_dataWrite_req_bits_blockSelOH = 4'h1 << beatCounter_value; // @[OneHot.scala 57:35]
-  assign io_dataWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe_1.scala 131:31]
+  assign io_dataWrite_req_bits_way = reqReg_chosenWay; // @[RefillPipe.scala 130:31]
   always @(posedge clock) begin
-    if (reset) begin // @[RefillPipe_1.scala 41:24]
-      state <= 2'h0; // @[RefillPipe_1.scala 41:24]
-    end else if (state == 2'h3) begin // @[RefillPipe_1.scala 109:27]
+    if (reset) begin // @[RefillPipe.scala 41:24]
+      state <= 2'h0; // @[RefillPipe.scala 41:24]
+    end else if (state == 2'h3) begin // @[RefillPipe.scala 108:27]
       state <= _GEN_20;
-    end else if (state == 2'h2) begin // @[RefillPipe_1.scala 93:33]
-      if (refillLastBeat) begin // @[RefillPipe_1.scala 95:30]
+    end else if (state == 2'h2) begin // @[RefillPipe.scala 92:33]
+      if (refillLastBeat) begin // @[RefillPipe.scala 94:30]
         state <= _GEN_20;
       end else begin
         state <= 2'h2;
       end
-    end else if (state == 2'h1) begin // @[RefillPipe_1.scala 83:26]
+    end else if (state == 2'h1) begin // @[RefillPipe.scala 82:26]
       state <= _GEN_16;
     end else begin
       state <= _GEN_14;
@@ -7607,9 +7355,9 @@ module RefillPipe_1_1(
     if (_reqReg_T) begin // @[Reg.scala 20:18]
       reqReg_chosenWay <= io_req_bits_chosenWay; // @[Reg.scala 20:22]
     end
-    if (state == 2'h1) begin // @[RefillPipe_1.scala 83:26]
-      if (_T_2) begin // @[RefillPipe_1.scala 85:33]
-        reqValidReg <= 1'h0; // @[RefillPipe_1.scala 87:25]
+    if (state == 2'h1) begin // @[RefillPipe.scala 82:26]
+      if (_T_2) begin // @[RefillPipe.scala 84:33]
+        reqValidReg <= 1'h0; // @[RefillPipe.scala 86:25]
       end else begin
         reqValidReg <= _GEN_15;
       end
@@ -7618,32 +7366,32 @@ module RefillPipe_1_1(
     end
     if (reset) begin // @[Counter.scala 61:40]
       beatCounter_value <= 2'h0; // @[Counter.scala 61:40]
-    end else if (state == 2'h2) begin // @[RefillPipe_1.scala 93:33]
-      if (refillLastBeat) begin // @[RefillPipe_1.scala 95:30]
+    end else if (state == 2'h2) begin // @[RefillPipe.scala 92:33]
+      if (refillLastBeat) begin // @[RefillPipe.scala 94:30]
         beatCounter_value <= 2'h0; // @[Counter.scala 98:11]
-      end else if (refillFire) begin // @[RefillPipe_1.scala 101:32]
+      end else if (refillFire) begin // @[RefillPipe.scala 100:32]
         beatCounter_value <= _value_T_1; // @[Counter.scala 77:15]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_0 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (2'h0 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_0 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_0 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (2'h0 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_0 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_1 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (2'h1 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_1 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_1 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (2'h1 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_1 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
-    if (reset) begin // @[RefillPipe_1.scala 62:39]
-      refillBlockDataArray_2 <= 32'h0; // @[RefillPipe_1.scala 62:39]
-    end else if (refillFire) begin // @[RefillPipe_1.scala 63:22]
-      if (2'h2 == beatCounter_value) begin // @[RefillPipe_1.scala 63:64]
-        refillBlockDataArray_2 <= io_tlbus_resp_bits_data; // @[RefillPipe_1.scala 63:64]
+    if (reset) begin // @[RefillPipe.scala 61:39]
+      refillBlockDataArray_2 <= 32'h0; // @[RefillPipe.scala 61:39]
+    end else if (refillFire) begin // @[RefillPipe.scala 62:22]
+      if (2'h2 == beatCounter_value) begin // @[RefillPipe.scala 62:64]
+        refillBlockDataArray_2 <= io_tlbus_resp_bits_data; // @[RefillPipe.scala 62:64]
       end
     end
   end
@@ -11015,7 +10763,7 @@ module SRAMArray_2P_10(
   assign brams_3_io_w_addr = io_w_addr; // @[SRAM_1.scala 209:28]
   assign brams_3_io_w_data = io_w_data_3; // @[SRAM_1.scala 210:28]
 endmodule
-module DataBankArray_1_1(
+module DataBankArray_1(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -11174,17 +10922,17 @@ module DataBankArray_1_1(
   wire [3:0] dataBanks_7_io_w_maskOH; // @[SRAM_1.scala 255:31]
   wire  ren = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
   wire  _wen_T_1 = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  wire  wen = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank_1.scala 51:44]
+  wire  wen = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank.scala 49:44]
   wire [1:0] _T_4 = io_write_req_bits_blockSelOH[0] + io_write_req_bits_blockSelOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_6 = io_write_req_bits_blockSelOH[2] + io_write_req_bits_blockSelOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_8 = _T_4 + _T_6; // @[Bitwise.scala 51:90]
-  wire  wen_1 = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_2 = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_3 = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_4 = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_5 = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_6 = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  wire  wen_7 = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank_1.scala 51:44]
+  wire  wen_1 = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_2 = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_3 = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_4 = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_5 = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_6 = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank.scala 49:44]
+  wire  wen_7 = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank.scala 49:44]
   SRAMArray_2P_10 dataBanks_0 ( // @[SRAM_1.scala 255:31]
     .clock(dataBanks_0_clock),
     .reset(dataBanks_0_reset),
@@ -11313,7 +11061,7 @@ module DataBankArray_1_1(
     .io_w_data_3(dataBanks_7_io_w_data_3),
     .io_w_maskOH(dataBanks_7_io_w_maskOH)
   );
-  assign io_read_req_ready = 1'h1; // @[DataBank_1.scala 45:23]
+  assign io_read_req_ready = 1'h1; // @[DataBank.scala 43:23]
   assign io_read_resp_0_0 = ren ? dataBanks_0_io_r_data_0 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_0_1 = ren ? dataBanks_0_io_r_data_1 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_0_2 = ren ? dataBanks_0_io_r_data_2 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
@@ -11346,87 +11094,87 @@ module DataBankArray_1_1(
   assign io_read_resp_7_1 = ren ? dataBanks_7_io_r_data_1 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_7_2 = ren ? dataBanks_7_io_r_data_2 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   assign io_read_resp_7_3 = ren ? dataBanks_7_io_r_data_3 : 32'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  assign io_write_req_ready = 1'h1; // @[DataBank_1.scala 53:28]
+  assign io_write_req_ready = 1'h1; // @[DataBank.scala 51:28]
   assign dataBanks_0_clock = clock;
   assign dataBanks_0_reset = reset;
   assign dataBanks_0_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_0_io_w_en = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_0_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_0_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_0_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_0_io_w_en = io_write_req_bits_way[0] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_0_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_0_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_0_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_1_clock = clock;
   assign dataBanks_1_reset = reset;
   assign dataBanks_1_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_1_io_w_en = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_1_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_1_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_1_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_1_io_w_en = io_write_req_bits_way[1] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_1_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_1_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_1_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_2_clock = clock;
   assign dataBanks_2_reset = reset;
   assign dataBanks_2_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_2_io_w_en = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_2_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_2_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_2_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_2_io_w_en = io_write_req_bits_way[2] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_2_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_2_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_2_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_3_clock = clock;
   assign dataBanks_3_reset = reset;
   assign dataBanks_3_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_3_io_w_en = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_3_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_3_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_3_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_3_io_w_en = io_write_req_bits_way[3] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_3_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_3_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_3_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_4_clock = clock;
   assign dataBanks_4_reset = reset;
   assign dataBanks_4_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_4_io_w_en = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_4_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_4_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_4_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_4_io_w_en = io_write_req_bits_way[4] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_4_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_4_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_4_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_5_clock = clock;
   assign dataBanks_5_reset = reset;
   assign dataBanks_5_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_5_io_w_en = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_5_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_5_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_5_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_5_io_w_en = io_write_req_bits_way[5] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_5_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_5_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_5_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_6_clock = clock;
   assign dataBanks_6_reset = reset;
   assign dataBanks_6_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_6_io_w_en = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_6_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_6_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_6_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_6_io_w_en = io_write_req_bits_way[6] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_6_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_6_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_6_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   assign dataBanks_7_clock = clock;
   assign dataBanks_7_reset = reset;
   assign dataBanks_7_io_r_addr = io_read_req_bits_set; // @[SRAM_1.scala 102:22 244:{19,19}]
-  assign dataBanks_7_io_w_en = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank_1.scala 51:44]
-  assign dataBanks_7_io_w_addr = io_write_req_bits_set; // @[DataBank_1.scala 54:19 SRAM_1.scala 237:19]
-  assign dataBanks_7_io_w_data_0 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_1 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_2 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_data_3 = io_write_req_bits_data; // @[DataBank_1.scala 54:19 SRAM_1.scala 238:35]
-  assign dataBanks_7_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank_1.scala 54:19 SRAM_1.scala 239:21]
+  assign dataBanks_7_io_w_en = io_write_req_bits_way[7] & _wen_T_1; // @[DataBank.scala 49:44]
+  assign dataBanks_7_io_w_addr = io_write_req_bits_set; // @[DataBank.scala 52:19 SRAM_1.scala 237:19]
+  assign dataBanks_7_io_w_data_0 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_1 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_2 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_data_3 = io_write_req_bits_data; // @[DataBank.scala 52:19 SRAM_1.scala 238:35]
+  assign dataBanks_7_io_w_maskOH = io_write_req_bits_blockSelOH; // @[DataBank.scala 52:19 SRAM_1.scala 239:21]
   always @(posedge clock) begin
     `ifndef SYNTHESIS
     `ifdef PRINTF_COND
@@ -17866,7 +17614,7 @@ module SRAMArray_2P_19(
   assign brams_7_io_w_addr = io_w_addr; // @[SRAM_1.scala 209:28]
   assign brams_7_io_w_data = io_w_data_7; // @[SRAM_1.scala 210:28]
 endmodule
-module DCacheDirectory_1_1(
+module DCacheDirectory_1(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -17875,7 +17623,14 @@ module DCacheDirectory_1_1(
   output        io_read_resp_bits_hit,
   output [7:0]  io_read_resp_bits_chosenWay,
   output        io_read_resp_bits_isDirtyWay,
-  output [19:0] io_read_resp_bits_dirtyTag,
+  output [19:0] io_read_resp_bits_tagRdVec_0,
+  output [19:0] io_read_resp_bits_tagRdVec_1,
+  output [19:0] io_read_resp_bits_tagRdVec_2,
+  output [19:0] io_read_resp_bits_tagRdVec_3,
+  output [19:0] io_read_resp_bits_tagRdVec_4,
+  output [19:0] io_read_resp_bits_tagRdVec_5,
+  output [19:0] io_read_resp_bits_tagRdVec_6,
+  output [19:0] io_read_resp_bits_tagRdVec_7,
   output        io_write_req_ready,
   input         io_write_req_valid,
   input  [31:0] io_write_req_bits_addr,
@@ -17960,7 +17715,7 @@ module DCacheDirectory_1_1(
   wire [1:0] _T_16 = io_write_req_bits_way[6] + io_write_req_bits_way[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_18 = _T_14 + _T_16; // @[Bitwise.scala 51:90]
   wire [3:0] _T_20 = _T_12 + _T_18; // @[Bitwise.scala 51:90]
-  wire  _T_46 = ~reset; // @[Directory_1.scala 37:11]
+  wire  _T_46 = ~reset; // @[Directory.scala 69:11]
   wire [19:0] rdata__0 = ren ? tagArray_io_r_data_0 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [19:0] rdata__1 = ren ? tagArray_io_r_data_1 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [19:0] rdata__2 = ren ? tagArray_io_r_data_2 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
@@ -17977,49 +17732,49 @@ module DCacheDirectory_1_1(
   wire [1:0] rdata_1_5 = ren ? metaArray_io_r_data_5 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [1:0] rdata_1_6 = ren ? metaArray_io_r_data_6 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
   wire [1:0] rdata_1_7 = ren ? metaArray_io_r_data_7 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [15:0] _T_48 = {rdata_1_7,rdata_1_6,rdata_1_5,rdata_1_4,rdata_1_3,rdata_1_2,rdata_1_1,rdata_1_0}; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_0_valid = _T_48[0]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_0_dirty = _T_48[1]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_1_valid = _T_48[2]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_1_dirty = _T_48[3]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_2_valid = _T_48[4]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_2_dirty = _T_48[5]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_3_valid = _T_48[6]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_3_dirty = _T_48[7]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_4_valid = _T_48[8]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_4_dirty = _T_48[9]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_5_valid = _T_48[10]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_5_dirty = _T_48[11]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_6_valid = _T_48[12]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_6_dirty = _T_48[13]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_7_valid = _T_48[14]; // @[Directory_1.scala 56:52]
-  wire  metaRdVec_7_dirty = _T_48[15]; // @[Directory_1.scala 56:52]
-  wire  tagMatchVec_0 = rdata__0 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_1 = rdata__1 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_2 = rdata__2 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_3 = rdata__3 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_4 = rdata__4 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_5 = rdata__5 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_6 = rdata__6 == rTag; // @[Directory_1.scala 63:46]
-  wire  tagMatchVec_7 = rdata__7 == rTag; // @[Directory_1.scala 63:46]
-  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_4 = tagMatchVec_4 & metaRdVec_4_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_5 = tagMatchVec_5 & metaRdVec_5_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_6 = tagMatchVec_6 & metaRdVec_6_valid; // @[Directory_1.scala 66:80]
-  wire  _matchWayOH_T_7 = tagMatchVec_7 & metaRdVec_7_valid; // @[Directory_1.scala 66:80]
+  wire [15:0] _T_48 = {rdata_1_7,rdata_1_6,rdata_1_5,rdata_1_4,rdata_1_3,rdata_1_2,rdata_1_1,rdata_1_0}; // @[Directory.scala 82:52]
+  wire  metaRdVec_0_valid = _T_48[0]; // @[Directory.scala 82:52]
+  wire  metaRdVec_0_dirty = _T_48[1]; // @[Directory.scala 82:52]
+  wire  metaRdVec_1_valid = _T_48[2]; // @[Directory.scala 82:52]
+  wire  metaRdVec_1_dirty = _T_48[3]; // @[Directory.scala 82:52]
+  wire  metaRdVec_2_valid = _T_48[4]; // @[Directory.scala 82:52]
+  wire  metaRdVec_2_dirty = _T_48[5]; // @[Directory.scala 82:52]
+  wire  metaRdVec_3_valid = _T_48[6]; // @[Directory.scala 82:52]
+  wire  metaRdVec_3_dirty = _T_48[7]; // @[Directory.scala 82:52]
+  wire  metaRdVec_4_valid = _T_48[8]; // @[Directory.scala 82:52]
+  wire  metaRdVec_4_dirty = _T_48[9]; // @[Directory.scala 82:52]
+  wire  metaRdVec_5_valid = _T_48[10]; // @[Directory.scala 82:52]
+  wire  metaRdVec_5_dirty = _T_48[11]; // @[Directory.scala 82:52]
+  wire  metaRdVec_6_valid = _T_48[12]; // @[Directory.scala 82:52]
+  wire  metaRdVec_6_dirty = _T_48[13]; // @[Directory.scala 82:52]
+  wire  metaRdVec_7_valid = _T_48[14]; // @[Directory.scala 82:52]
+  wire  metaRdVec_7_dirty = _T_48[15]; // @[Directory.scala 82:52]
+  wire  tagMatchVec_0 = rdata__0 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_1 = rdata__1 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_2 = rdata__2 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_3 = rdata__3 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_4 = rdata__4 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_5 = rdata__5 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_6 = rdata__6 == rTag; // @[Directory.scala 85:46]
+  wire  tagMatchVec_7 = rdata__7 == rTag; // @[Directory.scala 85:46]
+  wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_3 = tagMatchVec_3 & metaRdVec_3_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_4 = tagMatchVec_4 & metaRdVec_4_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_5 = tagMatchVec_5 & metaRdVec_5_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_6 = tagMatchVec_6 & metaRdVec_6_valid; // @[Directory.scala 88:80]
+  wire  _matchWayOH_T_7 = tagMatchVec_7 & metaRdVec_7_valid; // @[Directory.scala 88:80]
   wire [7:0] matchWayOH = {_matchWayOH_T_7,_matchWayOH_T_6,_matchWayOH_T_5,_matchWayOH_T_4,_matchWayOH_T_3,
     _matchWayOH_T_2,_matchWayOH_T_1,_matchWayOH_T}; // @[Cat.scala 33:92]
-  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_4 = ~metaRdVec_4_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_5 = ~metaRdVec_5_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_6 = ~metaRdVec_6_valid; // @[Directory_1.scala 67:53]
-  wire  invalidWayVec_7 = ~metaRdVec_7_valid; // @[Directory_1.scala 67:53]
+  wire  invalidWayVec_0 = ~metaRdVec_0_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_1 = ~metaRdVec_1_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_2 = ~metaRdVec_2_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_3 = ~metaRdVec_3_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_4 = ~metaRdVec_4_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_5 = ~metaRdVec_5_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_6 = ~metaRdVec_6_valid; // @[Directory.scala 89:53]
+  wire  invalidWayVec_7 = ~metaRdVec_7_valid; // @[Directory.scala 89:53]
   wire [7:0] _invalidWayOH_T_16 = invalidWayVec_6 ? 8'h40 : 8'h80; // @[Mux.scala 47:70]
   wire [7:0] _invalidWayOH_T_17 = invalidWayVec_5 ? 8'h20 : _invalidWayOH_T_16; // @[Mux.scala 47:70]
   wire [7:0] _invalidWayOH_T_18 = invalidWayVec_4 ? 8'h10 : _invalidWayOH_T_17; // @[Mux.scala 47:70]
@@ -18029,41 +17784,23 @@ module DCacheDirectory_1_1(
   wire [7:0] invalidWayOH = invalidWayVec_0 ? 8'h1 : _invalidWayOH_T_21; // @[Mux.scala 47:70]
   wire [7:0] _hasInvalidWay_T = {invalidWayVec_0,invalidWayVec_1,invalidWayVec_2,invalidWayVec_3,invalidWayVec_4,
     invalidWayVec_5,invalidWayVec_6,invalidWayVec_7}; // @[Cat.scala 33:92]
-  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory_1.scala 69:44]
+  wire  hasInvalidWay = |_hasInvalidWay_T; // @[Directory.scala 91:44]
   wire [7:0] replaceWay_lfsr_lo = {replaceWay_lfsr_prng_io_out_7,replaceWay_lfsr_prng_io_out_6,
     replaceWay_lfsr_prng_io_out_5,replaceWay_lfsr_prng_io_out_4,replaceWay_lfsr_prng_io_out_3,
     replaceWay_lfsr_prng_io_out_2,replaceWay_lfsr_prng_io_out_1,replaceWay_lfsr_prng_io_out_0}; // @[PRNG.scala 95:17]
   wire [15:0] replaceWay_lfsr = {replaceWay_lfsr_prng_io_out_15,replaceWay_lfsr_prng_io_out_14,
     replaceWay_lfsr_prng_io_out_13,replaceWay_lfsr_prng_io_out_12,replaceWay_lfsr_prng_io_out_11,
     replaceWay_lfsr_prng_io_out_10,replaceWay_lfsr_prng_io_out_9,replaceWay_lfsr_prng_io_out_8,replaceWay_lfsr_lo}; // @[PRNG.scala 95:17]
-  wire [2:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[2:0]; // @[DCache.scala 60:39]
+  wire [2:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[2:0]; // @[DCache.scala 61:39]
   wire [7:0] replaceWay = 8'h1 << replaceWay_outputWay_shiftAmount; // @[OneHot.scala 64:12]
-  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory_1.scala 71:65]
+  wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory.scala 93:65]
   reg [7:0] replaceWayReg; // @[Reg.scala 19:16]
-  wire  isHit = |matchWayOH; // @[Directory_1.scala 73:41]
-  wire [7:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory_1.scala 74:51]
-  wire [7:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory_1.scala 74:28]
-  wire [7:0] _dirtyWayOH_T = {metaRdVec_7_dirty,metaRdVec_6_dirty,metaRdVec_5_dirty,metaRdVec_4_dirty,metaRdVec_3_dirty,
+  wire  isHit = |matchWayOH; // @[Directory.scala 95:41]
+  wire [7:0] _choseWayOH_T = hasInvalidWay ? invalidWayOH : replaceWayReg; // @[Directory.scala 96:51]
+  wire [7:0] choseWayOH = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
+  wire [7:0] dirtyWayOH = {metaRdVec_7_dirty,metaRdVec_6_dirty,metaRdVec_5_dirty,metaRdVec_4_dirty,metaRdVec_3_dirty,
     metaRdVec_2_dirty,metaRdVec_1_dirty,metaRdVec_0_dirty}; // @[Cat.scala 33:92]
-  wire [7:0] _dirtyWayOH_T_1 = {metaRdVec_7_valid,metaRdVec_6_valid,metaRdVec_5_valid,metaRdVec_4_valid,
-    metaRdVec_3_valid,metaRdVec_2_valid,metaRdVec_1_valid,metaRdVec_0_valid}; // @[Cat.scala 33:92]
-  wire [7:0] _dirtyWayOH_T_2 = _dirtyWayOH_T & _dirtyWayOH_T_1; // @[Directory_1.scala 75:51]
-  wire [7:0] dirtyWayOH = _dirtyWayOH_T_2 & choseWayOH; // @[Directory_1.scala 75:79]
-  wire [7:0] _isDirtyWay_T = choseWayOH & dirtyWayOH; // @[Directory_1.scala 76:38]
-  wire [19:0] _dirtyTag_T_8 = dirtyWayOH[0] ? rdata__0 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_9 = dirtyWayOH[1] ? rdata__1 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_10 = dirtyWayOH[2] ? rdata__2 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_11 = dirtyWayOH[3] ? rdata__3 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_12 = dirtyWayOH[4] ? rdata__4 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_13 = dirtyWayOH[5] ? rdata__5 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_14 = dirtyWayOH[6] ? rdata__6 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_15 = dirtyWayOH[7] ? rdata__7 : 20'h0; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_16 = _dirtyTag_T_8 | _dirtyTag_T_9; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_17 = _dirtyTag_T_16 | _dirtyTag_T_10; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_18 = _dirtyTag_T_17 | _dirtyTag_T_11; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_19 = _dirtyTag_T_18 | _dirtyTag_T_12; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_20 = _dirtyTag_T_19 | _dirtyTag_T_13; // @[Mux.scala 27:73]
-  wire [19:0] _dirtyTag_T_21 = _dirtyTag_T_20 | _dirtyTag_T_14; // @[Mux.scala 27:73]
+  wire [7:0] _isDirtyWay_T = choseWayOH & dirtyWayOH; // @[Directory.scala 98:38]
   wire [1:0] _T_73 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_75 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_77 = _T_73 + _T_75; // @[Bitwise.scala 51:90]
@@ -18071,13 +17808,6 @@ module DCacheDirectory_1_1(
   wire [1:0] _T_81 = choseWayOH[6] + choseWayOH[7]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_83 = _T_79 + _T_81; // @[Bitwise.scala 51:90]
   wire [3:0] _T_85 = _T_77 + _T_83; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_99 = dirtyWayOH[0] + dirtyWayOH[1]; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_101 = dirtyWayOH[2] + dirtyWayOH[3]; // @[Bitwise.scala 51:90]
-  wire [2:0] _T_103 = _T_99 + _T_101; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_105 = dirtyWayOH[4] + dirtyWayOH[5]; // @[Bitwise.scala 51:90]
-  wire [1:0] _T_107 = dirtyWayOH[6] + dirtyWayOH[7]; // @[Bitwise.scala 51:90]
-  wire [2:0] _T_109 = _T_105 + _T_107; // @[Bitwise.scala 51:90]
-  wire [3:0] _T_111 = _T_103 + _T_109; // @[Bitwise.scala 51:90]
   SRAMArray_2P_18 tagArray ( // @[SRAM_1.scala 255:31]
     .clock(tagArray_clock),
     .reset(tagArray_reset),
@@ -18146,40 +17876,47 @@ module DCacheDirectory_1_1(
     .io_out_14(replaceWay_lfsr_prng_io_out_14),
     .io_out_15(replaceWay_lfsr_prng_io_out_15)
   );
-  assign io_read_req_ready = 1'h1; // @[Directory_1.scala 44:29]
-  assign io_read_resp_bits_hit = |matchWayOH; // @[Directory_1.scala 73:41]
-  assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory_1.scala 74:28]
-  assign io_read_resp_bits_isDirtyWay = |_isDirtyWay_T; // @[Directory_1.scala 76:53]
-  assign io_read_resp_bits_dirtyTag = _dirtyTag_T_21 | _dirtyTag_T_15; // @[Mux.scala 27:73]
-  assign io_write_req_ready = 1'h1; // @[Directory_1.scala 45:29]
+  assign io_read_req_ready = 1'h1; // @[Directory.scala 75:29]
+  assign io_read_resp_bits_hit = |matchWayOH; // @[Directory.scala 95:41]
+  assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
+  assign io_read_resp_bits_isDirtyWay = |_isDirtyWay_T; // @[Directory.scala 98:53]
+  assign io_read_resp_bits_tagRdVec_0 = ren ? tagArray_io_r_data_0 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_1 = ren ? tagArray_io_r_data_1 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_2 = ren ? tagArray_io_r_data_2 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_3 = ren ? tagArray_io_r_data_3 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_4 = ren ? tagArray_io_r_data_4 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_5 = ren ? tagArray_io_r_data_5 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_6 = ren ? tagArray_io_r_data_6 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_7 = ren ? tagArray_io_r_data_7 : 20'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_write_req_ready = 1'h1; // @[Directory.scala 76:29]
   assign tagArray_clock = clock;
   assign tagArray_reset = reset;
   assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign tagArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
-  assign tagArray_io_w_data_0 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_1 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_2 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_3 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_4 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_5 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_6 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_7 = wTag; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
+  assign tagArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
+  assign tagArray_io_w_data_0 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_1 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_2 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_3 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_4 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_5 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_6 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_data_7 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
   assign metaArray_clock = clock;
   assign metaArray_reset = reset;
   assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign metaArray_io_w_addr = wSet; // @[Directory_1.scala 94:15 SRAM_1.scala 237:19]
-  assign metaArray_io_w_data_0 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_1 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_2 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_3 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_4 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_5 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_6 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_7 = io_write_req_bits_meta; // @[Directory_1.scala 94:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory_1.scala 94:15 SRAM_1.scala 239:21]
+  assign metaArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
+  assign metaArray_io_w_data_0 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_1 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_2 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_3 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_4 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_5 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_6 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_data_7 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
+  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
   assign replaceWay_lfsr_prng_clock = clock;
   assign replaceWay_lfsr_prng_reset = reset;
   always @(posedge clock) begin
@@ -18192,8 +17929,8 @@ module DCacheDirectory_1_1(
     `endif
         if (~reset & ~(_T_20 < 4'h2)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory_1.scala:37 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
-            ,_T_20); // @[Directory_1.scala 37:11]
+            "Assertion failed: Error directory write way has multiple valid bit! ==>%d\n    at Directory.scala:69 assert(PopCount(wWay) < 2.U, cf\"Error directory write way has multiple valid bit! ==>${PopCount(wWay)}\")\n"
+            ,_T_20); // @[Directory.scala 69:11]
         end
     `ifdef PRINTF_COND
       end
@@ -18204,7 +17941,7 @@ module DCacheDirectory_1_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_20 < 4'h2) & ~reset) begin
-          $fatal; // @[Directory_1.scala 37:11]
+          $fatal; // @[Directory.scala 69:11]
         end
     `ifdef STOP_COND
       end
@@ -18216,8 +17953,8 @@ module DCacheDirectory_1_1(
     `endif
         if (_T_46 & ~(_T_85 == 4'h1)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory_1.scala:79 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
-            ); // @[Directory_1.scala 79:11]
+            "Assertion failed: Error chosenWay has multiple valid bit!\n    at Directory.scala:101 assert(PopCount(choseWayOH) === 1.U, \"Error chosenWay has multiple valid bit!\")\n"
+            ); // @[Directory.scala 101:11]
         end
     `ifdef PRINTF_COND
       end
@@ -18228,31 +17965,7 @@ module DCacheDirectory_1_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_85 == 4'h1) & _T_46) begin
-          $fatal; // @[Directory_1.scala 79:11]
-        end
-    `ifdef STOP_COND
-      end
-    `endif
-    `endif // SYNTHESIS
-    `ifndef SYNTHESIS
-    `ifdef PRINTF_COND
-      if (`PRINTF_COND) begin
-    `endif
-        if (_T_46 & ~(_T_111 <= 4'h1)) begin
-          $fwrite(32'h80000002,
-            "Assertion failed: Error dirtyWay has multiple valid bit!\n    at Directory_1.scala:80 assert(PopCount(dirtyWayOH) <= 1.U, \"Error dirtyWay has multiple valid bit!\")\n"
-            ); // @[Directory_1.scala 80:11]
-        end
-    `ifdef PRINTF_COND
-      end
-    `endif
-    `endif // SYNTHESIS
-    `ifndef SYNTHESIS
-    `ifdef STOP_COND
-      if (`STOP_COND) begin
-    `endif
-        if (~(_T_111 <= 4'h1) & _T_46) begin
-          $fatal; // @[Directory_1.scala 80:11]
+          $fatal; // @[Directory.scala 101:11]
         end
     `ifdef STOP_COND
       end
@@ -18360,7 +18073,6 @@ module Arbiter(
   input         io_in_0_bits_dirInfo_hit,
   input  [7:0]  io_in_0_bits_dirInfo_chosenWay,
   input         io_in_0_bits_dirInfo_isDirtyWay,
-  input  [19:0] io_in_0_bits_dirInfo_dirtyTag,
   input  [31:0] io_in_0_bits_data_0,
   input  [31:0] io_in_0_bits_data_1,
   input  [31:0] io_in_0_bits_data_2,
@@ -18371,7 +18083,7 @@ module Arbiter(
   input         io_in_1_bits_dirInfo_hit,
   input  [7:0]  io_in_1_bits_dirInfo_chosenWay,
   input         io_in_1_bits_dirInfo_isDirtyWay,
-  input  [19:0] io_in_1_bits_dirInfo_dirtyTag,
+  input  [19:0] io_in_1_bits_dirtyTag,
   input  [31:0] io_in_1_bits_data_0,
   input  [31:0] io_in_1_bits_data_1,
   input  [31:0] io_in_1_bits_data_2,
@@ -18384,7 +18096,7 @@ module Arbiter(
   output        io_out_bits_dirInfo_hit,
   output [7:0]  io_out_bits_dirInfo_chosenWay,
   output        io_out_bits_dirInfo_isDirtyWay,
-  output [19:0] io_out_bits_dirInfo_dirtyTag,
+  output [19:0] io_out_bits_dirtyTag,
   output [31:0] io_out_bits_data_0,
   output [31:0] io_out_bits_data_1,
   output [31:0] io_out_bits_data_2,
@@ -18403,7 +18115,7 @@ module Arbiter(
     ; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_dirInfo_isDirtyWay = io_in_0_valid ? io_in_0_bits_dirInfo_isDirtyWay :
     io_in_1_bits_dirInfo_isDirtyWay; // @[Arbiter.scala 136:15 138:26 140:19]
-  assign io_out_bits_dirInfo_dirtyTag = io_in_0_valid ? io_in_0_bits_dirInfo_dirtyTag : io_in_1_bits_dirInfo_dirtyTag; // @[Arbiter.scala 136:15 138:26 140:19]
+  assign io_out_bits_dirtyTag = io_in_0_valid ? 20'h0 : io_in_1_bits_dirtyTag; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_0 = io_in_0_valid ? io_in_0_bits_data_0 : io_in_1_bits_data_0; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_1 = io_in_0_valid ? io_in_0_bits_data_1 : io_in_1_bits_data_1; // @[Arbiter.scala 136:15 138:26 140:19]
   assign io_out_bits_data_2 = io_in_0_valid ? io_in_0_bits_data_2 : io_in_1_bits_data_2; // @[Arbiter.scala 136:15 138:26 140:19]
@@ -18551,7 +18263,7 @@ module Arbiter_7(
   assign io_out_bits_way = io_in_0_valid ? io_in_0_bits_way : _GEN_2; // @[Arbiter.scala 138:26 140:19]
   assign io_out_bits_meta = io_in_0_valid ? 2'h3 : _GEN_3; // @[Arbiter.scala 138:26 140:19]
 endmodule
-module DCache_1(
+module DCache(
   input         clock,
   input         reset,
   output        io_read_req_ready,
@@ -18574,393 +18286,404 @@ module DCache_1(
   input  [2:0]  io_tlbus_resp_bits_opcode,
   input  [31:0] io_tlbus_resp_bits_data
 );
-  wire  loadPipe_clock; // @[DCache_2.scala 31:26]
-  wire  loadPipe_reset; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_load_req_ready; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_load_req_valid; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_load_req_bits_addr; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_load_resp_valid; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_load_resp_bits_data; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dir_req_ready; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dir_req_valid; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dir_req_bits_addr; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dir_resp_bits_hit; // @[DCache_2.scala 31:26]
-  wire [7:0] loadPipe_io_dir_resp_bits_chosenWay; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dir_resp_bits_isDirtyWay; // @[DCache_2.scala 31:26]
-  wire [19:0] loadPipe_io_dir_resp_bits_dirtyTag; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dataBank_req_ready; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_dataBank_req_valid; // @[DCache_2.scala 31:26]
-  wire [7:0] loadPipe_io_dataBank_req_bits_set; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_0_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_0_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_0_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_0_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_1_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_1_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_1_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_1_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_2_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_2_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_2_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_2_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_3_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_3_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_3_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_3_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_4_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_4_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_4_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_4_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_5_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_5_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_5_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_5_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_6_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_6_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_6_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_6_3; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_7_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_7_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_7_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_dataBank_resp_7_3; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_mshr_ready; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_mshr_valid; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_mshr_bits_addr; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 31:26]
-  wire [7:0] loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 31:26]
-  wire  loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 31:26]
-  wire [19:0] loadPipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_mshr_bits_data_0; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_mshr_bits_data_1; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_mshr_bits_data_2; // @[DCache_2.scala 31:26]
-  wire [31:0] loadPipe_io_mshr_bits_data_3; // @[DCache_2.scala 31:26]
-  wire  storePipe_clock; // @[DCache_2.scala 32:27]
-  wire  storePipe_reset; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_store_req_ready; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_store_req_valid; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_store_req_bits_addr; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_store_req_bits_data; // @[DCache_2.scala 32:27]
-  wire [3:0] storePipe_io_store_req_bits_mask; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_store_resp_valid; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dir_read_req_valid; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dir_read_req_bits_addr; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dir_read_resp_bits_hit; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_dir_read_resp_bits_chosenWay; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dir_read_resp_bits_isDirtyWay; // @[DCache_2.scala 32:27]
-  wire [19:0] storePipe_io_dir_read_resp_bits_dirtyTag; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dir_write_req_valid; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dir_write_req_bits_addr; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_dir_write_req_bits_way; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dataBank_read_req_valid; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_dataBank_read_req_bits_set; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_0_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_0_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_0_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_0_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_1_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_1_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_1_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_1_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_2_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_2_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_2_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_2_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_3_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_3_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_3_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_3_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_4_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_4_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_4_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_4_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_5_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_5_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_5_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_5_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_6_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_6_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_6_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_6_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_7_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_7_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_7_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_read_resp_7_3; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_dataBank_write_req_valid; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_dataBank_write_req_bits_data; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_dataBank_write_req_bits_set; // @[DCache_2.scala 32:27]
-  wire [3:0] storePipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_dataBank_write_req_bits_way; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_mshr_ready; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_mshr_valid; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_addr; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 32:27]
-  wire [7:0] storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 32:27]
-  wire  storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 32:27]
-  wire [19:0] storePipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_data_0; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_data_1; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_data_2; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_data_3; // @[DCache_2.scala 32:27]
-  wire [31:0] storePipe_io_mshr_bits_storeData; // @[DCache_2.scala 32:27]
-  wire [3:0] storePipe_io_mshr_bits_storeMask; // @[DCache_2.scala 32:27]
-  wire  mshr_clock; // @[DCache_2.scala 33:22]
-  wire  mshr_reset; // @[DCache_2.scala 33:22]
-  wire  mshr_io_req_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_req_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_addr; // @[DCache_2.scala 33:22]
-  wire  mshr_io_req_bits_dirInfo_hit; // @[DCache_2.scala 33:22]
-  wire [7:0] mshr_io_req_bits_dirInfo_chosenWay; // @[DCache_2.scala 33:22]
-  wire  mshr_io_req_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 33:22]
-  wire [19:0] mshr_io_req_bits_dirInfo_dirtyTag; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_data_0; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_data_1; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_data_2; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_data_3; // @[DCache_2.scala 33:22]
-  wire  mshr_io_req_bits_isStore; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_req_bits_storeData; // @[DCache_2.scala 33:22]
-  wire [3:0] mshr_io_req_bits_storeMask; // @[DCache_2.scala 33:22]
-  wire  mshr_io_resp_load_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_resp_load_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_resp_load_bits_data; // @[DCache_2.scala 33:22]
-  wire  mshr_io_resp_store_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_resp_store_valid; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_refill_req_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_refill_req_bits_addr; // @[DCache_2.scala 33:22]
-  wire [7:0] mshr_io_tasks_refill_req_bits_chosenWay; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_refill_resp_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_refill_resp_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_refill_resp_bits_data; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_writeback_req_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_writeback_req_bits_addr; // @[DCache_2.scala 33:22]
-  wire [19:0] mshr_io_tasks_writeback_req_bits_dirtyTag; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_writeback_req_bits_data_0; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_writeback_req_bits_data_1; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_writeback_req_bits_data_2; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_tasks_writeback_req_bits_data_3; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_writeback_resp_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_tasks_writeback_resp_valid; // @[DCache_2.scala 33:22]
-  wire  mshr_io_dirWrite_req_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_dirWrite_req_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_dirWrite_req_bits_addr; // @[DCache_2.scala 33:22]
-  wire [7:0] mshr_io_dirWrite_req_bits_way; // @[DCache_2.scala 33:22]
-  wire  mshr_io_dataWrite_req_ready; // @[DCache_2.scala 33:22]
-  wire  mshr_io_dataWrite_req_valid; // @[DCache_2.scala 33:22]
-  wire [31:0] mshr_io_dataWrite_req_bits_data; // @[DCache_2.scala 33:22]
-  wire [7:0] mshr_io_dataWrite_req_bits_set; // @[DCache_2.scala 33:22]
-  wire [3:0] mshr_io_dataWrite_req_bits_blockSelOH; // @[DCache_2.scala 33:22]
-  wire [7:0] mshr_io_dataWrite_req_bits_way; // @[DCache_2.scala 33:22]
-  wire  refillPipe_clock; // @[DCache_2.scala 34:28]
-  wire  refillPipe_reset; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_req_ready; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_req_valid; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_req_bits_addr; // @[DCache_2.scala 34:28]
-  wire [7:0] refillPipe_io_req_bits_chosenWay; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_resp_valid; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_resp_bits_data; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_tlbus_req_ready; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_tlbus_req_valid; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_tlbus_req_bits_address; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_tlbus_resp_ready; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_tlbus_resp_valid; // @[DCache_2.scala 34:28]
-  wire [2:0] refillPipe_io_tlbus_resp_bits_opcode; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_tlbus_resp_bits_data; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_dirWrite_req_ready; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_dirWrite_req_valid; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_dirWrite_req_bits_addr; // @[DCache_2.scala 34:28]
-  wire [7:0] refillPipe_io_dirWrite_req_bits_way; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_dataWrite_req_ready; // @[DCache_2.scala 34:28]
-  wire  refillPipe_io_dataWrite_req_valid; // @[DCache_2.scala 34:28]
-  wire [31:0] refillPipe_io_dataWrite_req_bits_data; // @[DCache_2.scala 34:28]
-  wire [7:0] refillPipe_io_dataWrite_req_bits_set; // @[DCache_2.scala 34:28]
-  wire [3:0] refillPipe_io_dataWrite_req_bits_blockSelOH; // @[DCache_2.scala 34:28]
-  wire [7:0] refillPipe_io_dataWrite_req_bits_way; // @[DCache_2.scala 34:28]
-  wire  wb_clock; // @[DCache_2.scala 35:20]
-  wire  wb_reset; // @[DCache_2.scala 35:20]
-  wire  wb_io_req_ready; // @[DCache_2.scala 35:20]
-  wire  wb_io_req_valid; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_req_bits_addr; // @[DCache_2.scala 35:20]
-  wire [19:0] wb_io_req_bits_dirtyTag; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_req_bits_data_0; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_req_bits_data_1; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_req_bits_data_2; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_req_bits_data_3; // @[DCache_2.scala 35:20]
-  wire  wb_io_resp_valid; // @[DCache_2.scala 35:20]
-  wire  wb_io_tlbus_req_ready; // @[DCache_2.scala 35:20]
-  wire  wb_io_tlbus_req_valid; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_tlbus_req_bits_address; // @[DCache_2.scala 35:20]
-  wire [31:0] wb_io_tlbus_req_bits_data; // @[DCache_2.scala 35:20]
-  wire  wb_io_tlbus_resp_ready; // @[DCache_2.scala 35:20]
-  wire  wb_io_tlbus_resp_valid; // @[DCache_2.scala 35:20]
-  wire  db_clock; // @[DCache_2.scala 36:20]
-  wire  db_reset; // @[DCache_2.scala 36:20]
-  wire  db_io_read_req_ready; // @[DCache_2.scala 36:20]
-  wire  db_io_read_req_valid; // @[DCache_2.scala 36:20]
-  wire [7:0] db_io_read_req_bits_set; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_0_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_0_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_0_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_0_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_1_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_1_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_1_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_1_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_2_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_2_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_2_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_2_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_3_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_3_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_3_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_3_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_4_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_4_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_4_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_4_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_5_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_5_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_5_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_5_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_6_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_6_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_6_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_6_3; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_7_0; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_7_1; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_7_2; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_read_resp_7_3; // @[DCache_2.scala 36:20]
-  wire  db_io_write_req_ready; // @[DCache_2.scala 36:20]
-  wire  db_io_write_req_valid; // @[DCache_2.scala 36:20]
-  wire [31:0] db_io_write_req_bits_data; // @[DCache_2.scala 36:20]
-  wire [7:0] db_io_write_req_bits_set; // @[DCache_2.scala 36:20]
-  wire [3:0] db_io_write_req_bits_blockSelOH; // @[DCache_2.scala 36:20]
-  wire [7:0] db_io_write_req_bits_way; // @[DCache_2.scala 36:20]
-  wire  dir_clock; // @[DCache_2.scala 37:21]
-  wire  dir_reset; // @[DCache_2.scala 37:21]
-  wire  dir_io_read_req_ready; // @[DCache_2.scala 37:21]
-  wire  dir_io_read_req_valid; // @[DCache_2.scala 37:21]
-  wire [31:0] dir_io_read_req_bits_addr; // @[DCache_2.scala 37:21]
-  wire  dir_io_read_resp_bits_hit; // @[DCache_2.scala 37:21]
-  wire [7:0] dir_io_read_resp_bits_chosenWay; // @[DCache_2.scala 37:21]
-  wire  dir_io_read_resp_bits_isDirtyWay; // @[DCache_2.scala 37:21]
-  wire [19:0] dir_io_read_resp_bits_dirtyTag; // @[DCache_2.scala 37:21]
-  wire  dir_io_write_req_ready; // @[DCache_2.scala 37:21]
-  wire  dir_io_write_req_valid; // @[DCache_2.scala 37:21]
-  wire [31:0] dir_io_write_req_bits_addr; // @[DCache_2.scala 37:21]
-  wire [7:0] dir_io_write_req_bits_way; // @[DCache_2.scala 37:21]
-  wire [1:0] dir_io_write_req_bits_meta; // @[DCache_2.scala 37:21]
-  wire  mshrReqArb_io_in_0_ready; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_0_valid; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_0_bits_addr; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_0_bits_dirInfo_hit; // @[DCache_2.scala 59:28]
-  wire [7:0] mshrReqArb_io_in_0_bits_dirInfo_chosenWay; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 59:28]
-  wire [19:0] mshrReqArb_io_in_0_bits_dirInfo_dirtyTag; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_0_bits_data_0; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_0_bits_data_1; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_0_bits_data_2; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_0_bits_data_3; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_1_ready; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_1_valid; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_addr; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_1_bits_dirInfo_hit; // @[DCache_2.scala 59:28]
-  wire [7:0] mshrReqArb_io_in_1_bits_dirInfo_chosenWay; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 59:28]
-  wire [19:0] mshrReqArb_io_in_1_bits_dirInfo_dirtyTag; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_data_0; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_data_1; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_data_2; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_data_3; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_in_1_bits_storeData; // @[DCache_2.scala 59:28]
-  wire [3:0] mshrReqArb_io_in_1_bits_storeMask; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_out_ready; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_out_valid; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_addr; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache_2.scala 59:28]
-  wire [7:0] mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 59:28]
-  wire [19:0] mshrReqArb_io_out_bits_dirInfo_dirtyTag; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_data_0; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_data_1; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_data_2; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_data_3; // @[DCache_2.scala 59:28]
-  wire  mshrReqArb_io_out_bits_isStore; // @[DCache_2.scala 59:28]
-  wire [31:0] mshrReqArb_io_out_bits_storeData; // @[DCache_2.scala 59:28]
-  wire [3:0] mshrReqArb_io_out_bits_storeMask; // @[DCache_2.scala 59:28]
-  wire  tlbusReqArb_io_in_0_ready; // @[DCache_2.scala 64:29]
-  wire  tlbusReqArb_io_in_0_valid; // @[DCache_2.scala 64:29]
-  wire [31:0] tlbusReqArb_io_in_0_bits_address; // @[DCache_2.scala 64:29]
-  wire [31:0] tlbusReqArb_io_in_0_bits_data; // @[DCache_2.scala 64:29]
-  wire  tlbusReqArb_io_in_1_ready; // @[DCache_2.scala 64:29]
-  wire  tlbusReqArb_io_in_1_valid; // @[DCache_2.scala 64:29]
-  wire [31:0] tlbusReqArb_io_in_1_bits_address; // @[DCache_2.scala 64:29]
-  wire  tlbusReqArb_io_out_ready; // @[DCache_2.scala 64:29]
-  wire  tlbusReqArb_io_out_valid; // @[DCache_2.scala 64:29]
-  wire [2:0] tlbusReqArb_io_out_bits_opcode; // @[DCache_2.scala 64:29]
-  wire [31:0] tlbusReqArb_io_out_bits_address; // @[DCache_2.scala 64:29]
-  wire [31:0] tlbusReqArb_io_out_bits_data; // @[DCache_2.scala 64:29]
-  wire  loadRespArb_io_in_0_valid; // @[DCache_2.scala 76:29]
-  wire [31:0] loadRespArb_io_in_0_bits_data; // @[DCache_2.scala 76:29]
-  wire  loadRespArb_io_in_1_ready; // @[DCache_2.scala 76:29]
-  wire  loadRespArb_io_in_1_valid; // @[DCache_2.scala 76:29]
-  wire [31:0] loadRespArb_io_in_1_bits_data; // @[DCache_2.scala 76:29]
-  wire  loadRespArb_io_out_valid; // @[DCache_2.scala 76:29]
-  wire [31:0] loadRespArb_io_out_bits_data; // @[DCache_2.scala 76:29]
-  wire  storeRespArb_io_in_0_valid; // @[DCache_2.scala 81:30]
-  wire  storeRespArb_io_in_1_ready; // @[DCache_2.scala 81:30]
-  wire  storeRespArb_io_in_1_valid; // @[DCache_2.scala 81:30]
-  wire  storeRespArb_io_out_valid; // @[DCache_2.scala 81:30]
-  wire  dbRdReqArb_io_in_0_valid; // @[DCache_2.scala 87:28]
-  wire [7:0] dbRdReqArb_io_in_0_bits_set; // @[DCache_2.scala 87:28]
-  wire  dbRdReqArb_io_in_1_ready; // @[DCache_2.scala 87:28]
-  wire  dbRdReqArb_io_in_1_valid; // @[DCache_2.scala 87:28]
-  wire [7:0] dbRdReqArb_io_in_1_bits_set; // @[DCache_2.scala 87:28]
-  wire  dbRdReqArb_io_out_valid; // @[DCache_2.scala 87:28]
-  wire [7:0] dbRdReqArb_io_out_bits_set; // @[DCache_2.scala 87:28]
-  wire  dirRdReqArb_io_in_0_valid; // @[DCache_2.scala 92:29]
-  wire [31:0] dirRdReqArb_io_in_0_bits_addr; // @[DCache_2.scala 92:29]
-  wire  dirRdReqArb_io_in_1_ready; // @[DCache_2.scala 92:29]
-  wire  dirRdReqArb_io_in_1_valid; // @[DCache_2.scala 92:29]
-  wire [31:0] dirRdReqArb_io_in_1_bits_addr; // @[DCache_2.scala 92:29]
-  wire  dirRdReqArb_io_out_valid; // @[DCache_2.scala 92:29]
-  wire [31:0] dirRdReqArb_io_out_bits_addr; // @[DCache_2.scala 92:29]
-  wire  dataBankWrArb_io_in_0_valid; // @[DCache_2.scala 98:31]
-  wire [31:0] dataBankWrArb_io_in_0_bits_data; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_0_bits_set; // @[DCache_2.scala 98:31]
-  wire [3:0] dataBankWrArb_io_in_0_bits_blockSelOH; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_0_bits_way; // @[DCache_2.scala 98:31]
-  wire  dataBankWrArb_io_in_1_ready; // @[DCache_2.scala 98:31]
-  wire  dataBankWrArb_io_in_1_valid; // @[DCache_2.scala 98:31]
-  wire [31:0] dataBankWrArb_io_in_1_bits_data; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_1_bits_set; // @[DCache_2.scala 98:31]
-  wire [3:0] dataBankWrArb_io_in_1_bits_blockSelOH; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_1_bits_way; // @[DCache_2.scala 98:31]
-  wire  dataBankWrArb_io_in_2_ready; // @[DCache_2.scala 98:31]
-  wire  dataBankWrArb_io_in_2_valid; // @[DCache_2.scala 98:31]
-  wire [31:0] dataBankWrArb_io_in_2_bits_data; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_2_bits_set; // @[DCache_2.scala 98:31]
-  wire [3:0] dataBankWrArb_io_in_2_bits_blockSelOH; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_in_2_bits_way; // @[DCache_2.scala 98:31]
-  wire  dataBankWrArb_io_out_valid; // @[DCache_2.scala 98:31]
-  wire [31:0] dataBankWrArb_io_out_bits_data; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_out_bits_set; // @[DCache_2.scala 98:31]
-  wire [3:0] dataBankWrArb_io_out_bits_blockSelOH; // @[DCache_2.scala 98:31]
-  wire [7:0] dataBankWrArb_io_out_bits_way; // @[DCache_2.scala 98:31]
-  wire  dirWrArb_io_in_0_valid; // @[DCache_2.scala 104:26]
-  wire [31:0] dirWrArb_io_in_0_bits_addr; // @[DCache_2.scala 104:26]
-  wire [7:0] dirWrArb_io_in_0_bits_way; // @[DCache_2.scala 104:26]
-  wire  dirWrArb_io_in_1_ready; // @[DCache_2.scala 104:26]
-  wire  dirWrArb_io_in_1_valid; // @[DCache_2.scala 104:26]
-  wire [31:0] dirWrArb_io_in_1_bits_addr; // @[DCache_2.scala 104:26]
-  wire [7:0] dirWrArb_io_in_1_bits_way; // @[DCache_2.scala 104:26]
-  wire  dirWrArb_io_in_2_ready; // @[DCache_2.scala 104:26]
-  wire  dirWrArb_io_in_2_valid; // @[DCache_2.scala 104:26]
-  wire [31:0] dirWrArb_io_in_2_bits_addr; // @[DCache_2.scala 104:26]
-  wire [7:0] dirWrArb_io_in_2_bits_way; // @[DCache_2.scala 104:26]
-  wire  dirWrArb_io_out_valid; // @[DCache_2.scala 104:26]
-  wire [31:0] dirWrArb_io_out_bits_addr; // @[DCache_2.scala 104:26]
-  wire [7:0] dirWrArb_io_out_bits_way; // @[DCache_2.scala 104:26]
-  wire [1:0] dirWrArb_io_out_bits_meta; // @[DCache_2.scala 104:26]
-  LoadPipe_2 loadPipe ( // @[DCache_2.scala 31:26]
+  wire  loadPipe_clock; // @[DCache.scala 82:26]
+  wire  loadPipe_reset; // @[DCache.scala 82:26]
+  wire  loadPipe_io_load_req_ready; // @[DCache.scala 82:26]
+  wire  loadPipe_io_load_req_valid; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_load_req_bits_addr; // @[DCache.scala 82:26]
+  wire  loadPipe_io_load_resp_valid; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_load_resp_bits_data; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dir_req_ready; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dir_req_valid; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dir_req_bits_addr; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dir_resp_bits_hit; // @[DCache.scala 82:26]
+  wire [7:0] loadPipe_io_dir_resp_bits_chosenWay; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dir_resp_bits_isDirtyWay; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dataBank_req_ready; // @[DCache.scala 82:26]
+  wire  loadPipe_io_dataBank_req_valid; // @[DCache.scala 82:26]
+  wire [7:0] loadPipe_io_dataBank_req_bits_set; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_0_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_0_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_0_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_0_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_1_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_1_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_1_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_1_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_2_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_2_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_2_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_2_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_3_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_3_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_3_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_3_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_4_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_4_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_4_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_4_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_5_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_5_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_5_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_5_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_6_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_6_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_6_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_6_3; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_7_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_7_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_7_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_dataBank_resp_7_3; // @[DCache.scala 82:26]
+  wire  loadPipe_io_mshr_ready; // @[DCache.scala 82:26]
+  wire  loadPipe_io_mshr_valid; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_mshr_bits_addr; // @[DCache.scala 82:26]
+  wire  loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache.scala 82:26]
+  wire [7:0] loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache.scala 82:26]
+  wire  loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_mshr_bits_data_0; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_mshr_bits_data_1; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_mshr_bits_data_2; // @[DCache.scala 82:26]
+  wire [31:0] loadPipe_io_mshr_bits_data_3; // @[DCache.scala 82:26]
+  wire  storePipe_clock; // @[DCache.scala 83:27]
+  wire  storePipe_reset; // @[DCache.scala 83:27]
+  wire  storePipe_io_store_req_ready; // @[DCache.scala 83:27]
+  wire  storePipe_io_store_req_valid; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_store_req_bits_addr; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_store_req_bits_data; // @[DCache.scala 83:27]
+  wire [3:0] storePipe_io_store_req_bits_mask; // @[DCache.scala 83:27]
+  wire  storePipe_io_store_resp_valid; // @[DCache.scala 83:27]
+  wire  storePipe_io_dir_read_req_valid; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dir_read_req_bits_addr; // @[DCache.scala 83:27]
+  wire  storePipe_io_dir_read_resp_bits_hit; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_dir_read_resp_bits_chosenWay; // @[DCache.scala 83:27]
+  wire  storePipe_io_dir_read_resp_bits_isDirtyWay; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_0; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_1; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_2; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_3; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_4; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_5; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_6; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_dir_read_resp_bits_tagRdVec_7; // @[DCache.scala 83:27]
+  wire  storePipe_io_dir_write_req_valid; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dir_write_req_bits_addr; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_dir_write_req_bits_way; // @[DCache.scala 83:27]
+  wire  storePipe_io_dataBank_read_req_valid; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_dataBank_read_req_bits_set; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_0_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_0_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_0_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_0_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_1_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_1_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_1_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_1_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_2_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_2_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_2_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_2_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_3_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_3_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_3_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_3_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_4_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_4_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_4_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_4_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_5_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_5_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_5_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_5_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_6_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_6_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_6_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_6_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_7_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_7_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_7_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_read_resp_7_3; // @[DCache.scala 83:27]
+  wire  storePipe_io_dataBank_write_req_valid; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_dataBank_write_req_bits_data; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_dataBank_write_req_bits_set; // @[DCache.scala 83:27]
+  wire [3:0] storePipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_dataBank_write_req_bits_way; // @[DCache.scala 83:27]
+  wire  storePipe_io_mshr_ready; // @[DCache.scala 83:27]
+  wire  storePipe_io_mshr_valid; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_addr; // @[DCache.scala 83:27]
+  wire  storePipe_io_mshr_bits_dirInfo_hit; // @[DCache.scala 83:27]
+  wire [7:0] storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache.scala 83:27]
+  wire  storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache.scala 83:27]
+  wire [19:0] storePipe_io_mshr_bits_dirtyTag; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_data_0; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_data_1; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_data_2; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_data_3; // @[DCache.scala 83:27]
+  wire [31:0] storePipe_io_mshr_bits_storeData; // @[DCache.scala 83:27]
+  wire [3:0] storePipe_io_mshr_bits_storeMask; // @[DCache.scala 83:27]
+  wire  mshr_clock; // @[DCache.scala 84:22]
+  wire  mshr_reset; // @[DCache.scala 84:22]
+  wire  mshr_io_req_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_req_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_addr; // @[DCache.scala 84:22]
+  wire  mshr_io_req_bits_dirInfo_hit; // @[DCache.scala 84:22]
+  wire [7:0] mshr_io_req_bits_dirInfo_chosenWay; // @[DCache.scala 84:22]
+  wire  mshr_io_req_bits_dirInfo_isDirtyWay; // @[DCache.scala 84:22]
+  wire [19:0] mshr_io_req_bits_dirtyTag; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_data_0; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_data_1; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_data_2; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_data_3; // @[DCache.scala 84:22]
+  wire  mshr_io_req_bits_isStore; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_req_bits_storeData; // @[DCache.scala 84:22]
+  wire [3:0] mshr_io_req_bits_storeMask; // @[DCache.scala 84:22]
+  wire  mshr_io_resp_load_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_resp_load_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_resp_load_bits_data; // @[DCache.scala 84:22]
+  wire  mshr_io_resp_store_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_resp_store_valid; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_refill_req_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_refill_req_bits_addr; // @[DCache.scala 84:22]
+  wire [7:0] mshr_io_tasks_refill_req_bits_chosenWay; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_refill_resp_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_refill_resp_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_refill_resp_bits_data; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_writeback_req_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_writeback_req_bits_addr; // @[DCache.scala 84:22]
+  wire [19:0] mshr_io_tasks_writeback_req_bits_dirtyTag; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_writeback_req_bits_data_0; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_writeback_req_bits_data_1; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_writeback_req_bits_data_2; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_tasks_writeback_req_bits_data_3; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_writeback_resp_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_tasks_writeback_resp_valid; // @[DCache.scala 84:22]
+  wire  mshr_io_dirWrite_req_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_dirWrite_req_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_dirWrite_req_bits_addr; // @[DCache.scala 84:22]
+  wire [7:0] mshr_io_dirWrite_req_bits_way; // @[DCache.scala 84:22]
+  wire  mshr_io_dataWrite_req_ready; // @[DCache.scala 84:22]
+  wire  mshr_io_dataWrite_req_valid; // @[DCache.scala 84:22]
+  wire [31:0] mshr_io_dataWrite_req_bits_data; // @[DCache.scala 84:22]
+  wire [7:0] mshr_io_dataWrite_req_bits_set; // @[DCache.scala 84:22]
+  wire [3:0] mshr_io_dataWrite_req_bits_blockSelOH; // @[DCache.scala 84:22]
+  wire [7:0] mshr_io_dataWrite_req_bits_way; // @[DCache.scala 84:22]
+  wire  refillPipe_clock; // @[DCache.scala 85:28]
+  wire  refillPipe_reset; // @[DCache.scala 85:28]
+  wire  refillPipe_io_req_ready; // @[DCache.scala 85:28]
+  wire  refillPipe_io_req_valid; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_req_bits_addr; // @[DCache.scala 85:28]
+  wire [7:0] refillPipe_io_req_bits_chosenWay; // @[DCache.scala 85:28]
+  wire  refillPipe_io_resp_valid; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_resp_bits_data; // @[DCache.scala 85:28]
+  wire  refillPipe_io_tlbus_req_ready; // @[DCache.scala 85:28]
+  wire  refillPipe_io_tlbus_req_valid; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_tlbus_req_bits_address; // @[DCache.scala 85:28]
+  wire  refillPipe_io_tlbus_resp_ready; // @[DCache.scala 85:28]
+  wire  refillPipe_io_tlbus_resp_valid; // @[DCache.scala 85:28]
+  wire [2:0] refillPipe_io_tlbus_resp_bits_opcode; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_tlbus_resp_bits_data; // @[DCache.scala 85:28]
+  wire  refillPipe_io_dirWrite_req_ready; // @[DCache.scala 85:28]
+  wire  refillPipe_io_dirWrite_req_valid; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_dirWrite_req_bits_addr; // @[DCache.scala 85:28]
+  wire [7:0] refillPipe_io_dirWrite_req_bits_way; // @[DCache.scala 85:28]
+  wire  refillPipe_io_dataWrite_req_ready; // @[DCache.scala 85:28]
+  wire  refillPipe_io_dataWrite_req_valid; // @[DCache.scala 85:28]
+  wire [31:0] refillPipe_io_dataWrite_req_bits_data; // @[DCache.scala 85:28]
+  wire [7:0] refillPipe_io_dataWrite_req_bits_set; // @[DCache.scala 85:28]
+  wire [3:0] refillPipe_io_dataWrite_req_bits_blockSelOH; // @[DCache.scala 85:28]
+  wire [7:0] refillPipe_io_dataWrite_req_bits_way; // @[DCache.scala 85:28]
+  wire  wb_clock; // @[DCache.scala 86:20]
+  wire  wb_reset; // @[DCache.scala 86:20]
+  wire  wb_io_req_ready; // @[DCache.scala 86:20]
+  wire  wb_io_req_valid; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_req_bits_addr; // @[DCache.scala 86:20]
+  wire [19:0] wb_io_req_bits_dirtyTag; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_req_bits_data_0; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_req_bits_data_1; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_req_bits_data_2; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_req_bits_data_3; // @[DCache.scala 86:20]
+  wire  wb_io_resp_valid; // @[DCache.scala 86:20]
+  wire  wb_io_tlbus_req_ready; // @[DCache.scala 86:20]
+  wire  wb_io_tlbus_req_valid; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_tlbus_req_bits_address; // @[DCache.scala 86:20]
+  wire [31:0] wb_io_tlbus_req_bits_data; // @[DCache.scala 86:20]
+  wire  wb_io_tlbus_resp_ready; // @[DCache.scala 86:20]
+  wire  wb_io_tlbus_resp_valid; // @[DCache.scala 86:20]
+  wire  db_clock; // @[DCache.scala 87:20]
+  wire  db_reset; // @[DCache.scala 87:20]
+  wire  db_io_read_req_ready; // @[DCache.scala 87:20]
+  wire  db_io_read_req_valid; // @[DCache.scala 87:20]
+  wire [7:0] db_io_read_req_bits_set; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_0_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_0_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_0_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_0_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_1_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_1_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_1_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_1_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_2_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_2_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_2_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_2_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_3_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_3_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_3_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_3_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_4_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_4_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_4_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_4_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_5_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_5_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_5_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_5_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_6_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_6_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_6_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_6_3; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_7_0; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_7_1; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_7_2; // @[DCache.scala 87:20]
+  wire [31:0] db_io_read_resp_7_3; // @[DCache.scala 87:20]
+  wire  db_io_write_req_ready; // @[DCache.scala 87:20]
+  wire  db_io_write_req_valid; // @[DCache.scala 87:20]
+  wire [31:0] db_io_write_req_bits_data; // @[DCache.scala 87:20]
+  wire [7:0] db_io_write_req_bits_set; // @[DCache.scala 87:20]
+  wire [3:0] db_io_write_req_bits_blockSelOH; // @[DCache.scala 87:20]
+  wire [7:0] db_io_write_req_bits_way; // @[DCache.scala 87:20]
+  wire  dir_clock; // @[DCache.scala 88:21]
+  wire  dir_reset; // @[DCache.scala 88:21]
+  wire  dir_io_read_req_ready; // @[DCache.scala 88:21]
+  wire  dir_io_read_req_valid; // @[DCache.scala 88:21]
+  wire [31:0] dir_io_read_req_bits_addr; // @[DCache.scala 88:21]
+  wire  dir_io_read_resp_bits_hit; // @[DCache.scala 88:21]
+  wire [7:0] dir_io_read_resp_bits_chosenWay; // @[DCache.scala 88:21]
+  wire  dir_io_read_resp_bits_isDirtyWay; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_0; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_1; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_2; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_3; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_4; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_5; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_6; // @[DCache.scala 88:21]
+  wire [19:0] dir_io_read_resp_bits_tagRdVec_7; // @[DCache.scala 88:21]
+  wire  dir_io_write_req_ready; // @[DCache.scala 88:21]
+  wire  dir_io_write_req_valid; // @[DCache.scala 88:21]
+  wire [31:0] dir_io_write_req_bits_addr; // @[DCache.scala 88:21]
+  wire [7:0] dir_io_write_req_bits_way; // @[DCache.scala 88:21]
+  wire [1:0] dir_io_write_req_bits_meta; // @[DCache.scala 88:21]
+  wire  mshrReqArb_io_in_0_ready; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_0_valid; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_0_bits_addr; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_0_bits_dirInfo_hit; // @[DCache.scala 110:28]
+  wire [7:0] mshrReqArb_io_in_0_bits_dirInfo_chosenWay; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_0_bits_data_0; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_0_bits_data_1; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_0_bits_data_2; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_0_bits_data_3; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_1_ready; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_1_valid; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_addr; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_1_bits_dirInfo_hit; // @[DCache.scala 110:28]
+  wire [7:0] mshrReqArb_io_in_1_bits_dirInfo_chosenWay; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay; // @[DCache.scala 110:28]
+  wire [19:0] mshrReqArb_io_in_1_bits_dirtyTag; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_data_0; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_data_1; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_data_2; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_data_3; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_in_1_bits_storeData; // @[DCache.scala 110:28]
+  wire [3:0] mshrReqArb_io_in_1_bits_storeMask; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_out_ready; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_out_valid; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_addr; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache.scala 110:28]
+  wire [7:0] mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache.scala 110:28]
+  wire [19:0] mshrReqArb_io_out_bits_dirtyTag; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_data_0; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_data_1; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_data_2; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_data_3; // @[DCache.scala 110:28]
+  wire  mshrReqArb_io_out_bits_isStore; // @[DCache.scala 110:28]
+  wire [31:0] mshrReqArb_io_out_bits_storeData; // @[DCache.scala 110:28]
+  wire [3:0] mshrReqArb_io_out_bits_storeMask; // @[DCache.scala 110:28]
+  wire  tlbusReqArb_io_in_0_ready; // @[DCache.scala 115:29]
+  wire  tlbusReqArb_io_in_0_valid; // @[DCache.scala 115:29]
+  wire [31:0] tlbusReqArb_io_in_0_bits_address; // @[DCache.scala 115:29]
+  wire [31:0] tlbusReqArb_io_in_0_bits_data; // @[DCache.scala 115:29]
+  wire  tlbusReqArb_io_in_1_ready; // @[DCache.scala 115:29]
+  wire  tlbusReqArb_io_in_1_valid; // @[DCache.scala 115:29]
+  wire [31:0] tlbusReqArb_io_in_1_bits_address; // @[DCache.scala 115:29]
+  wire  tlbusReqArb_io_out_ready; // @[DCache.scala 115:29]
+  wire  tlbusReqArb_io_out_valid; // @[DCache.scala 115:29]
+  wire [2:0] tlbusReqArb_io_out_bits_opcode; // @[DCache.scala 115:29]
+  wire [31:0] tlbusReqArb_io_out_bits_address; // @[DCache.scala 115:29]
+  wire [31:0] tlbusReqArb_io_out_bits_data; // @[DCache.scala 115:29]
+  wire  loadRespArb_io_in_0_valid; // @[DCache.scala 127:29]
+  wire [31:0] loadRespArb_io_in_0_bits_data; // @[DCache.scala 127:29]
+  wire  loadRespArb_io_in_1_ready; // @[DCache.scala 127:29]
+  wire  loadRespArb_io_in_1_valid; // @[DCache.scala 127:29]
+  wire [31:0] loadRespArb_io_in_1_bits_data; // @[DCache.scala 127:29]
+  wire  loadRespArb_io_out_valid; // @[DCache.scala 127:29]
+  wire [31:0] loadRespArb_io_out_bits_data; // @[DCache.scala 127:29]
+  wire  storeRespArb_io_in_0_valid; // @[DCache.scala 132:30]
+  wire  storeRespArb_io_in_1_ready; // @[DCache.scala 132:30]
+  wire  storeRespArb_io_in_1_valid; // @[DCache.scala 132:30]
+  wire  storeRespArb_io_out_valid; // @[DCache.scala 132:30]
+  wire  dbRdReqArb_io_in_0_valid; // @[DCache.scala 138:28]
+  wire [7:0] dbRdReqArb_io_in_0_bits_set; // @[DCache.scala 138:28]
+  wire  dbRdReqArb_io_in_1_ready; // @[DCache.scala 138:28]
+  wire  dbRdReqArb_io_in_1_valid; // @[DCache.scala 138:28]
+  wire [7:0] dbRdReqArb_io_in_1_bits_set; // @[DCache.scala 138:28]
+  wire  dbRdReqArb_io_out_valid; // @[DCache.scala 138:28]
+  wire [7:0] dbRdReqArb_io_out_bits_set; // @[DCache.scala 138:28]
+  wire  dirRdReqArb_io_in_0_valid; // @[DCache.scala 143:29]
+  wire [31:0] dirRdReqArb_io_in_0_bits_addr; // @[DCache.scala 143:29]
+  wire  dirRdReqArb_io_in_1_ready; // @[DCache.scala 143:29]
+  wire  dirRdReqArb_io_in_1_valid; // @[DCache.scala 143:29]
+  wire [31:0] dirRdReqArb_io_in_1_bits_addr; // @[DCache.scala 143:29]
+  wire  dirRdReqArb_io_out_valid; // @[DCache.scala 143:29]
+  wire [31:0] dirRdReqArb_io_out_bits_addr; // @[DCache.scala 143:29]
+  wire  dataBankWrArb_io_in_0_valid; // @[DCache.scala 149:31]
+  wire [31:0] dataBankWrArb_io_in_0_bits_data; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_0_bits_set; // @[DCache.scala 149:31]
+  wire [3:0] dataBankWrArb_io_in_0_bits_blockSelOH; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_0_bits_way; // @[DCache.scala 149:31]
+  wire  dataBankWrArb_io_in_1_ready; // @[DCache.scala 149:31]
+  wire  dataBankWrArb_io_in_1_valid; // @[DCache.scala 149:31]
+  wire [31:0] dataBankWrArb_io_in_1_bits_data; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_1_bits_set; // @[DCache.scala 149:31]
+  wire [3:0] dataBankWrArb_io_in_1_bits_blockSelOH; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_1_bits_way; // @[DCache.scala 149:31]
+  wire  dataBankWrArb_io_in_2_ready; // @[DCache.scala 149:31]
+  wire  dataBankWrArb_io_in_2_valid; // @[DCache.scala 149:31]
+  wire [31:0] dataBankWrArb_io_in_2_bits_data; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_2_bits_set; // @[DCache.scala 149:31]
+  wire [3:0] dataBankWrArb_io_in_2_bits_blockSelOH; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_in_2_bits_way; // @[DCache.scala 149:31]
+  wire  dataBankWrArb_io_out_valid; // @[DCache.scala 149:31]
+  wire [31:0] dataBankWrArb_io_out_bits_data; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_out_bits_set; // @[DCache.scala 149:31]
+  wire [3:0] dataBankWrArb_io_out_bits_blockSelOH; // @[DCache.scala 149:31]
+  wire [7:0] dataBankWrArb_io_out_bits_way; // @[DCache.scala 149:31]
+  wire  dirWrArb_io_in_0_valid; // @[DCache.scala 155:26]
+  wire [31:0] dirWrArb_io_in_0_bits_addr; // @[DCache.scala 155:26]
+  wire [7:0] dirWrArb_io_in_0_bits_way; // @[DCache.scala 155:26]
+  wire  dirWrArb_io_in_1_ready; // @[DCache.scala 155:26]
+  wire  dirWrArb_io_in_1_valid; // @[DCache.scala 155:26]
+  wire [31:0] dirWrArb_io_in_1_bits_addr; // @[DCache.scala 155:26]
+  wire [7:0] dirWrArb_io_in_1_bits_way; // @[DCache.scala 155:26]
+  wire  dirWrArb_io_in_2_ready; // @[DCache.scala 155:26]
+  wire  dirWrArb_io_in_2_valid; // @[DCache.scala 155:26]
+  wire [31:0] dirWrArb_io_in_2_bits_addr; // @[DCache.scala 155:26]
+  wire [7:0] dirWrArb_io_in_2_bits_way; // @[DCache.scala 155:26]
+  wire  dirWrArb_io_out_valid; // @[DCache.scala 155:26]
+  wire [31:0] dirWrArb_io_out_bits_addr; // @[DCache.scala 155:26]
+  wire [7:0] dirWrArb_io_out_bits_way; // @[DCache.scala 155:26]
+  wire [1:0] dirWrArb_io_out_bits_meta; // @[DCache.scala 155:26]
+  LoadPipe loadPipe ( // @[DCache.scala 82:26]
     .clock(loadPipe_clock),
     .reset(loadPipe_reset),
     .io_load_req_ready(loadPipe_io_load_req_ready),
@@ -18974,7 +18697,6 @@ module DCache_1(
     .io_dir_resp_bits_hit(loadPipe_io_dir_resp_bits_hit),
     .io_dir_resp_bits_chosenWay(loadPipe_io_dir_resp_bits_chosenWay),
     .io_dir_resp_bits_isDirtyWay(loadPipe_io_dir_resp_bits_isDirtyWay),
-    .io_dir_resp_bits_dirtyTag(loadPipe_io_dir_resp_bits_dirtyTag),
     .io_dataBank_req_ready(loadPipe_io_dataBank_req_ready),
     .io_dataBank_req_valid(loadPipe_io_dataBank_req_valid),
     .io_dataBank_req_bits_set(loadPipe_io_dataBank_req_bits_set),
@@ -19016,13 +18738,12 @@ module DCache_1(
     .io_mshr_bits_dirInfo_hit(loadPipe_io_mshr_bits_dirInfo_hit),
     .io_mshr_bits_dirInfo_chosenWay(loadPipe_io_mshr_bits_dirInfo_chosenWay),
     .io_mshr_bits_dirInfo_isDirtyWay(loadPipe_io_mshr_bits_dirInfo_isDirtyWay),
-    .io_mshr_bits_dirInfo_dirtyTag(loadPipe_io_mshr_bits_dirInfo_dirtyTag),
     .io_mshr_bits_data_0(loadPipe_io_mshr_bits_data_0),
     .io_mshr_bits_data_1(loadPipe_io_mshr_bits_data_1),
     .io_mshr_bits_data_2(loadPipe_io_mshr_bits_data_2),
     .io_mshr_bits_data_3(loadPipe_io_mshr_bits_data_3)
   );
-  StorePipe_2 storePipe ( // @[DCache_2.scala 32:27]
+  StorePipe storePipe ( // @[DCache.scala 83:27]
     .clock(storePipe_clock),
     .reset(storePipe_reset),
     .io_store_req_ready(storePipe_io_store_req_ready),
@@ -19036,7 +18757,14 @@ module DCache_1(
     .io_dir_read_resp_bits_hit(storePipe_io_dir_read_resp_bits_hit),
     .io_dir_read_resp_bits_chosenWay(storePipe_io_dir_read_resp_bits_chosenWay),
     .io_dir_read_resp_bits_isDirtyWay(storePipe_io_dir_read_resp_bits_isDirtyWay),
-    .io_dir_read_resp_bits_dirtyTag(storePipe_io_dir_read_resp_bits_dirtyTag),
+    .io_dir_read_resp_bits_tagRdVec_0(storePipe_io_dir_read_resp_bits_tagRdVec_0),
+    .io_dir_read_resp_bits_tagRdVec_1(storePipe_io_dir_read_resp_bits_tagRdVec_1),
+    .io_dir_read_resp_bits_tagRdVec_2(storePipe_io_dir_read_resp_bits_tagRdVec_2),
+    .io_dir_read_resp_bits_tagRdVec_3(storePipe_io_dir_read_resp_bits_tagRdVec_3),
+    .io_dir_read_resp_bits_tagRdVec_4(storePipe_io_dir_read_resp_bits_tagRdVec_4),
+    .io_dir_read_resp_bits_tagRdVec_5(storePipe_io_dir_read_resp_bits_tagRdVec_5),
+    .io_dir_read_resp_bits_tagRdVec_6(storePipe_io_dir_read_resp_bits_tagRdVec_6),
+    .io_dir_read_resp_bits_tagRdVec_7(storePipe_io_dir_read_resp_bits_tagRdVec_7),
     .io_dir_write_req_valid(storePipe_io_dir_write_req_valid),
     .io_dir_write_req_bits_addr(storePipe_io_dir_write_req_bits_addr),
     .io_dir_write_req_bits_way(storePipe_io_dir_write_req_bits_way),
@@ -19085,7 +18813,7 @@ module DCache_1(
     .io_mshr_bits_dirInfo_hit(storePipe_io_mshr_bits_dirInfo_hit),
     .io_mshr_bits_dirInfo_chosenWay(storePipe_io_mshr_bits_dirInfo_chosenWay),
     .io_mshr_bits_dirInfo_isDirtyWay(storePipe_io_mshr_bits_dirInfo_isDirtyWay),
-    .io_mshr_bits_dirInfo_dirtyTag(storePipe_io_mshr_bits_dirInfo_dirtyTag),
+    .io_mshr_bits_dirtyTag(storePipe_io_mshr_bits_dirtyTag),
     .io_mshr_bits_data_0(storePipe_io_mshr_bits_data_0),
     .io_mshr_bits_data_1(storePipe_io_mshr_bits_data_1),
     .io_mshr_bits_data_2(storePipe_io_mshr_bits_data_2),
@@ -19093,7 +18821,7 @@ module DCache_1(
     .io_mshr_bits_storeData(storePipe_io_mshr_bits_storeData),
     .io_mshr_bits_storeMask(storePipe_io_mshr_bits_storeMask)
   );
-  MSHR mshr ( // @[DCache_2.scala 33:22]
+  MSHR mshr ( // @[DCache.scala 84:22]
     .clock(mshr_clock),
     .reset(mshr_reset),
     .io_req_ready(mshr_io_req_ready),
@@ -19102,7 +18830,7 @@ module DCache_1(
     .io_req_bits_dirInfo_hit(mshr_io_req_bits_dirInfo_hit),
     .io_req_bits_dirInfo_chosenWay(mshr_io_req_bits_dirInfo_chosenWay),
     .io_req_bits_dirInfo_isDirtyWay(mshr_io_req_bits_dirInfo_isDirtyWay),
-    .io_req_bits_dirInfo_dirtyTag(mshr_io_req_bits_dirInfo_dirtyTag),
+    .io_req_bits_dirtyTag(mshr_io_req_bits_dirtyTag),
     .io_req_bits_data_0(mshr_io_req_bits_data_0),
     .io_req_bits_data_1(mshr_io_req_bits_data_1),
     .io_req_bits_data_2(mshr_io_req_bits_data_2),
@@ -19141,7 +18869,7 @@ module DCache_1(
     .io_dataWrite_req_bits_blockSelOH(mshr_io_dataWrite_req_bits_blockSelOH),
     .io_dataWrite_req_bits_way(mshr_io_dataWrite_req_bits_way)
   );
-  RefillPipe_1_1 refillPipe ( // @[DCache_2.scala 34:28]
+  RefillPipe_1 refillPipe ( // @[DCache.scala 85:28]
     .clock(refillPipe_clock),
     .reset(refillPipe_reset),
     .io_req_ready(refillPipe_io_req_ready),
@@ -19168,7 +18896,7 @@ module DCache_1(
     .io_dataWrite_req_bits_blockSelOH(refillPipe_io_dataWrite_req_bits_blockSelOH),
     .io_dataWrite_req_bits_way(refillPipe_io_dataWrite_req_bits_way)
   );
-  WritebackQueue wb ( // @[DCache_2.scala 35:20]
+  WritebackQueue wb ( // @[DCache.scala 86:20]
     .clock(wb_clock),
     .reset(wb_reset),
     .io_req_ready(wb_io_req_ready),
@@ -19187,7 +18915,7 @@ module DCache_1(
     .io_tlbus_resp_ready(wb_io_tlbus_resp_ready),
     .io_tlbus_resp_valid(wb_io_tlbus_resp_valid)
   );
-  DataBankArray_1_1 db ( // @[DCache_2.scala 36:20]
+  DataBankArray_1 db ( // @[DCache.scala 87:20]
     .clock(db_clock),
     .reset(db_reset),
     .io_read_req_ready(db_io_read_req_ready),
@@ -19232,7 +18960,7 @@ module DCache_1(
     .io_write_req_bits_blockSelOH(db_io_write_req_bits_blockSelOH),
     .io_write_req_bits_way(db_io_write_req_bits_way)
   );
-  DCacheDirectory_1_1 dir ( // @[DCache_2.scala 37:21]
+  DCacheDirectory_1 dir ( // @[DCache.scala 88:21]
     .clock(dir_clock),
     .reset(dir_reset),
     .io_read_req_ready(dir_io_read_req_ready),
@@ -19241,21 +18969,27 @@ module DCache_1(
     .io_read_resp_bits_hit(dir_io_read_resp_bits_hit),
     .io_read_resp_bits_chosenWay(dir_io_read_resp_bits_chosenWay),
     .io_read_resp_bits_isDirtyWay(dir_io_read_resp_bits_isDirtyWay),
-    .io_read_resp_bits_dirtyTag(dir_io_read_resp_bits_dirtyTag),
+    .io_read_resp_bits_tagRdVec_0(dir_io_read_resp_bits_tagRdVec_0),
+    .io_read_resp_bits_tagRdVec_1(dir_io_read_resp_bits_tagRdVec_1),
+    .io_read_resp_bits_tagRdVec_2(dir_io_read_resp_bits_tagRdVec_2),
+    .io_read_resp_bits_tagRdVec_3(dir_io_read_resp_bits_tagRdVec_3),
+    .io_read_resp_bits_tagRdVec_4(dir_io_read_resp_bits_tagRdVec_4),
+    .io_read_resp_bits_tagRdVec_5(dir_io_read_resp_bits_tagRdVec_5),
+    .io_read_resp_bits_tagRdVec_6(dir_io_read_resp_bits_tagRdVec_6),
+    .io_read_resp_bits_tagRdVec_7(dir_io_read_resp_bits_tagRdVec_7),
     .io_write_req_ready(dir_io_write_req_ready),
     .io_write_req_valid(dir_io_write_req_valid),
     .io_write_req_bits_addr(dir_io_write_req_bits_addr),
     .io_write_req_bits_way(dir_io_write_req_bits_way),
     .io_write_req_bits_meta(dir_io_write_req_bits_meta)
   );
-  Arbiter mshrReqArb ( // @[DCache_2.scala 59:28]
+  Arbiter mshrReqArb ( // @[DCache.scala 110:28]
     .io_in_0_ready(mshrReqArb_io_in_0_ready),
     .io_in_0_valid(mshrReqArb_io_in_0_valid),
     .io_in_0_bits_addr(mshrReqArb_io_in_0_bits_addr),
     .io_in_0_bits_dirInfo_hit(mshrReqArb_io_in_0_bits_dirInfo_hit),
     .io_in_0_bits_dirInfo_chosenWay(mshrReqArb_io_in_0_bits_dirInfo_chosenWay),
     .io_in_0_bits_dirInfo_isDirtyWay(mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay),
-    .io_in_0_bits_dirInfo_dirtyTag(mshrReqArb_io_in_0_bits_dirInfo_dirtyTag),
     .io_in_0_bits_data_0(mshrReqArb_io_in_0_bits_data_0),
     .io_in_0_bits_data_1(mshrReqArb_io_in_0_bits_data_1),
     .io_in_0_bits_data_2(mshrReqArb_io_in_0_bits_data_2),
@@ -19266,7 +19000,7 @@ module DCache_1(
     .io_in_1_bits_dirInfo_hit(mshrReqArb_io_in_1_bits_dirInfo_hit),
     .io_in_1_bits_dirInfo_chosenWay(mshrReqArb_io_in_1_bits_dirInfo_chosenWay),
     .io_in_1_bits_dirInfo_isDirtyWay(mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay),
-    .io_in_1_bits_dirInfo_dirtyTag(mshrReqArb_io_in_1_bits_dirInfo_dirtyTag),
+    .io_in_1_bits_dirtyTag(mshrReqArb_io_in_1_bits_dirtyTag),
     .io_in_1_bits_data_0(mshrReqArb_io_in_1_bits_data_0),
     .io_in_1_bits_data_1(mshrReqArb_io_in_1_bits_data_1),
     .io_in_1_bits_data_2(mshrReqArb_io_in_1_bits_data_2),
@@ -19279,7 +19013,7 @@ module DCache_1(
     .io_out_bits_dirInfo_hit(mshrReqArb_io_out_bits_dirInfo_hit),
     .io_out_bits_dirInfo_chosenWay(mshrReqArb_io_out_bits_dirInfo_chosenWay),
     .io_out_bits_dirInfo_isDirtyWay(mshrReqArb_io_out_bits_dirInfo_isDirtyWay),
-    .io_out_bits_dirInfo_dirtyTag(mshrReqArb_io_out_bits_dirInfo_dirtyTag),
+    .io_out_bits_dirtyTag(mshrReqArb_io_out_bits_dirtyTag),
     .io_out_bits_data_0(mshrReqArb_io_out_bits_data_0),
     .io_out_bits_data_1(mshrReqArb_io_out_bits_data_1),
     .io_out_bits_data_2(mshrReqArb_io_out_bits_data_2),
@@ -19288,7 +19022,7 @@ module DCache_1(
     .io_out_bits_storeData(mshrReqArb_io_out_bits_storeData),
     .io_out_bits_storeMask(mshrReqArb_io_out_bits_storeMask)
   );
-  Arbiter_1 tlbusReqArb ( // @[DCache_2.scala 64:29]
+  Arbiter_1 tlbusReqArb ( // @[DCache.scala 115:29]
     .io_in_0_ready(tlbusReqArb_io_in_0_ready),
     .io_in_0_valid(tlbusReqArb_io_in_0_valid),
     .io_in_0_bits_address(tlbusReqArb_io_in_0_bits_address),
@@ -19302,7 +19036,7 @@ module DCache_1(
     .io_out_bits_address(tlbusReqArb_io_out_bits_address),
     .io_out_bits_data(tlbusReqArb_io_out_bits_data)
   );
-  Arbiter_2 loadRespArb ( // @[DCache_2.scala 76:29]
+  Arbiter_2 loadRespArb ( // @[DCache.scala 127:29]
     .io_in_0_valid(loadRespArb_io_in_0_valid),
     .io_in_0_bits_data(loadRespArb_io_in_0_bits_data),
     .io_in_1_ready(loadRespArb_io_in_1_ready),
@@ -19311,13 +19045,13 @@ module DCache_1(
     .io_out_valid(loadRespArb_io_out_valid),
     .io_out_bits_data(loadRespArb_io_out_bits_data)
   );
-  Arbiter_3 storeRespArb ( // @[DCache_2.scala 81:30]
+  Arbiter_3 storeRespArb ( // @[DCache.scala 132:30]
     .io_in_0_valid(storeRespArb_io_in_0_valid),
     .io_in_1_ready(storeRespArb_io_in_1_ready),
     .io_in_1_valid(storeRespArb_io_in_1_valid),
     .io_out_valid(storeRespArb_io_out_valid)
   );
-  Arbiter_4 dbRdReqArb ( // @[DCache_2.scala 87:28]
+  Arbiter_4 dbRdReqArb ( // @[DCache.scala 138:28]
     .io_in_0_valid(dbRdReqArb_io_in_0_valid),
     .io_in_0_bits_set(dbRdReqArb_io_in_0_bits_set),
     .io_in_1_ready(dbRdReqArb_io_in_1_ready),
@@ -19326,7 +19060,7 @@ module DCache_1(
     .io_out_valid(dbRdReqArb_io_out_valid),
     .io_out_bits_set(dbRdReqArb_io_out_bits_set)
   );
-  Arbiter_5 dirRdReqArb ( // @[DCache_2.scala 92:29]
+  Arbiter_5 dirRdReqArb ( // @[DCache.scala 143:29]
     .io_in_0_valid(dirRdReqArb_io_in_0_valid),
     .io_in_0_bits_addr(dirRdReqArb_io_in_0_bits_addr),
     .io_in_1_ready(dirRdReqArb_io_in_1_ready),
@@ -19335,7 +19069,7 @@ module DCache_1(
     .io_out_valid(dirRdReqArb_io_out_valid),
     .io_out_bits_addr(dirRdReqArb_io_out_bits_addr)
   );
-  Arbiter_6 dataBankWrArb ( // @[DCache_2.scala 98:31]
+  Arbiter_6 dataBankWrArb ( // @[DCache.scala 149:31]
     .io_in_0_valid(dataBankWrArb_io_in_0_valid),
     .io_in_0_bits_data(dataBankWrArb_io_in_0_bits_data),
     .io_in_0_bits_set(dataBankWrArb_io_in_0_bits_set),
@@ -19359,7 +19093,7 @@ module DCache_1(
     .io_out_bits_blockSelOH(dataBankWrArb_io_out_bits_blockSelOH),
     .io_out_bits_way(dataBankWrArb_io_out_bits_way)
   );
-  Arbiter_7 dirWrArb ( // @[DCache_2.scala 104:26]
+  Arbiter_7 dirWrArb ( // @[DCache.scala 155:26]
     .io_in_0_valid(dirWrArb_io_in_0_valid),
     .io_in_0_bits_addr(dirWrArb_io_in_0_bits_addr),
     .io_in_0_bits_way(dirWrArb_io_in_0_bits_way),
@@ -19376,229 +19110,234 @@ module DCache_1(
     .io_out_bits_way(dirWrArb_io_out_bits_way),
     .io_out_bits_meta(dirWrArb_io_out_bits_meta)
   );
-  assign io_read_req_ready = loadPipe_io_load_req_ready; // @[DCache_2.scala 51:26]
-  assign io_read_resp_valid = loadRespArb_io_out_valid; // @[DCache_2.scala 79:18]
-  assign io_read_resp_bits_data = loadRespArb_io_out_bits_data; // @[DCache_2.scala 79:18]
-  assign io_write_req_ready = storePipe_io_store_req_ready; // @[DCache_2.scala 52:28]
-  assign io_write_resp_valid = storeRespArb_io_out_valid; // @[DCache_2.scala 84:19]
-  assign io_tlbus_req_valid = tlbusReqArb_io_out_valid; // @[DCache_2.scala 67:18]
-  assign io_tlbus_req_bits_opcode = tlbusReqArb_io_out_bits_opcode; // @[DCache_2.scala 67:18]
-  assign io_tlbus_req_bits_address = tlbusReqArb_io_out_bits_address; // @[DCache_2.scala 67:18]
-  assign io_tlbus_req_bits_data = tlbusReqArb_io_out_bits_data; // @[DCache_2.scala 67:18]
+  assign io_read_req_ready = loadPipe_io_load_req_ready; // @[DCache.scala 102:26]
+  assign io_read_resp_valid = loadRespArb_io_out_valid; // @[DCache.scala 130:18]
+  assign io_read_resp_bits_data = loadRespArb_io_out_bits_data; // @[DCache.scala 130:18]
+  assign io_write_req_ready = storePipe_io_store_req_ready; // @[DCache.scala 103:28]
+  assign io_write_resp_valid = storeRespArb_io_out_valid; // @[DCache.scala 135:19]
+  assign io_tlbus_req_valid = tlbusReqArb_io_out_valid; // @[DCache.scala 118:18]
+  assign io_tlbus_req_bits_opcode = tlbusReqArb_io_out_bits_opcode; // @[DCache.scala 118:18]
+  assign io_tlbus_req_bits_address = tlbusReqArb_io_out_bits_address; // @[DCache.scala 118:18]
+  assign io_tlbus_req_bits_data = tlbusReqArb_io_out_bits_data; // @[DCache.scala 118:18]
   assign loadPipe_clock = clock;
   assign loadPipe_reset = reset;
-  assign loadPipe_io_load_req_valid = io_read_req_valid; // @[DCache_2.scala 51:26]
-  assign loadPipe_io_load_req_bits_addr = io_read_req_bits_addr; // @[DCache_2.scala 51:26]
-  assign loadPipe_io_dir_req_ready = dirRdReqArb_io_in_1_ready; // @[DCache_2.scala 94:26]
-  assign loadPipe_io_dir_resp_bits_hit = dir_io_read_resp_bits_hit; // @[DCache_2.scala 40:31]
-  assign loadPipe_io_dir_resp_bits_chosenWay = dir_io_read_resp_bits_chosenWay; // @[DCache_2.scala 40:31]
-  assign loadPipe_io_dir_resp_bits_isDirtyWay = dir_io_read_resp_bits_isDirtyWay; // @[DCache_2.scala 40:31]
-  assign loadPipe_io_dir_resp_bits_dirtyTag = dir_io_read_resp_bits_dirtyTag; // @[DCache_2.scala 40:31]
-  assign loadPipe_io_dataBank_req_ready = dbRdReqArb_io_in_1_ready; // @[DCache_2.scala 89:25]
-  assign loadPipe_io_dataBank_resp_0_0 = db_io_read_resp_0_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_0_1 = db_io_read_resp_0_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_0_2 = db_io_read_resp_0_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_0_3 = db_io_read_resp_0_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_1_0 = db_io_read_resp_1_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_1_1 = db_io_read_resp_1_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_1_2 = db_io_read_resp_1_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_1_3 = db_io_read_resp_1_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_2_0 = db_io_read_resp_2_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_2_1 = db_io_read_resp_2_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_2_2 = db_io_read_resp_2_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_2_3 = db_io_read_resp_2_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_3_0 = db_io_read_resp_3_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_3_1 = db_io_read_resp_3_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_3_2 = db_io_read_resp_3_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_3_3 = db_io_read_resp_3_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_4_0 = db_io_read_resp_4_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_4_1 = db_io_read_resp_4_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_4_2 = db_io_read_resp_4_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_4_3 = db_io_read_resp_4_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_5_0 = db_io_read_resp_5_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_5_1 = db_io_read_resp_5_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_5_2 = db_io_read_resp_5_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_5_3 = db_io_read_resp_5_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_6_0 = db_io_read_resp_6_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_6_1 = db_io_read_resp_6_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_6_2 = db_io_read_resp_6_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_6_3 = db_io_read_resp_6_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_7_0 = db_io_read_resp_7_0; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_7_1 = db_io_read_resp_7_1; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_7_2 = db_io_read_resp_7_2; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_dataBank_resp_7_3 = db_io_read_resp_7_3; // @[DCache_2.scala 44:31]
-  assign loadPipe_io_mshr_ready = mshrReqArb_io_in_0_ready; // @[DCache_2.scala 60:25]
+  assign loadPipe_io_load_req_valid = io_read_req_valid; // @[DCache.scala 102:26]
+  assign loadPipe_io_load_req_bits_addr = io_read_req_bits_addr; // @[DCache.scala 102:26]
+  assign loadPipe_io_dir_req_ready = dirRdReqArb_io_in_1_ready; // @[DCache.scala 145:26]
+  assign loadPipe_io_dir_resp_bits_hit = dir_io_read_resp_bits_hit; // @[DCache.scala 91:31]
+  assign loadPipe_io_dir_resp_bits_chosenWay = dir_io_read_resp_bits_chosenWay; // @[DCache.scala 91:31]
+  assign loadPipe_io_dir_resp_bits_isDirtyWay = dir_io_read_resp_bits_isDirtyWay; // @[DCache.scala 91:31]
+  assign loadPipe_io_dataBank_req_ready = dbRdReqArb_io_in_1_ready; // @[DCache.scala 140:25]
+  assign loadPipe_io_dataBank_resp_0_0 = db_io_read_resp_0_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_0_1 = db_io_read_resp_0_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_0_2 = db_io_read_resp_0_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_0_3 = db_io_read_resp_0_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_1_0 = db_io_read_resp_1_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_1_1 = db_io_read_resp_1_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_1_2 = db_io_read_resp_1_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_1_3 = db_io_read_resp_1_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_2_0 = db_io_read_resp_2_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_2_1 = db_io_read_resp_2_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_2_2 = db_io_read_resp_2_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_2_3 = db_io_read_resp_2_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_3_0 = db_io_read_resp_3_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_3_1 = db_io_read_resp_3_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_3_2 = db_io_read_resp_3_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_3_3 = db_io_read_resp_3_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_4_0 = db_io_read_resp_4_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_4_1 = db_io_read_resp_4_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_4_2 = db_io_read_resp_4_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_4_3 = db_io_read_resp_4_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_5_0 = db_io_read_resp_5_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_5_1 = db_io_read_resp_5_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_5_2 = db_io_read_resp_5_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_5_3 = db_io_read_resp_5_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_6_0 = db_io_read_resp_6_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_6_1 = db_io_read_resp_6_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_6_2 = db_io_read_resp_6_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_6_3 = db_io_read_resp_6_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_7_0 = db_io_read_resp_7_0; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_7_1 = db_io_read_resp_7_1; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_7_2 = db_io_read_resp_7_2; // @[DCache.scala 95:31]
+  assign loadPipe_io_dataBank_resp_7_3 = db_io_read_resp_7_3; // @[DCache.scala 95:31]
+  assign loadPipe_io_mshr_ready = mshrReqArb_io_in_0_ready; // @[DCache.scala 111:25]
   assign storePipe_clock = clock;
   assign storePipe_reset = reset;
-  assign storePipe_io_store_req_valid = io_write_req_valid; // @[DCache_2.scala 52:28]
-  assign storePipe_io_store_req_bits_addr = io_write_req_bits_addr; // @[DCache_2.scala 52:28]
-  assign storePipe_io_store_req_bits_data = io_write_req_bits_data; // @[DCache_2.scala 52:28]
-  assign storePipe_io_store_req_bits_mask = io_write_req_bits_mask; // @[DCache_2.scala 52:28]
-  assign storePipe_io_dir_read_resp_bits_hit = dir_io_read_resp_bits_hit; // @[DCache_2.scala 42:37]
-  assign storePipe_io_dir_read_resp_bits_chosenWay = dir_io_read_resp_bits_chosenWay; // @[DCache_2.scala 42:37]
-  assign storePipe_io_dir_read_resp_bits_isDirtyWay = dir_io_read_resp_bits_isDirtyWay; // @[DCache_2.scala 42:37]
-  assign storePipe_io_dir_read_resp_bits_dirtyTag = dir_io_read_resp_bits_dirtyTag; // @[DCache_2.scala 42:37]
-  assign storePipe_io_dataBank_read_resp_0_0 = db_io_read_resp_0_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_0_1 = db_io_read_resp_0_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_0_2 = db_io_read_resp_0_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_0_3 = db_io_read_resp_0_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_1_0 = db_io_read_resp_1_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_1_1 = db_io_read_resp_1_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_1_2 = db_io_read_resp_1_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_1_3 = db_io_read_resp_1_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_2_0 = db_io_read_resp_2_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_2_1 = db_io_read_resp_2_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_2_2 = db_io_read_resp_2_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_2_3 = db_io_read_resp_2_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_3_0 = db_io_read_resp_3_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_3_1 = db_io_read_resp_3_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_3_2 = db_io_read_resp_3_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_3_3 = db_io_read_resp_3_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_4_0 = db_io_read_resp_4_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_4_1 = db_io_read_resp_4_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_4_2 = db_io_read_resp_4_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_4_3 = db_io_read_resp_4_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_5_0 = db_io_read_resp_5_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_5_1 = db_io_read_resp_5_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_5_2 = db_io_read_resp_5_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_5_3 = db_io_read_resp_5_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_6_0 = db_io_read_resp_6_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_6_1 = db_io_read_resp_6_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_6_2 = db_io_read_resp_6_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_6_3 = db_io_read_resp_6_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_7_0 = db_io_read_resp_7_0; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_7_1 = db_io_read_resp_7_1; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_7_2 = db_io_read_resp_7_2; // @[DCache_2.scala 45:37]
-  assign storePipe_io_dataBank_read_resp_7_3 = db_io_read_resp_7_3; // @[DCache_2.scala 45:37]
-  assign storePipe_io_mshr_ready = mshrReqArb_io_in_1_ready; // @[DCache_2.scala 61:25]
+  assign storePipe_io_store_req_valid = io_write_req_valid; // @[DCache.scala 103:28]
+  assign storePipe_io_store_req_bits_addr = io_write_req_bits_addr; // @[DCache.scala 103:28]
+  assign storePipe_io_store_req_bits_data = io_write_req_bits_data; // @[DCache.scala 103:28]
+  assign storePipe_io_store_req_bits_mask = io_write_req_bits_mask; // @[DCache.scala 103:28]
+  assign storePipe_io_dir_read_resp_bits_hit = dir_io_read_resp_bits_hit; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_chosenWay = dir_io_read_resp_bits_chosenWay; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_isDirtyWay = dir_io_read_resp_bits_isDirtyWay; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_0 = dir_io_read_resp_bits_tagRdVec_0; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_1 = dir_io_read_resp_bits_tagRdVec_1; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_2 = dir_io_read_resp_bits_tagRdVec_2; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_3 = dir_io_read_resp_bits_tagRdVec_3; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_4 = dir_io_read_resp_bits_tagRdVec_4; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_5 = dir_io_read_resp_bits_tagRdVec_5; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_6 = dir_io_read_resp_bits_tagRdVec_6; // @[DCache.scala 93:37]
+  assign storePipe_io_dir_read_resp_bits_tagRdVec_7 = dir_io_read_resp_bits_tagRdVec_7; // @[DCache.scala 93:37]
+  assign storePipe_io_dataBank_read_resp_0_0 = db_io_read_resp_0_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_0_1 = db_io_read_resp_0_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_0_2 = db_io_read_resp_0_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_0_3 = db_io_read_resp_0_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_1_0 = db_io_read_resp_1_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_1_1 = db_io_read_resp_1_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_1_2 = db_io_read_resp_1_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_1_3 = db_io_read_resp_1_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_2_0 = db_io_read_resp_2_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_2_1 = db_io_read_resp_2_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_2_2 = db_io_read_resp_2_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_2_3 = db_io_read_resp_2_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_3_0 = db_io_read_resp_3_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_3_1 = db_io_read_resp_3_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_3_2 = db_io_read_resp_3_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_3_3 = db_io_read_resp_3_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_4_0 = db_io_read_resp_4_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_4_1 = db_io_read_resp_4_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_4_2 = db_io_read_resp_4_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_4_3 = db_io_read_resp_4_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_5_0 = db_io_read_resp_5_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_5_1 = db_io_read_resp_5_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_5_2 = db_io_read_resp_5_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_5_3 = db_io_read_resp_5_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_6_0 = db_io_read_resp_6_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_6_1 = db_io_read_resp_6_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_6_2 = db_io_read_resp_6_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_6_3 = db_io_read_resp_6_3; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_7_0 = db_io_read_resp_7_0; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_7_1 = db_io_read_resp_7_1; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_7_2 = db_io_read_resp_7_2; // @[DCache.scala 96:37]
+  assign storePipe_io_dataBank_read_resp_7_3 = db_io_read_resp_7_3; // @[DCache.scala 96:37]
+  assign storePipe_io_mshr_ready = mshrReqArb_io_in_1_ready; // @[DCache.scala 112:25]
   assign mshr_clock = clock;
   assign mshr_reset = reset;
-  assign mshr_io_req_valid = mshrReqArb_io_out_valid; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_addr = mshrReqArb_io_out_bits_addr; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_dirInfo_hit = mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_dirInfo_chosenWay = mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_dirInfo_isDirtyWay = mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_dirInfo_dirtyTag = mshrReqArb_io_out_bits_dirInfo_dirtyTag; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_data_0 = mshrReqArb_io_out_bits_data_0; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_data_1 = mshrReqArb_io_out_bits_data_1; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_data_2 = mshrReqArb_io_out_bits_data_2; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_data_3 = mshrReqArb_io_out_bits_data_3; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_isStore = mshrReqArb_io_out_bits_isStore; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_storeData = mshrReqArb_io_out_bits_storeData; // @[DCache_2.scala 62:17]
-  assign mshr_io_req_bits_storeMask = mshrReqArb_io_out_bits_storeMask; // @[DCache_2.scala 62:17]
-  assign mshr_io_resp_load_ready = loadRespArb_io_in_1_ready; // @[DCache_2.scala 78:26]
-  assign mshr_io_resp_store_ready = storeRespArb_io_in_1_ready; // @[DCache_2.scala 83:27]
-  assign mshr_io_tasks_refill_resp_valid = refillPipe_io_resp_valid; // @[DCache_2.scala 55:31]
-  assign mshr_io_tasks_refill_resp_bits_data = refillPipe_io_resp_bits_data; // @[DCache_2.scala 55:31]
-  assign mshr_io_tasks_writeback_resp_valid = wb_io_resp_valid; // @[DCache_2.scala 57:34]
-  assign mshr_io_dirWrite_req_ready = dirWrArb_io_in_2_ready; // @[DCache_2.scala 107:23]
-  assign mshr_io_dataWrite_req_ready = dataBankWrArb_io_in_2_ready; // @[DCache_2.scala 101:28]
+  assign mshr_io_req_valid = mshrReqArb_io_out_valid; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_addr = mshrReqArb_io_out_bits_addr; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_dirInfo_hit = mshrReqArb_io_out_bits_dirInfo_hit; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_dirInfo_chosenWay = mshrReqArb_io_out_bits_dirInfo_chosenWay; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_dirInfo_isDirtyWay = mshrReqArb_io_out_bits_dirInfo_isDirtyWay; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_dirtyTag = mshrReqArb_io_out_bits_dirtyTag; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_data_0 = mshrReqArb_io_out_bits_data_0; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_data_1 = mshrReqArb_io_out_bits_data_1; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_data_2 = mshrReqArb_io_out_bits_data_2; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_data_3 = mshrReqArb_io_out_bits_data_3; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_isStore = mshrReqArb_io_out_bits_isStore; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_storeData = mshrReqArb_io_out_bits_storeData; // @[DCache.scala 113:17]
+  assign mshr_io_req_bits_storeMask = mshrReqArb_io_out_bits_storeMask; // @[DCache.scala 113:17]
+  assign mshr_io_resp_load_ready = loadRespArb_io_in_1_ready; // @[DCache.scala 129:26]
+  assign mshr_io_resp_store_ready = storeRespArb_io_in_1_ready; // @[DCache.scala 134:27]
+  assign mshr_io_tasks_refill_resp_valid = refillPipe_io_resp_valid; // @[DCache.scala 106:31]
+  assign mshr_io_tasks_refill_resp_bits_data = refillPipe_io_resp_bits_data; // @[DCache.scala 106:31]
+  assign mshr_io_tasks_writeback_resp_valid = wb_io_resp_valid; // @[DCache.scala 108:34]
+  assign mshr_io_dirWrite_req_ready = dirWrArb_io_in_2_ready; // @[DCache.scala 158:23]
+  assign mshr_io_dataWrite_req_ready = dataBankWrArb_io_in_2_ready; // @[DCache.scala 152:28]
   assign refillPipe_clock = clock;
   assign refillPipe_reset = reset;
-  assign refillPipe_io_req_valid = mshr_io_tasks_refill_req_valid; // @[DCache_2.scala 54:30]
-  assign refillPipe_io_req_bits_addr = mshr_io_tasks_refill_req_bits_addr; // @[DCache_2.scala 54:30]
-  assign refillPipe_io_req_bits_chosenWay = mshr_io_tasks_refill_req_bits_chosenWay; // @[DCache_2.scala 54:30]
-  assign refillPipe_io_tlbus_req_ready = tlbusReqArb_io_in_1_ready; // @[DCache_2.scala 66:26]
-  assign refillPipe_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[DCache_2.scala 71:36]
-  assign refillPipe_io_tlbus_resp_bits_opcode = io_tlbus_resp_bits_opcode; // @[DCache_2.scala 72:35]
-  assign refillPipe_io_tlbus_resp_bits_data = io_tlbus_resp_bits_data; // @[DCache_2.scala 72:35]
-  assign refillPipe_io_dirWrite_req_ready = dirWrArb_io_in_1_ready; // @[DCache_2.scala 106:23]
-  assign refillPipe_io_dataWrite_req_ready = dataBankWrArb_io_in_1_ready; // @[DCache_2.scala 100:28]
+  assign refillPipe_io_req_valid = mshr_io_tasks_refill_req_valid; // @[DCache.scala 105:30]
+  assign refillPipe_io_req_bits_addr = mshr_io_tasks_refill_req_bits_addr; // @[DCache.scala 105:30]
+  assign refillPipe_io_req_bits_chosenWay = mshr_io_tasks_refill_req_bits_chosenWay; // @[DCache.scala 105:30]
+  assign refillPipe_io_tlbus_req_ready = tlbusReqArb_io_in_1_ready; // @[DCache.scala 117:26]
+  assign refillPipe_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[DCache.scala 122:36]
+  assign refillPipe_io_tlbus_resp_bits_opcode = io_tlbus_resp_bits_opcode; // @[DCache.scala 123:35]
+  assign refillPipe_io_tlbus_resp_bits_data = io_tlbus_resp_bits_data; // @[DCache.scala 123:35]
+  assign refillPipe_io_dirWrite_req_ready = dirWrArb_io_in_1_ready; // @[DCache.scala 157:23]
+  assign refillPipe_io_dataWrite_req_ready = dataBankWrArb_io_in_1_ready; // @[DCache.scala 151:28]
   assign wb_clock = clock;
   assign wb_reset = reset;
-  assign wb_io_req_valid = mshr_io_tasks_writeback_req_valid; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_addr = mshr_io_tasks_writeback_req_bits_addr; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_dirtyTag = mshr_io_tasks_writeback_req_bits_dirtyTag; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_data_0 = mshr_io_tasks_writeback_req_bits_data_0; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_data_1 = mshr_io_tasks_writeback_req_bits_data_1; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_data_2 = mshr_io_tasks_writeback_req_bits_data_2; // @[DCache_2.scala 56:33]
-  assign wb_io_req_bits_data_3 = mshr_io_tasks_writeback_req_bits_data_3; // @[DCache_2.scala 56:33]
-  assign wb_io_tlbus_req_ready = tlbusReqArb_io_in_0_ready; // @[DCache_2.scala 65:26]
-  assign wb_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[DCache_2.scala 69:28]
+  assign wb_io_req_valid = mshr_io_tasks_writeback_req_valid; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_addr = mshr_io_tasks_writeback_req_bits_addr; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_dirtyTag = mshr_io_tasks_writeback_req_bits_dirtyTag; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_data_0 = mshr_io_tasks_writeback_req_bits_data_0; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_data_1 = mshr_io_tasks_writeback_req_bits_data_1; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_data_2 = mshr_io_tasks_writeback_req_bits_data_2; // @[DCache.scala 107:33]
+  assign wb_io_req_bits_data_3 = mshr_io_tasks_writeback_req_bits_data_3; // @[DCache.scala 107:33]
+  assign wb_io_tlbus_req_ready = tlbusReqArb_io_in_0_ready; // @[DCache.scala 116:26]
+  assign wb_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[DCache.scala 120:28]
   assign db_clock = clock;
   assign db_reset = reset;
-  assign db_io_read_req_valid = dbRdReqArb_io_out_valid; // @[DCache_2.scala 90:20]
-  assign db_io_read_req_bits_set = dbRdReqArb_io_out_bits_set; // @[DCache_2.scala 90:20]
-  assign db_io_write_req_valid = dataBankWrArb_io_out_valid; // @[DCache_2.scala 102:21]
-  assign db_io_write_req_bits_data = dataBankWrArb_io_out_bits_data; // @[DCache_2.scala 102:21]
-  assign db_io_write_req_bits_set = dataBankWrArb_io_out_bits_set; // @[DCache_2.scala 102:21]
-  assign db_io_write_req_bits_blockSelOH = dataBankWrArb_io_out_bits_blockSelOH; // @[DCache_2.scala 102:21]
-  assign db_io_write_req_bits_way = dataBankWrArb_io_out_bits_way; // @[DCache_2.scala 102:21]
+  assign db_io_read_req_valid = dbRdReqArb_io_out_valid; // @[DCache.scala 141:20]
+  assign db_io_read_req_bits_set = dbRdReqArb_io_out_bits_set; // @[DCache.scala 141:20]
+  assign db_io_write_req_valid = dataBankWrArb_io_out_valid; // @[DCache.scala 153:21]
+  assign db_io_write_req_bits_data = dataBankWrArb_io_out_bits_data; // @[DCache.scala 153:21]
+  assign db_io_write_req_bits_set = dataBankWrArb_io_out_bits_set; // @[DCache.scala 153:21]
+  assign db_io_write_req_bits_blockSelOH = dataBankWrArb_io_out_bits_blockSelOH; // @[DCache.scala 153:21]
+  assign db_io_write_req_bits_way = dataBankWrArb_io_out_bits_way; // @[DCache.scala 153:21]
   assign dir_clock = clock;
   assign dir_reset = reset;
-  assign dir_io_read_req_valid = dirRdReqArb_io_out_valid; // @[DCache_2.scala 95:21]
-  assign dir_io_read_req_bits_addr = dirRdReqArb_io_out_bits_addr; // @[DCache_2.scala 95:21]
-  assign dir_io_write_req_valid = dirWrArb_io_out_valid; // @[DCache_2.scala 108:22]
-  assign dir_io_write_req_bits_addr = dirWrArb_io_out_bits_addr; // @[DCache_2.scala 108:22]
-  assign dir_io_write_req_bits_way = dirWrArb_io_out_bits_way; // @[DCache_2.scala 108:22]
-  assign dir_io_write_req_bits_meta = dirWrArb_io_out_bits_meta; // @[DCache_2.scala 108:22]
-  assign mshrReqArb_io_in_0_valid = loadPipe_io_mshr_valid; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_addr = loadPipe_io_mshr_bits_addr; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_dirInfo_hit = loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_dirInfo_chosenWay = loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay = loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_dirInfo_dirtyTag = loadPipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_data_0 = loadPipe_io_mshr_bits_data_0; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_data_1 = loadPipe_io_mshr_bits_data_1; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_data_2 = loadPipe_io_mshr_bits_data_2; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_0_bits_data_3 = loadPipe_io_mshr_bits_data_3; // @[DCache_2.scala 60:25]
-  assign mshrReqArb_io_in_1_valid = storePipe_io_mshr_valid; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_addr = storePipe_io_mshr_bits_addr; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_dirInfo_hit = storePipe_io_mshr_bits_dirInfo_hit; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_dirInfo_chosenWay = storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay = storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_dirInfo_dirtyTag = storePipe_io_mshr_bits_dirInfo_dirtyTag; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_data_0 = storePipe_io_mshr_bits_data_0; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_data_1 = storePipe_io_mshr_bits_data_1; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_data_2 = storePipe_io_mshr_bits_data_2; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_data_3 = storePipe_io_mshr_bits_data_3; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_storeData = storePipe_io_mshr_bits_storeData; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_in_1_bits_storeMask = storePipe_io_mshr_bits_storeMask; // @[DCache_2.scala 61:25]
-  assign mshrReqArb_io_out_ready = mshr_io_req_ready; // @[DCache_2.scala 62:17]
-  assign tlbusReqArb_io_in_0_valid = wb_io_tlbus_req_valid; // @[DCache_2.scala 65:26]
-  assign tlbusReqArb_io_in_0_bits_address = wb_io_tlbus_req_bits_address; // @[DCache_2.scala 65:26]
-  assign tlbusReqArb_io_in_0_bits_data = wb_io_tlbus_req_bits_data; // @[DCache_2.scala 65:26]
-  assign tlbusReqArb_io_in_1_valid = refillPipe_io_tlbus_req_valid; // @[DCache_2.scala 66:26]
-  assign tlbusReqArb_io_in_1_bits_address = refillPipe_io_tlbus_req_bits_address; // @[DCache_2.scala 66:26]
-  assign tlbusReqArb_io_out_ready = io_tlbus_req_ready; // @[DCache_2.scala 67:18]
-  assign loadRespArb_io_in_0_valid = loadPipe_io_load_resp_valid; // @[DCache_2.scala 77:26]
-  assign loadRespArb_io_in_0_bits_data = loadPipe_io_load_resp_bits_data; // @[DCache_2.scala 77:26]
-  assign loadRespArb_io_in_1_valid = mshr_io_resp_load_valid; // @[DCache_2.scala 78:26]
-  assign loadRespArb_io_in_1_bits_data = mshr_io_resp_load_bits_data; // @[DCache_2.scala 78:26]
-  assign storeRespArb_io_in_0_valid = storePipe_io_store_resp_valid; // @[DCache_2.scala 82:27]
-  assign storeRespArb_io_in_1_valid = mshr_io_resp_store_valid; // @[DCache_2.scala 83:27]
-  assign dbRdReqArb_io_in_0_valid = storePipe_io_dataBank_read_req_valid; // @[DCache_2.scala 88:25]
-  assign dbRdReqArb_io_in_0_bits_set = storePipe_io_dataBank_read_req_bits_set; // @[DCache_2.scala 88:25]
-  assign dbRdReqArb_io_in_1_valid = loadPipe_io_dataBank_req_valid; // @[DCache_2.scala 89:25]
-  assign dbRdReqArb_io_in_1_bits_set = loadPipe_io_dataBank_req_bits_set; // @[DCache_2.scala 89:25]
-  assign dirRdReqArb_io_in_0_valid = storePipe_io_dir_read_req_valid; // @[DCache_2.scala 93:26]
-  assign dirRdReqArb_io_in_0_bits_addr = storePipe_io_dir_read_req_bits_addr; // @[DCache_2.scala 93:26]
-  assign dirRdReqArb_io_in_1_valid = loadPipe_io_dir_req_valid; // @[DCache_2.scala 94:26]
-  assign dirRdReqArb_io_in_1_bits_addr = loadPipe_io_dir_req_bits_addr; // @[DCache_2.scala 94:26]
-  assign dataBankWrArb_io_in_0_valid = storePipe_io_dataBank_write_req_valid; // @[DCache_2.scala 99:28]
-  assign dataBankWrArb_io_in_0_bits_data = storePipe_io_dataBank_write_req_bits_data; // @[DCache_2.scala 99:28]
-  assign dataBankWrArb_io_in_0_bits_set = storePipe_io_dataBank_write_req_bits_set; // @[DCache_2.scala 99:28]
-  assign dataBankWrArb_io_in_0_bits_blockSelOH = storePipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache_2.scala 99:28]
-  assign dataBankWrArb_io_in_0_bits_way = storePipe_io_dataBank_write_req_bits_way; // @[DCache_2.scala 99:28]
-  assign dataBankWrArb_io_in_1_valid = refillPipe_io_dataWrite_req_valid; // @[DCache_2.scala 100:28]
-  assign dataBankWrArb_io_in_1_bits_data = refillPipe_io_dataWrite_req_bits_data; // @[DCache_2.scala 100:28]
-  assign dataBankWrArb_io_in_1_bits_set = refillPipe_io_dataWrite_req_bits_set; // @[DCache_2.scala 100:28]
-  assign dataBankWrArb_io_in_1_bits_blockSelOH = refillPipe_io_dataWrite_req_bits_blockSelOH; // @[DCache_2.scala 100:28]
-  assign dataBankWrArb_io_in_1_bits_way = refillPipe_io_dataWrite_req_bits_way; // @[DCache_2.scala 100:28]
-  assign dataBankWrArb_io_in_2_valid = mshr_io_dataWrite_req_valid; // @[DCache_2.scala 101:28]
-  assign dataBankWrArb_io_in_2_bits_data = mshr_io_dataWrite_req_bits_data; // @[DCache_2.scala 101:28]
-  assign dataBankWrArb_io_in_2_bits_set = mshr_io_dataWrite_req_bits_set; // @[DCache_2.scala 101:28]
-  assign dataBankWrArb_io_in_2_bits_blockSelOH = mshr_io_dataWrite_req_bits_blockSelOH; // @[DCache_2.scala 101:28]
-  assign dataBankWrArb_io_in_2_bits_way = mshr_io_dataWrite_req_bits_way; // @[DCache_2.scala 101:28]
-  assign dirWrArb_io_in_0_valid = storePipe_io_dir_write_req_valid; // @[DCache_2.scala 105:23]
-  assign dirWrArb_io_in_0_bits_addr = storePipe_io_dir_write_req_bits_addr; // @[DCache_2.scala 105:23]
-  assign dirWrArb_io_in_0_bits_way = storePipe_io_dir_write_req_bits_way; // @[DCache_2.scala 105:23]
-  assign dirWrArb_io_in_1_valid = refillPipe_io_dirWrite_req_valid; // @[DCache_2.scala 106:23]
-  assign dirWrArb_io_in_1_bits_addr = refillPipe_io_dirWrite_req_bits_addr; // @[DCache_2.scala 106:23]
-  assign dirWrArb_io_in_1_bits_way = refillPipe_io_dirWrite_req_bits_way; // @[DCache_2.scala 106:23]
-  assign dirWrArb_io_in_2_valid = mshr_io_dirWrite_req_valid; // @[DCache_2.scala 107:23]
-  assign dirWrArb_io_in_2_bits_addr = mshr_io_dirWrite_req_bits_addr; // @[DCache_2.scala 107:23]
-  assign dirWrArb_io_in_2_bits_way = mshr_io_dirWrite_req_bits_way; // @[DCache_2.scala 107:23]
+  assign dir_io_read_req_valid = dirRdReqArb_io_out_valid; // @[DCache.scala 146:21]
+  assign dir_io_read_req_bits_addr = dirRdReqArb_io_out_bits_addr; // @[DCache.scala 146:21]
+  assign dir_io_write_req_valid = dirWrArb_io_out_valid; // @[DCache.scala 159:22]
+  assign dir_io_write_req_bits_addr = dirWrArb_io_out_bits_addr; // @[DCache.scala 159:22]
+  assign dir_io_write_req_bits_way = dirWrArb_io_out_bits_way; // @[DCache.scala 159:22]
+  assign dir_io_write_req_bits_meta = dirWrArb_io_out_bits_meta; // @[DCache.scala 159:22]
+  assign mshrReqArb_io_in_0_valid = loadPipe_io_mshr_valid; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_addr = loadPipe_io_mshr_bits_addr; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_dirInfo_hit = loadPipe_io_mshr_bits_dirInfo_hit; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_dirInfo_chosenWay = loadPipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_dirInfo_isDirtyWay = loadPipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_data_0 = loadPipe_io_mshr_bits_data_0; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_data_1 = loadPipe_io_mshr_bits_data_1; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_data_2 = loadPipe_io_mshr_bits_data_2; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_0_bits_data_3 = loadPipe_io_mshr_bits_data_3; // @[DCache.scala 111:25]
+  assign mshrReqArb_io_in_1_valid = storePipe_io_mshr_valid; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_addr = storePipe_io_mshr_bits_addr; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_dirInfo_hit = storePipe_io_mshr_bits_dirInfo_hit; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_dirInfo_chosenWay = storePipe_io_mshr_bits_dirInfo_chosenWay; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_dirInfo_isDirtyWay = storePipe_io_mshr_bits_dirInfo_isDirtyWay; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_dirtyTag = storePipe_io_mshr_bits_dirtyTag; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_data_0 = storePipe_io_mshr_bits_data_0; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_data_1 = storePipe_io_mshr_bits_data_1; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_data_2 = storePipe_io_mshr_bits_data_2; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_data_3 = storePipe_io_mshr_bits_data_3; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_storeData = storePipe_io_mshr_bits_storeData; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_in_1_bits_storeMask = storePipe_io_mshr_bits_storeMask; // @[DCache.scala 112:25]
+  assign mshrReqArb_io_out_ready = mshr_io_req_ready; // @[DCache.scala 113:17]
+  assign tlbusReqArb_io_in_0_valid = wb_io_tlbus_req_valid; // @[DCache.scala 116:26]
+  assign tlbusReqArb_io_in_0_bits_address = wb_io_tlbus_req_bits_address; // @[DCache.scala 116:26]
+  assign tlbusReqArb_io_in_0_bits_data = wb_io_tlbus_req_bits_data; // @[DCache.scala 116:26]
+  assign tlbusReqArb_io_in_1_valid = refillPipe_io_tlbus_req_valid; // @[DCache.scala 117:26]
+  assign tlbusReqArb_io_in_1_bits_address = refillPipe_io_tlbus_req_bits_address; // @[DCache.scala 117:26]
+  assign tlbusReqArb_io_out_ready = io_tlbus_req_ready; // @[DCache.scala 118:18]
+  assign loadRespArb_io_in_0_valid = loadPipe_io_load_resp_valid; // @[DCache.scala 128:26]
+  assign loadRespArb_io_in_0_bits_data = loadPipe_io_load_resp_bits_data; // @[DCache.scala 128:26]
+  assign loadRespArb_io_in_1_valid = mshr_io_resp_load_valid; // @[DCache.scala 129:26]
+  assign loadRespArb_io_in_1_bits_data = mshr_io_resp_load_bits_data; // @[DCache.scala 129:26]
+  assign storeRespArb_io_in_0_valid = storePipe_io_store_resp_valid; // @[DCache.scala 133:27]
+  assign storeRespArb_io_in_1_valid = mshr_io_resp_store_valid; // @[DCache.scala 134:27]
+  assign dbRdReqArb_io_in_0_valid = storePipe_io_dataBank_read_req_valid; // @[DCache.scala 139:25]
+  assign dbRdReqArb_io_in_0_bits_set = storePipe_io_dataBank_read_req_bits_set; // @[DCache.scala 139:25]
+  assign dbRdReqArb_io_in_1_valid = loadPipe_io_dataBank_req_valid; // @[DCache.scala 140:25]
+  assign dbRdReqArb_io_in_1_bits_set = loadPipe_io_dataBank_req_bits_set; // @[DCache.scala 140:25]
+  assign dirRdReqArb_io_in_0_valid = storePipe_io_dir_read_req_valid; // @[DCache.scala 144:26]
+  assign dirRdReqArb_io_in_0_bits_addr = storePipe_io_dir_read_req_bits_addr; // @[DCache.scala 144:26]
+  assign dirRdReqArb_io_in_1_valid = loadPipe_io_dir_req_valid; // @[DCache.scala 145:26]
+  assign dirRdReqArb_io_in_1_bits_addr = loadPipe_io_dir_req_bits_addr; // @[DCache.scala 145:26]
+  assign dataBankWrArb_io_in_0_valid = storePipe_io_dataBank_write_req_valid; // @[DCache.scala 150:28]
+  assign dataBankWrArb_io_in_0_bits_data = storePipe_io_dataBank_write_req_bits_data; // @[DCache.scala 150:28]
+  assign dataBankWrArb_io_in_0_bits_set = storePipe_io_dataBank_write_req_bits_set; // @[DCache.scala 150:28]
+  assign dataBankWrArb_io_in_0_bits_blockSelOH = storePipe_io_dataBank_write_req_bits_blockSelOH; // @[DCache.scala 150:28]
+  assign dataBankWrArb_io_in_0_bits_way = storePipe_io_dataBank_write_req_bits_way; // @[DCache.scala 150:28]
+  assign dataBankWrArb_io_in_1_valid = refillPipe_io_dataWrite_req_valid; // @[DCache.scala 151:28]
+  assign dataBankWrArb_io_in_1_bits_data = refillPipe_io_dataWrite_req_bits_data; // @[DCache.scala 151:28]
+  assign dataBankWrArb_io_in_1_bits_set = refillPipe_io_dataWrite_req_bits_set; // @[DCache.scala 151:28]
+  assign dataBankWrArb_io_in_1_bits_blockSelOH = refillPipe_io_dataWrite_req_bits_blockSelOH; // @[DCache.scala 151:28]
+  assign dataBankWrArb_io_in_1_bits_way = refillPipe_io_dataWrite_req_bits_way; // @[DCache.scala 151:28]
+  assign dataBankWrArb_io_in_2_valid = mshr_io_dataWrite_req_valid; // @[DCache.scala 152:28]
+  assign dataBankWrArb_io_in_2_bits_data = mshr_io_dataWrite_req_bits_data; // @[DCache.scala 152:28]
+  assign dataBankWrArb_io_in_2_bits_set = mshr_io_dataWrite_req_bits_set; // @[DCache.scala 152:28]
+  assign dataBankWrArb_io_in_2_bits_blockSelOH = mshr_io_dataWrite_req_bits_blockSelOH; // @[DCache.scala 152:28]
+  assign dataBankWrArb_io_in_2_bits_way = mshr_io_dataWrite_req_bits_way; // @[DCache.scala 152:28]
+  assign dirWrArb_io_in_0_valid = storePipe_io_dir_write_req_valid; // @[DCache.scala 156:23]
+  assign dirWrArb_io_in_0_bits_addr = storePipe_io_dir_write_req_bits_addr; // @[DCache.scala 156:23]
+  assign dirWrArb_io_in_0_bits_way = storePipe_io_dir_write_req_bits_way; // @[DCache.scala 156:23]
+  assign dirWrArb_io_in_1_valid = refillPipe_io_dirWrite_req_valid; // @[DCache.scala 157:23]
+  assign dirWrArb_io_in_1_bits_addr = refillPipe_io_dirWrite_req_bits_addr; // @[DCache.scala 157:23]
+  assign dirWrArb_io_in_1_bits_way = refillPipe_io_dirWrite_req_bits_way; // @[DCache.scala 157:23]
+  assign dirWrArb_io_in_2_valid = mshr_io_dirWrite_req_valid; // @[DCache.scala 158:23]
+  assign dirWrArb_io_in_2_bits_addr = mshr_io_dirWrite_req_bits_addr; // @[DCache.scala 158:23]
+  assign dirWrArb_io_in_2_bits_way = mshr_io_dirWrite_req_bits_way; // @[DCache.scala 158:23]
 endmodule
 module Mem(
   input         clock,
@@ -19783,7 +19522,7 @@ module Mem(
     .io_cache_write_resp_ready(lsu_io_cache_write_resp_ready),
     .io_cache_write_resp_valid(lsu_io_cache_write_resp_valid)
   );
-  DCache_1 dcache ( // @[4_Mem.scala 165:24]
+  DCache dcache ( // @[4_Mem.scala 165:24]
     .clock(dcache_clock),
     .reset(dcache_reset),
     .io_read_req_ready(dcache_io_read_req_ready),

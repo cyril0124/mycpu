@@ -53,18 +53,16 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     println(s" tagBits: ${dcacheTagBits}")
 
 
-    val db = Module(new DataBankArray_1)
-    val dir = Module(new DCacheDirectory_1)
-    val refillPipe = Module(new RefillPipe_1)
+    val db = Module(new DataBankArray)
+    val dir = Module(new DCacheDirectory)
+    val refillPipe = Module(new RefillPipe)
 
     refillPipe.io.resp.ready := true.B
     refillPipe.io.dataWrite.req <> db.io.write.req
     refillPipe.io.dirWrite.req <> dir.io.write.req
     refillPipe.io.tlbus <> io.tlbus
     
-    val loadQueueEntries = 8
-    // val loadQueue = Module(new Queue(new StageInfo, entries = loadQueueEntries, flow = true))
-    val refillBuffer = Module(new RefillBuffer(loadQueueEntries / 2))
+    val refillBuffer = Module(new RefillBuffer(2))
 
     val s0_valid = Wire(Bool())
     val s1_valid, s1_ready = Wire(Bool())
@@ -76,11 +74,9 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     // read databank & directory
     val s0_full = RegInit(false.B)
     val s0_latch = io.read.req.fire
-    // val s0_fire = s0_valid && loadQueue.io.enq.fire
     val s0_fire = s0_valid && s1_ready
     val s0_req = Mux(io.read.req.fire, io.read.req.bits, RegEnable(io.read.req.bits, s0_latch))
 
-    // io.read.req.ready := loadQueue.io.enq.ready
     io.read.req.ready := !s0_full || s0_fire
     
     when(s0_latch) { s0_full := true.B }
@@ -104,10 +100,6 @@ class ICache()(implicit val p: Parameters) extends MyModule {
         val rdData = chiselTypeOf(db.io.read.resp)
     }
 
-    // loadQueue.io.enq.valid := s0_valid
-    // loadQueue.io.enq.bits.dirInfo := dir.io.read.resp.bits
-    // loadQueue.io.enq.bits.req := s0_req
-    // loadQueue.io.enq.bits.rdData := db.io.read.resp
     val s0_info = Wire(new StageInfo)
     s0_info.dirInfo := dir.io.read.resp.bits
     s0_info.req := s0_req
@@ -117,14 +109,9 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     // stage 1
     // --------------------------------------------------------------------------------
     // 
-
-
-    // loadQueue.io.deq.ready := s1_ready
     val s1_full = RegInit(false.B)
-    // val s1_latch = loadQueue.io.deq.valid && s1_ready
     val s1_latch = s0_valid && s1_ready
     val s1_fire = s1_valid && s2_ready
-    // val s1_info = RegEnable(loadQueue.io.deq.bits, s1_latch)
     val s1_info = RegEnable(s0_info, s1_latch)
     val s1_blockSel = addrToDCacheBlockOH(s1_info.req.addr)
     s1_ready := !s1_full || s1_fire

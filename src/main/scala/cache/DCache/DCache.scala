@@ -14,7 +14,57 @@ import dataclass.data
 import chisel3.util.random.LFSR
 import scala.tools.cmd.Meta
 
-class DCache_1()(implicit val p: Parameters) extends MyModule {
+
+class CacheReadReq()(implicit val p: Parameters) extends MyBundle{
+    val addr = UInt(xlen.W)
+}
+
+class CacheReadResp()(implicit val p: Parameters) extends MyBundle{
+    val data = UInt(xlen.W)
+    val stageID = UInt(2.W)
+}
+
+class CacheReadBus()(implicit val p: Parameters) extends MyBundle{
+    val req = Flipped(Decoupled(new CacheReadReq))
+    val resp = Decoupled(new CacheReadResp)
+}
+
+class CacheWriteReq()(implicit val p: Parameters) extends MyBundle{
+    val addr = UInt(xlen.W)
+    val data = UInt(xlen.W)
+    val mask = UInt(dcacheBlockBytes.W) 
+}
+
+class CacheWriteResp()(implicit val p: Parameters) extends MyBundle{
+    val status = Bool()
+    // val stageID = UInt(2.W)
+}
+
+class CacheWriteBus()(implicit val p: Parameters) extends MyBundle{
+    val req = Flipped(Decoupled(new CacheWriteReq))
+    val resp = Decoupled(new CacheWriteResp)
+}
+
+class DCacheIO()(implicit val p: Parameters) extends MyBundle{
+    val read = new CacheReadBus
+    val write = new CacheWriteBus
+
+    val tlbus = new TLMasterBusUL
+}
+
+object ReplacePolicy{
+    def apply(policy: String = "random", nrWay: Int = 4): UInt = {
+        val outputWay = WireInit(0.U(nrWay.W))
+        if(policy == "random") {
+            val lfsr = LFSR(nrWay*2)
+            outputWay := UIntToOH(lfsr(log2Ceil(nrWay)-1, 0), nrWay)
+        }
+        outputWay
+    }
+}
+
+
+class DCache()(implicit val p: Parameters) extends MyModule {
     val io = IO(new DCacheIO)
     
     val cacheSize = dcacheSets * dcacheWays * dcacheBanks *dcacheBlockBytes
@@ -28,13 +78,13 @@ class DCache_1()(implicit val p: Parameters) extends MyModule {
     println(s" setBits: ${dcacheSetBits}")
     println(s" tagBits: ${dcacheTagBits}")
 
-    val loadPipe = Module(new LoadPipe_2)
-    val storePipe = Module(new StorePipe_2)
+    val loadPipe = Module(new LoadPipe)
+    val storePipe = Module(new StorePipe)
     val mshr = Module(new MSHR)
-    val refillPipe = Module(new RefillPipe_1)
+    val refillPipe = Module(new RefillPipe)
     val wb = Module(new WritebackQueue)
-    val db = Module(new DataBankArray_1)
-    val dir = Module(new DCacheDirectory_1)
+    val db = Module(new DataBankArray)
+    val dir = Module(new DCacheDirectory)
 
     loadPipe.io.dir.resp.valid := dir.io.read.resp.valid
     loadPipe.io.dir.resp.bits <> dir.io.read.resp.bits
@@ -43,10 +93,6 @@ class DCache_1()(implicit val p: Parameters) extends MyModule {
 
     loadPipe.io.dataBank.resp := db.io.read.resp
     storePipe.io.dataBank.read.resp := db.io.read.resp
-    // loadPipe.io.dataBank.resp.valid := db.io.read.resp.valid
-    // loadPipe.io.dataBank.resp.bits <> db.io.read.resp.bits
-    // storePipe.io.dataBank.read.resp.valid := db.io.read.resp.valid
-    // storePipe.io.dataBank.read.resp.bits <> db.io.read.resp.bits
 
     loadPipe.io.load.req <> io.read.req
     storePipe.io.store.req <> io.write.req
@@ -111,13 +157,13 @@ class DCache_1()(implicit val p: Parameters) extends MyModule {
 
 }
 
-object DCache_1GenRTL extends App {
+object DCacheGenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
             simulation = false
         )
     })
 
-    println("Generating the DCache_1 hardware")
-    (new chisel3.stage.ChiselStage).emitVerilog(new DCache_1()(defaultConfig), Array("--target-dir", "build"))
+    println("Generating the DCache hardware")
+    (new chisel3.stage.ChiselStage).emitVerilog(new DCache()(defaultConfig), Array("--target-dir", "build"))
 }
