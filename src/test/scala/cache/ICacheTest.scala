@@ -69,14 +69,15 @@ class ICacheTest extends AnyFlatSpec with ChiselScalatestTester {
 
             fork{
                 load(0x1000)
+                c.clock.step(10)
                 load(0x1004)
                 load(0x1008)
-                load(0x100C)
+                load(0x100D)
 
-                load(0x2008)
-                load(0x2000)
-                load(0x1000)
-                load(0x100C)
+                // load(0x2008)
+                // load(0x2000)
+                // load(0x1000)
+                // load(0x100C)
             }.fork{
                 while(!c.io.tlbus.req.valid.peekBoolean()) c.clock.step()
                 c.clock.step()

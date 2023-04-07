@@ -15,6 +15,7 @@ class RefillReqBundle()(implicit val p: Parameters) extends MyBundle {
 
 class RefillRespBundle()(implicit val p: Parameters) extends MyBundle {
     val data = UInt((dcacheBlockBytes*8).W)
+    val blockData = Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))
 }
 
 class RefillPipeIO()(implicit val p: Parameters) extends MyBundle {
@@ -61,7 +62,7 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     val refillBlockDataArray = RegInit(VecInit((0 until dcacheBlockSize).map{i => 0.U((dcacheBlockBytes*8).W)}))
     when(refillFire) { refillBlockDataArray(beatCounter.value) := refillResp.data }
     val refillBlockData = WireInit(VecInit((0 until dcacheBlockSize).map{ i => if(i != dcacheBlockSize-1) refillBlockDataArray(i) else refillResp.data }))
-    val readRespData = Mux1H(dataBlockSelOH, refillBlockData)
+    // val readRespData = Mux1H(dataBlockSelOH, refillBlockData)
 
 
     // send Get
@@ -134,6 +135,7 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     // send refill resp
     io.resp.valid := state === sResp || refillLastBeat
     io.resp.bits.data := Mux1H(dataBlockSelOH, refillBlockData) // for load
+    io.resp.bits.blockData := refillBlockData
 
     // send Get request
     val blockAddr = Cat(req.addr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))

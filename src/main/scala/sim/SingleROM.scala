@@ -67,7 +67,7 @@ import mycpu.util._
 abstract class SingleMemBase()(implicit val p: Parameters) extends MyModule {
     val io = IO(new TLSlaveBusUL)
 
-    val mem = SyncReadMem(romSize, UInt((busBeatSize*8).W))
+    val mem = SyncReadMem(romSize, UInt(romReadWidth.W))
 
     val reqReg = RegEnable(io.req.bits, io.req.fire)
     val req = Mux(io.req.fire, io.req.bits, reqReg)

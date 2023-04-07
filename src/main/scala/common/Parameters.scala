@@ -69,7 +69,6 @@ trait HasMyCpuParameters {
 
     val icacheRdWays = myCpuParams.icacheRdWays
 
-
     // TODO:
     /**           Memory Map Configuration
       *  ____________   _____________________________
@@ -116,6 +115,9 @@ trait HasMyCpuParameters {
     val rfWrPort = myCpuParams.rfWrPort
     val rfDebug = myCpuParams.rfDebug
     // val rfStateOut = myCpuParams.rfStateOut
+
+    val romReadWidth = myCpuParams.romReadWidth
+    require(romReadWidth >= busBeatWidth, "error params, romReadWidth < busBeatWidth")
     
 }
 
@@ -129,16 +131,17 @@ case class MyCpuParameters
     romSize: Int = 0x00020000,
     ramSize: Int = 1024,
 
+    romReadWidth: Int = 4 * 8, 
     busBeatSize: Int = 4,
     busMaxBeat: Int = 32,
 
     // DCache Configuration
     dcacheWays: Int = 8,
     dcacheSets: Int = 256,
-    // dcacheBlockBytes: Int = 8,
     dcacheBlockSize: Int = 4,
     dcacheBanks: Int = 2,
 
+    // ICache Configuration
     icacheRdWays: Int = 4,
 
     startAddr: Int = 0,

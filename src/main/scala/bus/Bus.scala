@@ -46,8 +46,8 @@ import BusReq._
 class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatWidth.W) 
-    val source = UInt(log2Ceil(nrBusMaster).W)
+    val size = UInt(busBeatWidth.W) // PutFullData: 2^n bytes will be written by the slave.   Get: 2^n bytes will be read by the slave and returned
+    val source = UInt(log2Ceil(nrBusMaster).W) // PutFullData: Byte lanes to be written; must be contiguous.    Get: Byte lanes to be read from
     val address = UInt(xlen.W)
     val mask = UInt(busBeatSize.W) 
     val corrupt = Bool()
@@ -59,10 +59,10 @@ class BusMasterBundle()(implicit val p: Parameters) extends MyBundle{
 class BusSlaveBundle()(implicit val p: Parameters) extends MyBundle{
     val opcode = UInt(3.W)
     val param = UInt(3.W)
-    val size = UInt(busBeatWidth.W) 
+    val size = UInt(busBeatWidth.W) // AccessAck: 2^n bytes were accessed by the slave.   AccessAckData: 2^n bytes were accessed by the slave.
     val source = UInt(log2Ceil(nrBusMaster).W)
     val sink = UInt(log2Ceil(nrBusSlave).W)
-    val denied = Bool()
+    val denied = Bool() // The slave was unable to service the request(Busy)
     val corrupt = Bool()
     val data = UInt((busBeatSize*8).W) 
 }
