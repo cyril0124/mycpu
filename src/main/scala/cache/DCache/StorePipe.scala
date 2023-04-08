@@ -102,11 +102,12 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
 
     io.dataBank.write.req.valid := s1_isHit && s1_full
     io.dataBank.write.req.bits <> DontCare
-    io.dataBank.write.req.bits.blockSelOH := s1_dataBlockSelOH
+    io.dataBank.write.req.bits.blockMask := s1_dataBlockSelOH
     io.dataBank.write.req.bits.set := s1_wSet
     io.dataBank.write.req.bits.way := s1_chosenWayOH
-    io.dataBank.write.req.bits.data := dcacheMergeData(s1_rdData, s1_reqReg.data, s1_reqReg.mask)
-
+    val tempWrData = WireInit(0.U.asTypeOf(Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))))
+    tempWrData(OHToUInt(s1_dataBlockSelOH)) := dcacheMergeData(s1_rdData, s1_reqReg.data, s1_reqReg.mask)
+    io.dataBank.write.req.bits.data := tempWrData
 
 
     s1_valid := s1_full && (

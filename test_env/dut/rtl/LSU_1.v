@@ -42,7 +42,7 @@ module LSU_1(
   wire  s0_latch = io_req_ready & io_req_valid; // @[Decoupled.scala 51:35]
   wire  _s0_valid_T = io_cache_read_req_ready & io_cache_read_req_valid; // @[Decoupled.scala 51:35]
   reg  s0_valid_holdReg; // @[Reg.scala 19:16]
-  wire  _s0_valid_T_1 = _s0_valid_T | s0_valid_holdReg; // @[util.scala 12:12]
+  wire  _s0_valid_T_1 = _s0_valid_T | s0_valid_holdReg; // @[util.scala 26:12]
   reg [4:0] s0_reqReg_lsuOp; // @[Reg.scala 19:16]
   wire [4:0] s0_req_lsuOp = s0_latch ? io_req_bits_lsuOp : s0_reqReg_lsuOp; // @[LSU.scala 211:21]
   wire  _T_7 = 5'h1 == s0_req_lsuOp; // @[Lookup.scala 31:38]
@@ -56,7 +56,7 @@ module LSU_1(
   wire  load = _T_7 | (_T_9 | (_T_11 | (_T_13 | _T_15))); // @[Lookup.scala 34:39]
   wire  _s0_valid_T_3 = io_cache_write_req_ready & io_cache_write_req_valid; // @[Decoupled.scala 51:35]
   reg  s0_valid_holdReg_1; // @[Reg.scala 19:16]
-  wire  _s0_valid_T_4 = _s0_valid_T_3 | s0_valid_holdReg_1; // @[util.scala 12:12]
+  wire  _s0_valid_T_4 = _s0_valid_T_3 | s0_valid_holdReg_1; // @[util.scala 26:12]
   wire  _T_36 = _T_15 ? 1'h0 : _T_17 | (_T_19 | _T_21); // @[Lookup.scala 34:39]
   wire  _T_37 = _T_13 ? 1'h0 : _T_36; // @[Lookup.scala 34:39]
   wire  _T_38 = _T_11 ? 1'h0 : _T_37; // @[Lookup.scala 34:39]
@@ -100,10 +100,10 @@ module LSU_1(
   reg [1:0] s1_offset; // @[Reg.scala 19:16]
   wire  _s1_loadRespValid_T = io_cache_read_resp_ready & io_cache_read_resp_valid; // @[Decoupled.scala 51:35]
   reg  s1_loadRespValid_holdReg; // @[Reg.scala 19:16]
-  wire  s1_loadRespValid = _s1_loadRespValid_T ? io_cache_read_resp_valid : s1_loadRespValid_holdReg; // @[util.scala 12:12]
+  wire  s1_loadRespValid = _s1_loadRespValid_T ? io_cache_read_resp_valid : s1_loadRespValid_holdReg; // @[util.scala 26:12]
   wire  _s1_storeRespValid_T = io_cache_write_resp_ready & io_cache_write_resp_valid; // @[Decoupled.scala 51:35]
   reg  s1_storeRespValid_holdReg; // @[Reg.scala 19:16]
-  wire  s1_storeRespValid = _s1_storeRespValid_T ? io_cache_write_resp_valid : s1_storeRespValid_holdReg; // @[util.scala 12:12]
+  wire  s1_storeRespValid = _s1_storeRespValid_T ? io_cache_write_resp_valid : s1_storeRespValid_holdReg; // @[util.scala 26:12]
   wire  s1_fire = s1_full & (s1_loadRespValid | s1_storeRespValid); // @[LSU.scala 306:25]
   wire  _GEN_17 = s1_full & s1_fire ? 1'h0 : s1_full; // @[LSU.scala 272:26 281:{35,45}]
   wire  _GEN_18 = s0_fire | _GEN_17; // @[LSU.scala 280:{20,30}]
@@ -116,30 +116,30 @@ module LSU_1(
   wire [31:0] _s1_loadData_T_12 = 2'h2 == s1_offset ? _s1_loadData_T_5 : _s1_loadData_T_10; // @[Mux.scala 81:58]
   wire [31:0] s1_loadData = 2'h3 == s1_offset ? _s1_loadData_T_8 : _s1_loadData_T_12; // @[Mux.scala 81:58]
   wire [7:0] _io_resp_bits_rdata_T_1 = s1_loadData[7:0]; // @[LSU.scala 300:85]
-  wire  io_resp_bits_rdata_signBit = _io_resp_bits_rdata_T_1[7]; // @[util.scala 28:27]
+  wire  io_resp_bits_rdata_signBit = _io_resp_bits_rdata_T_1[7]; // @[util.scala 42:27]
   wire [5:0] io_resp_bits_rdata_out_lo_lo = {io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,
     io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit}; // @[Cat.scala 33:92]
   wire [11:0] io_resp_bits_rdata_out_lo = {io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,
     io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,
     io_resp_bits_rdata_out_lo_lo}; // @[Cat.scala 33:92]
-  wire [7:0] _io_resp_bits_rdata_out_T_1 = s1_loadData[7:0]; // @[util.scala 32:75]
+  wire [7:0] _io_resp_bits_rdata_out_T_1 = s1_loadData[7:0]; // @[util.scala 46:75]
   wire [31:0] io_resp_bits_rdata_out = {io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit
     ,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_signBit,io_resp_bits_rdata_out_lo_lo,
     io_resp_bits_rdata_out_lo,_io_resp_bits_rdata_out_T_1}; // @[Cat.scala 33:92]
-  wire [31:0] io_resp_bits_rdata_out_1 = {{24'd0}, s1_loadData[7:0]}; // @[util.scala 48:36]
+  wire [31:0] io_resp_bits_rdata_out_1 = {{24'd0}, s1_loadData[7:0]}; // @[util.scala 62:36]
   wire [31:0] _io_resp_bits_rdata_T_3 = s1_signed ? io_resp_bits_rdata_out : io_resp_bits_rdata_out_1; // @[LSU.scala 300:48]
   wire [15:0] _io_resp_bits_rdata_T_5 = s1_loadData[15:0]; // @[LSU.scala 301:86]
-  wire  io_resp_bits_rdata_signBit_1 = _io_resp_bits_rdata_T_5[15]; // @[util.scala 28:27]
+  wire  io_resp_bits_rdata_signBit_1 = _io_resp_bits_rdata_T_5[15]; // @[util.scala 42:27]
   wire [7:0] io_resp_bits_rdata_out_lo_1 = {io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1}; // @[Cat.scala 33:92]
-  wire [15:0] _io_resp_bits_rdata_out_T_3 = s1_loadData[15:0]; // @[util.scala 32:75]
+  wire [15:0] _io_resp_bits_rdata_out_T_3 = s1_loadData[15:0]; // @[util.scala 46:75]
   wire [31:0] io_resp_bits_rdata_out_2 = {io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,
     io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_signBit_1,io_resp_bits_rdata_out_lo_1,_io_resp_bits_rdata_out_T_3}; // @[Cat.scala 33:92]
-  wire [31:0] io_resp_bits_rdata_out_3 = {{16'd0}, s1_loadData[15:0]}; // @[util.scala 48:36]
+  wire [31:0] io_resp_bits_rdata_out_3 = {{16'd0}, s1_loadData[15:0]}; // @[util.scala 62:36]
   wire [31:0] _io_resp_bits_rdata_T_7 = s1_signed ? io_resp_bits_rdata_out_2 : io_resp_bits_rdata_out_3; // @[LSU.scala 301:48]
-  wire [31:0] _io_resp_bits_rdata_T_10 = 2'h3 == s1_offset ? _s1_loadData_T_8 : _s1_loadData_T_12; // @[util.scala 30:18]
+  wire [31:0] _io_resp_bits_rdata_T_10 = 2'h3 == s1_offset ? _s1_loadData_T_8 : _s1_loadData_T_12; // @[util.scala 44:18]
   wire [31:0] _io_resp_bits_rdata_T_12 = s1_signed ? _io_resp_bits_rdata_T_10 : s1_loadData; // @[LSU.scala 302:48]
   wire [31:0] _io_resp_bits_rdata_T_14 = 2'h0 == s1_width ? _io_resp_bits_rdata_T_3 : s1_loadData; // @[Mux.scala 81:58]
   wire [31:0] _io_resp_bits_rdata_T_16 = 2'h1 == s1_width ? _io_resp_bits_rdata_T_7 : _io_resp_bits_rdata_T_14; // @[Mux.scala 81:58]
@@ -161,16 +161,16 @@ module LSU_1(
     end else begin
       s0_full <= _GEN_5;
     end
-    if (s0_fire) begin // @[util.scala 11:21]
-      s0_valid_holdReg <= 1'h0; // @[util.scala 11:31]
+    if (s0_fire) begin // @[util.scala 25:21]
+      s0_valid_holdReg <= 1'h0; // @[util.scala 25:31]
     end else begin
       s0_valid_holdReg <= _s0_valid_T_1;
     end
     if (s0_latch) begin // @[Reg.scala 20:18]
       s0_reqReg_lsuOp <= io_req_bits_lsuOp; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[util.scala 11:21]
-      s0_valid_holdReg_1 <= 1'h0; // @[util.scala 11:31]
+    if (s0_fire) begin // @[util.scala 25:21]
+      s0_valid_holdReg_1 <= 1'h0; // @[util.scala 25:31]
     end else begin
       s0_valid_holdReg_1 <= _s0_valid_T_4;
     end
@@ -209,18 +209,18 @@ module LSU_1(
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_offset <= s0_offset; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[util.scala 11:21]
-      s1_loadRespValid_holdReg <= 1'h0; // @[util.scala 11:31]
-    end else if (_s1_loadRespValid_T) begin // @[util.scala 12:12]
+    if (s0_fire) begin // @[util.scala 25:21]
+      s1_loadRespValid_holdReg <= 1'h0; // @[util.scala 25:31]
+    end else if (_s1_loadRespValid_T) begin // @[util.scala 26:12]
       s1_loadRespValid_holdReg <= io_cache_read_resp_valid;
     end
-    if (s0_fire) begin // @[util.scala 11:21]
-      s1_storeRespValid_holdReg <= 1'h0; // @[util.scala 11:31]
-    end else if (_s1_storeRespValid_T) begin // @[util.scala 12:12]
+    if (s0_fire) begin // @[util.scala 25:21]
+      s1_storeRespValid_holdReg <= 1'h0; // @[util.scala 25:31]
+    end else if (_s1_storeRespValid_T) begin // @[util.scala 26:12]
       s1_storeRespValid_holdReg <= io_cache_write_resp_valid;
     end
-    if (s0_fire) begin // @[util.scala 11:21]
-      s1_loadResp_holdReg_data <= 32'h0; // @[util.scala 11:31]
+    if (s0_fire) begin // @[util.scala 25:21]
+      s1_loadResp_holdReg_data <= 32'h0; // @[util.scala 25:31]
     end else if (_s1_loadRespValid_T) begin // @[Reg.scala 20:18]
       s1_loadResp_holdReg_data <= io_cache_read_resp_bits_data; // @[Reg.scala 20:22]
     end

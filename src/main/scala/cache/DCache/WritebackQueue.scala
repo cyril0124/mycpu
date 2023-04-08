@@ -44,9 +44,11 @@ class WritebackQueue()(implicit val p: Parameters) extends MyModule {
     val reqValidReg = RegEnable(true.B, io.req.fire)
     val reqValid = Mux(io.req.fire, true.B, reqValidReg)
 
-    val serializer = Module(new TLSerializer(UInt((dcacheBlockBytes*8).W), dcacheBlockSize))
+    val busBeatWrBlock = busBeatSize / dcacheBlockBytes // how many block will each bus beat write into
+    val busTotalBeat = dcacheBlockSize / busBeatWrBlock // how many beat will the bus transfer in order to fullfill the whole cacheLine
+    val serializer = Module(new TLSerializer(Vec(busBeatWrBlock, UInt((dcacheBlockBytes*8).W)), busTotalBeat))
     serializer.io.in.valid := reqValid
-    serializer.io.in.bits := req.data
+    serializer.io.in.bits := req.data.asTypeOf(Vec(busTotalBeat, Vec(busBeatWrBlock, UInt((dcacheBlockBytes*8).W))))
 
     val state = RegInit(sIdle)
     val nextState = WireInit(sIdle)
@@ -98,9 +100,13 @@ class WritebackQueue()(implicit val p: Parameters) extends MyModule {
     serializer.io.out.ready := io.tlbus.req.ready
     io.tlbus.req.valid := serializer.io.out.valid
     io.tlbus.req.bits <> DontCare
-    io.tlbus.req.bits.data := serializer.io.out.bits
+    io.tlbus.req.bits.data := serializer.io.out.bits.asUInt
     io.tlbus.req.bits.opcode := BusReq.PutFullData
-    val writebackAddr = Cat(req.dirtyTag, addrToDCacheSet(req.addr), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
+    val dirtyTag = req.dirtyTag
+    val dirtySet = addrToDCacheSet(req.addr)
+    dontTouch(dirtySet)
+    dontTouch(dirtyTag)
+    val writebackAddr = Cat(dirtyTag, dirtySet, Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
     io.tlbus.req.bits.address :=  writebackAddr + (serializer.io.beatCounter << dcacheByteOffsetBits)
     io.tlbus.req.bits.mask := Fill(dcacheWays, 1.U)
     io.tlbus.req.bits.size := (dcacheBlockBytes * dcacheBlockSize).U

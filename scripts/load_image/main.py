@@ -106,7 +106,7 @@ def main():
     try:
         mwidth = int(sys.argv[3])
     except:
-        mwidth = 4
+        mwidth = 16
     cmd = "readelf -S " + image + " > table.txt"
     os.system(cmd)
     text_start = 0
@@ -159,6 +159,10 @@ def main():
                     wt.write(bytearray(byte_array[::-1]).hex() + '\n')
                 byte_array.clear()
                 count = 0
+        # unalign address
+        for i in range(0, mwidth-count):
+            byte_array.append(0)
+        wt.write(bytearray(byte_array[::-1]).hex() + '\n')
         # b0 = 0
         # b1 = 0
         # b2 = 0

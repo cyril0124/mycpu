@@ -151,9 +151,12 @@ class Fetch_1()(implicit val p: Parameters) extends MyModule{
     val icache = Module(new ICache()(p.alterPartial(
         {
             case MyCpuParamsKey => MyCpuParameters(
+                simulation = simulation,
                 dcacheSets = 128,
                 dcacheWays = 8,
-                dcacheBlockSize = 8
+                dcacheBlockSize = 8,
+                busBeatSize = busBeatSize,
+                logEnable = logEnable,
             )
         }
     )))

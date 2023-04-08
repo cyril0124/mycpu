@@ -11,7 +11,7 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
     val io = IO(new Bundle{
         val write = Flipped(ValidIO(new Bundle{
             val cacheLineAddr = UInt(xlen.W)
-            val data = UInt((dcacheBlockBytes*8).W)
+            val data = UInt((busBeatSize*8).W)
         }))
         val read = Output(new Bundle{
             val cacheLineAddr = Vec(entries, UInt(xlen.W))
@@ -25,8 +25,11 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
     val valids = Reg(Vec(entries, Bool()))
 
     val wrPtr = Counter(entries)
-    val beatCounter = Counter(dcacheBlockSize)
-    val lastBeat = beatCounter.value === (dcacheBlockSize - 1).U
+    
+    val busBeatWrBlock = busBeatSize / dcacheBlockBytes // how many block will each bus beat write into
+    val busTotalBeat = dcacheBlockSize / busBeatWrBlock // how many beat will the bus transfer in order to fullfill the whole cacheLine
+    val beatCounter = Counter(busTotalBeat)
+    val lastBeat = beatCounter.value === (busTotalBeat - 1).U
 
     when(io.write.fire && lastBeat) {
         beatCounter.reset()
@@ -38,6 +41,7 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
 
     when(io.write.fire) {
         buf(wrPtr.value)(beatCounter.value) := io.write.bits.data
+        buf(wrPtr.value).asTypeOf(Vec(busTotalBeat, UInt((busBeatWrBlock*dcacheBlockBytes*8).W)))(beatCounter.value) := io.write.bits.data
     }
 
     io.read.cacheLineAddr <> addr

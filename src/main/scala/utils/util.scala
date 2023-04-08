@@ -5,6 +5,20 @@ import chisel3.util._
 import mycpu.common._
 
 
+object SimLog{
+    def apply(enable: Boolean, en: Bool, fmt: String, data: Bits*): Any =
+        apply(enable, en, Printable.pack(fmt, data: _*))
+
+    def apply(enable: Boolean, en: Bool, pable: Printable): Any = {
+        if(enable) {
+            val commonInfo = p"[SimLog ][time=${GTimer()}] "
+            when(en) {
+                printf(commonInfo + pable)
+            }
+        }
+    }
+}
+
 object Hold{
     def apply[T <: Data](data: T, en: Bool, reset: Bool): T = {
         val holdReg = RegEnable(data, en)

@@ -26,7 +26,7 @@ def main():
                 module_name = re.split(r'[;,\s(]\s*',line)[1]
                 module_count = module_count + 1
                 strr = '['+str(module_count)+'] find module => '+module_name + ' in line ' + str(line_num)
-                print(strr)
+                # print(strr)
                 print(strr, file=lf)
                 # file_name = output_path+str(module_count)+'_'+module_name+'.v'
                 file_name = output_path+module_name+'.v'
@@ -42,14 +42,14 @@ def main():
                     # print(temp_line)
                     # strr = '\tfind submodule => ('+temp_line[1] +')\t('+ temp_line[2] +') in line ['+str(line_num)+']'
                     strr = '\tfind submodule => module_name:( %-*s)  inst_name:( %-*s) in line [ %-*s ]'%(20,temp_line[1],20,temp_line[2],6,str(line_num))
-                    print(strr)
+                    # print(strr)
                     print(strr, file=lf)
                 
             if(find_endmodule == True):
                 find_module = False
                 find_endmodule = False
                 strr = module_name+' done!' + ' in line ' + str(line_num) + '\n'
-                print(strr)
+                # print(strr)
                 print(strr,file=lf)
                 try:
                     wf.close()

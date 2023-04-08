@@ -1,58 +1,58 @@
 module Mem(
-  input         clock,
-  input         reset,
-  output        io_in_ready,
-  input  [1:0]  io_in_bits_resultSrc,
-  input  [4:0]  io_in_bits_lsuOp,
-  input         io_in_bits_regWrEn,
-  input  [31:0] io_in_bits_aluOut,
-  input  [31:0] io_in_bits_data2,
-  input  [31:0] io_in_bits_pcNext4,
-  input  [2:0]  io_in_bits_csrOp,
-  input         io_in_bits_csrWrEn,
-  input         io_in_bits_csrValid,
-  input  [31:0] io_in_bits_csrRdData,
-  input  [31:0] io_in_bits_csrWrData,
-  input  [31:0] io_in_bits_csrAddr,
-  input  [3:0]  io_in_bits_excType,
-  input         io_in_bits_instState_commit,
-  input  [31:0] io_in_bits_instState_pc,
-  input  [31:0] io_in_bits_instState_inst,
-  input         io_out_ready,
-  output        io_out_valid,
-  output [1:0]  io_out_bits_resultSrc,
-  output        io_out_bits_regWrEn,
-  output [31:0] io_out_bits_aluOut,
-  output [31:0] io_out_bits_pcNext4,
-  output [2:0]  io_out_bits_csrOp,
-  output        io_out_bits_csrWrEn,
-  output [31:0] io_out_bits_csrRdData,
-  output [31:0] io_out_bits_csrWrData,
-  output [11:0] io_out_bits_csrAddr,
-  output        io_out_bits_instState_commit,
-  output [31:0] io_out_bits_instState_pc,
-  output [31:0] io_out_bits_instState_inst,
-  output [31:0] io_lsuData,
-  output        io_lsuOK,
-  input         io_tlbus_req_ready,
-  output        io_tlbus_req_valid,
-  output [2:0]  io_tlbus_req_bits_opcode,
-  output [31:0] io_tlbus_req_bits_address,
-  output [31:0] io_tlbus_req_bits_data,
-  input         io_tlbus_resp_valid,
-  input  [2:0]  io_tlbus_resp_bits_opcode,
-  input  [31:0] io_tlbus_resp_bits_data,
-  output [4:0]  io_hazard_rd,
-  output [31:0] io_hazard_rdVal,
-  output        io_hazard_regWrEn,
-  input         io_ctrl_flush,
-  output        io_excp_valid,
-  output        io_excp_bits_isMret,
-  output        io_excp_bits_isSret,
-  output [30:0] io_excp_bits_excCause,
-  output [31:0] io_excp_bits_excPc,
-  input         io_csrBusy,
-  input  [1:0]  io_csrMode
+  input          clock,
+  input          reset,
+  output         io_in_ready,
+  input  [1:0]   io_in_bits_resultSrc,
+  input  [4:0]   io_in_bits_lsuOp,
+  input          io_in_bits_regWrEn,
+  input  [31:0]  io_in_bits_aluOut,
+  input  [31:0]  io_in_bits_data2,
+  input  [31:0]  io_in_bits_pcNext4,
+  input  [2:0]   io_in_bits_csrOp,
+  input          io_in_bits_csrWrEn,
+  input          io_in_bits_csrValid,
+  input  [31:0]  io_in_bits_csrRdData,
+  input  [31:0]  io_in_bits_csrWrData,
+  input  [31:0]  io_in_bits_csrAddr,
+  input  [3:0]   io_in_bits_excType,
+  input          io_in_bits_instState_commit,
+  input  [31:0]  io_in_bits_instState_pc,
+  input  [31:0]  io_in_bits_instState_inst,
+  input          io_out_ready,
+  output         io_out_valid,
+  output [1:0]   io_out_bits_resultSrc,
+  output         io_out_bits_regWrEn,
+  output [31:0]  io_out_bits_aluOut,
+  output [31:0]  io_out_bits_pcNext4,
+  output [2:0]   io_out_bits_csrOp,
+  output         io_out_bits_csrWrEn,
+  output [31:0]  io_out_bits_csrRdData,
+  output [31:0]  io_out_bits_csrWrData,
+  output [11:0]  io_out_bits_csrAddr,
+  output         io_out_bits_instState_commit,
+  output [31:0]  io_out_bits_instState_pc,
+  output [31:0]  io_out_bits_instState_inst,
+  output [31:0]  io_lsuData,
+  output         io_lsuOK,
+  input          io_tlbus_req_ready,
+  output         io_tlbus_req_valid,
+  output [2:0]   io_tlbus_req_bits_opcode,
+  output [31:0]  io_tlbus_req_bits_address,
+  output [127:0] io_tlbus_req_bits_data,
+  input          io_tlbus_resp_valid,
+  input  [2:0]   io_tlbus_resp_bits_opcode,
+  input  [127:0] io_tlbus_resp_bits_data,
+  output [4:0]   io_hazard_rd,
+  output [31:0]  io_hazard_rdVal,
+  output         io_hazard_regWrEn,
+  input          io_ctrl_flush,
+  output         io_excp_valid,
+  output         io_excp_bits_isMret,
+  output         io_excp_bits_isSret,
+  output [30:0]  io_excp_bits_excCause,
+  output [31:0]  io_excp_bits_excPc,
+  input          io_csrBusy,
+  input  [1:0]   io_csrMode
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -112,10 +112,11 @@ module Mem(
   wire  dcache_io_tlbus_req_valid; // @[4_Mem.scala 165:24]
   wire [2:0] dcache_io_tlbus_req_bits_opcode; // @[4_Mem.scala 165:24]
   wire [31:0] dcache_io_tlbus_req_bits_address; // @[4_Mem.scala 165:24]
-  wire [31:0] dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 165:24]
+  wire [127:0] dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 165:24]
+  wire  dcache_io_tlbus_resp_ready; // @[4_Mem.scala 165:24]
   wire  dcache_io_tlbus_resp_valid; // @[4_Mem.scala 165:24]
   wire [2:0] dcache_io_tlbus_resp_bits_opcode; // @[4_Mem.scala 165:24]
-  wire [31:0] dcache_io_tlbus_resp_bits_data; // @[4_Mem.scala 165:24]
+  wire [127:0] dcache_io_tlbus_resp_bits_data; // @[4_Mem.scala 165:24]
   wire  lsuReady = lsu_io_req_ready; // @[4_Mem.scala 148:14 60:28]
   reg [4:0] stageReg_lsuOp; // @[4_Mem.scala 70:27]
   wire  validLsuOp = ~(stageReg_lsuOp == 5'h0 | stageReg_lsuOp == 5'h14); // @[4_Mem.scala 149:19]
@@ -200,6 +201,7 @@ module Mem(
     .io_tlbus_req_bits_opcode(dcache_io_tlbus_req_bits_opcode),
     .io_tlbus_req_bits_address(dcache_io_tlbus_req_bits_address),
     .io_tlbus_req_bits_data(dcache_io_tlbus_req_bits_data),
+    .io_tlbus_resp_ready(dcache_io_tlbus_resp_ready),
     .io_tlbus_resp_valid(dcache_io_tlbus_resp_valid),
     .io_tlbus_resp_bits_opcode(dcache_io_tlbus_resp_bits_opcode),
     .io_tlbus_resp_bits_data(dcache_io_tlbus_resp_bits_data)
@@ -224,7 +226,7 @@ module Mem(
   assign io_tlbus_req_bits_opcode = dcache_io_tlbus_req_bits_opcode; // @[4_Mem.scala 168:21]
   assign io_tlbus_req_bits_address = dcache_io_tlbus_req_bits_address; // @[4_Mem.scala 168:21]
   assign io_tlbus_req_bits_data = dcache_io_tlbus_req_bits_data; // @[4_Mem.scala 168:21]
-  assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]
+  assign io_hazard_rd = stageReg_instState_inst[11:7]; // @[util.scala 71:31]
   assign io_hazard_rdVal = stageReg_aluOut; // @[4_Mem.scala 183:29]
   assign io_hazard_regWrEn = stageReg_regWrEn; // @[4_Mem.scala 182:29]
   assign io_excp_valid = ~io_csrBusy & hasTrap & _io_in_ready_T; // @[4_Mem.scala 109:55]

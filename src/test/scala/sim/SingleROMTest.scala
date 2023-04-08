@@ -15,7 +15,7 @@ import scala.math
 class SingleROMTest extends AnyFlatSpec with ChiselScalatestTester {
 
     behavior of "SingleROM"
-    val busBeatSize = 8
+    val busBeatSize = 16
 
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
@@ -85,23 +85,12 @@ class SingleROMTest extends AnyFlatSpec with ChiselScalatestTester {
 
             init()
             c.clock.step(10)
-
-            // // put single
-            // putRandomData(0, 1)
-            // c.clock.step()
-            // // put multi
-            // putRandomData(0, 4)
-            // c.clock.step()
-            // // get single 
-            // get(0x5600, 1)
-            // c.clock.step()
-            // // get multi
-            // get(0x0000, 4)
-            // c.clock.step(10)
-            
-            putRandomDataCheck(0, 4)
+            putRandomDataCheck(0, 2)
             putRandomDataCheck(0x1200, 8)
             putRandomDataCheck(0x4099, 8)
+
+            // putRandomDataCheck()
+            get(0, 2)
 
             c.clock.step(100)
         }

@@ -12,6 +12,14 @@ module LoadPipe(
   input         io_dir_resp_bits_hit,
   input  [7:0]  io_dir_resp_bits_chosenWay,
   input         io_dir_resp_bits_isDirtyWay,
+  input  [19:0] io_dir_resp_bits_tagRdVec_0,
+  input  [19:0] io_dir_resp_bits_tagRdVec_1,
+  input  [19:0] io_dir_resp_bits_tagRdVec_2,
+  input  [19:0] io_dir_resp_bits_tagRdVec_3,
+  input  [19:0] io_dir_resp_bits_tagRdVec_4,
+  input  [19:0] io_dir_resp_bits_tagRdVec_5,
+  input  [19:0] io_dir_resp_bits_tagRdVec_6,
+  input  [19:0] io_dir_resp_bits_tagRdVec_7,
   input         io_dataBank_req_ready,
   output        io_dataBank_req_valid,
   output [7:0]  io_dataBank_req_bits_set,
@@ -53,6 +61,7 @@ module LoadPipe(
   output        io_mshr_bits_dirInfo_hit,
   output [7:0]  io_mshr_bits_dirInfo_chosenWay,
   output        io_mshr_bits_dirInfo_isDirtyWay,
+  output [19:0] io_mshr_bits_dirtyTag,
   output [31:0] io_mshr_bits_data_0,
   output [31:0] io_mshr_bits_data_1,
   output [31:0] io_mshr_bits_data_2,
@@ -100,6 +109,14 @@ module LoadPipe(
   reg [31:0] _RAND_38;
   reg [31:0] _RAND_39;
   reg [31:0] _RAND_40;
+  reg [31:0] _RAND_41;
+  reg [31:0] _RAND_42;
+  reg [31:0] _RAND_43;
+  reg [31:0] _RAND_44;
+  reg [31:0] _RAND_45;
+  reg [31:0] _RAND_46;
+  reg [31:0] _RAND_47;
+  reg [31:0] _RAND_48;
 `endif // RANDOMIZE_REG_INIT
   reg  s0_full; // @[LoadPipe.scala 31:26]
   wire  s0_latch = io_load_req_ready & io_load_req_valid; // @[Decoupled.scala 51:35]
@@ -110,12 +127,12 @@ module LoadPipe(
   wire  s0_valid = (s0_valid_REG | s0_validReg) & _s0_valid_T_1 & _s0_valid_T_3; // @[LoadPipe.scala 55:71]
   reg  s1_full; // @[LoadPipe.scala 61:26]
   reg  s1_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[LoadPipe.scala 89:21]
+  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[LoadPipe.scala 92:21]
   wire  _s1_valid_T_1 = io_mshr_ready & io_mshr_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_4 = s1_dirInfo_hit & io_load_resp_valid; // @[LoadPipe.scala 90:30]
-  wire  _s1_valid_T_5 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_4; // @[LoadPipe.scala 89:47]
-  wire  s1_fire = s1_full & _s1_valid_T_5; // @[LoadPipe.scala 88:25]
-  wire  s1_ready = ~s1_full | s1_fire; // @[LoadPipe.scala 73:26]
+  wire  _s1_valid_T_4 = s1_dirInfo_hit & io_load_resp_valid; // @[LoadPipe.scala 93:30]
+  wire  _s1_valid_T_5 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_4; // @[LoadPipe.scala 92:47]
+  wire  s1_fire = s1_full & _s1_valid_T_5; // @[LoadPipe.scala 91:25]
+  wire  s1_ready = ~s1_full | s1_fire; // @[LoadPipe.scala 75:26]
   wire  s0_fire = s0_valid & s1_ready; // @[LoadPipe.scala 33:28]
   reg [31:0] s0_reqReg_addr; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = s0_latch ? io_load_req_bits_addr : s0_reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
@@ -225,20 +242,43 @@ module LoadPipe(
   wire [31:0] _s1_rdData_T_7 = s1_blockSel[3] ? s1_rdBlockData_3 : 32'h0; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdData_T_8 = _s1_rdData_T_4 | _s1_rdData_T_5; // @[Mux.scala 27:73]
   wire [31:0] _s1_rdData_T_9 = _s1_rdData_T_8 | _s1_rdData_T_6; // @[Mux.scala 27:73]
-  wire  _GEN_49 = s1_full & s1_fire ? 1'h0 : s1_full; // @[LoadPipe.scala 61:26 75:{35,45}]
-  wire  _GEN_50 = s0_fire | _GEN_49; // @[LoadPipe.scala 74:{20,30}]
+  reg [19:0] s1_tagRdVec_0; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_1; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_2; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_3; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_4; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_5; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_6; // @[Reg.scala 19:16]
+  reg [19:0] s1_tagRdVec_7; // @[Reg.scala 19:16]
+  wire [19:0] _s1_dirtyTag_T_8 = s1_dirInfo_chosenWay[0] ? s1_tagRdVec_0 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_9 = s1_dirInfo_chosenWay[1] ? s1_tagRdVec_1 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_10 = s1_dirInfo_chosenWay[2] ? s1_tagRdVec_2 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_11 = s1_dirInfo_chosenWay[3] ? s1_tagRdVec_3 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_12 = s1_dirInfo_chosenWay[4] ? s1_tagRdVec_4 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_13 = s1_dirInfo_chosenWay[5] ? s1_tagRdVec_5 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_14 = s1_dirInfo_chosenWay[6] ? s1_tagRdVec_6 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_15 = s1_dirInfo_chosenWay[7] ? s1_tagRdVec_7 : 20'h0; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_16 = _s1_dirtyTag_T_8 | _s1_dirtyTag_T_9; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_17 = _s1_dirtyTag_T_16 | _s1_dirtyTag_T_10; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_18 = _s1_dirtyTag_T_17 | _s1_dirtyTag_T_11; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_19 = _s1_dirtyTag_T_18 | _s1_dirtyTag_T_12; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_20 = _s1_dirtyTag_T_19 | _s1_dirtyTag_T_13; // @[Mux.scala 27:73]
+  wire [19:0] _s1_dirtyTag_T_21 = _s1_dirtyTag_T_20 | _s1_dirtyTag_T_14; // @[Mux.scala 27:73]
+  wire  _GEN_57 = s1_full & s1_fire ? 1'h0 : s1_full; // @[LoadPipe.scala 61:26 77:{35,45}]
+  wire  _GEN_58 = s0_fire | _GEN_57; // @[LoadPipe.scala 76:{20,30}]
   assign io_load_req_ready = ~s0_full; // @[LoadPipe.scala 37:26]
-  assign io_load_resp_valid = s1_dirInfo_hit & s1_full; // @[LoadPipe.scala 84:36]
+  assign io_load_resp_valid = s1_dirInfo_hit & s1_full; // @[LoadPipe.scala 87:36]
   assign io_load_resp_bits_data = _s1_rdData_T_9 | _s1_rdData_T_7; // @[Mux.scala 27:73]
   assign io_dir_req_valid = s0_latch | s0_full; // @[LoadPipe.scala 43:34]
   assign io_dir_req_bits_addr = s0_latch ? io_load_req_bits_addr : s0_reqReg_addr; // @[LoadPipe.scala 35:23]
   assign io_dataBank_req_valid = s0_latch | s0_full; // @[LoadPipe.scala 46:39]
   assign io_dataBank_req_bits_set = _GEN_0[11:4]; // @[Parameters.scala 50:11]
-  assign io_mshr_valid = _s1_valid_T & s1_full; // @[LoadPipe.scala 77:32]
-  assign io_mshr_bits_addr = s1_rAddr; // @[LoadPipe.scala 79:23]
-  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[LoadPipe.scala 81:26]
-  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[LoadPipe.scala 81:26]
-  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[LoadPipe.scala 81:26]
+  assign io_mshr_valid = _s1_valid_T & s1_full; // @[LoadPipe.scala 79:32]
+  assign io_mshr_bits_addr = s1_rAddr; // @[LoadPipe.scala 81:23]
+  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[LoadPipe.scala 84:26]
+  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[LoadPipe.scala 84:26]
+  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[LoadPipe.scala 84:26]
+  assign io_mshr_bits_dirtyTag = _s1_dirtyTag_T_21 | _s1_dirtyTag_T_15; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_0 = _s1_rdBlockData_T_21 | _s1_rdBlockData_T_15; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_1 = _s1_rdBlockData_T_36 | _s1_rdBlockData_T_30; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_2 = _s1_rdBlockData_T_51 | _s1_rdBlockData_T_45; // @[Mux.scala 27:73]
@@ -258,7 +298,7 @@ module LoadPipe(
     if (reset) begin // @[LoadPipe.scala 61:26]
       s1_full <= 1'h0; // @[LoadPipe.scala 61:26]
     end else begin
-      s1_full <= _GEN_50;
+      s1_full <= _GEN_58;
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_dirInfo_hit <= io_dir_resp_bits_hit; // @[Reg.scala 20:22]
@@ -374,6 +414,30 @@ module LoadPipe(
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_dirInfo_isDirtyWay <= io_dir_resp_bits_isDirtyWay; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_0 <= io_dir_resp_bits_tagRdVec_0; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_1 <= io_dir_resp_bits_tagRdVec_1; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_2 <= io_dir_resp_bits_tagRdVec_2; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_3 <= io_dir_resp_bits_tagRdVec_3; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_4 <= io_dir_resp_bits_tagRdVec_4; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_5 <= io_dir_resp_bits_tagRdVec_5; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_6 <= io_dir_resp_bits_tagRdVec_6; // @[Reg.scala 20:22]
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      s1_tagRdVec_7 <= io_dir_resp_bits_tagRdVec_7; // @[Reg.scala 20:22]
     end
   end
 // Register and memory initialization
@@ -494,6 +558,22 @@ initial begin
   s1_dirInfo_chosenWay = _RAND_39[7:0];
   _RAND_40 = {1{`RANDOM}};
   s1_dirInfo_isDirtyWay = _RAND_40[0:0];
+  _RAND_41 = {1{`RANDOM}};
+  s1_tagRdVec_0 = _RAND_41[19:0];
+  _RAND_42 = {1{`RANDOM}};
+  s1_tagRdVec_1 = _RAND_42[19:0];
+  _RAND_43 = {1{`RANDOM}};
+  s1_tagRdVec_2 = _RAND_43[19:0];
+  _RAND_44 = {1{`RANDOM}};
+  s1_tagRdVec_3 = _RAND_44[19:0];
+  _RAND_45 = {1{`RANDOM}};
+  s1_tagRdVec_4 = _RAND_45[19:0];
+  _RAND_46 = {1{`RANDOM}};
+  s1_tagRdVec_5 = _RAND_46[19:0];
+  _RAND_47 = {1{`RANDOM}};
+  s1_tagRdVec_6 = _RAND_47[19:0];
+  _RAND_48 = {1{`RANDOM}};
+  s1_tagRdVec_7 = _RAND_48[19:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

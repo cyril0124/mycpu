@@ -1,6 +1,9 @@
 #!/bin/bash
+curr_dir=$(dirname $(readlink -f "$0"))
+dut_log="dut.log"
 
 cd build
 rm *.vcd *.fst *.fst.hier
 make -j 16
-./mycpu_test | tee ../out.log
+echo ${curr_dir}/$dut_log
+./mycpu_test 2> ${curr_dir}/$dut_log | tee ../out.log 

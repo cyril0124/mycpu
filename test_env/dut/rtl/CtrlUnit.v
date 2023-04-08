@@ -26,7 +26,7 @@ module CtrlUnit(
   wire  decoder_io_out_regWrEn; // @[CtrlUnit.scala 59:25]
   wire [2:0] decoder_io_out_csrOp; // @[CtrlUnit.scala 59:25]
   wire [3:0] decoder_io_out_excType; // @[CtrlUnit.scala 59:25]
-  wire [6:0] opcode = io_in_inst[6:0]; // @[util.scala 60:34]
+  wire [6:0] opcode = io_in_inst[6:0]; // @[util.scala 74:34]
   wire  _io_out_pcAddReg_T_1 = 7'h67 == opcode; // @[CtrlUnit.scala 81:31]
   Decoder decoder ( // @[CtrlUnit.scala 59:25]
     .io_inst(decoder_io_inst),

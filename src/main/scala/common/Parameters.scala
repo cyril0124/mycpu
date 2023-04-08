@@ -99,7 +99,7 @@ trait HasMyCpuParameters {
     val nrBusMaster = myCpuParams.nrBusMaster
     val nrBusSlave = myCpuParams.nrBusSlave
     val busBeatSize = myCpuParams.busBeatSize
-    val busBeatWidth = myCpuParams.xlen
+    val busBeatWidth = myCpuParams.busBeatSize * 8 
     val busMaskWidth = myCpuParams.xlen / 8
     val busMaxBeat = myCpuParams.busMaxBeat
 
@@ -116,9 +116,11 @@ trait HasMyCpuParameters {
     val rfDebug = myCpuParams.rfDebug
     // val rfStateOut = myCpuParams.rfStateOut
 
-    val romReadWidth = myCpuParams.romReadWidth
+    val romReadWidth = busBeatWidth // myCpuParams.romReadWidth
     require(romReadWidth >= busBeatWidth, "error params, romReadWidth < busBeatWidth")
     
+
+    val logEnable = myCpuParams.logEnable
 }
 
 case class MyCpuParameters
@@ -162,6 +164,8 @@ case class MyCpuParameters
     rfWrPort: Int = 1,
     rfDebug: Boolean = false,
     // rfStateOut: Boolean = true,
+
+    logEnable: Boolean = false
 
 )
 {

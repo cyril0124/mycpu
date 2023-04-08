@@ -155,6 +155,12 @@ class DCache()(implicit val p: Parameters) extends MyModule {
 
     io.tlbus.req.bits.source := MASTER_1
 
+    SimLog(simulation & logEnable, io.read.req.fire, "[DCache] read req ==> addr: 0x%x\n", io.read.req.bits.addr)
+    SimLog(simulation & logEnable, io.read.resp.fire, "[DCache] read resp <== data: 0x%x\n", io.read.resp.bits.data)
+    SimLog(simulation & logEnable, io.write.req.fire, "[DCache] write req ==> addr: 0x%x  data: 0x%x\n", io.write.req.bits.addr, io.write.req.bits.data)
+    SimLog(simulation & logEnable, io.write.resp.fire, "[DCache] write resp <== \n")
+    SimLog(simulation & logEnable, io.tlbus.req.fire && io.tlbus.req.bits.opcode === PutFullData, "[DCache] dirty write back ==> data: 0x%x  addr: 0x%x\n", io.tlbus.req.bits.data, io.tlbus.req.bits.address)
+    SimLog(simulation & logEnable, io.tlbus.resp.fire & io.tlbus.resp.bits.opcode === AccessAckData, "[DCache] refill resp <== data: 0x%x ", io.tlbus.resp.bits.data)
 }
 
 object DCacheGenRTL extends App {

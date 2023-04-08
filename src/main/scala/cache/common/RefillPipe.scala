@@ -50,20 +50,16 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     val reqValid = Mux(io.req.fire, true.B, reqValidReg)
     val dataBlockSelOH = addrToDCacheBlockOH(reqReg.addr)
 
-    val beatCounter = Counter(dcacheBlockSize)
-    val beatOH = UIntToOH(beatCounter.value)
-    val lastBeat = beatCounter.value === (dcacheBlockSize-1).U
+    val busBeatWrBlock = busBeatSize / dcacheBlockBytes // how many block will each bus beat write into
+    val busTotalBeat = dcacheBlockSize / busBeatWrBlock // how many beat will the bus transfer in order to fullfill the whole cacheLine
+    val beatCounter = Counter(busTotalBeat)
+    val beatOH = UIntToOH(beatCounter.value, dcacheBlockSize*dcacheBlockBytes / busBeatSize)
+    // val lastBeat = beatCounter.value === (dcacheBlockSize - 1).U
+    val lastBeat = if(busTotalBeat != 1) beatCounter.value === (busTotalBeat - 1).U else true.B
     val refillFire = io.tlbus.resp.fire && io.tlbus.resp.bits.opcode === BusReq.AccessAckData
     val refillLastBeat = refillFire && lastBeat
     val refillResp = io.tlbus.resp.bits
     io.tlbus.resp.ready := io.dataWrite.req.ready && io.dirWrite.req.ready
-
-    // refill data
-    val refillBlockDataArray = RegInit(VecInit((0 until dcacheBlockSize).map{i => 0.U((dcacheBlockBytes*8).W)}))
-    when(refillFire) { refillBlockDataArray(beatCounter.value) := refillResp.data }
-    val refillBlockData = WireInit(VecInit((0 until dcacheBlockSize).map{ i => if(i != dcacheBlockSize-1) refillBlockDataArray(i) else refillResp.data }))
-    // val readRespData = Mux1H(dataBlockSelOH, refillBlockData)
-
 
     // send Get
     // 00
@@ -126,16 +122,24 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     io.dirWrite.req.bits.way := reqReg.chosenWay
 
     // writeback databank
+    val blockMask = FillInterleaved(busBeatWrBlock, beatOH) // write mask for each transfered bus beat, indicate which block will be written
     io.dataWrite.req.valid := refillSafe
-    io.dataWrite.req.bits.blockSelOH := beatOH
+    io.dataWrite.req.bits.blockMask :=  blockMask
     io.dataWrite.req.bits.way := reqReg.chosenWay
     io.dataWrite.req.bits.set := addrToDCacheSet(reqReg.addr)
-    io.dataWrite.req.bits.data := refillResp.data
+    io.dataWrite.req.bits.data := Fill(dcacheBlockSize / busBeatWrBlock, refillResp.data).asTypeOf(Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W)))
     
+    // refill data
+    val refillBlockDataArray = RegInit(VecInit((0 until dcacheBlockSize).map{i => 0.U((dcacheBlockBytes*8).W)}).asTypeOf(Vec(busTotalBeat, Vec(busBeatWrBlock, UInt((dcacheBlockBytes*8).W)))))
+    when(refillFire) { 
+        refillBlockDataArray(beatCounter.value) := refillResp.data.asTypeOf(Vec(busBeatWrBlock, UInt((dcacheBlockBytes*8).W))) 
+    }
+    val refillBlockData = WireInit(VecInit((0 until busTotalBeat).map{ i => if(i != busTotalBeat -1) refillBlockDataArray(i).asUInt else refillResp.data.asUInt}))
+
     // send refill resp
     io.resp.valid := state === sResp || refillLastBeat
-    io.resp.bits.data := Mux1H(dataBlockSelOH, refillBlockData) // for load
-    io.resp.bits.blockData := refillBlockData
+    io.resp.bits.data := Mux1H(dataBlockSelOH, refillBlockData.asTypeOf(Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W)))) // for load
+    io.resp.bits.blockData := refillBlockData.asTypeOf(Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W)))
 
     // send Get request
     val blockAddr = Cat(req.addr(xlen-1, dcacheByteOffsetBits + dcacheBlockBits), Fill(dcacheByteOffsetBits + dcacheBlockBits, 0.U))
@@ -144,5 +148,10 @@ class RefillPipe()(implicit val p: Parameters) extends MyModule {
     io.tlbus.req.bits.opcode := BusReq.Get
     io.tlbus.req.bits.address := blockAddr
     io.tlbus.req.bits.size := (dcacheBlockBytes * dcacheBlockSize).U
+
+
+
+    SimLog(simulation & logEnable, io.tlbus.req.fire, "[RefillPipe] req ==> addr: 0x%x size:%d\n", io.tlbus.req.bits.address, io.tlbus.req.bits.size)
+    SimLog(simulation & logEnable, refillFire, "[RefillPipe] resp <== data: 0x%x beat: %d\n", refillResp.data, beatCounter.value)
 
 }

@@ -1,27 +1,27 @@
 module Queue(
-  input         clock,
-  input         reset,
-  output        io_enq_ready,
-  input         io_enq_valid,
-  input  [2:0]  io_enq_bits_opcode,
-  input  [31:0] io_enq_bits_size,
-  input         io_enq_bits_source,
-  input  [31:0] io_enq_bits_address,
-  input  [31:0] io_enq_bits_data,
-  input         io_deq_ready,
-  output        io_deq_valid,
-  output [2:0]  io_deq_bits_opcode,
-  output [31:0] io_deq_bits_size,
-  output        io_deq_bits_source,
-  output [31:0] io_deq_bits_address,
-  output [31:0] io_deq_bits_data
+  input          clock,
+  input          reset,
+  output         io_enq_ready,
+  input          io_enq_valid,
+  input  [2:0]   io_enq_bits_opcode,
+  input  [127:0] io_enq_bits_size,
+  input          io_enq_bits_source,
+  input  [31:0]  io_enq_bits_address,
+  input  [127:0] io_enq_bits_data,
+  input          io_deq_ready,
+  output         io_deq_valid,
+  output [2:0]   io_deq_bits_opcode,
+  output [127:0] io_deq_bits_size,
+  output         io_deq_bits_source,
+  output [31:0]  io_deq_bits_address,
+  output [127:0] io_deq_bits_data
 );
 `ifdef RANDOMIZE_MEM_INIT
   reg [31:0] _RAND_0;
-  reg [31:0] _RAND_1;
+  reg [127:0] _RAND_1;
   reg [31:0] _RAND_2;
   reg [31:0] _RAND_3;
-  reg [31:0] _RAND_4;
+  reg [127:0] _RAND_4;
 `endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_5;
@@ -36,11 +36,11 @@ module Queue(
   wire [2:0] ram_opcode_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_opcode_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_opcode_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_size [0:7]; // @[Decoupled.scala 273:95]
+  reg [127:0] ram_size [0:7]; // @[Decoupled.scala 273:95]
   wire  ram_size_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
   wire [2:0] ram_size_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_size_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_size_MPORT_data; // @[Decoupled.scala 273:95]
+  wire [127:0] ram_size_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
+  wire [127:0] ram_size_MPORT_data; // @[Decoupled.scala 273:95]
   wire [2:0] ram_size_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_size_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_size_MPORT_en; // @[Decoupled.scala 273:95]
@@ -60,11 +60,11 @@ module Queue(
   wire [2:0] ram_address_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_address_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_address_MPORT_en; // @[Decoupled.scala 273:95]
-  reg [31:0] ram_data [0:7]; // @[Decoupled.scala 273:95]
+  reg [127:0] ram_data [0:7]; // @[Decoupled.scala 273:95]
   wire  ram_data_io_deq_bits_MPORT_en; // @[Decoupled.scala 273:95]
   wire [2:0] ram_data_io_deq_bits_MPORT_addr; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_data_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
-  wire [31:0] ram_data_MPORT_data; // @[Decoupled.scala 273:95]
+  wire [127:0] ram_data_io_deq_bits_MPORT_data; // @[Decoupled.scala 273:95]
+  wire [127:0] ram_data_MPORT_data; // @[Decoupled.scala 273:95]
   wire [2:0] ram_data_MPORT_addr; // @[Decoupled.scala 273:95]
   wire  ram_data_MPORT_mask; // @[Decoupled.scala 273:95]
   wire  ram_data_MPORT_en; // @[Decoupled.scala 273:95]
@@ -202,18 +202,18 @@ initial begin
   _RAND_0 = {1{`RANDOM}};
   for (initvar = 0; initvar < 8; initvar = initvar+1)
     ram_opcode[initvar] = _RAND_0[2:0];
-  _RAND_1 = {1{`RANDOM}};
+  _RAND_1 = {4{`RANDOM}};
   for (initvar = 0; initvar < 8; initvar = initvar+1)
-    ram_size[initvar] = _RAND_1[31:0];
+    ram_size[initvar] = _RAND_1[127:0];
   _RAND_2 = {1{`RANDOM}};
   for (initvar = 0; initvar < 8; initvar = initvar+1)
     ram_source[initvar] = _RAND_2[0:0];
   _RAND_3 = {1{`RANDOM}};
   for (initvar = 0; initvar < 8; initvar = initvar+1)
     ram_address[initvar] = _RAND_3[31:0];
-  _RAND_4 = {1{`RANDOM}};
+  _RAND_4 = {4{`RANDOM}};
   for (initvar = 0; initvar < 8; initvar = initvar+1)
-    ram_data[initvar] = _RAND_4[31:0];
+    ram_data[initvar] = _RAND_4[127:0];
 `endif // RANDOMIZE_MEM_INIT
 `ifdef RANDOMIZE_REG_INIT
   _RAND_5 = {1{`RANDOM}};

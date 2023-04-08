@@ -77,7 +77,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     val s0_fire = s0_valid && s1_ready
     val s0_req = Mux(io.read.req.fire, io.read.req.bits, RegEnable(io.read.req.bits, s0_latch))
 
-    io.read.req.ready := !s0_full //|| s0_fire
+    io.read.req.ready := !s0_full || s0_fire
     
     when(s0_latch) { s0_full := true.B }
     .elsewhen(s0_full && s0_fire) { s0_full := false.B }
@@ -194,12 +194,15 @@ class ICache()(implicit val p: Parameters) extends MyModule {
                                             )
                                         ) 
     }
+    dontTouch(io.read.resp.bits)
     
     refillPipe.io.resp.ready := io.read.resp.ready
 
     io.tlbus.resp.ready := true.B
     io.tlbus.req.bits.source := MASTER_0
 
+    SimLog(simulation & logEnable, io.read.req.fire, "[ICache] read req ==> addr: 0x%x\n", io.read.req.bits.addr)
+    SimLog(simulation & logEnable, io.read.resp.fire, "[ICache] read resp <== data: 0x%x  inst:0x%x\n", io.read.resp.bits.data, io.read.resp.bits.inst.asUInt)
 }
 
 object ICacheGenRTL extends App {

@@ -27,7 +27,7 @@ class TLSerializer[T <: Data](gen:T, nrIn: Int, latch: Boolean = false) extends 
     io.in.ready := true.B
     
     val beatCounter = Counter(nrIn)
-    val lastBeat = beatCounter.value === (nrIn - 1).U
+    val lastBeat =  if(nrIn != 1) beatCounter.value === (nrIn - 1).U else true.B
     val beatOH = UIntToOH(beatCounter.value)
     when(dataValid) {
         when(io.out.fire && lastBeat) {

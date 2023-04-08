@@ -352,7 +352,9 @@ if( testCase == 0 ) {
 object CoreGenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
-            simulation = true
+            simulation = true,
+            busBeatSize = 16,
+            logEnable = true,
         )
     })
 

@@ -118,7 +118,7 @@ module Execute(
   wire [31:0] _io_out_memory_bits_data2_T_3 = io_hazard_in_aluSrc2 == 2'h2 ? io_hazard_in_rdValW : stageReg_data2; // @[3_Execute.scala 155:52]
   wire [31:0] _io_out_memory_bits_data2_T_4 = io_hazard_in_aluSrc2 == 2'h1 ? io_hazard_in_rdValM :
     _io_out_memory_bits_data2_T_3; // @[3_Execute.scala 153:48]
-  wire [11:0] csrAddr = stageReg_instState_inst[31:20]; // @[util.scala 64:36]
+  wire [11:0] csrAddr = stageReg_instState_inst[31:20]; // @[util.scala 78:36]
   ALU alu ( // @[3_Execute.scala 102:29]
     .io_in1(alu_io_in1),
     .io_in2(alu_io_in2),
@@ -146,12 +146,12 @@ module Execute(
   assign io_out_memory_bits_instState_inst = stageReg_instState_inst; // @[3_Execute.scala 186:35]
   assign io_out_fetch_bits_brTaken = (stageReg_isBranch & aluZero | stageReg_isJump) & stageReg_instState_commit; // @[3_Execute.scala 137:94]
   assign io_out_fetch_bits_targetAddr = stageReg_pcAddReg ? alu_io_out : _io_out_fetch_bits_targetAddr_T_8; // @[3_Execute.scala 138:43]
-  assign io_hazard_out_rs1 = stageReg_instState_inst[19:15]; // @[util.scala 58:31]
-  assign io_hazard_out_rs2 = stageReg_instState_inst[24:20]; // @[util.scala 59:31]
+  assign io_hazard_out_rs1 = stageReg_instState_inst[19:15]; // @[util.scala 72:31]
+  assign io_hazard_out_rs2 = stageReg_instState_inst[24:20]; // @[util.scala 73:31]
   assign io_hazard_out_resultSrc = stageReg_resultSrc; // @[3_Execute.scala 182:35]
-  assign io_hazard_out_rd = stageReg_instState_inst[11:7]; // @[util.scala 57:31]
+  assign io_hazard_out_rd = stageReg_instState_inst[11:7]; // @[util.scala 71:31]
   assign io_csrRead_op = stageReg_csrOp; // @[3_Execute.scala 167:35]
-  assign io_csrRead_addr = stageReg_instState_inst[31:20]; // @[util.scala 64:36]
+  assign io_csrRead_addr = stageReg_instState_inst[31:20]; // @[util.scala 78:36]
   assign alu_io_in1 = stageReg_aluIn1IsReg ? hazardData1 : stageReg_aluIn1; // @[3_Execute.scala 118:27]
   assign alu_io_in2 = stageReg_aluIn2IsReg ? hazardData2 : stageReg_aluIn2; // @[3_Execute.scala 120:27]
   assign alu_io_opSel = stageReg_aluOpSel; // @[3_Execute.scala 133:18]

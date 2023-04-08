@@ -69,6 +69,8 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     val s1_chosenWayOH = s1_dirInfo.chosenWay
     val s1_rdBlockData = Mux1H(s1_dirInfo.chosenWay, s1_rdDataAll) // all blocks of data within a chosenWay
     val s1_rdData = Mux1H(s1_blockSel, s1_rdBlockData)
+    val s1_tagRdVec = RegEnable(io.dir.resp.bits.tagRdVec, s1_latch)
+    val s1_dirtyTag      = Mux1H(s1_chosenWayOH, s1_tagRdVec)
 
     s1_ready := !s1_full || s1_fire
     when(s1_latch) { s1_full := true.B }
@@ -78,6 +80,7 @@ class LoadPipe()(implicit val p: Parameters) extends MyModule {
     io.mshr.bits <> DontCare
     io.mshr.bits.addr := s1_rAddr
     io.mshr.bits.isStore := false.B
+    io.mshr.bits.dirtyTag := s1_dirtyTag
     io.mshr.bits.dirInfo := s1_dirInfo
     io.mshr.bits.data := s1_rdBlockData // writeback data
 

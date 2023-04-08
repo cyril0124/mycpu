@@ -137,7 +137,7 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     // write back dirty block data into next level memory
     io.tasks.writeback.req.valid := state === sWriteback || willWriteback
     io.tasks.writeback.req.bits.addr := req.addr
-    io.tasks.writeback.req.bits.dirtyTag := req.dirtyTag //req.dirInfo.dirtyTag
+    io.tasks.writeback.req.bits.dirtyTag := req.dirtyTag
     io.tasks.writeback.req.bits.data := req.data
     io.tasks.writeback.resp.ready := true.B
 
@@ -152,11 +152,15 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
 
     // write store data into dataBanks
     io.dataWrite.req.valid := state === sWriteData || willWriteStore
-    io.dataWrite.req.bits.blockSelOH := addrToDCacheBlockOH(reqReg.addr)
-    val oldData = Mux(io.tasks.refill.resp.fire, io.tasks.refill.resp.bits.data, RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire))
-    io.dataWrite.req.bits.data := dcacheMergeData(oldData, reqReg.storeData, reqReg.storeMask) 
+    io.dataWrite.req.bits.blockMask := addrToDCacheBlockOH(reqReg.addr)
     io.dataWrite.req.bits.set := addrToDCacheSet(reqReg.addr)
     io.dataWrite.req.bits.way := reqReg.dirInfo.chosenWay
+    val oldData = Mux(io.tasks.refill.resp.fire, io.tasks.refill.resp.bits.data, RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire))
+    val tempWrData = WireInit(0.U.asTypeOf(Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))))
+    tempWrData(OHToUInt(addrToDCacheBlockOH(reqReg.addr))) := dcacheMergeData(oldData, reqReg.storeData, reqReg.storeMask) 
+    io.dataWrite.req.bits.data := tempWrData
+
+
 
 
     io.resp.load.valid := !req.isStore && (state === sResp || willRespLoad)

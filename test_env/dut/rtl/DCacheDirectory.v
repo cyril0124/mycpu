@@ -15,6 +15,7 @@ module DCacheDirectory(
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
   wire  tagArray_clock; // @[SRAM_1.scala 255:31]
+  wire  tagArray_reset; // @[SRAM_1.scala 255:31]
   wire [6:0] tagArray_io_r_addr; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_0; // @[SRAM_1.scala 255:31]
   wire [19:0] tagArray_io_r_data_1; // @[SRAM_1.scala 255:31]
@@ -36,6 +37,7 @@ module DCacheDirectory(
   wire [19:0] tagArray_io_w_data_7; // @[SRAM_1.scala 255:31]
   wire [7:0] tagArray_io_w_maskOH; // @[SRAM_1.scala 255:31]
   wire  metaArray_clock; // @[SRAM_1.scala 255:31]
+  wire  metaArray_reset; // @[SRAM_1.scala 255:31]
   wire [6:0] metaArray_io_r_addr; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_0; // @[SRAM_1.scala 255:31]
   wire [1:0] metaArray_io_r_data_1; // @[SRAM_1.scala 255:31]
@@ -163,6 +165,7 @@ module DCacheDirectory(
   wire [3:0] _T_85 = _T_77 + _T_83; // @[Bitwise.scala 51:90]
   SRAMArray_2P_8 tagArray ( // @[SRAM_1.scala 255:31]
     .clock(tagArray_clock),
+    .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
     .io_r_data_0(tagArray_io_r_data_0),
     .io_r_data_1(tagArray_io_r_data_1),
@@ -186,6 +189,7 @@ module DCacheDirectory(
   );
   SRAMArray_2P_9 metaArray ( // @[SRAM_1.scala 255:31]
     .clock(metaArray_clock),
+    .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),
     .io_r_data_0(metaArray_io_r_data_0),
     .io_r_data_1(metaArray_io_r_data_1),
@@ -224,6 +228,7 @@ module DCacheDirectory(
   assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
   assign io_write_req_ready = 1'h1; // @[Directory.scala 76:29]
   assign tagArray_clock = clock;
+  assign tagArray_reset = reset;
   assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   assign tagArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
@@ -237,6 +242,7 @@ module DCacheDirectory(
   assign tagArray_io_w_data_7 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
   assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
   assign metaArray_clock = clock;
+  assign metaArray_reset = reset;
   assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
   assign metaArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]

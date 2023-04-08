@@ -36,8 +36,8 @@ class Emu {
         VerilatedFstC *tfp;
         UcEngine *engine;
 
-        uint64_t seed = 0, wave_begin = 10, wave_end = -1;
-        bool enable_wave = false;
+        uint64_t seed = 0, wave_begin = 0, wave_end = 1000;
+        bool enable_wave = true;
         bool step_check_pc = true;
         bool step_check_inst = true;
         bool step_check_int_reg = true;

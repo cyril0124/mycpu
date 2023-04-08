@@ -22,12 +22,11 @@ class DataBankArrayRead()(implicit val p: Parameters) extends MyBundle {
 
 class DataBankArrayWrite()(implicit val p: Parameters) extends MyBundle {
     val req = Flipped(Decoupled(new Bundle{
-        val data = UInt((dcacheBlockBytes*8).W)
         val set = UInt(log2Ceil(dcacheSets).W)
         val blockSelOH = UInt(dcacheBlockSize.W)
 
-        // val data_1 = Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))
-        // val blockMask = UInt(dcacheBlockSize.W)
+        val data = Vec(dcacheBlockSize, UInt((dcacheBlockBytes*8).W))
+        val blockMask = UInt(dcacheBlockSize.W)
         val way = UInt(dcacheWays.W)
     }))
 }
@@ -45,31 +44,19 @@ class DataBankArray()(implicit val p: Parameters) extends MyModule {
     val rSet = io.read.req.bits.set
     val ren = io.read.req.fire
     io.read.req.ready := true.B //&& !io.write.req.fire // TODO: using single port SRAM
+
     for(i <- 0 until dcacheWays) {
         io.read.resp(i) := dataBanks(i).read(rSet, ren)
 
         val wSet = io.write.req.bits.set
         val wData = io.write.req.bits.data
         val wen = io.write.req.bits.way(i) && io.write.req.fire
-        val wBlock = io.write.req.bits.blockSelOH
+        val wMask = io.write.req.bits.blockMask
         io.write.req.ready := true.B
         when(wen) {
-            dataBanks(i).write(wSet, wData, wBlock)
+            dataBanks(i).write(wSet, wData, wMask)
         }
     }
-
-    // for(i <- 0 until dcacheWays) {
-    //     io.read.resp(i) := dataBanks(i).read(rSet, ren)
-
-    //     val wSet = io.write.req.bits.set
-    //     val wData = io.write.req.bits.data_1
-    //     val wen = io.write.req.bits.way(i) && io.write.req.fire
-    //     val wMask = io.write.req.bits.blockMask
-    //     io.write.req.ready := true.B
-    //     when(wen) {
-    //         dataBanks(i).write(wSet, wData, wMask)
-    //     }
-    // }
 }
 
 object DataBankArrayGenRTL extends App {
