@@ -67,4 +67,23 @@ object Control{
 
     val REG_WR_N = false.B
     val REG_WR_Y = true.B
+
+    val BR_WIDTH = log2Ceil(9) 
+    val BR_NOP = 0.U(BR_WIDTH.W)
+    val BR_JAL = 1.U(BR_WIDTH.W)
+    val BR_JALR = 2.U(BR_WIDTH.W)
+    val BR_EQ = 3.U(BR_WIDTH.W)
+    val BR_NE = 4.U(BR_WIDTH.W)
+    val BR_GE = 5.U(BR_WIDTH.W)
+    val BR_LT = 6.U(BR_WIDTH.W)
+    val BR_LTU = 7.U(BR_WIDTH.W)
+    val BR_GEU = 8.U(BR_WIDTH.W)
+
+    val WB_WIDTH = log2Ceil(5)
+    val WB_NOP = 0.U(WB_WIDTH.W)
+    val WB_ALU = 1.U(WB_WIDTH.W) // aluOUt
+    val WB_LSU = 2.U(WB_WIDTH.W) // rdData
+    val WB_PCN4 = 3.U(WB_WIDTH.W) // pcNext4
+    val WB_CSR = 4.U(WB_WIDTH.W) // csrFile
+
 }

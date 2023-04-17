@@ -1,0 +1,56 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Thu Apr 13 12:26:48 2023
+[*]
+[dumpfile] "/home/cyril/workspace/riscv/mycpu/cocotb/top_tb.vcd"
+[dumpfile_mtime] "Thu Apr 13 12:22:01 2023"
+[dumpfile_size] 6793143
+[savefile] "/home/cyril/workspace/riscv/mycpu/cocotb/failed.gtkw"
+[timestart] 0
+[size] 2560 1369
+[pos] -217 -217
+*-25.000000 1084000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.top_tb.
+[treeopen] top.top_tb.core_inst.
+[sst_width] 463
+[signals_width] 302
+[sst_expanded] 1
+[sst_vpaned_height] 422
+@28
+top.top_tb.core_inst.ife.clock
+@29
+top.top_tb.core_inst.ife.reset
+@200
+-
+@28
+top.top_tb.core_inst.ife.io_in_start
+@200
+-
+@28
+top.top_tb.core_inst.ife.io_out_bits_instState_commit
+@22
+top.top_tb.core_inst.ife.io_out_bits_instState_inst[31:0]
+top.top_tb.core_inst.ife.io_out_bits_instState_pc[31:0]
+top.top_tb.core_inst.ife.io_out_bits_pcNext4[31:0]
+@28
+top.top_tb.core_inst.ife.io_out_ready
+top.top_tb.core_inst.ife.io_out_valid
+@200
+-
+@22
+top.top_tb.core_inst.ife.icache_io_read_req_bits_addr[31:0]
+@28
+top.top_tb.core_inst.ife.icache_io_read_req_ready
+top.top_tb.core_inst.ife.icache_io_read_req_valid
+@200
+-
+@28
+top.top_tb.core_inst.ife.firstFire
+@22
+top.top_tb.core_inst.ife.pcReg[31:0]
+@28
+top.top_tb.core_inst.ife.preFetchInst
+top.top_tb.core_inst.ife.io_out_bits_instState_commit
+[pattern_trace] 1
+[pattern_trace] 0

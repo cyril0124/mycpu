@@ -138,8 +138,8 @@ case class MyCpuParameters
     busMaxBeat: Int = 32,
 
     // DCache Configuration
-    dcacheWays: Int = 8,
-    dcacheSets: Int = 256,
+    dcacheWays: Int = 4,
+    dcacheSets: Int = 512,
     dcacheBlockSize: Int = 4,
     dcacheBanks: Int = 2,
 

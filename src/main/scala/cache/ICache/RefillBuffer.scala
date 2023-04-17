@@ -29,7 +29,7 @@ class RefillBuffer(entries: Int = 2)(implicit val p: Parameters) extends MyModul
     val busBeatWrBlock = busBeatSize / dcacheBlockBytes // how many block will each bus beat write into
     val busTotalBeat = dcacheBlockSize / busBeatWrBlock // how many beat will the bus transfer in order to fullfill the whole cacheLine
     val beatCounter = Counter(busTotalBeat)
-    val lastBeat = beatCounter.value === (busTotalBeat - 1).U
+    val lastBeat = if(busTotalBeat != 1) beatCounter.value === (busTotalBeat - 1).U else true.B // beatCounter.value === (busTotalBeat - 1).U
 
     when(io.write.fire && lastBeat) {
         beatCounter.reset()

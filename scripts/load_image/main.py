@@ -96,7 +96,7 @@ def main():
     if(argv_len != 2):
         # read dissassembly file and generate hex code of instruction
         assert "Usage: python3 main.py <elf file> <mode: -s(single memory(ROM)) -m(seperate ROM & RAM)> <memory width, default: 4-byte>\n"
-
+    print("load_image")
     # read image and parse segment table
     image = sys.argv[1]
     try:

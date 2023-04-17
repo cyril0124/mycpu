@@ -206,7 +206,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
         )
     })
     // it should "test read miss and read hit" in {
-    //     test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c => 
+    //     test(new DCache()(defaultConfig)).withAnnotations(annos) { c => 
             
     //         case class p()(implicit val p: Parameters) extends HasMyCpuParameters
     //         val param = p()(c.p)
@@ -288,7 +288,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     // }
 
     // it should "test write miss and write hit" in {
-    //     test(new DCache_1()(defaultConfig)).withAnnotations(annos) { c => 
+    //     test(new DCache()(defaultConfig)).withAnnotations(annos) { c => 
 
     //         case class p()(implicit val p: Parameters) extends HasMyCpuParameters
     //         val param = p()(c.p)
@@ -361,7 +361,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
     //         var hitTimes = 0
     //         var dirtyTimes = 0
     //         for(i <- 0 until testCaseNum) {
-    //             val addr = nextInt(math.pow(2, 20).toInt) << param.dcacheByteOffsetBits
+    //             val addr = nextInt(math.pow(2, 12).toInt) << param.dcacheByteOffsetBits
     //             val data = nextInt(math.pow(2, 20).toInt)
     //             write(addr, data, fill(1, param.dcacheBlockBytes).toInt)
                 
@@ -537,38 +537,6 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
             var store_hit = 0
             var store_miss = 0
             var store_miss_dirty = 0
-
-            // ----------------------------------------------------------------
-            // def storeMissClean(addr: Int) = {
-            //     write(addr, randData, fill(1, param.dcacheBlockBytes).toInt)
-            //     while(!c.io.tlbus.req.valid.peekBoolean() && !c.io.read.resp.valid.peekBoolean()) {
-            //                 c.clock.step()
-            //     }
-            //     val reqBeat = c.io.tlbus.req.bits.size.peekInt().toInt >> log2Ceil(param.busBeatSize)
-            //     c.clock.step()
-            //     for(i <- 0 until reqBeat) {
-            //         val refillData = randData()
-            //         val blockAddr = addrToBlockAddr(addr)
-            //         scoreboard += (blockAddr + (i << param.blockOffsetBits) -> refillData)
-
-            //         respRefill(refillData, 1)
-            //         c.clock.step()
-            //         resp.valid.poke(0)
-            //     }
-            //     c.clock.step()
-            // }
-
-            // storeMissClean(0)
-            // storeMissClean(2048)
-
-            // c.clock.step(10)
-            // read(4096) // load miss dirty
-
-
-
-            // c.clock.step(100)
-
-            // ----------------------------------------------------------------
 
             for( i <- 0 until testCaseNum) {
                 val addr = nextInt(math.pow(2, 15).toInt) << param.dcacheByteOffsetBits

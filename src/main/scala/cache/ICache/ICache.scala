@@ -77,7 +77,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     val s0_fire = s0_valid && s1_ready
     val s0_req = Mux(io.read.req.fire, io.read.req.bits, RegEnable(io.read.req.bits, s0_latch))
 
-    io.read.req.ready := !s0_full || s0_fire
+    io.read.req.ready := !s0_full //|| s0_fire
     
     when(s0_latch) { s0_full := true.B }
     .elsewhen(s0_full && s0_fire) { s0_full := false.B }
@@ -88,8 +88,8 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     dir.io.read.req.valid := s0_latch || s0_full
     dir.io.read.req.bits.addr := s0_req.addr
 
-    s0_valid := s0_full //&& db.io.read.fire && dir.io.read.req.fire // TODO: using single port SRAM
-
+    // s0_valid := RegNext(s0_latch) || s0_full //&& db.io.read.fire && dir.io.read.req.fire // TODO: using single port SRAM
+    s0_valid := s0_full
     // --------------------------------------------------------------------------------
     // loadQueue
     // --------------------------------------------------------------------------------

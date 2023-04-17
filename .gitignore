@@ -8,6 +8,10 @@ temp/
 *.key
 mill*
 scripts/extract_verilog_module/output/*
+cocotb/sim_build
+cocotb/__pycache__
+cocotb/utils/__pycache__
+cocotb/engine/__pycache__
 ### XilinxISE template
 # intermediate build files
 *.bgn

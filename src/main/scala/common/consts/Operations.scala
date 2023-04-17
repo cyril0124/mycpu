@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util.log2Ceil
 
 object AluOp {
-    val aluOpWidth = 4
+    val aluOpWidth = 5
 
     val ALU_ADD = 0.U(aluOpWidth.W)
     val ALU_SUB = 1.U(aluOpWidth.W)
@@ -29,11 +29,13 @@ object AluOp {
 
     val ALU_GEQU = 15.U(aluOpWidth.W)
 
-    val ALU_XXX = 0.U(aluOpWidth.W) // dont care what aluOP is.
+    val ALU_XXX = 17.U(aluOpWidth.W) // dont care what aluOP is.
+    val ALU_NOP = ALU_XXX
 }
 
 // all operations that supported by LSU
 object LsuOp {
+    import AluOp._
     val LSU_OP_WIDTH = log2Ceil(23)
 
     val LSU_NOP   = 0.U(LSU_OP_WIDTH.W)

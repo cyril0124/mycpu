@@ -230,8 +230,10 @@ void Emu::execute(uint64_t nr_cycles) {
 
 
 void before_assert(void) {
-    // float ipc = (float)((float)inst_num/(float)cycles);
-    float ipc = (float)((float)inst_num/(float)machine_cycles);
+    float ipc = (float)((float)inst_num/(float)cycles);
+    // float ipc = (float)((float)inst_num/(float)machine_cycles);
     float cpi = 1 / ipc;
-    printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, machine_cycles, ipc, cpi);
+    // printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, machine_cycles, ipc, cpi);
+    printf("inst_num = %ld, cycles = %ld, IPC = %.2f, CPI = %.2f\n", inst_num, cycles, ipc, cpi);
+
 }

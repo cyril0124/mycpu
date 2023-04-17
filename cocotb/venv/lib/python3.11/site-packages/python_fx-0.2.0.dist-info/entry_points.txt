@@ -1,0 +1,2 @@
+[console_scripts]
+pyfx = pyfx.cli:main

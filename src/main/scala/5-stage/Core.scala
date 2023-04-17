@@ -354,7 +354,7 @@ object CoreGenRTL extends App {
         case MyCpuParamsKey => MyCpuParameters(
             simulation = true,
             busBeatSize = 16,
-            logEnable = true,
+            logEnable = false,
         )
     })
 
