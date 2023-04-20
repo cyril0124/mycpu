@@ -17,7 +17,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.s=$(BUILD_DIR)/%.o)
 TARGETS := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%}
 DUMPS := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%.dump}
 
-image_name ?= rv32ui-p-srai
+image_name ?= test_alu
 # test_ecall
 
 all: ${TARGETS} ${DUMPS}
@@ -28,7 +28,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
 $(BUILD_DIR)/%: $(BUILD_DIR)/%.o
 	$(RISCV_GCC) $(RISCV_GCC_OPTS) -T $(PRJ_DIR)/link.ld $< -o $@
 # add test case configuration file
-	- cd ${TOP_PRJ_DIR}/test_env/tests; python3 ${SCRIPT_DIR}/json_config/main.py -a $(@F).bin ${BUILD_DIR} 42
+# - cd ${TOP_PRJ_DIR}/test_env/tests; python3 ${SCRIPT_DIR}/json_config/main.py -a $(@F).bin ${BUILD_DIR} 42
 
 $(BUILD_DIR)/%.dump: $(BUILD_DIR)/%
 	$(RISCV_OBJDUMP) $< > /$@

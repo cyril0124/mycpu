@@ -27,14 +27,14 @@ class Core_1Test extends AnyFlatSpec with ChiselScalatestTester {
         test(new Core_1()(defaultConfig)).withAnnotations(annos) { c => 
 
             def init() = {
-                c.io.ibOutReady.poke(0)
+                // c.io.ibOutReady.poke(0)
             }
 
             def read(addr: Int) = {
-                c.io.readValid.poke(1)
-                c.io.readAddr.poke(addr)
+                // c.io.readValid.poke(1)
+                // c.io.readAddr.poke(addr)
                 c.clock.step()
-                c.io.readValid.poke(0)
+                // c.io.readValid.poke(0)
             }
 
             def randData() = nextInt(1000)
@@ -47,14 +47,14 @@ class Core_1Test extends AnyFlatSpec with ChiselScalatestTester {
             //     c.clock.step()
             // }
 
-            c.io.ibOutReady.poke(1)
-            c.clock.step(20)
+            // c.io.ibOutReady.poke(1)
+            // c.clock.step(20)
 
             // c.io.readValid.poke(1)
-            c.io.brAddr.poke(0x1000)
-            c.io.brTaken.poke(1)
-            c.clock.step()
-            c.io.brTaken.poke(0)
+            // c.io.brAddr.poke(0x1000)
+            // c.io.brTaken.poke(1)
+            // c.clock.step()
+            // c.io.brTaken.poke(0)
             // c.io.ibOutReady.poke(0)
 
             // c.io.flush.poke(1)

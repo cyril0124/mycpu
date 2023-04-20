@@ -30,7 +30,7 @@ object AluOp {
     val ALU_GEQU = 15.U(aluOpWidth.W)
 
     val ALU_XXX = 17.U(aluOpWidth.W) // dont care what aluOP is.
-    val ALU_NOP = ALU_XXX
+    val ALU_NOP = 17.U(aluOpWidth.W)
 }
 
 // all operations that supported by LSU

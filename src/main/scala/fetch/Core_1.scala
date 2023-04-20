@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import org.chipsalliance.cde.config._
 import chisel3.experimental.ChiselEnum
+import chisel3.util.experimental.BoringUtils
 
 import mycpu.common._
 import mycpu.util._
@@ -11,17 +12,44 @@ import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
 import mycpu.common.consts.AluOp._
 
+
+class EdgeDetect(typ: String = "faling") extends Module{
+    val io = IO(new Bundle{
+        val in = Input(Bool())
+        val change = Output(Bool())
+    })
+
+    val reg = RegInit(false.B)
+    val prev = RegNext(io.in)
+
+    reg := prev
+    if(typ == "faling")
+        io.change := prev && !io.in
+    else if(typ == "rising")
+        io.change := !prev && io.in
+}
+
 class Core_1IO()(implicit val p: Parameters) extends MyBundle {
-    val readValid = Input(Bool())
-    val readAddr = Input(UInt(xlen.W))
-    val flush = Input(Bool())
-    val ibOutReady = Input(Bool())
-    val brTaken = Input(Bool())
-    val brAddr = Input(UInt(xlen.W))
+    // val readValid = Input(Bool())
+    // val readAddr = Input(UInt(xlen.W))
+    // val ibOutReady = Input(Bool())
+
+    // val flush = Input(Bool())
+    // val brTaken = Input(Bool())
+    // val brAddr = Input(UInt(xlen.W))
+
+    val in = new Bundle{
+                val start = Input(Bool())
+            }
+    val out = new Bundle{
+                val state = Output(new CoreState)
+            }
 }
 
 class Core_1()(implicit val p: Parameters) extends MyModule {
     val io = IO(new Core_1IO)
+    io <> DontCare
+    dontTouch(io)
 
     val ib = Module(new InstBuffer)
     dontTouch(ib.io)
@@ -37,6 +65,11 @@ class Core_1()(implicit val p: Parameters) extends MyModule {
             )
         }
     )))
+    val rf = Module(new RegFile2(UInt(xlen.W)))
+    rf.io.r <> DontCare
+    rf.io.w <> DontCare
+
+    val aluStage = Module(new ALUStage)
 
     val fetch_valid = Wire(Bool())
     val dec_valid, dec_ready = Wire(Bool())
@@ -50,11 +83,17 @@ class Core_1()(implicit val p: Parameters) extends MyModule {
     val pcNext4 = pcReg + (icacheRdWays*(ilen/8)).U
     val fetch_fire = fetch_valid
 
+    val edgeBackPressure = Module(new EdgeDetect("faling"))
+    edgeBackPressure.io.in := ib.io.out.back_pressure
     val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
-    val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && (fetch_fire || io.brTaken))
+    // val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && (fetch_fire || io.brTaken || edgeBackPressure.io.change) && !ib.io.out.back_pressure)
+    val preFetchInst = (firstFire && pcReg === resetPc.U) || (!firstFire && (fetch_fire || edgeBackPressure.io.change) && !ib.io.out.back_pressure)
 
-    icache.io.read.req.valid := preFetchInst
-    icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), Mux(io.brTaken, io.brAddr, pcReg))
+
+    icache.io.read.req.valid := preFetchInst && io.in.start
+    // icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), Mux(io.brTaken, io.brAddr, pcReg))
+    icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), pcReg)
+
     
     dontTouch(icache.io)
 
@@ -62,31 +101,40 @@ class Core_1()(implicit val p: Parameters) extends MyModule {
         pcReg := pcNext
     }
 
-    pcNext := Mux(io.brTaken, io.brAddr, pcNext4)
+    // pcNext := Mux(io.brTaken, io.brAddr, pcNext4)
+    pcNext := pcNext4
     
     icache.io.read.resp.ready := true.B
     fetch_valid := icache.io.read.resp.valid
 
+
     // --------------------------------------------------------------------------------
     // Instruction Buffer
     // --------------------------------------------------------------------------------
-    ib.io.icache.valid := fetch_valid
-    ib.io.icache.bits := icache.io.read.resp.bits
-    ib.io.flush := io.flush || io.brTaken // TODO:
-    ib.io.out.ready := dec_ready
+    ib.io.in.icache.valid := fetch_valid
+    ib.io.in.icache.bits := icache.io.read.resp.bits
+    ib.io.in.pc.valid := fetch_valid
+    ib.io.in.pc.bits := pcReg
+    // ib.io.in.flush := io.flush || io.brTaken // TODO:
+    ib.io.in.flush := false.B
+    ib.io.out.inst.ready := dec_ready
+    ib.io.out.pc.ready := dec_ready
     
     // --------------------------------------------------------------------------------
     // Decode stage
     // --------------------------------------------------------------------------------
-    val dec_latch = ib.io.out.valid && dec_ready
+    val dec_latch = ib.io.out.inst.valid && dec_ready
     val dec_full = RegInit(false.B)
-    val dec_fire = dec_valid //&& issue_ready
-    val dec_inst = RegEnable(ib.io.out.bits, dec_latch)
+    val dec_fire = dec_valid && issue_ready
+    val dec_inst = RegEnable(ib.io.out.inst.bits, dec_latch)
+    val dec_pc = RegEnable(ib.io.out.pc.bits, dec_latch)
     
+    // Pipeline handshake
     dec_ready := !dec_full || dec_fire
     when(dec_latch) { dec_full := true.B }
     .elsewhen(dec_full && dec_fire) { dec_full := false.B }
 
+    // Instruction decode
     val dec_decoders = Seq.fill(icacheRdWays)(Module(new Decoder_1))
     val dec_decodeSigs = Seq.fill(icacheRdWays)(WireInit(0.U.asTypeOf(new DecodeSigs_1)))
     for(i <- 0 until icacheRdWays) {
@@ -100,62 +148,136 @@ class Core_1()(implicit val p: Parameters) extends MyModule {
 
     dec_valid := RegNext(dec_latch) || dec_full
 
-    // TODO: Insert Buffer
+    // TODO: Insert Buffer(Queue, FIFO)
 
     // --------------------------------------------------------------------------------
     // Issue stage 
     // --------------------------------------------------------------------------------
+    // Pipeline handshake reletive signals
     val issue_latch = dec_valid && issue_ready
     val issue_fire = Wire(Bool())
     val issue_full = RegInit(false.B)
-
+    // Pipeline data signals
+    val issue_pc = RegEnable(dec_pc, issue_latch)
     val issue_decodeSigs = Reg(Vec(icacheRdWays, new DecodeSigs_1))
     val issue_instValid = RegEnable(Cat(dec_inst.map{d => d.valid}).asUInt, issue_latch)
-    val issue_inst = RegEnable(Cat(dec_inst.map{d => d.inst}).asUInt, issue_latch)
-
+    val issue_inst = Reg(Vec(icacheRdWays, UInt(ilen.W))) 
     val issue_instSize = PopCount(issue_instValid) - 1.U
-
     val issue_instFire = Wire(Bool())
     val issue_ptr = RegInit(0.U(log2Ceil(icacheRdWays).W))
     for(i <- 0 until icacheRdWays) {
         when(issue_latch) {
             issue_decodeSigs(i) := dec_decodeSigs(i)
+            issue_inst(i) := dec_inst(i).inst
         }
     }
 
-
+    // Pipeline handshake
     issue_ready := !issue_full || issue_fire
-
     when(issue_latch) { issue_full := true.B }
     .elsewhen(issue_full && issue_fire) { issue_full := false.B}
 
-
-    issue_valid := issue_ptr === issue_instSize
+    
+    // Select valid instruction that will be issue later
+    issue_valid := issue_ptr === issue_instSize && issue_instFire
     when(issue_instFire) {
         issue_ptr := issue_ptr + 1.U
     }
+    val issue_chosenDecodesigs = Mux1H(UIntToOH(issue_ptr), issue_decodeSigs)
+    val issue_chosenInst = Mux1H(UIntToOH(issue_ptr), issue_inst) 
+    
+    val decOpr1 = issue_chosenDecodesigs.opr1
+    val decOpr2 = issue_chosenDecodesigs.opr2
+    val rs1 = InstField(issue_chosenInst, "rs1")
+    val rs2 = InstField(issue_chosenInst, "rs2")
+    val issue_rs1 = Mux(decOpr1 === OPR_REG1, rs1, 0.U)
+    val issue_rs2 = Mux(decOpr2 === OPR_REG2, rs2, 0.U)
+    val issue_rd = InstField(issue_chosenInst, "rd")
 
-    issue_fire := issue_valid
+    
+    // Functional Unit handshake signals
+    val bru_ready, bru_valid, bru_latch  = WireInit(true.B)
+    val lsu_ready, lsu_valid, lsu_latch  = WireInit(true.B)
 
-    issue_instFire := true.B
-    MultiDontTouch(issue_latch, issue_fire, issue_decodeSigs, issue_instValid, issue_ptr)
+    issue_instFire := aluStage.io.in.fire // alu_latch // indicate that one instruction are issued
+    issue_fire := issue_valid // indicate that all of the instrcution are issued
 
-    // in-order issue
-    val aluValid = issue_decodeSigs(issue_ptr).aluOp =/= ALU_NOP
-    val bruValid = issue_decodeSigs(issue_ptr).brType =/= BR_NOP
-    val lsuValid = issue_decodeSigs(issue_ptr).lsuOp =/= LSU_NOP
-    assert(PopCount(VecInit(Seq(aluValid, bruValid, lsuValid))) <= 1.U, "more than one op valid!")
+    // Functional Unit issue valid signals
+    val issue_aluValid = issue_chosenDecodesigs.aluOp =/= ALU_NOP
+    val issue_bruValid = issue_chosenDecodesigs.brType =/= BR_NOP
+    val issue_lsuValid = issue_chosenDecodesigs.lsuOp =/= LSU_NOP
+    assert(((PopCount(VecInit(Seq(issue_aluValid, issue_bruValid, issue_lsuValid))) <= 1.U && issue_full) || !issue_full), 
+            cf"more than one op valid! ${issue_aluValid} ${issue_bruValid} ${issue_lsuValid} inst=> ${Hexadecimal(issue_chosenInst)} aluOp=> ${issue_chosenDecodesigs.aluOp} lsuOp=> ${issue_chosenDecodesigs.lsuOp}"
+        )
+
+    // Read scoreboard info before issue an instruction in case of WAW hazard
+    import mycpu.FUType._
+    val scoreboard = Module(new Scoreboard(3))
+    scoreboard.io <> DontCare
+    dontTouch(scoreboard.io)
+    scoreboard.io.issue.valid := (issue_aluValid || issue_bruValid || issue_lsuValid) && issue_full
+    scoreboard.io.issue.bits.fuId := MuxCase(ALU, Seq(
+                                            issue_aluValid -> ALU,
+                                            issue_bruValid -> BRU,
+                                            issue_lsuValid -> LSU,
+                                        ))
+    scoreboard.io.issue.bits.op := MuxCase(ALU_ADD, Seq(
+                                            issue_aluValid -> issue_chosenDecodesigs.aluOp,
+                                            issue_bruValid -> issue_chosenDecodesigs.brType,
+                                            issue_lsuValid -> issue_chosenDecodesigs.lsuOp,
+                                        ))
+    scoreboard.io.issue.bits.rs1 := issue_rs1
+    scoreboard.io.issue.bits.rs2 := issue_rs2
+    scoreboard.io.issue.bits.rd  := issue_rd
 
     // --------------------------------------------------------------------------------
     // ALU stage
     // --------------------------------------------------------------------------------
-    // val alu_
+    aluStage.io.in.bits.pc := issue_pc + (issue_ptr << 2)
+    aluStage.io.in.bits.aluOp := issue_chosenDecodesigs.aluOp
+    aluStage.io.in.bits.immSign := issue_chosenDecodesigs.immSign
+    aluStage.io.in.bits.inst := issue_chosenInst
+    aluStage.io.in.bits.opr1 := issue_chosenDecodesigs.opr1
+    aluStage.io.in.bits.opr2 := issue_chosenDecodesigs.opr2
+    aluStage.io.in.valid := issue_aluValid & scoreboard.io.issue.fire
+    aluStage.io.rfRd(0) <> rf.io.r(0)
+    aluStage.io.rfRd(1) <> rf.io.r(1)
+    aluStage.io.rfRdReady := scoreboard.io.readOpr(ALU).ready
+    aluStage.io.out.ready := scoreboard.io.writeback(ALU).ready
+    scoreboard.io.readOpr(ALU).valid := aluStage.io.rfRd(0).en
+    scoreboard.io.execute(ALU) := RegNext(scoreboard.io.readOpr(ALU).fire)
+    scoreboard.io.writeback(ALU).valid := aluStage.io.out.valid
+    // alu_valid := aluStage.io.wb.fire
 
 
+    // --------------------------------------------------------------------------------
+    // BRU stage
+    // --------------------------------------------------------------------------------
 
 
+    rf.io.w(0).en := aluStage.io.out.fire
+    rf.io.w(0).addr := aluStage.io.out.bits.rd
+    rf.io.w(0).data := aluStage.io.out.bits.data
 
+    val instState = Wire(new InstState)
+    instState.commit := aluStage.io.out.fire
+    instState.inst := aluStage.io.out.bits.inst
+    instState.pc := aluStage.io.out.bits.pc
 
+    val regState = WireInit(0.U.asTypeOf(new RegFileState))
+    BoringUtils.addSink(regState, "regState")
+
+    io.out.state.instState <> RegNext(instState)
+    io.out.state.intRegState <> regState
+    
+
+    MultiDontTouch(rf.io,  aluStage.io)
+    MultiDontTouch(issue_latch, issue_fire, issue_decodeSigs, issue_instValid, issue_ptr)
+    MultiDontTouch(issue_chosenInst, issue_chosenDecodesigs)
+
+    // --------------------------------------------------------------------------------
+    // Bus
+    // --------------------------------------------------------------------------------
     val xbar = Module(new TLXbar)
     val rom = Module(new SingleROM)
     xbar.io <> DontCare
@@ -163,4 +285,19 @@ class Core_1()(implicit val p: Parameters) extends MyModule {
     icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
     rom.io.req <> xbar.io.slaveFace.in(0)
     rom.io.resp <> xbar.io.slaveFace.out(0)
+}
+
+object Core_1GenRTL extends App {
+    val defaultConfig = new Config((_,_,_) => {
+        case MyCpuParamsKey => MyCpuParameters(
+            simulation = true,
+            busBeatSize = 16,
+            logEnable = false,
+            rfRdPort = 6, // for three FUs we need total 6 rdport
+            rfWrPort = 1,
+        )
+    })
+
+    println("Generating the Core_1 hardware")
+    (new chisel3.stage.ChiselStage).emitVerilog(new Core_1()(defaultConfig), Array("--target-dir", "build"))
 }

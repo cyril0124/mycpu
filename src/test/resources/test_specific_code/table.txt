@@ -1,15 +1,13 @@
-There are 8 section headers, starting at offset 0x3558:
+There are 6 section headers, starting at offset 0x1140:
 
 Section Headers:
   [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
   [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .text.init        PROGBITS        00000000 001000 00063c 00  AX  0   0 64
-  [ 2] .tohost           PROGBITS        00001000 002000 000048 00  WA  0   0 64
-  [ 3] .data             PROGBITS        00002000 003000 000010 00  WA  0   0 16
-  [ 4] .riscv.attributes RISCV_ATTRIBUTE 00000000 003010 000032 00      0   0  1
-  [ 5] .symtab           SYMTAB          00000000 003044 000350 10      6  47  4
-  [ 6] .strtab           STRTAB          00000000 003394 00017d 00      0   0  1
-  [ 7] .shstrtab         STRTAB          00000000 003511 000046 00      0   0  1
+  [ 1] .text             PROGBITS        00000000 001000 000090 00  AX  0   0  4
+  [ 2] .riscv.attributes RISCV_ATTRIBUTE 00000000 001090 00001a 00      0   0  1
+  [ 3] .symtab           SYMTAB          00000000 0010ac 000050 10      4   5  4
+  [ 4] .strtab           STRTAB          00000000 0010fc 00000f 00      0   0  1
+  [ 5] .shstrtab         STRTAB          00000000 00110b 000033 00      0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
   L (link order), O (extra OS processing required), G (group), T (TLS),

@@ -58,6 +58,7 @@ class ScoreboardIO(nrFu: Int)(implicit val p: Parameters) extends MyBundle {
     val readOpr = Vec(nrFu, Flipped(Decoupled()))
     val execute = Vec(nrFu, Input(Bool()))
     val writeback = Vec(nrFu, Flipped(Decoupled()))
+    // val wbReady = Vec(nrFu, Output(Bool()))
 }
 class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
     val io = IO(new ScoreboardIO(nrFu))
@@ -67,11 +68,11 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
 
     val fuBusy = WireInit(VecInit(fuStatus.map{f => f.busy}))
     
-    // WAW hazard
-    val wawRd = Cat(fuStatus.map(f => f.rd === io.issue.bits.rd && f.busy)).orR
-    io.issue.ready := !wawRd && io.issue.valid && !fuBusy(io.issue.bits.fuId)
+    // Write After Write hazard
+    val wawRd = Cat(fuStatus.map(f => f.rd === io.issue.bits.rd && f.busy && f.rd =/= 0.U )).orR
+    io.issue.ready := (!wawRd || wawRd && io.issue.bits.fuId === ALU) && io.issue.valid && !fuBusy(io.issue.bits.fuId)
 
-    // read after write hazard for rs1, rs2
+    // Read After Write hazard for rs1, rs2 (true dependency)
     val rawRs1 = Wire(Vec(nrFu, Bool()))
     val rawRs2 = Wire(Vec(nrFu, Bool()))
     val rawRs1_1 = Wire(Vec(nrFu, Bool())) // work when issue req is fired
@@ -84,8 +85,8 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
     for(i <- 0 until nrFu) {
         // rawRs1(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === fuStatus(i).rs1 && f.busy else false.B}).orR
         // rawRs2(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === fuStatus(i).rs2 && f.busy else false.B}).orR
-        rawRs1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs1 && f.busy}).orR
-        rawRs2(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs2 && f.busy}).orR
+        rawRs1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs1 && f.busy && f.rd =/= 0.U }).orR
+        rawRs2(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs2 && f.busy && f.rd =/= 0.U }).orR
         fuStatus(i).rs1_ready := Mux(rawRs1(i), false.B, true.B)
         fuStatus(i).rs2_ready := Mux(rawRs2(i), false.B, true.B)
 
@@ -96,8 +97,8 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
             fuStatus(i).rs1 := io.issue.bits.rs1
             fuStatus(i).rs2 := io.issue.bits.rs2
 
-            val matchRs1OH = Cat(fuStatus.map{f => f.rd === io.issue.bits.rs1 && f.busy}.reverse)
-            val matchRs2OH = Cat(fuStatus.map{f => f.rd === io.issue.bits.rs2 && f.busy}.reverse)
+            val matchRs1OH = Cat(fuStatus.map{f => f.rd === io.issue.bits.rs1 && f.busy && f.rd =/= 0.U }.reverse)
+            val matchRs2OH = Cat(fuStatus.map{f => f.rd === io.issue.bits.rs2 && f.busy && f.rd =/= 0.U }.reverse)
             assert(PopCount(matchRs1OH) <= 1.U, "error matchRs1OH has multiple hot bit")
             assert(PopCount(matchRs2OH) <= 1.U, "error matchRs2OH has multiple hot bit")
             fuStatus(i).gen_rs1 := Mux1H(matchRs1OH, FUs)
@@ -121,7 +122,7 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
         dontTouch(fuStatus(i))
     }
     
-    // RAW hazard
+    // Read After Write hazard (true dependency)
     for(i <- 0 until nrFu) {
         io.readOpr(i).ready := fuStatus(i).rs1_ready && fuStatus(i).rs2_ready && fuStatus(i).busy && io.readOpr(i).valid
     }
@@ -134,7 +135,7 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
         }
     }
 
-    // write after read hazard
+    // Write After Read hazard
     val warRd = Wire(Vec(nrFu, Bool()))
 
     for(i <- 0 until nrFu) {
@@ -144,7 +145,7 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
         // }).orR && fuStatus(i).busy
 
         warRd(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => 
-            ((f.rs1 === fuStatus(i).rd && f.rs1_ready) || (f.rs2 === fuStatus(i).rd && f.rs2_ready)) && f.busy
+            ((f.rs1 === fuStatus(i).rd && f.rs1_ready) || (f.rs2 === fuStatus(i).rd && f.rs2_ready)) && f.busy && f.rd =/= 0.U 
         }).orR && fuStatus(i).busy
 
         io.writeback(i).ready := io.writeback(i).valid && !warRd(i)
@@ -152,6 +153,11 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
         when(io.writeback(i).fire) {
             fuStatus(i).busy := false.B
         }
+
+        // io.wbReady(i) := !warRd(i)
+        // when(io.wbReady(i)) {
+        //     fuStatus(i).busy := false.B
+        // }
     }
 }
 

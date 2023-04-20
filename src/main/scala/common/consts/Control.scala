@@ -68,7 +68,7 @@ object Control{
     val REG_WR_N = false.B
     val REG_WR_Y = true.B
 
-    val BR_WIDTH = log2Ceil(9) 
+    val BR_WIDTH = log2Ceil(10) 
     val BR_NOP = 0.U(BR_WIDTH.W)
     val BR_JAL = 1.U(BR_WIDTH.W)
     val BR_JALR = 2.U(BR_WIDTH.W)
@@ -78,6 +78,7 @@ object Control{
     val BR_LT = 6.U(BR_WIDTH.W)
     val BR_LTU = 7.U(BR_WIDTH.W)
     val BR_GEU = 8.U(BR_WIDTH.W)
+    val BR_AUI = 9.U(BR_WIDTH.W) // auipc
 
     val WB_WIDTH = log2Ceil(5)
     val WB_NOP = 0.U(WB_WIDTH.W)

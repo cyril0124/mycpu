@@ -165,7 +165,8 @@ object XDecode_1 {
         SRAI    -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_SRA,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
         ORI     -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_OR,    OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
         ANDI    -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_AND,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
-        AUIPC   -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_ADD,   OPR_PC,    OPR_IMM,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE),
+        
+        AUIPC   -> List(BR_AUI,  WB_ALU,  LSU_NOP,  ALU_NOP,   OPR_PC,    OPR_IMM,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE),
 
         SB      -> List(BR_NOP,  WB_NOP,  LSU_SB,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_S,  IMM_SE,
         SH      -> List(BR_NOP,  WB_NOP,  LSU_SH,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE),
@@ -225,8 +226,8 @@ class Decoder_1()(implicit val p: Parameters) extends MyModule {
         val out = Output(new DecodeSigs_1())
     })
 
-    val decodeTable = XDecode.table
-    val defaultDecodeTable = XDecode.decodeDefault
+    val decodeTable = XDecode_1.table
+    val defaultDecodeTable = XDecode_1.decodeDefault
 
     val decodeSigs = ListLookup(io.inst, defaultDecodeTable, decodeTable)
 

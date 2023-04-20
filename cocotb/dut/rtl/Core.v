@@ -1,9 +1,7 @@
-/* verilator lint_off MULTIDRIVEN */
 module Core(
   input         clock,
   input         reset,
   input         io_in_start,
-  input wire [63:0]  val,
   output [31:0] io_out_state_intRegState_regState_0,
   output [31:0] io_out_state_intRegState_regState_1,
   output [31:0] io_out_state_intRegState_regState_2,
@@ -42,15 +40,6 @@ module Core(
   output [31:0] io_out_state_csrState_mcycle,
   output [31:0] io_out_state_csrState_mcycleh
 );
-
-reg [63:0] count;
-always@(posedge clock) begin
-  count <= count + val;
-end
-
-assign io_out_state_csrState_mcycle = count > 10 ? 111 : csrFile_csrState_0_mcycle;
-// always_comb if(count > 10) io_out_state_csrState_mcycle = count[31:0];
-
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
   reg [31:0] _RAND_1;

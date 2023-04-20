@@ -51,7 +51,7 @@ Core core_inst (
     .clock(clock),
     .reset(reset),
     .io_in_start(io_in_start),
-    .val(),
+    // .val(),
     // .io_in_csrStateIn_mcycle(io_in_csrStateIn_mcycle),
     // .io_in_csrStateIn_mcycleh(io_in_csrStateIn_mcycle),
     // int reg state

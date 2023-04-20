@@ -64,7 +64,7 @@ async def cpu_running(dut):
         for _ in range(10000*200):
             cycles = cycles + 1
             if dut_inst_commit.value == 1:
-                dut.core_inst.val.value = 1 # cycles + dut_cpu_state.pc + 1
+                # dut.core_inst.val.value = 1 # cycles + dut_cpu_state.pc + 1
                 # if cycles % 1000 == 1:
                 #     print("1000 cycles pass..")
                 print(f"pc ==> {hex(ql.cpu_state.pc)}")    
@@ -82,7 +82,7 @@ async def cpu_running(dut):
         ipc: float = ql.inst_count / cycles
         cpi: float = 1 / ipc
         print(f"inst num: {ql.inst_count} cycles: {cycles} ipc: {ipc:.2f} cpi: {cpi:.2f}")
-        print(f"{dut.core_inst.count.value.integer}")
+        # print(f"{dut.core_inst.count.value.integer}")
 
 
 @cocotb.test()

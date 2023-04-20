@@ -62,8 +62,10 @@ class ScoreboardTest extends AnyFlatSpec with ChiselScalatestTester {
             def writeback(fu: UInt) = {
                 val id = fu.litValue.toInt
                 c.io.writeback(id).valid.poke(1)
+                // c.io.wbReady(id).poke(1)
                 c.clock.step()
                 c.io.writeback(id).valid.poke(0)
+                // c.io.wbReady(id).poke(0)
             }
 
             def freeAll() = {
