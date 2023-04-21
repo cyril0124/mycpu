@@ -185,12 +185,12 @@ object XDecode_1 {
 
         LUI     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE), // OPR_ZERO,  OPR_IMM,  IMM_U,  IMM_ZE,
 
-        BEQ     -> List(BR_EQ,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_REG2, 
-        BNE     -> List(BR_NE,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
-        BLT     -> List(BR_LT,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
-        BGE     -> List(BR_GE,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
-        BLTU    -> List(BR_LTU,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
-        BGEU    -> List(BR_GEU,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
+        BEQ     -> List(BR_EQ,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_REG2, 
+        BNE     -> List(BR_NE,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
+        BLT     -> List(BR_LT,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
+        BGE     -> List(BR_GE,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
+        BLTU    -> List(BR_LTU,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
+        BGEU    -> List(BR_GEU,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
 
         
         // TODO:

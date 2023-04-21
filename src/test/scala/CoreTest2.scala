@@ -20,6 +20,8 @@ class Core_1Test extends AnyFlatSpec with ChiselScalatestTester {
             simulation = false,
             busBeatSize = 16,
             logEnable = true,
+            rfRdPort = 6, // for three FUs we need total 6 rdport
+            rfWrPort = 3,
         )
     })
 
@@ -28,6 +30,7 @@ class Core_1Test extends AnyFlatSpec with ChiselScalatestTester {
 
             def init() = {
                 // c.io.ibOutReady.poke(0)
+                c.io.in.start.poke(1)
             }
 
             def read(addr: Int) = {

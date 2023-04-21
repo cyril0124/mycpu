@@ -17,7 +17,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.s=$(BUILD_DIR)/%.o)
 TARGETS := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%}
 DUMPS := ${SRCS:${SRC_DIR}/%.s=${BUILD_DIR}/%.dump}
 
-image_name ?= test_alu
+image_name ?= test_bru
 # test_ecall
 
 all: ${TARGETS} ${DUMPS}

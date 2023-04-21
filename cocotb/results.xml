@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1682001325" />
-    <testcase name="cpu_running_test" classname="top_tb" file="/home/cyril/workspace/riscv/mycpu/cocotb/top_tb.py" lineno="88" time="7.963127851486206" sim_time_ns="74153000.001" ratio_time="9312044.385568967" />
+    <property name="random_seed" value="1682004275" />
+    <testcase name="cpu_running_test" classname="top_tb" file="/home/cyril/workspace/riscv/mycpu/cocotb/top_tb.py" lineno="157" time="9.802536964416504" sim_time_ns="74153000.001" ratio_time="7564674.356258748" />
   </testsuite>
 </testsuites>

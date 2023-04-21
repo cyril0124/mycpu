@@ -7,6 +7,7 @@ import org.chipsalliance.cde.config._
 
 import mycpu.common._
 import mycpu.util._
+import firrtl.Utils
 
 sealed class ReadPort[T <: Data](gen:T)(implicit val p: Parameters) extends MyBundle {
   val addr = Input(UInt(rfAddrWidth.W))
@@ -133,22 +134,45 @@ class RegFile2[T <: Data](gen:T = UInt(32.W))(implicit val p: Parameters) extend
   assert(regs(0).asUInt === 0.U, "zero reg must be 0 !")
   
 
-  (0 until rfRdPort).foreach{ i =>
-    when(io.r(i).en) {
-      // write operation has higher priority
-      // when(io.w(0).en && io.r(i).addr === io.w(0).addr){
-      //   io.r(i).data := io.w(0).data
-      // }.otherwise{
-      //   io.r(i).data := regs(io.r(i).addr)
-      // }
-      io.r(i).data := regs(io.r(i).addr)
-    }.otherwise {
-      io.r(i).data := DontCare
+  // (0 until rfRdPort).foreach{ i =>
+  //   when(io.r(i).en) {
+  //     // write operation has higher priority
+  //     // when(io.w(0).en && io.r(i).addr === io.w(0).addr){
+  //     //   io.r(i).data := io.w(0).data
+  //     // }.otherwise{
+  //     //   io.r(i).data := regs(io.r(i).addr)
+  //     // }
+  //     io.r(i).data := regs(io.r(i).addr)
+  //   }.otherwise {
+  //     io.r(i).data := DontCare
+  //   }
+  // }
+
+  io.r.zipWithIndex.foreach{ case (r, i) =>
+    val writeVec = Cat(io.w.map( w => w.addr === r.addr && w.en && w.addr =/= 0.U).reverse)
+    val hasWrite = writeVec.orR
+    when(r.en) {
+      when(hasWrite) {
+        r.data := io.w(OHToUInt(writeVec)).data
+      }.otherwise{
+        r.data := regs(r.addr)
+      }
+    }.otherwise{
+      r.data := DontCare
     }
   }
 
-  when(io.w(0).en && io.w(0).addr =/= 0.U) {
-    regs(io.w(0).addr) := io.w(0).data
+  // when(io.w(0).en && io.w(0).addr =/= 0.U) {
+  //   regs(io.w(0).addr) := io.w(0).data
+  // }
+
+  io.w.foreach{ w => 
+    // val writeAddrVec = Cat(io.w.map( ww => w.addr === ww.addr && w.addr =/= 0.U && w.en))
+    // val hasSameWrite = writeAddrVec.orR
+    // assert(hasSameWrite === false.B, "Write multiple same address!")
+    when(w.en && w.addr =/= 0.U){
+      regs(w.addr) := w.data
+    }
   }
 
   // if(rfStateOut) {

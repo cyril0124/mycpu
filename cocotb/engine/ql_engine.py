@@ -20,6 +20,7 @@ class CPUState:
         self.pc = pc
         self.int_regs = [None] * 32 # np.zeros(32, dtype=np.uint32)#
         self.inst = None
+        self.inst_count = 0
 
 
 class QlEngine:
