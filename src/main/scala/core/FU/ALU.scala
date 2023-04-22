@@ -77,6 +77,8 @@ class ALUStageIO()(implicit val p: Parameters) extends MyBundle {
 
         val inst = UInt(ilen.W)
         val pc = UInt(xlen.W)
+
+        val id = UInt(3.W)
     }))
     val out = Decoupled(new Bundle{
         val data = UInt(xlen.W)
@@ -84,9 +86,12 @@ class ALUStageIO()(implicit val p: Parameters) extends MyBundle {
 
         val inst = UInt(ilen.W)
         val pc = UInt(xlen.W)
+
+        val id = UInt(3.W)
     })
     val rfRd = Vec(2, Flipped(new ReadPort(UInt(xlen.W))))
     val rfRdReady = Input(Bool())
+    val flush = Input(Bool())
 }
 
 class ALUStage()(implicit val p: Parameters) extends MyModule {
@@ -148,6 +153,7 @@ class ALUStage()(implicit val p: Parameters) extends MyModule {
     val s1_aluInVec = RegEnable(s0_aluInVec, s1_latch)
     val s1_pc = RegEnable(s0_info.pc, s1_latch)
     val s1_inst = RegEnable(s0_info.inst, s1_latch)
+    val s1_id = RegEnable(s0_info.id, s1_latch)
     s1_ready := !s1_full || s1_fire
 
     when(s1_latch) { s1_full := true.B }
@@ -162,8 +168,15 @@ class ALUStage()(implicit val p: Parameters) extends MyModule {
     io.out.bits.rd := s1_rd
     io.out.bits.pc := s1_pc
     io.out.bits.inst := s1_inst
+    io.out.bits.id := s1_id
     io.out.valid := s1_full
 
     s1_valid := io.out.fire
 
+
+
+    when(io.flush) {
+        s0_full := false.B
+        s1_full := false.B
+    }
 }

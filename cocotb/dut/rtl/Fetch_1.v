@@ -37,11 +37,6 @@ module Fetch_1(
   wire  icache_io_read_resp_ready; // @[1_Fetch.scala 151:24]
   wire  icache_io_read_resp_valid; // @[1_Fetch.scala 151:24]
   wire [31:0] icache_io_read_resp_bits_data; // @[1_Fetch.scala 151:24]
-  wire [31:0] icache_io_read_resp_bits_inst_0; // @[1_Fetch.scala 151:24]
-  wire [31:0] icache_io_read_resp_bits_inst_1; // @[1_Fetch.scala 151:24]
-  wire [31:0] icache_io_read_resp_bits_inst_2; // @[1_Fetch.scala 151:24]
-  wire [31:0] icache_io_read_resp_bits_inst_3; // @[1_Fetch.scala 151:24]
-  wire [2:0] icache_io_read_resp_bits_size; // @[1_Fetch.scala 151:24]
   wire  icache_io_tlbus_req_ready; // @[1_Fetch.scala 151:24]
   wire  icache_io_tlbus_req_valid; // @[1_Fetch.scala 151:24]
   wire [31:0] icache_io_tlbus_req_bits_address; // @[1_Fetch.scala 151:24]
@@ -84,11 +79,6 @@ module Fetch_1(
     .io_read_resp_ready(icache_io_read_resp_ready),
     .io_read_resp_valid(icache_io_read_resp_valid),
     .io_read_resp_bits_data(icache_io_read_resp_bits_data),
-    .io_read_resp_bits_inst_0(icache_io_read_resp_bits_inst_0),
-    .io_read_resp_bits_inst_1(icache_io_read_resp_bits_inst_1),
-    .io_read_resp_bits_inst_2(icache_io_read_resp_bits_inst_2),
-    .io_read_resp_bits_inst_3(icache_io_read_resp_bits_inst_3),
-    .io_read_resp_bits_size(icache_io_read_resp_bits_size),
     .io_tlbus_req_ready(icache_io_tlbus_req_ready),
     .io_tlbus_req_valid(icache_io_tlbus_req_valid),
     .io_tlbus_req_bits_address(icache_io_tlbus_req_bits_address),

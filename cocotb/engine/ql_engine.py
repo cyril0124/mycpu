@@ -24,12 +24,13 @@ class CPUState:
 
 
 class QlEngine:
-    def __init__(self, bin_file, reset_pc = 0x0, verbose = False):
+    def __init__(self, bin_file, image_name, reset_pc = 0x0, verbose = False):
         self.load_image(bin_file)
         self._ql = Qiling(code = self.binary_data,  archtype='RISCV', ostype="blob", profile=f"{current_path}/profile/ql-config.ql", verbose = QL_VERBOSE.DEFAULT)
         self.cpu_state = CPUState(reset_pc)
         self.inst_count = 0
         self.image = bin_file
+        self.image_name = image_name
         self._verbose = verbose
         self.reg_init()
     
@@ -62,10 +63,12 @@ class QlEngine:
             self.cpu_state.pc = self._ql.arch.regs.arch_pc
             self.inst_count = self.inst_count + 1
             self.read_regs_all()
-            # if self.cpu_state.pc == 0x27a0 or self.cpu_state.pc == 0x2930:
-            #     raise
-            if self.cpu_state.pc == 0x265c:
-                raise
+            if self.image_name in ["qsort", "rsort"]:
+                if self.cpu_state.pc == 0x27a0 or self.cpu_state.pc == 0x2930:
+                    raise
+            if self.image_name == "median":
+                if self.cpu_state.pc == 0x265c:
+                    raise
             return 0
         except:
             print(f"TERMINATE!!! ==> inst_count: {self.inst_count}")

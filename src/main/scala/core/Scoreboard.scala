@@ -58,7 +58,7 @@ class ScoreboardIO(nrFu: Int)(implicit val p: Parameters) extends MyBundle {
     val readOpr = Vec(nrFu, Flipped(Decoupled()))
     val execute = Vec(nrFu, Input(Bool()))
     val writeback = Vec(nrFu, Flipped(Decoupled()))
-    // val wbReady = Vec(nrFu, Output(Bool()))
+    val flush = Input(Bool())
 }
 class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
     val io = IO(new ScoreboardIO(nrFu))
@@ -83,8 +83,6 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
 
 
     for(i <- 0 until nrFu) {
-        // rawRs1(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === fuStatus(i).rs1 && f.busy else false.B}).orR
-        // rawRs2(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === fuStatus(i).rs2 && f.busy else false.B}).orR
         rawRs1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs1 && f.busy && f.rd =/= 0.U }).orR
         rawRs2(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) =>  f.rd === fuStatus(i).rs2 && f.busy && f.rd =/= 0.U }).orR
         fuStatus(i).rs1_ready := Mux(rawRs1(i), false.B, true.B)
@@ -104,8 +102,6 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
             fuStatus(i).gen_rs1 := Mux1H(matchRs1OH, FUs)
             fuStatus(i).gen_rs2 := Mux1H(matchRs2OH, FUs)
 
-            // rawRs1_1(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === io.issue.bits.rs1 && f.busy else false.B}).orR
-            // rawRs2_1(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => if( j != i) f.rd === io.issue.bits.rs2 && f.busy else false.B}).orR
             rawRs1_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs1 && f.busy}).orR
             rawRs2_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs2 && f.busy}).orR
             fuStatus(i).rs1_ready := Mux(rawRs1_1(i), false.B, true.B)
@@ -139,25 +135,19 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
     val warRd = Wire(Vec(nrFu, Bool()))
 
     for(i <- 0 until nrFu) {
-        // warRd(i) := Cat(fuStatus.zipWithIndex.map{ case (f, j) => 
-        //     if(j != i) ((f.rs1 === fuStatus(i).rd && f.rs1_ready) || (f.rs2 === fuStatus(i).rd && f.rs2_ready)) && f.busy
-        //     else false.B
-        // }).orR && fuStatus(i).busy
-
         warRd(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => 
             ((f.rs1 === fuStatus(i).rd && f.rs1_ready) || (f.rs2 === fuStatus(i).rd && f.rs2_ready)) && f.busy && f.rd =/= 0.U 
         }).orR && fuStatus(i).busy
 
         io.writeback(i).ready := io.writeback(i).valid && !warRd(i)
 
-        when(io.writeback(i).fire) {
+        when(io.writeback(i).fire && !(io.issue.bits.fuId === FUs(i) && io.issue.fire)) {
             fuStatus(i).busy := false.B
         }
+    }
 
-        // io.wbReady(i) := !warRd(i)
-        // when(io.wbReady(i)) {
-        //     fuStatus(i).busy := false.B
-        // }
+    when(io.flush) {
+        fuStatus.foreach(f => f.busy := false.B )
     }
 }
 

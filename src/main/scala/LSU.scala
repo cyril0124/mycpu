@@ -262,8 +262,9 @@ class LSU_1()(implicit val p: Parameters) extends MyModule {
     io.cache.write.req.bits.mask := s0_storeMask
 
     // s0_valid := !s0_ready && ( (io.cache.read.req.fire && load) || (io.cache.write.req.fire && wen) )
-    s0_valid := (Hold(true.B, io.cache.read.req.fire, s0_fire) && load) || (Hold(true.B, io.cache.write.req.fire, s0_fire) && wen)
-
+    // s0_valid := (Hold(true.B, io.cache.read.req.fire, s0_fire) && load) || (Hold(true.B, io.cache.write.req.fire, s0_fire) && wen)
+    s0_valid := io.cache.read.req.fire || io.cache.write.req.fire || s0_reqSend
+    
     // --------------------------------------------------------------------------------
     // stage 1
     // --------------------------------------------------------------------------------

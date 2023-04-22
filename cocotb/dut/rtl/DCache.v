@@ -650,7 +650,7 @@ module DCache(
     .io_write_req_bits_way(dir_io_write_req_bits_way),
     .io_write_req_bits_meta(dir_io_write_req_bits_meta)
   );
-  Arbiter mshrReqArb ( // @[DCache.scala 105:28]
+  Arbiter_1 mshrReqArb ( // @[DCache.scala 105:28]
     .io_in_0_ready(mshrReqArb_io_in_0_ready),
     .io_in_0_valid(mshrReqArb_io_in_0_valid),
     .io_in_0_bits_addr(mshrReqArb_io_in_0_bits_addr),
@@ -690,7 +690,7 @@ module DCache(
     .io_out_bits_storeData(mshrReqArb_io_out_bits_storeData),
     .io_out_bits_storeMask(mshrReqArb_io_out_bits_storeMask)
   );
-  Arbiter_1 tlbusReqArb ( // @[DCache.scala 110:29]
+  Arbiter_2 tlbusReqArb ( // @[DCache.scala 110:29]
     .io_in_0_ready(tlbusReqArb_io_in_0_ready),
     .io_in_0_valid(tlbusReqArb_io_in_0_valid),
     .io_in_0_bits_address(tlbusReqArb_io_in_0_bits_address),
@@ -704,7 +704,7 @@ module DCache(
     .io_out_bits_address(tlbusReqArb_io_out_bits_address),
     .io_out_bits_data(tlbusReqArb_io_out_bits_data)
   );
-  Arbiter_2 loadRespArb ( // @[DCache.scala 122:29]
+  Arbiter_3 loadRespArb ( // @[DCache.scala 122:29]
     .io_in_0_valid(loadRespArb_io_in_0_valid),
     .io_in_0_bits_data(loadRespArb_io_in_0_bits_data),
     .io_in_1_ready(loadRespArb_io_in_1_ready),
@@ -713,13 +713,13 @@ module DCache(
     .io_out_valid(loadRespArb_io_out_valid),
     .io_out_bits_data(loadRespArb_io_out_bits_data)
   );
-  Arbiter_3 storeRespArb ( // @[DCache.scala 127:30]
+  Arbiter_4 storeRespArb ( // @[DCache.scala 127:30]
     .io_in_0_valid(storeRespArb_io_in_0_valid),
     .io_in_1_ready(storeRespArb_io_in_1_ready),
     .io_in_1_valid(storeRespArb_io_in_1_valid),
     .io_out_valid(storeRespArb_io_out_valid)
   );
-  Arbiter_4 dbRdReqArb ( // @[DCache.scala 133:28]
+  Arbiter_5 dbRdReqArb ( // @[DCache.scala 133:28]
     .io_in_0_valid(dbRdReqArb_io_in_0_valid),
     .io_in_0_bits_set(dbRdReqArb_io_in_0_bits_set),
     .io_in_1_ready(dbRdReqArb_io_in_1_ready),
@@ -728,7 +728,7 @@ module DCache(
     .io_out_valid(dbRdReqArb_io_out_valid),
     .io_out_bits_set(dbRdReqArb_io_out_bits_set)
   );
-  Arbiter_5 dirRdReqArb ( // @[DCache.scala 138:29]
+  Arbiter_6 dirRdReqArb ( // @[DCache.scala 138:29]
     .io_in_0_valid(dirRdReqArb_io_in_0_valid),
     .io_in_0_bits_addr(dirRdReqArb_io_in_0_bits_addr),
     .io_in_1_ready(dirRdReqArb_io_in_1_ready),
@@ -737,7 +737,7 @@ module DCache(
     .io_out_valid(dirRdReqArb_io_out_valid),
     .io_out_bits_addr(dirRdReqArb_io_out_bits_addr)
   );
-  Arbiter_6 dataBankWrArb ( // @[DCache.scala 144:31]
+  Arbiter_7 dataBankWrArb ( // @[DCache.scala 144:31]
     .io_in_0_valid(dataBankWrArb_io_in_0_valid),
     .io_in_0_bits_set(dataBankWrArb_io_in_0_bits_set),
     .io_in_0_bits_data_0(dataBankWrArb_io_in_0_bits_data_0),
@@ -772,7 +772,7 @@ module DCache(
     .io_out_bits_blockMask(dataBankWrArb_io_out_bits_blockMask),
     .io_out_bits_way(dataBankWrArb_io_out_bits_way)
   );
-  Arbiter_7 dirWrArb ( // @[DCache.scala 150:26]
+  Arbiter_8 dirWrArb ( // @[DCache.scala 150:26]
     .io_in_0_valid(dirWrArb_io_in_0_valid),
     .io_in_0_bits_addr(dirWrArb_io_in_0_bits_addr),
     .io_in_0_bits_way(dirWrArb_io_in_0_bits_way),

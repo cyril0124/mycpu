@@ -14,6 +14,7 @@ import dataclass.data
 import chisel3.util.random.LFSR
 import scala.tools.cmd.Meta
 import chisel3.internal.firrtl.Ref
+import os.read
 
 
 class ICacheReadReq()(implicit val p: Parameters) extends MyBundle{
@@ -22,6 +23,7 @@ class ICacheReadReq()(implicit val p: Parameters) extends MyBundle{
 
 class ICacheReadResp()(implicit val p: Parameters) extends MyBundle{
     val data = UInt(ilen.W)
+    val addr = UInt(xlen.W)
     val inst = Vec(icacheRdWays, UInt(ilen.W))
     val size = UInt((log2Ceil(icacheRdWays) + 1).W)
 }
@@ -34,6 +36,7 @@ class ICacheReadBus()(implicit val p: Parameters) extends MyBundle{
 class ICacheIO()(implicit val p: Parameters) extends MyBundle{
     val read = new ICacheReadBus
     val tlbus = new TLMasterBusUL
+    val flush = Input(Bool())
 }
 
 
@@ -90,6 +93,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
 
     // s0_valid := RegNext(s0_latch) || s0_full //&& db.io.read.fire && dir.io.read.req.fire // TODO: using single port SRAM
     s0_valid := s0_full
+
     // --------------------------------------------------------------------------------
     // loadQueue
     // --------------------------------------------------------------------------------
@@ -133,10 +137,28 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     refillPipe.io.req.bits.addr := s1_info.req.addr
     refillPipe.io.req.bits.chosenWay := s1_info.dirInfo.chosenWay
 
-    s1_valid := s1_full && ( s1_info.dirInfo.hit && io.read.resp.fire || 
+    val rdThreshole = dcacheBlockSize.U - icacheRdWays.U
+    val s1_off = s1_info.req.addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits)
+    val s1_respHitSize = Mux(s1_off >= rdThreshole, dcacheBlockSize.U - s1_off, icacheRdWays.U)
+    val s1_respHitInst = (s1_rdBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst) 
+    val s1_respBypassInst = (s1_bypassBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
+    val s1_resp = WireInit(0.U.asTypeOf(io.read.resp))
+    s1_resp.valid := ( s1_info.dirInfo.hit || !s1_info.dirInfo.hit && s1_bypass ) && s1_full && s2_ready
+    s1_resp.bits.addr := s1_info.req.addr
+    s1_resp.bits.size := s1_respHitSize
+    s1_resp.bits.data := Mux(s1_bypass, s1_bypassData, s1_rdHitData)
+    s1_resp.bits.inst.zipWithIndex.foreach{ case(inst, i) =>
+        inst := Mux(s1_bypass, s1_respBypassInst(i), s1_respHitInst(i))
+    }
+
+    s1_valid := s1_full && ( s1_info.dirInfo.hit && s1_resp.fire || 
                         !s1_info.dirInfo.hit && refillPipe.io.req.fire && !s1_bypass ||
-                        !s1_info.dirInfo.hit && s1_bypass && io.read.resp.fire
+                        !s1_info.dirInfo.hit && s1_bypass && s1_resp.fire
                     )
+    // s1_valid := s1_full && ( s1_info.dirInfo.hit && io.read.resp.fire || 
+    //                     !s1_info.dirInfo.hit && refillPipe.io.req.fire && !s1_bypass ||
+    //                     !s1_info.dirInfo.hit && s1_bypass && io.read.resp.fire
+    //                 )
 
     // --------------------------------------------------------------------------------
     // stage 2
@@ -159,42 +181,72 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     dontTouch(refillBuffer.io)
 
     val s2_refillData = refillPipe.io.resp.bits.data
+    val s2_refillValid = RegInit(false.B)
+    when(s2_refillValid && s2_latch || s2_fire ) { s2_refillValid := false.B }
+    .elsewhen(refillPipe.io.resp.fire) { s2_refillValid := true.B }
 
-    s2_valid := s2_full && (s2_dirInfo.hit || !s2_dirInfo.hit && io.read.resp.fire || s2_bypass)
-
-
-    val respHit = s1_info.dirInfo.hit && s1_full
-    val respMiss = !s2_dirInfo.hit && s2_full && refillPipe.io.resp.fire
-    val respBypass = s1_bypass && !s1_info.dirInfo.hit && s1_full
-    io.read.resp.valid :=  respHit || respMiss || respBypass
-    io.read.resp.bits.data := Mux(s1_info.dirInfo.hit,
-                                    s1_rdHitData,
-                                    Mux(s1_bypass, 
-                                        s1_bypassData,  // bypass from refill buffer
-                                        s2_refillData
-                                    )
-                                )
-
-    val s1_off = s1_info.req.addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits)
     val s2_off = s2_addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits) // block offset
-    dontTouch(s2_off)
-    val rdThreshole = dcacheBlockSize.U - icacheRdWays.U
-    val respHitSize = Mux(s1_off >= rdThreshole, dcacheBlockSize.U - s1_off, icacheRdWays.U)
-    val respMissSize = Mux(s2_off >= rdThreshole, dcacheBlockSize.U - s2_off, icacheRdWays.U)
-    io.read.resp.bits.size :=  Mux(s1_info.dirInfo.hit || s1_bypass, respHitSize, respMissSize)  
-    val respHitInst = (s1_rdBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst) 
-    val respBypassInst = (s1_bypassBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
-    val respRefillInst = (refillPipe.io.resp.bits.blockData.asUInt >> (s2_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
-    for( i <- 0 until icacheRdWays) {
-        io.read.resp.bits.inst(i) := Mux(s1_info.dirInfo.hit, 
-                                            respHitInst(i), 
-                                            Mux(s1_bypass, 
-                                                respBypassInst(i), 
-                                                respRefillInst(i)
-                                            )
-                                        ) 
+    val s2_respMissSize = Mux(s2_off >= rdThreshole, dcacheBlockSize.U - s2_off, icacheRdWays.U)
+    val s2_respRefillInst = (refillPipe.io.resp.bits.blockData.asUInt >> (s2_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
+    val s2_resp = WireInit(0.U.asTypeOf(io.read.resp))
+    s2_resp.valid := !s2_dirInfo.hit && s2_full && (refillPipe.io.resp.fire || s2_refillValid)
+    s2_resp.bits.addr := s2_addr
+    s2_resp.bits.size := s2_respMissSize
+    s2_resp.bits.data := s2_refillData
+    s2_resp.bits.inst.zipWithIndex.foreach{ case(inst, i) =>
+        inst := s2_respRefillInst(i)
     }
-    dontTouch(io.read.resp.bits)
+    // refillPipe.io.resp.ready := s2_resp.ready
+
+    s2_valid := s2_full && (s2_dirInfo.hit || s2_bypass || !s2_dirInfo.hit && s2_resp.fire )
+    // s2_valid := s2_full && (s2_dirInfo.hit || !s2_dirInfo.hit && refillPipe.io.resp.fire || s2_bypass)
+
+
+    when(io.flush) {
+        s1_full := false.B
+        s2_full := false.B
+    }
+
+
+    val readRespArb = Module(new Arbiter(chiselTypeOf(io.read.resp.bits), 2))
+    readRespArb.io.in(0) <> s2_resp
+    readRespArb.io.in(1) <> s1_resp
+    io.read.resp <> readRespArb.io.out
+
+
+
+    // val respHit = s1_info.dirInfo.hit && s1_full
+    // val respMiss = !s2_dirInfo.hit && s2_full && refillPipe.io.resp.fire
+    // val respBypass = s1_bypass && !s1_info.dirInfo.hit && s1_full
+    // io.read.resp.valid :=  respHit || respMiss || respBypass
+    // io.read.resp.bits.data := Mux(s1_info.dirInfo.hit,
+    //                                 s1_rdHitData,
+    //                                 Mux(s1_bypass, 
+    //                                     s1_bypassData,  // bypass from refill buffer
+    //                                     s2_refillData
+    //                                 )
+    //                             )
+    // io.read.resp.bits.addr := Mux(s1_info.dirInfo.hit || s1_bypass, s1_info.req.addr, s2_addr)
+
+    // // val s1_off = s1_info.req.addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits)
+    // // val s2_off = s2_addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits) // block offset
+    // // val rdThreshole = dcacheBlockSize.U - icacheRdWays.U
+    // val respHitSize = Mux(s1_off >= rdThreshole, dcacheBlockSize.U - s1_off, icacheRdWays.U)
+    // val respMissSize = Mux(s2_off >= rdThreshole, dcacheBlockSize.U - s2_off, icacheRdWays.U)
+    // io.read.resp.bits.size :=  Mux(s1_info.dirInfo.hit || s1_bypass, respHitSize, respMissSize)  
+    // val respHitInst = (s1_rdBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst) 
+    // val respBypassInst = (s1_bypassBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
+    // val respRefillInst = (refillPipe.io.resp.bits.blockData.asUInt >> (s2_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)
+    // for( i <- 0 until icacheRdWays) {
+    //     io.read.resp.bits.inst(i) := Mux(s1_info.dirInfo.hit, 
+    //                                         respHitInst(i), 
+    //                                         Mux(s1_bypass, 
+    //                                             respBypassInst(i), 
+    //                                             respRefillInst(i)
+    //                                         )
+    //                                     ) 
+    // }
+    // dontTouch(io.read.resp.bits)
     
     refillPipe.io.resp.ready := io.read.resp.ready
 

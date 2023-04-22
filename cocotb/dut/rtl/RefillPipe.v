@@ -8,14 +8,6 @@ module RefillPipe(
   input          io_resp_ready,
   output         io_resp_valid,
   output [31:0]  io_resp_bits_data,
-  output [31:0]  io_resp_bits_blockData_0,
-  output [31:0]  io_resp_bits_blockData_1,
-  output [31:0]  io_resp_bits_blockData_2,
-  output [31:0]  io_resp_bits_blockData_3,
-  output [31:0]  io_resp_bits_blockData_4,
-  output [31:0]  io_resp_bits_blockData_5,
-  output [31:0]  io_resp_bits_blockData_6,
-  output [31:0]  io_resp_bits_blockData_7,
   input          io_tlbus_req_ready,
   output         io_tlbus_req_valid,
   output [31:0]  io_tlbus_req_bits_address,
@@ -100,14 +92,6 @@ module RefillPipe(
   assign io_req_ready = state == 2'h0; // @[RefillPipe.scala 45:27]
   assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe.scala 140:38]
   assign io_resp_bits_data = _io_resp_bits_data_T_30 | _io_resp_bits_data_T_24; // @[Mux.scala 27:73]
-  assign io_resp_bits_blockData_0 = _io_resp_bits_data_T[31:0]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_1 = _io_resp_bits_data_T[63:32]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_2 = _io_resp_bits_data_T[95:64]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_3 = _io_resp_bits_data_T[127:96]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_4 = _io_resp_bits_data_T[159:128]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_5 = _io_resp_bits_data_T[191:160]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_6 = _io_resp_bits_data_T[223:192]; // @[RefillPipe.scala 142:55]
-  assign io_resp_bits_blockData_7 = _io_resp_bits_data_T[255:224]; // @[RefillPipe.scala 142:55]
   assign io_tlbus_req_valid = _reqReg_T | reqValidReg; // @[RefillPipe.scala 50:23]
   assign io_tlbus_req_bits_address = {_GEN_0[31:5],5'h0}; // @[Cat.scala 33:92]
   assign io_tlbus_resp_ready = 1'h1; // @[RefillPipe.scala 62:51]

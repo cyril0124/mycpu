@@ -107,7 +107,7 @@ def load_image(elf_file='', mwidth = 16):
 
 image = 'median'
 dut_cpu_state: CPUState = CPUState(0)
-ql = QlEngine(f"{current_path}/tests/rv32i/build/{image}.bin", verbose=False)
+ql = QlEngine(f"{current_path}/tests/rv32i/build/{image}.bin", image, verbose=False)
 
 # get chisel signal
 def get_signal(dut, str):
@@ -130,7 +130,7 @@ async def cpu_running(dut):
     dut_pc = dut.io_out_state_instState_pc
 
     thread = threading.Thread(target=test, args=(ql.cpu_state,), daemon=True)
-    thread.start()
+    # thread.start()
     cycles = 0
     try:
         for _ in range(10000*200):
@@ -151,7 +151,7 @@ async def cpu_running(dut):
         ipc: float = ql.inst_count / cycles
         cpi: float = 1 / ipc
         print(f"inst num: {ql.inst_count} cycles: {cycles} ipc: {ipc:.2f} cpi: {cpi:.2f}")
-        thread.join()
+        # thread.join()
 
 
 @cocotb.test()
