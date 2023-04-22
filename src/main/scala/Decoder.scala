@@ -150,11 +150,11 @@ object XDecode_1 {
 //                      |          |        |          |            |        |        |        |        |       |
                    List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_NOP,   OPR_ZERO,  OPR_ZERO, IMM_X,  IMM_SE,  CSR_NOP, EXC_ILLEG)
     val RV32I: Array[(BitPat, List[UInt])] = Array(
-        LB      -> List(BR_NOP,  WB_LSU,  LSU_LB,   ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
-        LH      -> List(BR_NOP,  WB_LSU,  LSU_LH,   ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
-        LW      -> List(BR_NOP,  WB_LSU,  LSU_LW,   ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
-        LBU     -> List(BR_NOP,  WB_LSU,  LSU_LBU,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
-        LHU     -> List(BR_NOP,  WB_LSU,  LSU_LHU,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
+        LB      -> List(BR_NOP,  WB_LSU,  LSU_LB,   ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
+        LH      -> List(BR_NOP,  WB_LSU,  LSU_LH,   ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
+        LW      -> List(BR_NOP,  WB_LSU,  LSU_LW,   ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
+        LBU     -> List(BR_NOP,  WB_LSU,  LSU_LBU,  ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
+        LHU     -> List(BR_NOP,  WB_LSU,  LSU_LHU,  ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_I,  IMM_SE,
 
         ADDI    -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_ADD,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
         SLLI    -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_SLL,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_ZE,  CSR_NOP, EXC_NONE),
@@ -166,11 +166,11 @@ object XDecode_1 {
         ORI     -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_OR,    OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
         ANDI    -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_AND,   OPR_REG1,  OPR_IMM,  IMM_I,  IMM_SE,  CSR_NOP, EXC_NONE),
         
-        AUIPC   -> List(BR_AUI,  WB_ALU,  LSU_NOP,  ALU_NOP,   OPR_PC,    OPR_IMM,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE),
+        AUIPC   -> List(BR_NOP,  WB_ALU,  LSU_NOP,  ALU_ADD,   OPR_PC,    OPR_IMM,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE),
 
-        SB      -> List(BR_NOP,  WB_NOP,  LSU_SB,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_S,  IMM_SE,
-        SH      -> List(BR_NOP,  WB_NOP,  LSU_SH,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE),
-        SW      -> List(BR_NOP,  WB_NOP,  LSU_SW,  ALU_NOP,   OPR_ZERO,  OPR_ZERO,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE),
+        SB      -> List(BR_NOP,  WB_NOP,  LSU_SB,  ALU_NOP,   OPR_REG1,  OPR_REG2,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_IMM, IMM_S,  IMM_SE,
+        SH      -> List(BR_NOP,  WB_NOP,  LSU_SH,  ALU_NOP,   OPR_REG1,  OPR_REG2,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE),
+        SW      -> List(BR_NOP,  WB_NOP,  LSU_SW,  ALU_NOP,   OPR_REG1,  OPR_REG2,  IMM_S,  IMM_SE,  CSR_NOP, EXC_NONE),
 
         ADD     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_ADD,   OPR_REG1,  OPR_REG2,  IMM_X,  IMM_ZE,  CSR_NOP, EXC_NONE),
         SUB     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_SUB,   OPR_REG1,  OPR_REG2,  IMM_X,  IMM_ZE,  CSR_NOP, EXC_NONE),
@@ -183,7 +183,7 @@ object XDecode_1 {
         OR      -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_OR,    OPR_REG1,  OPR_REG2,  IMM_X,  IMM_ZE,  CSR_NOP, EXC_NONE),
         AND     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_AND,   OPR_REG1,  OPR_REG2,  IMM_X,  IMM_ZE,  CSR_NOP, EXC_NONE),
 
-        LUI     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_NOP,  OPR_ZERO,  OPR_ZERO,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE), // OPR_ZERO,  OPR_IMM,  IMM_U,  IMM_ZE,
+        LUI     -> List(BR_NOP,  WB_ALU,  LSU_NOP, ALU_ADD,  OPR_ZERO,  OPR_IMM,  IMM_U,  IMM_ZE,  CSR_NOP, EXC_NONE), // OPR_ZERO,  OPR_IMM,  IMM_U,  IMM_ZE,
 
         BEQ     -> List(BR_EQ,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE), // OPR_REG1,  OPR_REG2, 
         BNE     -> List(BR_NE,   WB_ALU,  LSU_NOP, ALU_NOP,  OPR_REG1,  OPR_REG2,  IMM_B,  IMM_SE,  CSR_NOP, EXC_NONE),
@@ -209,12 +209,12 @@ object XDecode_1 {
     )
 
     val Zicsr: Array[(BitPat, List[UInt])] = Array(
-        CSRRW   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_ZE,  CSR_RW, EXC_NONE),
-        CSRRS   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_ZE,  CSR_RS, EXC_NONE),
-        CSRRC   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_REG1,  OPR_ZERO,  IMM_I,  IMM_ZE,  CSR_RC, EXC_NONE),
-        CSRRWI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RW, EXC_NONE),
-        CSRRSI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RS, EXC_NONE),
-        CSRRCI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_ADD,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RC, EXC_NONE),
+        CSRRW   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_X,  IMM_ZE,  CSR_RW, EXC_NONE),
+        CSRRS   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_X,  IMM_ZE,  CSR_RS, EXC_NONE),
+        CSRRC   -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_REG1,  OPR_ZERO,  IMM_X,  IMM_ZE,  CSR_RC, EXC_NONE),
+        CSRRWI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RW, EXC_NONE),
+        CSRRSI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RS, EXC_NONE),
+        CSRRCI  -> List(BR_NOP,  WB_CSR,  LSU_NOP,  ALU_NOP,   OPR_IMMR,  OPR_ZERO,  IMM_CSR,IMM_ZE,  CSR_RC, EXC_NONE),
     )
 
     val table: Array[(BitPat, List[UInt])] = RV32I ++ Zicsr

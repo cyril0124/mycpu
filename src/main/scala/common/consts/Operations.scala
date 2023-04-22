@@ -28,6 +28,7 @@ object AluOp {
     val ALU_BYPB = 14.U(aluOpWidth.W) // bypass input port B
 
     val ALU_GEQU = 15.U(aluOpWidth.W)
+    val ALU_LUI = 16.U(aluOpWidth.W)
 
     val ALU_XXX = 17.U(aluOpWidth.W) // dont care what aluOP is.
     val ALU_NOP = 17.U(aluOpWidth.W)

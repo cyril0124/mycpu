@@ -139,6 +139,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
 
     val rdThreshole = dcacheBlockSize.U - icacheRdWays.U
     val s1_off = s1_info.req.addr(dcacheByteOffsetBits+dcacheBlockBits-1, dcacheByteOffsetBits)
+    dontTouch(s1_off)
     val s1_respHitSize = Mux(s1_off >= rdThreshole, dcacheBlockSize.U - s1_off, icacheRdWays.U)
     val s1_respHitInst = (s1_rdBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst) 
     val s1_respBypassInst = (s1_bypassBlockData.asUInt >> (s1_off << log2Ceil(ilen)) )(icacheRdWays*32-1, 0).asTypeOf(io.read.resp.bits.inst)

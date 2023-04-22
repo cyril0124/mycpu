@@ -20,8 +20,8 @@ class Core_1Test extends AnyFlatSpec with ChiselScalatestTester {
             simulation = false,
             busBeatSize = 16,
             logEnable = true,
-            rfRdPort = 6, // for three FUs we need total 6 rdport
-            rfWrPort = 3,
+            rfRdPort = 8, // for three FUs we need total 6 rdport
+            rfWrPort = 4,
         )
     })
 

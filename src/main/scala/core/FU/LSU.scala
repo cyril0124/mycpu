@@ -23,7 +23,7 @@ class LSUStageIO()(implicit val p: Parameters) extends MyBundle {
         val inst = UInt(ilen.W)
         val pc = UInt(xlen.W)
 
-        val id = UInt(3.W)
+        val id = UInt(8.W)
     }))
     val out = Decoupled(new Bundle{
         val data = UInt(xlen.W)
@@ -33,7 +33,7 @@ class LSUStageIO()(implicit val p: Parameters) extends MyBundle {
         val inst = UInt(ilen.W)
         val pc = UInt(xlen.W) 
 
-        val id = UInt(3.W)
+        val id = UInt(8.W)
     })
     val rfRd = Vec(2, Flipped(new ReadPort(UInt(xlen.W))))
     val rfRdReady = Input(Bool())
@@ -91,7 +91,7 @@ class LSUStage()(implicit val p: Parameters) extends MyModule {
 
     val s0_addr = s0_imm + s0_rsValVec(0)
 
-    s0_valid := io.rfRdReady && s0_full
+    s0_valid := s0_full && ( (s0_info.lsuOp =/= LSU_FENC && io.rfRdReady) || (s0_info.lsuOp === LSU_FENC && io.out.fire))
 
     // --------------------------------------------------------------------------------
     // Stage 1
@@ -112,7 +112,7 @@ class LSUStage()(implicit val p: Parameters) extends MyModule {
     val s1_id = RegEnable(s0_info.id, s1_latch)
     s1_ready := !s1_full || s1_fire
 
-    when(s1_latch && !(s0_info.lsuOp === LSU_NOP || s0_info.lsuOp === LSU_FENC) ) { s1_full := true.B }
+    when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_fire && s1_full) { s1_full := false.B }
 
     val ((s1_en: Bool) :: (s1_wen: Bool) :: (s1_load: Bool) :: s1_width :: (s1_signed: Bool) :: Nil) = 
@@ -138,10 +138,10 @@ class LSUStage()(implicit val p: Parameters) extends MyModule {
     .elsewhen(io.cache.read.req.fire || io.cache.write.req.fire) { s1_reqSend := true.B }
     
 
-    io.cache.read.req.valid := s1_load && s1_full && !s1_reqSend 
+    io.cache.read.req.valid := s1_load && s1_full && !s1_reqSend && !io.flush
     io.cache.read.req.bits.addr := Cat(s1_addr(xlen-1, blockOffsetBits), Fill(blockOffsetBits, 0.U))
 
-    io.cache.write.req.valid := s1_wen && s1_full && !s1_reqSend
+    io.cache.write.req.valid := s1_wen && s1_full && !s1_reqSend && !io.flush
     io.cache.write.req.bits.addr := Cat(s1_addr(xlen-1, blockOffsetBits), Fill(blockOffsetBits, 0.U))
     io.cache.write.req.bits.data := s1_wdata << (s1_offset << 3)
     val s1_storeMask = MuxLookup(s1_width, "b1111".U, Seq(
@@ -157,7 +157,7 @@ class LSUStage()(implicit val p: Parameters) extends MyModule {
     ))
     io.cache.write.req.bits.mask := s1_storeMask
     
-    s1_valid := io.cache.read.req.fire || io.cache.write.req.fire || s1_reqSend //&& s1_full
+    s1_valid := s1_full && (io.cache.read.req.fire || io.cache.write.req.fire || s1_reqSend) 
     
     // --------------------------------------------------------------------------------
     // Stage 2
@@ -203,13 +203,14 @@ class LSUStage()(implicit val p: Parameters) extends MyModule {
 
     s2_valid := s2_full && (s2_loadRespValid || s2_storeRespValid)
 
-    io.out.valid := s2_valid && s2_en
+    val s0_fence = s0_full && s0_info.lsuOp === LSU_FENC
+    io.out.valid := s2_valid && s2_en || s0_fence
     io.out.bits.data := s2_loadData
-    io.out.bits.pc := s2_pc
-    io.out.bits.inst := s2_inst
+    io.out.bits.pc := Mux(s0_fence, s0_info.pc, s2_pc)
+    io.out.bits.inst := Mux(s0_fence, s0_info.inst, s2_inst)
     io.out.bits.rd := s2_rd
-    io.out.bits.wrEn := s2_load && s2_en
-    io.out.bits.id := s2_id
+    io.out.bits.wrEn := Mux(s0_fence, false.B, s2_load && s2_en)
+    io.out.bits.id := Mux(s0_fence, s0_info.id, s2_id)
 
 
     when(io.flush) {

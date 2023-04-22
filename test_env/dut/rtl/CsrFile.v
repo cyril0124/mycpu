@@ -8,15 +8,6 @@ module CsrFile(
   input  [2:0]  io_write_op,
   input  [11:0] io_write_addr,
   input  [31:0] io_write_data,
-  input         io_write_retired,
-  input         io_except_valid,
-  input         io_except_bits_isMret,
-  input         io_except_bits_isSret,
-  input  [30:0] io_except_bits_excCause,
-  input  [31:0] io_except_bits_excPc,
-  input  [31:0] io_except_bits_excValue,
-  output [1:0]  io_mode,
-  output        io_busy,
   output [31:0] io_mepc,
   output [31:0] io_trapVec,
   output [31:0] csrState_0_mcycle,
@@ -39,8 +30,7 @@ module CsrFile(
   reg [31:0] _RAND_13;
   reg [31:0] _RAND_14;
   reg [31:0] _RAND_15;
-  reg [31:0] _RAND_16;
-  reg [63:0] _RAND_17;
+  reg [63:0] _RAND_16;
 `endif // RANDOMIZE_REG_INIT
   reg  mcause_int; // @[CsrFile.scala 69:28]
   reg [30:0] mcause_code; // @[CsrFile.scala 69:28]
@@ -58,7 +48,6 @@ module CsrFile(
   reg [31:0] mepc_data; // @[CsrFile.scala 74:28]
   reg  satp_mode; // @[CsrFile.scala 75:28]
   reg [21:0] satp_ppn; // @[CsrFile.scala 75:28]
-  reg [31:0] mtval_data; // @[CsrFile.scala 76:28]
   reg [63:0] mcycle_data; // @[CsrFile.scala 77:28]
   wire [31:0] _T = {mcause_int,mcause_code}; // @[CsrFile.scala 88:49]
   wire [10:0] lo = {2'h0,mstatus_spp,mstatus_mpie,1'h0,mstatus_spie,1'h0,mstatus_mie,1'h0,mstatus_sie,1'h0}; // @[CsrFile.scala 89:50]
@@ -97,7 +86,7 @@ module CsrFile(
   wire  _T_67 = 12'h3bf == io_read_addr; // @[Lookup.scala 31:38]
   wire [31:0] _T_88 = _T_27 ? mcycle_data[63:32] : 32'h0; // @[Lookup.scala 34:39]
   wire [31:0] _T_89 = _T_25 ? mcycle_data[31:0] : _T_88; // @[Lookup.scala 34:39]
-  wire [31:0] _T_90 = _T_23 ? mtval_data : _T_89; // @[Lookup.scala 34:39]
+  wire [31:0] _T_90 = _T_23 ? 32'h0 : _T_89; // @[Lookup.scala 34:39]
   wire [31:0] _T_91 = _T_21 ? _T_3 : _T_90; // @[Lookup.scala 34:39]
   wire [31:0] _T_92 = _T_19 ? mepc_data : _T_91; // @[Lookup.scala 34:39]
   wire [31:0] _T_93 = _T_17 ? mideleg_data : _T_92; // @[Lookup.scala 34:39]
@@ -127,7 +116,7 @@ module CsrFile(
   wire  _csrData_T_21 = 12'hb80 == io_write_addr; // @[Lookup.scala 31:38]
   wire [31:0] _csrData_T_82 = _csrData_T_21 ? mcycle_data[63:32] : 32'h0; // @[Lookup.scala 34:39]
   wire [31:0] _csrData_T_83 = _csrData_T_19 ? mcycle_data[31:0] : _csrData_T_82; // @[Lookup.scala 34:39]
-  wire [31:0] _csrData_T_84 = _csrData_T_17 ? mtval_data : _csrData_T_83; // @[Lookup.scala 34:39]
+  wire [31:0] _csrData_T_84 = _csrData_T_17 ? 32'h0 : _csrData_T_83; // @[Lookup.scala 34:39]
   wire [31:0] _csrData_T_85 = _csrData_T_15 ? _T_3 : _csrData_T_84; // @[Lookup.scala 34:39]
   wire [31:0] _csrData_T_86 = _csrData_T_13 ? mepc_data : _csrData_T_85; // @[Lookup.scala 34:39]
   wire [31:0] _csrData_T_87 = _csrData_T_11 ? mideleg_data : _csrData_T_86; // @[Lookup.scala 34:39]
@@ -179,14 +168,10 @@ module CsrFile(
   wire  _GEN_25 = _csrData_T_7 ? satp_mode : _GEN_17; // @[CsrFile.scala 151:31 75:28]
   wire [21:0] _GEN_26 = _csrData_T_7 ? satp_ppn : _GEN_18; // @[CsrFile.scala 151:31 75:28]
   wire [63:0] _GEN_27 = _csrData_T_7 ? _mcycle_data_T_1 : _GEN_19; // @[CsrFile.scala 148:17 151:31]
-  wire [31:0] _T_167 = {1'h0,io_except_bits_excCause}; // @[Cat.scala 33:92]
-  wire [31:0] _mepc_data_T_3 = {io_except_bits_excPc[31:2],2'h0}; // @[Cat.scala 33:92]
   wire [31:0] csrState_mcycle = mcycle_data[31:0]; // @[CsrFile.scala 179:29]
   wire [31:0] csrState_mcycleh = mcycle_data[63:32]; // @[CsrFile.scala 180:30]
   assign io_read_valid = 3'h5 == io_read_op ? _readValid_T : _readValid_T_10; // @[Mux.scala 81:58]
   assign io_read_data = _T_7 ? 32'h0 : _T_97; // @[Lookup.scala 34:39]
-  assign io_mode = 2'h3; // @[CsrFile.scala 171:13]
-  assign io_busy = io_write_op != 3'h0 & io_write_op != 3'h1; // @[CsrFile.scala 140:43]
   assign io_mepc = mepc_data; // @[CsrFile.scala 173:13]
   assign io_trapVec = {mtvec_base,mtvec_mode}; // @[CsrFile.scala 174:25]
   assign csrState_0_mcycle = csrState_mcycle;
@@ -198,8 +183,6 @@ module CsrFile(
       if (_csrData_T_3) begin // @[CsrFile.scala 151:31]
         mcause_int <= writeData[31]; // @[CSR.scala 384:11]
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mcause_int <= _T_167[31]; // @[CSR.scala 384:11]
     end
     if (reset) begin // @[CsrFile.scala 69:28]
       mcause_code <= 31'h0; // @[CsrFile.scala 69:28]
@@ -207,8 +190,6 @@ module CsrFile(
       if (_csrData_T_3) begin // @[CsrFile.scala 151:31]
         mcause_code <= {{27'd0}, writeData[3:0]}; // @[CSR.scala 385:11]
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mcause_code <= {{27'd0}, _T_167[3:0]}; // @[CSR.scala 385:11]
     end
     if (reset) begin // @[CsrFile.scala 70:28]
       mstatus_sum <= 1'h0; // @[CsrFile.scala 70:28]
@@ -227,8 +208,6 @@ module CsrFile(
           mstatus_mpp <= writeData[12:11]; // @[CSR.scala 223:11]
         end
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mstatus_mpp <= 2'h3; // @[CsrFile.scala 168:22]
     end
     if (reset) begin // @[CsrFile.scala 70:28]
       mstatus_spp <= 1'h0; // @[CsrFile.scala 70:28]
@@ -247,8 +226,6 @@ module CsrFile(
           mstatus_mpie <= writeData[7]; // @[CSR.scala 225:11]
         end
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mstatus_mpie <= mstatus_mie; // @[CsrFile.scala 166:22]
     end
     if (reset) begin // @[CsrFile.scala 70:28]
       mstatus_spie <= 1'h0; // @[CsrFile.scala 70:28]
@@ -267,8 +244,6 @@ module CsrFile(
           mstatus_mie <= writeData[3]; // @[CSR.scala 227:11]
         end
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mstatus_mie <= 1'h0; // @[CsrFile.scala 167:22]
     end
     if (reset) begin // @[CsrFile.scala 70:28]
       mstatus_sie <= 1'h0; // @[CsrFile.scala 70:28]
@@ -323,8 +298,6 @@ module CsrFile(
           mepc_data <= _GEN_24;
         end
       end
-    end else if (io_except_valid) begin // @[CsrFile.scala 162:33]
-      mepc_data <= _mepc_data_T_3; // @[CSR.scala 369:11]
     end
     if (reset) begin // @[CsrFile.scala 75:28]
       satp_mode <= 1'h0; // @[CsrFile.scala 75:28]
@@ -342,13 +315,6 @@ module CsrFile(
         if (!(12'h300 == io_write_addr)) begin // @[CsrFile.scala 151:31]
           satp_ppn <= _GEN_26;
         end
-      end
-    end
-    if (reset) begin // @[CsrFile.scala 76:28]
-      mtval_data <= 32'h0; // @[CsrFile.scala 76:28]
-    end else if (!(writeEn)) begin // @[CsrFile.scala 150:19]
-      if (io_except_valid) begin // @[CsrFile.scala 162:33]
-        mtval_data <= io_except_bits_excValue; // @[CSR.scala 17:10]
       end
     end
     if (reset) begin // @[CsrFile.scala 77:28]
@@ -433,10 +399,8 @@ initial begin
   satp_mode = _RAND_14[0:0];
   _RAND_15 = {1{`RANDOM}};
   satp_ppn = _RAND_15[21:0];
-  _RAND_16 = {1{`RANDOM}};
-  mtval_data = _RAND_16[31:0];
-  _RAND_17 = {2{`RANDOM}};
-  mcycle_data = _RAND_17[63:0];
+  _RAND_16 = {2{`RANDOM}};
+  mcycle_data = _RAND_16[63:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

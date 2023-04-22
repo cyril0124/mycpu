@@ -12,12 +12,13 @@ import chisel3.experimental.hierarchy.public
 
 
 object FUType{
-    val FU_WIDTH = log2Ceil(3)
+    val FU_WIDTH = log2Ceil(4)
     val ALU = 0.U(FU_WIDTH.W)
     val BRU = 1.U(FU_WIDTH.W)
     val LSU = 2.U(FU_WIDTH.W)
+    val CSR = 3.U(FU_WIDTH.W)
     val FU_NOP = ALU
-    val FUs = Seq(ALU, BRU, LSU)
+    val FUs = Seq(ALU, BRU, LSU, CSR)
 }
 
 import FUType._
@@ -102,8 +103,8 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
             fuStatus(i).gen_rs1 := Mux1H(matchRs1OH, FUs)
             fuStatus(i).gen_rs2 := Mux1H(matchRs2OH, FUs)
 
-            rawRs1_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs1 && f.busy}).orR
-            rawRs2_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs2 && f.busy}).orR
+            rawRs1_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs1 && f.busy && f.rd =/= 0.U}).orR
+            rawRs2_1(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => f.rd === io.issue.bits.rs2 && f.busy && f.rd =/= 0.U}).orR
             fuStatus(i).rs1_ready := Mux(rawRs1_1(i), false.B, true.B)
             fuStatus(i).rs2_ready := Mux(rawRs2_1(i), false.B, true.B)
         }
@@ -137,7 +138,7 @@ class Scoreboard(nrFu: Int)(implicit val p: Parameters) extends MyModule {
     for(i <- 0 until nrFu) {
         warRd(i) := Cat(fuStatus.zipWithIndex.filter(_._2 != i).map{ case (f, _) => 
             ((f.rs1 === fuStatus(i).rd && f.rs1_ready) || (f.rs2 === fuStatus(i).rd && f.rs2_ready)) && f.busy && f.rd =/= 0.U 
-        }).orR && fuStatus(i).busy
+        }).orR && fuStatus(i).busy && fuStatus(i).rd =/= 0.U
 
         io.writeback(i).ready := io.writeback(i).valid && !warRd(i)
 

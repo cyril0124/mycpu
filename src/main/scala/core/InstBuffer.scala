@@ -37,8 +37,8 @@ class InstBuffer()(implicit val p: Parameters) extends MyModule {
     val entries = Seq.fill(icacheRdWays)(Module(new Queue(new InstBufferEntry, totalEntries, flow = false, hasFlush = true)))
     val pcQueue = Module(new Queue(UInt(xlen.W), icacheRdWays * 2, flow = false, hasFlush = true))
 
-    io.status.back_pressure := entries(0).io.count >= (totalEntries - 2).U
-    io.status.full := entries(0).io.count === (totalEntries - 1).U 
+    io.status.back_pressure := entries(0).io.count >= (totalEntries - 3).U
+    io.status.full := entries(0).io.count === (totalEntries - 2).U 
     io.in.ready := entries.map(e => e.io.enq.ready).reduce(_&&_)
     io.out.valid := entries.map(e => e.io.deq.valid).reduce(_&&_)
 
