@@ -154,3 +154,118 @@ class CSRStage()(implicit val p: Parameters) extends MyModule {
         s1_full := false.B
     }
 }
+
+class CSRStageIO_1()(implicit val p: Parameters) extends MyBundle {
+    val in = Flipped(Decoupled(new Bundle{
+        val csrOp = UInt(CSR_OP_WIDTH.W)
+        val excpType = UInt(EXC_TYPE_WIDTH.W)
+        
+        val rs1Val = UInt(xlen.W)
+        val rs2Val = UInt(xlen.W)
+
+        val inst = UInt(ilen.W)
+        val id = UInt(8.W)
+    }))
+    val out = Decoupled(new Bundle{
+        val data = UInt(xlen.W)
+
+        val excpAddr = UInt(xlen.W)
+        val excpValid = Bool()
+
+        val id = UInt(8.W)
+    })
+    val flush = Input(Bool())
+    val csr = Output(new Bundle{
+        val mode    = Output(UInt(CSR_MODE_WIDTH.W))
+        val busy    = Output(Bool())
+        val mepc    = Output(UInt(xlen.W))
+        val trapVec = Output(UInt(xlen.W))
+    })
+}
+
+class CSRStage_1()(implicit val p: Parameters) extends MyModule {
+    val io = IO(new CSRStageIO_1)
+
+    val csrFile = Module(new CsrFile)
+    csrFile.io <> DontCare
+    io.csr.busy := csrFile.io.busy
+    io.csr.mepc := csrFile.io.mepc
+    io.csr.mode := csrFile.io.mode
+    io.csr.trapVec := csrFile.io.trapVec
+
+    val s0_valid, s0_ready = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool()) 
+    
+    io.in.ready := s0_ready
+    // --------------------------------------------------------------------------------
+    // Stage 0
+    // --------------------------------------------------------------------------------
+    // CSR read & Read regfile
+    val s0_latch = io.in.valid && s0_ready
+    val s0_full = RegInit(false.B)
+    val s0_fire = s0_valid & s1_ready
+    val s0_info = RegEnable(io.in.bits, s0_latch)
+    s0_ready := !s0_full || s0_fire
+
+    when(s0_latch) { s0_full := true.B }
+    .elsewhen(s0_fire && s0_full) { s0_full := false.B }
+
+    val immGen = Module(new ImmGen)
+    val s0_imm = immGen.io.imm
+    immGen.io.immSrc := IMM_CSR
+    immGen.io.immSign := IMM_ZE
+    immGen.io.inst := s0_info.inst
+
+    val s0_csrAddr = InstField(s0_info.inst, "csr_dest")
+    val s0_csrOp = s0_info.csrOp
+    val s0_excpType = s0_info.excpType
+
+    
+    val s0_csrRdData = csrFile.io.read.data
+    csrFile.io.read.addr := s0_csrAddr
+    csrFile.io.read.op := s0_csrOp
+    
+    
+    val s0_csrWrEn = s0_csrOp =/= CSR_NOP && csrFile.io.read.valid
+    dontTouch(s0_csrWrEn)
+
+    s0_valid := s0_full
+
+    // --------------------------------------------------------------------------------
+    // Stage 1
+    // --------------------------------------------------------------------------------
+    // CSR write
+    val s1_latch = s0_valid && s1_ready
+    val s1_full = RegInit(false.B)
+    val s1_fire = s1_valid
+    val s1_csrOp = RegEnable(s0_csrOp, s1_latch)
+    val s1_excpType = RegEnable(s0_excpType, s1_latch)
+    val s1_csrAddr = RegEnable(s0_csrAddr, s1_latch)
+    val s1_csrWrEn = RegEnable(s0_csrWrEn, s1_latch)
+    val s1_csrWrData = RegEnable(s0_info.rs1Val, s1_latch)
+    val s1_csrRdData = RegEnable(s0_csrRdData, s1_latch)
+    val s1_id = RegEnable(s0_info.id, s1_latch)
+    s1_ready := !s1_full || s1_fire
+
+    when(s1_latch) { s1_full := true.B }
+    .elsewhen(s1_fire && s1_full) { s1_full := false.B }
+
+    csrFile.io.write.addr := s1_csrAddr
+    csrFile.io.write.data := s1_csrWrData
+    csrFile.io.write.op := Mux(s1_csrWrEn, s1_csrOp, CSR_R)
+
+    io.out.bits.excpValid := s1_excpType =/= EXC_NONE
+    io.out.bits.excpAddr := MuxLookup(s1_excpType, csrFile.io.trapVec, Seq(
+                            EXC_MRET -> csrFile.io.mepc,
+                        ))
+    io.out.bits.data := s1_csrRdData
+    io.out.bits.id := s1_id
+    io.out.valid := s1_full
+
+    s1_valid := io.out.fire
+    
+    when(io.flush) {
+        s0_full := false.B
+        s1_full := false.B
+    }
+}

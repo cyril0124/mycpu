@@ -176,3 +176,107 @@ class BRUStage()(implicit val p: Parameters) extends MyModule {
         s1_full := false.B
     }
 }
+
+
+class BRUStageIO_1()(implicit val p: Parameters) extends MyBundle {
+    val in = Flipped(Decoupled(new Bundle{
+        val opr1 = UInt(OPR_WIDTH.W)
+        val opr2 = UInt(OPR_WIDTH.W)
+        val bruOp = UInt(BR_WIDTH.W)
+        val immSrc = UInt(IMM_TYP_WIDTH.W)
+        val rs1Val = UInt(xlen.W)
+        val rs2Val = UInt(xlen.W)
+
+        val inst = UInt(ilen.W)
+        val pc = UInt(xlen.W)
+
+        val id = UInt(8.W)
+    }))
+    val out = Decoupled(new Bundle{
+        val brTaken = Bool()
+        val brAddr = UInt(xlen.W)
+
+        val data = UInt(xlen.W)
+        val wrEn = Bool()
+
+        val id = UInt(8.W)
+    })
+    val flush = Input(Bool())
+}
+
+class BRUStage_1()(implicit val p: Parameters) extends MyModule {
+    val io = IO(new BRUStageIO_1)
+
+    val s0_valid, s0_ready = Wire(Bool())
+    val s1_valid, s1_ready = Wire(Bool()) 
+
+    io.in.ready := s0_ready
+    // --------------------------------------------------------------------------------
+    // Stage 0
+    // --------------------------------------------------------------------------------
+    // Read oprand & Generate imm
+    val s0_latch = io.in.valid && s0_ready // TODO: Cancle handshake ?
+    val s0_full = RegInit(false.B)
+    val s0_fire = s0_valid & s1_ready
+    val s0_info = RegEnable(io.in.bits, s0_latch)
+    s0_ready := !s0_full || s0_fire
+
+    when(s0_latch) { s0_full := true.B }
+    .elsewhen(s0_fire && s0_full) { s0_full := false.B }
+
+    val immGen = Module(new ImmGen)
+    val s0_imm = immGen.io.imm
+    immGen.io.immSrc := s0_info.immSrc
+    immGen.io.immSign := IMM_SE
+    immGen.io.inst := s0_info.inst
+
+    val s0_bruInVec = VecInit(Seq.fill(2)(WireInit(0.U(xlen.W))))
+    s0_bruInVec(0) := MuxLookup( s0_info.opr1, 0.U, Seq(
+                        OPR_ZERO -> 0.U, 
+                        OPR_REG1 -> s0_info.rs1Val,
+                    ))
+    s0_bruInVec(1) := MuxLookup( s0_info.opr2, 0.U, Seq(
+                        OPR_ZERO -> 0.U, 
+                        OPR_REG2 -> s0_info.rs2Val,
+                    ))
+    
+    s0_valid := s0_full
+    // --------------------------------------------------------------------------------
+    // Stage 1
+    // --------------------------------------------------------------------------------
+    // Bru operation
+    val s1_latch = s0_valid && s1_ready
+    val s1_full = RegInit(false.B)
+    val s1_fire = s1_valid
+    val s1_bruOp = RegEnable(s0_info.bruOp, s1_latch)
+    val s1_bruInVec = RegEnable(s0_bruInVec, s1_latch)
+    val s1_imm = RegEnable(s0_imm, s1_latch)
+    val s1_pc = RegEnable(s0_info.pc, s1_latch)
+    val s1_inst = RegEnable(s0_info.inst, s1_latch)
+    val s1_id = RegEnable(s0_info.id, s1_latch)
+    s1_ready := !s1_full || s1_fire
+
+    when(s1_latch) { s1_full := true.B }
+    .elsewhen(s1_fire && s1_full) { s1_full := false.B }
+
+    val bru = Module(new BRU)
+    bru.io.in1 := s1_bruInVec(0)
+    bru.io.in2 := s1_bruInVec(1)
+    bru.io.offset := s1_imm
+    bru.io.pc := s1_pc
+    bru.io.opSel := s1_bruOp
+
+    io.out.bits.brTaken := bru.io.brTaken && s1_full
+    io.out.bits.brAddr := bru.io.brAddr
+    io.out.bits.wrEn := ( s1_bruOp === BR_JAL | s1_bruOp === BR_JALR ) && s1_full
+    io.out.bits.data := s1_pc + 4.U // for jalr instruction
+    io.out.bits.id := s1_id
+    io.out.valid := s1_full
+
+    s1_valid := io.out.fire
+    
+    when(io.flush) {
+        s0_full := false.B
+        s1_full := false.B
+    }
+}

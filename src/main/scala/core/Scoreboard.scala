@@ -13,6 +13,7 @@ import chisel3.experimental.hierarchy.public
 
 object FUType{
     val FU_WIDTH = log2Ceil(4)
+    val FU_NUM = 4
     val ALU = 0.U(FU_WIDTH.W)
     val BRU = 1.U(FU_WIDTH.W)
     val LSU = 2.U(FU_WIDTH.W)
