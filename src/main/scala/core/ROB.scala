@@ -16,6 +16,7 @@ object ROBStates{
     val sExec = 1.U(ROB_STATE_WIDTH.W) // execution complete: instruction is already load into Functional Unit
     val sWrite = 2.U(ROB_STATE_WIDTH.W) // write ROB complete
     val sCommit = 3.U(ROB_STATE_WIDTH.W) // commmit complete
+    // val sIdle = 4.U(ROB_STATE_WIDTH.W)
 }
 
 import ROBStates._
@@ -26,13 +27,28 @@ class ROBEntry()(implicit val p: Parameters) extends MyBundle {
     val rd = UInt(log2Ceil(rfSets).W)
     val data = UInt(xlen.W)
 
+    // for BRU only
+    val brAddr = UInt(xlen.W)
+    val brTaken = Bool()
+
+    // for CSR only
+    val excpAddr = UInt(xlen.W)
+    val excpValid = Bool()
+
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
 }
 
+class ROBReadInfo()(implicit val p: Parameters) extends MyBundle {
+    val busy = Bool()
+    val state = UInt(ROB_STATE_WIDTH.W)
+    val rd = UInt(log2Ceil(rfSets).W)
+    val data = UInt(xlen.W)
+}
+
 class RegResult()(implicit val p: Parameters) extends MyBundle {
     val owner = UInt(8.W) // from which ROB Entry, should be fill wieh ROBId
-    val data = UInt(xlen.W)
+    // val data = UInt(xlen.W)
 }
 
 class ROBInput()(implicit val p: Parameters) extends MyBundle {
@@ -48,6 +64,15 @@ class ROBOutput()(implicit val p: Parameters) extends MyBundle {
     val rdWrEn = Bool()
     val rd = UInt(log2Ceil(rfSets).W)
     val data = UInt(xlen.W)
+    val id = UInt(8.W)
+
+    // for BRU only
+    val brAddr = UInt(xlen.W)
+    val brTaken = Bool()
+
+    // for CSR only
+    val excpAddr = UInt(xlen.W)
+    val excpValid = Bool()
 
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
@@ -55,12 +80,27 @@ class ROBOutput()(implicit val p: Parameters) extends MyBundle {
 
 class ROBFuInput(numEntries: Int)(implicit val p: Parameters) extends MyBundle {
     val id = UInt(log2Ceil(numEntries).W)
-    // val rd = UInt(5.W)
     val data = UInt(xlen.W)
+    val rd = UInt(5.W)
+
+    // for BRU only
+    val brAddr = UInt(xlen.W)
+    val brTaken = Bool()
+
+    // for CSR only
+    val excpAddr = UInt(xlen.W)
+    val excpValid = Bool()
 }
 
 class ROBRsInput(numEntries: Int)(implicit val p: Parameters) extends MyBundle {
     val id = UInt(log2Ceil(numEntries).W)
+    val rd = UInt(5.W)
+}
+
+class ROBRsOutput(numEntries: Int)(implicit val p: Parameters) extends MyBundle {
+    val data = UInt(xlen.W)
+    val id = UInt(log2Ceil(numEntries).W)
+    val rd = UInt(5.W)
 }
 
 class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModule {
@@ -68,6 +108,7 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
         val enq = Flipped(Decoupled(new ROBInput)) // from Issue stage
         val deq = Decoupled(Output(new ROBOutput)) // to Commit logic
         val rs = Vec(nrFu, Flipped(Valid(new ROBRsInput(numEntries)))) // from Reservation Station
+        val read = Vec(numEntries, Output(new ROBReadInfo)) // for Reservation Station
         val fu = Vec(nrFu, Flipped(Valid(new ROBFuInput(numEntries)))) // from Functional Unit, valid when Functional Unit commit result
         val id = Output(UInt(log2Ceil(numEntries).W)) // id for Reservation Station
         val regStatus = Output(Vec(rfSets, new RegResult))
@@ -83,21 +124,27 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
     val count = RegInit(0.U(log2Ceil(numEntries+1).W))
     val full = count === numEntries.U
     val empty = count === 0.U
+    
+    (0 until numEntries).foreach{
+        i => dontTouch(entries(i).busy)
+    }
 
     io.regStatus <> regResStat
     io.id := tail + 1.U
-    io.enq.ready := !full
-    io.deq.valid := entries(head).state === sWrite && !empty
+    io.enq.ready := !full && !entries(tail).busy
+    io.deq.valid := entries(head).state === sWrite && entries(head).busy // && !empty
     io.deq.bits.data := entries(head).data
     io.deq.bits.rd := entries(head).rd
     io.deq.bits.rdWrEn := entries(head).rd =/= 0.U
     io.deq.bits.pc := entries(head).pc
     io.deq.bits.inst := entries(head).inst
+    io.deq.bits.brAddr := entries(head).brAddr
+    io.deq.bits.brTaken := entries(head).brTaken
+    io.deq.bits.excpAddr := entries(head).excpAddr
+    io.deq.bits.excpValid := entries(head).excpValid
+    io.deq.bits.id := head + 1.U
 
     val enq = io.enq.bits
-    val invalidRd = enq.fuValid(BRU) && (enq.fuOp =/= BR_JALR || enq.fuOp =/= BR_JAL) || 
-                    enq.fuValid(LSU) && (enq.fuOp === LSU_SW || enq.fuOp === LSU_SH || enq.fuOp === LSU_SB || enq.fuOp === LSU_FENC) ||
-                    enq.rd === 0.U
     when (io.enq.fire) {
         entries(tail).busy := true.B
         entries(tail).state := sIssue
@@ -105,24 +152,33 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
         entries(tail).rd := io.enq.bits.rd
         entries(tail).pc := io.enq.bits.pc
         entries(tail).inst := io.enq.bits.inst
-
-        regResStat(io.enq.bits.rd).owner := Mux(invalidRd, 0.U, tail + 1.U)
+        
+        val rd = io.enq.bits.rd
+        regResStat(rd).owner := Mux(rd === 0.U, 0.U, tail + 1.U)
 
         tail := Mux(tail === (numEntries - 1).U, 0.U, tail + 1.U)
-        count := count + 1.U
     }
     
     when (io.deq.fire) {
         entries(head).busy := false.B
         entries(head).state := sCommit
+        entries(head).brTaken := false.B
+        entries(head).excpValid := false.B
+
+        val rdDeqEntry = entries(head).rd
+        when(regResStat(rdDeqEntry).owner === head + 1.U && !(io.enq.fire && io.enq.bits.rd === rdDeqEntry) ) { // deq has higher priority
+            regResStat(rdDeqEntry).owner := 0.U
+        }
 
         head := Mux(head === (numEntries - 1).U, 0.U, head + 1.U)
-        count := count - 1.U
     }
 
-    io.rs.foreach{ r =>
-        when(r.fire) {
-            entries(r.bits.id - 1.U).state := sExec
+    when( !(io.deq.fire && io.enq.fire) ) {
+        when(io.enq.fire) {
+            count := count + 1.U
+        }
+        when(io.deq.fire) {
+            count := count - 1.U
         }
     }
 
@@ -130,17 +186,30 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
         when (f.fire) {
             entries(f.bits.id - 1.U).data := f.bits.data
             entries(f.bits.id - 1.U).state := sWrite
-            
-            val rd = entries(f.bits.id - 1.U).rd
-            regResStat(rd).owner := 0.U
-            when(rd =/= 0.U) {
-                regResStat(rd).data := f.bits.data
-            }
+            entries(f.bits.id - 1.U).brAddr := f.bits.brAddr
+            entries(f.bits.id - 1.U).brTaken := f.bits.brTaken
+            entries(f.bits.id - 1.U).excpAddr := f.bits.excpAddr
+            entries(f.bits.id - 1.U).excpValid := f.bits.excpValid
+        }
+    }
+
+    entries.zip(io.read).foreach{ case(e, r) => 
+        r.busy := e.busy
+        r.data := e.data
+        r.state := e.state
+        r.rd := e.rd
+    }
+
+    
+    io.rs.foreach{ r =>
+        when(r.fire) { // Reservation Station has higher priority than Functional Unit
+            entries(r.bits.id - 1.U).state := sExec
         }
     }
 
     when (io.flush) {
         entries.foreach(e => e.busy := false.B)
+        regResStat.foreach(r => r.owner := 0.U)
         head := 0.U
         tail := 0.U
         count := 0.U

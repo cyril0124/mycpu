@@ -15,18 +15,11 @@ module RegFile2(
   output [31:0] io_r_5_data,
   input  [4:0]  io_r_6_addr,
   output [31:0] io_r_6_data,
+  input  [4:0]  io_r_7_addr,
+  output [31:0] io_r_7_data,
   input  [4:0]  io_w_0_addr,
   input         io_w_0_en,
   input  [31:0] io_w_0_data,
-  input  [4:0]  io_w_1_addr,
-  input         io_w_1_en,
-  input  [31:0] io_w_1_data,
-  input  [4:0]  io_w_2_addr,
-  input         io_w_2_en,
-  input  [31:0] io_w_2_data,
-  input  [4:0]  io_w_3_addr,
-  input         io_w_3_en,
-  input  [31:0] io_w_3_data,
   output [31:0] regState_0_regState_0,
   output [31:0] regState_0_regState_1,
   output [31:0] regState_0_regState_2,
@@ -159,22 +152,16 @@ module RegFile2(
   wire [31:0] _GEN_31 = reset ? 32'h0 : regs_31; // @[RegFile.scala 125:17 126:22 128:9]
   wire  _writeVec_T_2 = io_w_0_addr != 5'h0; // @[RegFile.scala 152:75]
   wire  _writeVec_T_3 = io_w_0_addr == io_r_0_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_6 = io_w_1_addr != 5'h0; // @[RegFile.scala 152:75]
-  wire  _writeVec_T_7 = io_w_1_addr == io_r_0_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_10 = io_w_2_addr != 5'h0; // @[RegFile.scala 152:75]
-  wire  _writeVec_T_11 = io_w_2_addr == io_r_0_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_14 = io_w_3_addr != 5'h0; // @[RegFile.scala 152:75]
-  wire  _writeVec_T_15 = io_w_3_addr == io_r_0_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec = {_writeVec_T_15,_writeVec_T_11,_writeVec_T_7,_writeVec_T_3}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec = {2'h0,1'h0,_writeVec_T_3}; // @[Cat.scala 33:92]
   wire  hasWrite = |writeVec; // @[RegFile.scala 153:29]
   wire [1:0] io_r_0_data_hi = writeVec[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_0_data_lo = writeVec[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_0_data_T = |io_r_0_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_0_data_T_1 = io_r_0_data_hi | io_r_0_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_0_data_T_3 = {_io_r_0_data_T,_io_r_0_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_33 = 2'h1 == _io_r_0_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_34 = 2'h2 == _io_r_0_data_T_3 ? io_w_2_data : _GEN_33; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_35 = 2'h3 == _io_r_0_data_T_3 ? io_w_3_data : _GEN_34; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_33 = 2'h1 == _io_r_0_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_34 = 2'h2 == _io_r_0_data_T_3 ? 32'h0 : _GEN_33; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_35 = 2'h3 == _io_r_0_data_T_3 ? 32'h0 : _GEN_34; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_36 = regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_37 = 5'h1 == io_r_0_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_38 = 5'h2 == io_r_0_addr ? regs_2 : _GEN_37; // @[RegFile.scala 158:{16,16}]
@@ -208,19 +195,16 @@ module RegFile2(
   wire [31:0] _GEN_66 = 5'h1e == io_r_0_addr ? regs_30 : _GEN_65; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_67 = 5'h1f == io_r_0_addr ? regs_31 : _GEN_66; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_19 = io_w_0_addr == io_r_1_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_23 = io_w_1_addr == io_r_1_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_27 = io_w_2_addr == io_r_1_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_31 = io_w_3_addr == io_r_1_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_1 = {_writeVec_T_31,_writeVec_T_27,_writeVec_T_23,_writeVec_T_19}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_1 = {2'h0,1'h0,_writeVec_T_19}; // @[Cat.scala 33:92]
   wire  hasWrite_1 = |writeVec_1; // @[RegFile.scala 153:29]
   wire [1:0] io_r_1_data_hi = writeVec_1[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_1_data_lo = writeVec_1[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_1_data_T = |io_r_1_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_1_data_T_1 = io_r_1_data_hi | io_r_1_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_1_data_T_3 = {_io_r_1_data_T,_io_r_1_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_71 = 2'h1 == _io_r_1_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_72 = 2'h2 == _io_r_1_data_T_3 ? io_w_2_data : _GEN_71; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_73 = 2'h3 == _io_r_1_data_T_3 ? io_w_3_data : _GEN_72; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_71 = 2'h1 == _io_r_1_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_72 = 2'h2 == _io_r_1_data_T_3 ? 32'h0 : _GEN_71; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_73 = 2'h3 == _io_r_1_data_T_3 ? 32'h0 : _GEN_72; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_75 = 5'h1 == io_r_1_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_76 = 5'h2 == io_r_1_addr ? regs_2 : _GEN_75; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_77 = 5'h3 == io_r_1_addr ? regs_3 : _GEN_76; // @[RegFile.scala 158:{16,16}]
@@ -253,19 +237,16 @@ module RegFile2(
   wire [31:0] _GEN_104 = 5'h1e == io_r_1_addr ? regs_30 : _GEN_103; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_105 = 5'h1f == io_r_1_addr ? regs_31 : _GEN_104; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_35 = io_w_0_addr == io_r_2_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_39 = io_w_1_addr == io_r_2_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_43 = io_w_2_addr == io_r_2_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_47 = io_w_3_addr == io_r_2_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_2 = {_writeVec_T_47,_writeVec_T_43,_writeVec_T_39,_writeVec_T_35}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_2 = {2'h0,1'h0,_writeVec_T_35}; // @[Cat.scala 33:92]
   wire  hasWrite_2 = |writeVec_2; // @[RegFile.scala 153:29]
   wire [1:0] io_r_2_data_hi = writeVec_2[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_2_data_lo = writeVec_2[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_2_data_T = |io_r_2_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_2_data_T_1 = io_r_2_data_hi | io_r_2_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_2_data_T_3 = {_io_r_2_data_T,_io_r_2_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_109 = 2'h1 == _io_r_2_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_110 = 2'h2 == _io_r_2_data_T_3 ? io_w_2_data : _GEN_109; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_111 = 2'h3 == _io_r_2_data_T_3 ? io_w_3_data : _GEN_110; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_109 = 2'h1 == _io_r_2_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_110 = 2'h2 == _io_r_2_data_T_3 ? 32'h0 : _GEN_109; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_111 = 2'h3 == _io_r_2_data_T_3 ? 32'h0 : _GEN_110; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_113 = 5'h1 == io_r_2_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_114 = 5'h2 == io_r_2_addr ? regs_2 : _GEN_113; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_115 = 5'h3 == io_r_2_addr ? regs_3 : _GEN_114; // @[RegFile.scala 158:{16,16}]
@@ -298,19 +279,16 @@ module RegFile2(
   wire [31:0] _GEN_142 = 5'h1e == io_r_2_addr ? regs_30 : _GEN_141; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_143 = 5'h1f == io_r_2_addr ? regs_31 : _GEN_142; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_51 = io_w_0_addr == io_r_3_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_55 = io_w_1_addr == io_r_3_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_59 = io_w_2_addr == io_r_3_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_63 = io_w_3_addr == io_r_3_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_3 = {_writeVec_T_63,_writeVec_T_59,_writeVec_T_55,_writeVec_T_51}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_3 = {2'h0,1'h0,_writeVec_T_51}; // @[Cat.scala 33:92]
   wire  hasWrite_3 = |writeVec_3; // @[RegFile.scala 153:29]
   wire [1:0] io_r_3_data_hi = writeVec_3[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_3_data_lo = writeVec_3[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_3_data_T = |io_r_3_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_3_data_T_1 = io_r_3_data_hi | io_r_3_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_3_data_T_3 = {_io_r_3_data_T,_io_r_3_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_147 = 2'h1 == _io_r_3_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_148 = 2'h2 == _io_r_3_data_T_3 ? io_w_2_data : _GEN_147; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_149 = 2'h3 == _io_r_3_data_T_3 ? io_w_3_data : _GEN_148; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_147 = 2'h1 == _io_r_3_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_148 = 2'h2 == _io_r_3_data_T_3 ? 32'h0 : _GEN_147; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_149 = 2'h3 == _io_r_3_data_T_3 ? 32'h0 : _GEN_148; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_151 = 5'h1 == io_r_3_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_152 = 5'h2 == io_r_3_addr ? regs_2 : _GEN_151; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_153 = 5'h3 == io_r_3_addr ? regs_3 : _GEN_152; // @[RegFile.scala 158:{16,16}]
@@ -343,19 +321,16 @@ module RegFile2(
   wire [31:0] _GEN_180 = 5'h1e == io_r_3_addr ? regs_30 : _GEN_179; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_181 = 5'h1f == io_r_3_addr ? regs_31 : _GEN_180; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_67 = io_w_0_addr == io_r_4_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_71 = io_w_1_addr == io_r_4_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_75 = io_w_2_addr == io_r_4_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_79 = io_w_3_addr == io_r_4_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_4 = {_writeVec_T_79,_writeVec_T_75,_writeVec_T_71,_writeVec_T_67}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_4 = {2'h0,1'h0,_writeVec_T_67}; // @[Cat.scala 33:92]
   wire  hasWrite_4 = |writeVec_4; // @[RegFile.scala 153:29]
   wire [1:0] io_r_4_data_hi = writeVec_4[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_4_data_lo = writeVec_4[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_4_data_T = |io_r_4_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_4_data_T_1 = io_r_4_data_hi | io_r_4_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_4_data_T_3 = {_io_r_4_data_T,_io_r_4_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_185 = 2'h1 == _io_r_4_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_186 = 2'h2 == _io_r_4_data_T_3 ? io_w_2_data : _GEN_185; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_187 = 2'h3 == _io_r_4_data_T_3 ? io_w_3_data : _GEN_186; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_185 = 2'h1 == _io_r_4_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_186 = 2'h2 == _io_r_4_data_T_3 ? 32'h0 : _GEN_185; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_187 = 2'h3 == _io_r_4_data_T_3 ? 32'h0 : _GEN_186; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_189 = 5'h1 == io_r_4_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_190 = 5'h2 == io_r_4_addr ? regs_2 : _GEN_189; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_191 = 5'h3 == io_r_4_addr ? regs_3 : _GEN_190; // @[RegFile.scala 158:{16,16}]
@@ -388,19 +363,16 @@ module RegFile2(
   wire [31:0] _GEN_218 = 5'h1e == io_r_4_addr ? regs_30 : _GEN_217; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_219 = 5'h1f == io_r_4_addr ? regs_31 : _GEN_218; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_83 = io_w_0_addr == io_r_5_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_87 = io_w_1_addr == io_r_5_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_91 = io_w_2_addr == io_r_5_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_95 = io_w_3_addr == io_r_5_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_5 = {_writeVec_T_95,_writeVec_T_91,_writeVec_T_87,_writeVec_T_83}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_5 = {2'h0,1'h0,_writeVec_T_83}; // @[Cat.scala 33:92]
   wire  hasWrite_5 = |writeVec_5; // @[RegFile.scala 153:29]
   wire [1:0] io_r_5_data_hi = writeVec_5[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_5_data_lo = writeVec_5[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_5_data_T = |io_r_5_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_5_data_T_1 = io_r_5_data_hi | io_r_5_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_5_data_T_3 = {_io_r_5_data_T,_io_r_5_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_223 = 2'h1 == _io_r_5_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_224 = 2'h2 == _io_r_5_data_T_3 ? io_w_2_data : _GEN_223; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_225 = 2'h3 == _io_r_5_data_T_3 ? io_w_3_data : _GEN_224; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_223 = 2'h1 == _io_r_5_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_224 = 2'h2 == _io_r_5_data_T_3 ? 32'h0 : _GEN_223; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_225 = 2'h3 == _io_r_5_data_T_3 ? 32'h0 : _GEN_224; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_227 = 5'h1 == io_r_5_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_228 = 5'h2 == io_r_5_addr ? regs_2 : _GEN_227; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_229 = 5'h3 == io_r_5_addr ? regs_3 : _GEN_228; // @[RegFile.scala 158:{16,16}]
@@ -433,19 +405,16 @@ module RegFile2(
   wire [31:0] _GEN_256 = 5'h1e == io_r_5_addr ? regs_30 : _GEN_255; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_257 = 5'h1f == io_r_5_addr ? regs_31 : _GEN_256; // @[RegFile.scala 158:{16,16}]
   wire  _writeVec_T_99 = io_w_0_addr == io_r_6_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_103 = io_w_1_addr == io_r_6_addr & io_w_1_en & io_w_1_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_107 = io_w_2_addr == io_r_6_addr & io_w_2_en & io_w_2_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire  _writeVec_T_111 = io_w_3_addr == io_r_6_addr & io_w_3_en & io_w_3_addr != 5'h0; // @[RegFile.scala 152:65]
-  wire [3:0] writeVec_6 = {_writeVec_T_111,_writeVec_T_107,_writeVec_T_103,_writeVec_T_99}; // @[Cat.scala 33:92]
+  wire [3:0] writeVec_6 = {2'h0,1'h0,_writeVec_T_99}; // @[Cat.scala 33:92]
   wire  hasWrite_6 = |writeVec_6; // @[RegFile.scala 153:29]
   wire [1:0] io_r_6_data_hi = writeVec_6[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] io_r_6_data_lo = writeVec_6[1:0]; // @[OneHot.scala 31:18]
   wire  _io_r_6_data_T = |io_r_6_data_hi; // @[OneHot.scala 32:14]
   wire [1:0] _io_r_6_data_T_1 = io_r_6_data_hi | io_r_6_data_lo; // @[OneHot.scala 32:28]
   wire [1:0] _io_r_6_data_T_3 = {_io_r_6_data_T,_io_r_6_data_T_1[1]}; // @[Cat.scala 33:92]
-  wire [31:0] _GEN_261 = 2'h1 == _io_r_6_data_T_3 ? io_w_1_data : io_w_0_data; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_262 = 2'h2 == _io_r_6_data_T_3 ? io_w_2_data : _GEN_261; // @[RegFile.scala 156:{16,16}]
-  wire [31:0] _GEN_263 = 2'h3 == _io_r_6_data_T_3 ? io_w_3_data : _GEN_262; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_261 = 2'h1 == _io_r_6_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_262 = 2'h2 == _io_r_6_data_T_3 ? 32'h0 : _GEN_261; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_263 = 2'h3 == _io_r_6_data_T_3 ? 32'h0 : _GEN_262; // @[RegFile.scala 156:{16,16}]
   wire [31:0] _GEN_265 = 5'h1 == io_r_6_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_266 = 5'h2 == io_r_6_addr ? regs_2 : _GEN_265; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_267 = 5'h3 == io_r_6_addr ? regs_3 : _GEN_266; // @[RegFile.scala 158:{16,16}]
@@ -477,198 +446,48 @@ module RegFile2(
   wire [31:0] _GEN_293 = 5'h1d == io_r_6_addr ? regs_29 : _GEN_292; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_294 = 5'h1e == io_r_6_addr ? regs_30 : _GEN_293; // @[RegFile.scala 158:{16,16}]
   wire [31:0] _GEN_295 = 5'h1f == io_r_6_addr ? regs_31 : _GEN_294; // @[RegFile.scala 158:{16,16}]
-  wire [31:0] _GEN_336 = 5'h0 == io_w_0_addr ? io_w_0_data : 32'h0; // @[RegFile.scala 133:11 174:{20,20}]
-  wire [31:0] _GEN_337 = 5'h1 == io_w_0_addr ? io_w_0_data : _GEN_1; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_338 = 5'h2 == io_w_0_addr ? io_w_0_data : _GEN_2; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_339 = 5'h3 == io_w_0_addr ? io_w_0_data : _GEN_3; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_340 = 5'h4 == io_w_0_addr ? io_w_0_data : _GEN_4; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_341 = 5'h5 == io_w_0_addr ? io_w_0_data : _GEN_5; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_342 = 5'h6 == io_w_0_addr ? io_w_0_data : _GEN_6; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_343 = 5'h7 == io_w_0_addr ? io_w_0_data : _GEN_7; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_344 = 5'h8 == io_w_0_addr ? io_w_0_data : _GEN_8; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_345 = 5'h9 == io_w_0_addr ? io_w_0_data : _GEN_9; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_346 = 5'ha == io_w_0_addr ? io_w_0_data : _GEN_10; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_347 = 5'hb == io_w_0_addr ? io_w_0_data : _GEN_11; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_348 = 5'hc == io_w_0_addr ? io_w_0_data : _GEN_12; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_349 = 5'hd == io_w_0_addr ? io_w_0_data : _GEN_13; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_350 = 5'he == io_w_0_addr ? io_w_0_data : _GEN_14; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_351 = 5'hf == io_w_0_addr ? io_w_0_data : _GEN_15; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_352 = 5'h10 == io_w_0_addr ? io_w_0_data : _GEN_16; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_353 = 5'h11 == io_w_0_addr ? io_w_0_data : _GEN_17; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_354 = 5'h12 == io_w_0_addr ? io_w_0_data : _GEN_18; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_355 = 5'h13 == io_w_0_addr ? io_w_0_data : _GEN_19; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_356 = 5'h14 == io_w_0_addr ? io_w_0_data : _GEN_20; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_357 = 5'h15 == io_w_0_addr ? io_w_0_data : _GEN_21; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_358 = 5'h16 == io_w_0_addr ? io_w_0_data : _GEN_22; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_359 = 5'h17 == io_w_0_addr ? io_w_0_data : _GEN_23; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_360 = 5'h18 == io_w_0_addr ? io_w_0_data : _GEN_24; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_361 = 5'h19 == io_w_0_addr ? io_w_0_data : _GEN_25; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_362 = 5'h1a == io_w_0_addr ? io_w_0_data : _GEN_26; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_363 = 5'h1b == io_w_0_addr ? io_w_0_data : _GEN_27; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_364 = 5'h1c == io_w_0_addr ? io_w_0_data : _GEN_28; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_365 = 5'h1d == io_w_0_addr ? io_w_0_data : _GEN_29; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_366 = 5'h1e == io_w_0_addr ? io_w_0_data : _GEN_30; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_367 = 5'h1f == io_w_0_addr ? io_w_0_data : _GEN_31; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_368 = io_w_0_en & _writeVec_T_2 ? _GEN_336 : 32'h0; // @[RegFile.scala 133:11 173:33]
-  wire [31:0] _GEN_369 = io_w_0_en & _writeVec_T_2 ? _GEN_337 : _GEN_1; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_370 = io_w_0_en & _writeVec_T_2 ? _GEN_338 : _GEN_2; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_371 = io_w_0_en & _writeVec_T_2 ? _GEN_339 : _GEN_3; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_372 = io_w_0_en & _writeVec_T_2 ? _GEN_340 : _GEN_4; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_373 = io_w_0_en & _writeVec_T_2 ? _GEN_341 : _GEN_5; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_374 = io_w_0_en & _writeVec_T_2 ? _GEN_342 : _GEN_6; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_375 = io_w_0_en & _writeVec_T_2 ? _GEN_343 : _GEN_7; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_376 = io_w_0_en & _writeVec_T_2 ? _GEN_344 : _GEN_8; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_377 = io_w_0_en & _writeVec_T_2 ? _GEN_345 : _GEN_9; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_378 = io_w_0_en & _writeVec_T_2 ? _GEN_346 : _GEN_10; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_379 = io_w_0_en & _writeVec_T_2 ? _GEN_347 : _GEN_11; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_380 = io_w_0_en & _writeVec_T_2 ? _GEN_348 : _GEN_12; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_381 = io_w_0_en & _writeVec_T_2 ? _GEN_349 : _GEN_13; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_382 = io_w_0_en & _writeVec_T_2 ? _GEN_350 : _GEN_14; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_383 = io_w_0_en & _writeVec_T_2 ? _GEN_351 : _GEN_15; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_384 = io_w_0_en & _writeVec_T_2 ? _GEN_352 : _GEN_16; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_385 = io_w_0_en & _writeVec_T_2 ? _GEN_353 : _GEN_17; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_386 = io_w_0_en & _writeVec_T_2 ? _GEN_354 : _GEN_18; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_387 = io_w_0_en & _writeVec_T_2 ? _GEN_355 : _GEN_19; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_388 = io_w_0_en & _writeVec_T_2 ? _GEN_356 : _GEN_20; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_389 = io_w_0_en & _writeVec_T_2 ? _GEN_357 : _GEN_21; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_390 = io_w_0_en & _writeVec_T_2 ? _GEN_358 : _GEN_22; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_391 = io_w_0_en & _writeVec_T_2 ? _GEN_359 : _GEN_23; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_392 = io_w_0_en & _writeVec_T_2 ? _GEN_360 : _GEN_24; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_393 = io_w_0_en & _writeVec_T_2 ? _GEN_361 : _GEN_25; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_394 = io_w_0_en & _writeVec_T_2 ? _GEN_362 : _GEN_26; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_395 = io_w_0_en & _writeVec_T_2 ? _GEN_363 : _GEN_27; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_396 = io_w_0_en & _writeVec_T_2 ? _GEN_364 : _GEN_28; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_397 = io_w_0_en & _writeVec_T_2 ? _GEN_365 : _GEN_29; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_398 = io_w_0_en & _writeVec_T_2 ? _GEN_366 : _GEN_30; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_399 = io_w_0_en & _writeVec_T_2 ? _GEN_367 : _GEN_31; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_400 = 5'h0 == io_w_1_addr ? io_w_1_data : _GEN_368; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_401 = 5'h1 == io_w_1_addr ? io_w_1_data : _GEN_369; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_402 = 5'h2 == io_w_1_addr ? io_w_1_data : _GEN_370; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_403 = 5'h3 == io_w_1_addr ? io_w_1_data : _GEN_371; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_404 = 5'h4 == io_w_1_addr ? io_w_1_data : _GEN_372; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_405 = 5'h5 == io_w_1_addr ? io_w_1_data : _GEN_373; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_406 = 5'h6 == io_w_1_addr ? io_w_1_data : _GEN_374; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_407 = 5'h7 == io_w_1_addr ? io_w_1_data : _GEN_375; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_408 = 5'h8 == io_w_1_addr ? io_w_1_data : _GEN_376; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_409 = 5'h9 == io_w_1_addr ? io_w_1_data : _GEN_377; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_410 = 5'ha == io_w_1_addr ? io_w_1_data : _GEN_378; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_411 = 5'hb == io_w_1_addr ? io_w_1_data : _GEN_379; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_412 = 5'hc == io_w_1_addr ? io_w_1_data : _GEN_380; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_413 = 5'hd == io_w_1_addr ? io_w_1_data : _GEN_381; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_414 = 5'he == io_w_1_addr ? io_w_1_data : _GEN_382; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_415 = 5'hf == io_w_1_addr ? io_w_1_data : _GEN_383; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_416 = 5'h10 == io_w_1_addr ? io_w_1_data : _GEN_384; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_417 = 5'h11 == io_w_1_addr ? io_w_1_data : _GEN_385; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_418 = 5'h12 == io_w_1_addr ? io_w_1_data : _GEN_386; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_419 = 5'h13 == io_w_1_addr ? io_w_1_data : _GEN_387; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_420 = 5'h14 == io_w_1_addr ? io_w_1_data : _GEN_388; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_421 = 5'h15 == io_w_1_addr ? io_w_1_data : _GEN_389; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_422 = 5'h16 == io_w_1_addr ? io_w_1_data : _GEN_390; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_423 = 5'h17 == io_w_1_addr ? io_w_1_data : _GEN_391; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_424 = 5'h18 == io_w_1_addr ? io_w_1_data : _GEN_392; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_425 = 5'h19 == io_w_1_addr ? io_w_1_data : _GEN_393; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_426 = 5'h1a == io_w_1_addr ? io_w_1_data : _GEN_394; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_427 = 5'h1b == io_w_1_addr ? io_w_1_data : _GEN_395; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_428 = 5'h1c == io_w_1_addr ? io_w_1_data : _GEN_396; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_429 = 5'h1d == io_w_1_addr ? io_w_1_data : _GEN_397; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_430 = 5'h1e == io_w_1_addr ? io_w_1_data : _GEN_398; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_431 = 5'h1f == io_w_1_addr ? io_w_1_data : _GEN_399; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_432 = io_w_1_en & _writeVec_T_6 ? _GEN_400 : _GEN_368; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_433 = io_w_1_en & _writeVec_T_6 ? _GEN_401 : _GEN_369; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_434 = io_w_1_en & _writeVec_T_6 ? _GEN_402 : _GEN_370; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_435 = io_w_1_en & _writeVec_T_6 ? _GEN_403 : _GEN_371; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_436 = io_w_1_en & _writeVec_T_6 ? _GEN_404 : _GEN_372; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_437 = io_w_1_en & _writeVec_T_6 ? _GEN_405 : _GEN_373; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_438 = io_w_1_en & _writeVec_T_6 ? _GEN_406 : _GEN_374; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_439 = io_w_1_en & _writeVec_T_6 ? _GEN_407 : _GEN_375; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_440 = io_w_1_en & _writeVec_T_6 ? _GEN_408 : _GEN_376; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_441 = io_w_1_en & _writeVec_T_6 ? _GEN_409 : _GEN_377; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_442 = io_w_1_en & _writeVec_T_6 ? _GEN_410 : _GEN_378; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_443 = io_w_1_en & _writeVec_T_6 ? _GEN_411 : _GEN_379; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_444 = io_w_1_en & _writeVec_T_6 ? _GEN_412 : _GEN_380; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_445 = io_w_1_en & _writeVec_T_6 ? _GEN_413 : _GEN_381; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_446 = io_w_1_en & _writeVec_T_6 ? _GEN_414 : _GEN_382; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_447 = io_w_1_en & _writeVec_T_6 ? _GEN_415 : _GEN_383; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_448 = io_w_1_en & _writeVec_T_6 ? _GEN_416 : _GEN_384; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_449 = io_w_1_en & _writeVec_T_6 ? _GEN_417 : _GEN_385; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_450 = io_w_1_en & _writeVec_T_6 ? _GEN_418 : _GEN_386; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_451 = io_w_1_en & _writeVec_T_6 ? _GEN_419 : _GEN_387; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_452 = io_w_1_en & _writeVec_T_6 ? _GEN_420 : _GEN_388; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_453 = io_w_1_en & _writeVec_T_6 ? _GEN_421 : _GEN_389; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_454 = io_w_1_en & _writeVec_T_6 ? _GEN_422 : _GEN_390; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_455 = io_w_1_en & _writeVec_T_6 ? _GEN_423 : _GEN_391; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_456 = io_w_1_en & _writeVec_T_6 ? _GEN_424 : _GEN_392; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_457 = io_w_1_en & _writeVec_T_6 ? _GEN_425 : _GEN_393; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_458 = io_w_1_en & _writeVec_T_6 ? _GEN_426 : _GEN_394; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_459 = io_w_1_en & _writeVec_T_6 ? _GEN_427 : _GEN_395; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_460 = io_w_1_en & _writeVec_T_6 ? _GEN_428 : _GEN_396; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_461 = io_w_1_en & _writeVec_T_6 ? _GEN_429 : _GEN_397; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_462 = io_w_1_en & _writeVec_T_6 ? _GEN_430 : _GEN_398; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_463 = io_w_1_en & _writeVec_T_6 ? _GEN_431 : _GEN_399; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_464 = 5'h0 == io_w_2_addr ? io_w_2_data : _GEN_432; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_465 = 5'h1 == io_w_2_addr ? io_w_2_data : _GEN_433; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_466 = 5'h2 == io_w_2_addr ? io_w_2_data : _GEN_434; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_467 = 5'h3 == io_w_2_addr ? io_w_2_data : _GEN_435; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_468 = 5'h4 == io_w_2_addr ? io_w_2_data : _GEN_436; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_469 = 5'h5 == io_w_2_addr ? io_w_2_data : _GEN_437; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_470 = 5'h6 == io_w_2_addr ? io_w_2_data : _GEN_438; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_471 = 5'h7 == io_w_2_addr ? io_w_2_data : _GEN_439; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_472 = 5'h8 == io_w_2_addr ? io_w_2_data : _GEN_440; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_473 = 5'h9 == io_w_2_addr ? io_w_2_data : _GEN_441; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_474 = 5'ha == io_w_2_addr ? io_w_2_data : _GEN_442; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_475 = 5'hb == io_w_2_addr ? io_w_2_data : _GEN_443; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_476 = 5'hc == io_w_2_addr ? io_w_2_data : _GEN_444; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_477 = 5'hd == io_w_2_addr ? io_w_2_data : _GEN_445; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_478 = 5'he == io_w_2_addr ? io_w_2_data : _GEN_446; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_479 = 5'hf == io_w_2_addr ? io_w_2_data : _GEN_447; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_480 = 5'h10 == io_w_2_addr ? io_w_2_data : _GEN_448; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_481 = 5'h11 == io_w_2_addr ? io_w_2_data : _GEN_449; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_482 = 5'h12 == io_w_2_addr ? io_w_2_data : _GEN_450; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_483 = 5'h13 == io_w_2_addr ? io_w_2_data : _GEN_451; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_484 = 5'h14 == io_w_2_addr ? io_w_2_data : _GEN_452; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_485 = 5'h15 == io_w_2_addr ? io_w_2_data : _GEN_453; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_486 = 5'h16 == io_w_2_addr ? io_w_2_data : _GEN_454; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_487 = 5'h17 == io_w_2_addr ? io_w_2_data : _GEN_455; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_488 = 5'h18 == io_w_2_addr ? io_w_2_data : _GEN_456; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_489 = 5'h19 == io_w_2_addr ? io_w_2_data : _GEN_457; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_490 = 5'h1a == io_w_2_addr ? io_w_2_data : _GEN_458; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_491 = 5'h1b == io_w_2_addr ? io_w_2_data : _GEN_459; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_492 = 5'h1c == io_w_2_addr ? io_w_2_data : _GEN_460; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_493 = 5'h1d == io_w_2_addr ? io_w_2_data : _GEN_461; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_494 = 5'h1e == io_w_2_addr ? io_w_2_data : _GEN_462; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_495 = 5'h1f == io_w_2_addr ? io_w_2_data : _GEN_463; // @[RegFile.scala 174:{20,20}]
-  wire [31:0] _GEN_496 = io_w_2_en & _writeVec_T_10 ? _GEN_464 : _GEN_432; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_497 = io_w_2_en & _writeVec_T_10 ? _GEN_465 : _GEN_433; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_498 = io_w_2_en & _writeVec_T_10 ? _GEN_466 : _GEN_434; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_499 = io_w_2_en & _writeVec_T_10 ? _GEN_467 : _GEN_435; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_500 = io_w_2_en & _writeVec_T_10 ? _GEN_468 : _GEN_436; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_501 = io_w_2_en & _writeVec_T_10 ? _GEN_469 : _GEN_437; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_502 = io_w_2_en & _writeVec_T_10 ? _GEN_470 : _GEN_438; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_503 = io_w_2_en & _writeVec_T_10 ? _GEN_471 : _GEN_439; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_504 = io_w_2_en & _writeVec_T_10 ? _GEN_472 : _GEN_440; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_505 = io_w_2_en & _writeVec_T_10 ? _GEN_473 : _GEN_441; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_506 = io_w_2_en & _writeVec_T_10 ? _GEN_474 : _GEN_442; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_507 = io_w_2_en & _writeVec_T_10 ? _GEN_475 : _GEN_443; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_508 = io_w_2_en & _writeVec_T_10 ? _GEN_476 : _GEN_444; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_509 = io_w_2_en & _writeVec_T_10 ? _GEN_477 : _GEN_445; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_510 = io_w_2_en & _writeVec_T_10 ? _GEN_478 : _GEN_446; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_511 = io_w_2_en & _writeVec_T_10 ? _GEN_479 : _GEN_447; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_512 = io_w_2_en & _writeVec_T_10 ? _GEN_480 : _GEN_448; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_513 = io_w_2_en & _writeVec_T_10 ? _GEN_481 : _GEN_449; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_514 = io_w_2_en & _writeVec_T_10 ? _GEN_482 : _GEN_450; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_515 = io_w_2_en & _writeVec_T_10 ? _GEN_483 : _GEN_451; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_516 = io_w_2_en & _writeVec_T_10 ? _GEN_484 : _GEN_452; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_517 = io_w_2_en & _writeVec_T_10 ? _GEN_485 : _GEN_453; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_518 = io_w_2_en & _writeVec_T_10 ? _GEN_486 : _GEN_454; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_519 = io_w_2_en & _writeVec_T_10 ? _GEN_487 : _GEN_455; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_520 = io_w_2_en & _writeVec_T_10 ? _GEN_488 : _GEN_456; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_521 = io_w_2_en & _writeVec_T_10 ? _GEN_489 : _GEN_457; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_522 = io_w_2_en & _writeVec_T_10 ? _GEN_490 : _GEN_458; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_523 = io_w_2_en & _writeVec_T_10 ? _GEN_491 : _GEN_459; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_524 = io_w_2_en & _writeVec_T_10 ? _GEN_492 : _GEN_460; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_525 = io_w_2_en & _writeVec_T_10 ? _GEN_493 : _GEN_461; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_526 = io_w_2_en & _writeVec_T_10 ? _GEN_494 : _GEN_462; // @[RegFile.scala 173:33]
-  wire [31:0] _GEN_527 = io_w_2_en & _writeVec_T_10 ? _GEN_495 : _GEN_463; // @[RegFile.scala 173:33]
+  wire  _writeVec_T_115 = io_w_0_addr == io_r_7_addr & io_w_0_en & io_w_0_addr != 5'h0; // @[RegFile.scala 152:65]
+  wire [3:0] writeVec_7 = {2'h0,1'h0,_writeVec_T_115}; // @[Cat.scala 33:92]
+  wire  hasWrite_7 = |writeVec_7; // @[RegFile.scala 153:29]
+  wire [1:0] io_r_7_data_hi = writeVec_7[3:2]; // @[OneHot.scala 30:18]
+  wire [1:0] io_r_7_data_lo = writeVec_7[1:0]; // @[OneHot.scala 31:18]
+  wire  _io_r_7_data_T = |io_r_7_data_hi; // @[OneHot.scala 32:14]
+  wire [1:0] _io_r_7_data_T_1 = io_r_7_data_hi | io_r_7_data_lo; // @[OneHot.scala 32:28]
+  wire [1:0] _io_r_7_data_T_3 = {_io_r_7_data_T,_io_r_7_data_T_1[1]}; // @[Cat.scala 33:92]
+  wire [31:0] _GEN_299 = 2'h1 == _io_r_7_data_T_3 ? 32'h0 : io_w_0_data; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_300 = 2'h2 == _io_r_7_data_T_3 ? 32'h0 : _GEN_299; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_301 = 2'h3 == _io_r_7_data_T_3 ? 32'h0 : _GEN_300; // @[RegFile.scala 156:{16,16}]
+  wire [31:0] _GEN_303 = 5'h1 == io_r_7_addr ? regs_1 : regs_0; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_304 = 5'h2 == io_r_7_addr ? regs_2 : _GEN_303; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_305 = 5'h3 == io_r_7_addr ? regs_3 : _GEN_304; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_306 = 5'h4 == io_r_7_addr ? regs_4 : _GEN_305; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_307 = 5'h5 == io_r_7_addr ? regs_5 : _GEN_306; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_308 = 5'h6 == io_r_7_addr ? regs_6 : _GEN_307; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_309 = 5'h7 == io_r_7_addr ? regs_7 : _GEN_308; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_310 = 5'h8 == io_r_7_addr ? regs_8 : _GEN_309; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_311 = 5'h9 == io_r_7_addr ? regs_9 : _GEN_310; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_312 = 5'ha == io_r_7_addr ? regs_10 : _GEN_311; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_313 = 5'hb == io_r_7_addr ? regs_11 : _GEN_312; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_314 = 5'hc == io_r_7_addr ? regs_12 : _GEN_313; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_315 = 5'hd == io_r_7_addr ? regs_13 : _GEN_314; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_316 = 5'he == io_r_7_addr ? regs_14 : _GEN_315; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_317 = 5'hf == io_r_7_addr ? regs_15 : _GEN_316; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_318 = 5'h10 == io_r_7_addr ? regs_16 : _GEN_317; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_319 = 5'h11 == io_r_7_addr ? regs_17 : _GEN_318; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_320 = 5'h12 == io_r_7_addr ? regs_18 : _GEN_319; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_321 = 5'h13 == io_r_7_addr ? regs_19 : _GEN_320; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_322 = 5'h14 == io_r_7_addr ? regs_20 : _GEN_321; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_323 = 5'h15 == io_r_7_addr ? regs_21 : _GEN_322; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_324 = 5'h16 == io_r_7_addr ? regs_22 : _GEN_323; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_325 = 5'h17 == io_r_7_addr ? regs_23 : _GEN_324; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_326 = 5'h18 == io_r_7_addr ? regs_24 : _GEN_325; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_327 = 5'h19 == io_r_7_addr ? regs_25 : _GEN_326; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_328 = 5'h1a == io_r_7_addr ? regs_26 : _GEN_327; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_329 = 5'h1b == io_r_7_addr ? regs_27 : _GEN_328; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_330 = 5'h1c == io_r_7_addr ? regs_28 : _GEN_329; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_331 = 5'h1d == io_r_7_addr ? regs_29 : _GEN_330; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_332 = 5'h1e == io_r_7_addr ? regs_30 : _GEN_331; // @[RegFile.scala 158:{16,16}]
+  wire [31:0] _GEN_333 = 5'h1f == io_r_7_addr ? regs_31 : _GEN_332; // @[RegFile.scala 158:{16,16}]
   wire [31:0] regState_regState_0 = regs_0; // @[RegFile.scala 182:22 184:7]
   wire [31:0] regState_regState_1 = regs_1; // @[RegFile.scala 182:22 184:7]
   wire [31:0] regState_regState_2 = regs_2; // @[RegFile.scala 182:22 184:7]
@@ -708,6 +527,7 @@ module RegFile2(
   assign io_r_4_data = hasWrite_4 ? _GEN_187 : _GEN_219; // @[RegFile.scala 155:22 156:16 158:16]
   assign io_r_5_data = hasWrite_5 ? _GEN_225 : _GEN_257; // @[RegFile.scala 155:22 156:16 158:16]
   assign io_r_6_data = hasWrite_6 ? _GEN_263 : _GEN_295; // @[RegFile.scala 155:22 156:16 158:16]
+  assign io_r_7_data = hasWrite_7 ? _GEN_301 : _GEN_333; // @[RegFile.scala 155:22 156:16 158:16]
   assign regState_0_regState_0 = _GEN_36;
   assign regState_0_regState_1 = regState_regState_1;
   assign regState_0_regState_2 = regState_regState_2;
@@ -741,293 +561,293 @@ module RegFile2(
   assign regState_0_regState_30 = regState_regState_30;
   assign regState_0_regState_31 = regState_regState_31;
   always @(posedge clock) begin
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h0 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_0 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h0 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_0 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_0 <= _GEN_496;
+        regs_0 <= 32'h0; // @[RegFile.scala 133:11]
       end
     end else begin
-      regs_0 <= _GEN_496;
+      regs_0 <= 32'h0; // @[RegFile.scala 133:11]
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_1 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_1 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_1 <= _GEN_497;
+        regs_1 <= _GEN_1;
       end
     end else begin
-      regs_1 <= _GEN_497;
+      regs_1 <= _GEN_1;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h2 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_2 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h2 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_2 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_2 <= _GEN_498;
+        regs_2 <= _GEN_2;
       end
     end else begin
-      regs_2 <= _GEN_498;
+      regs_2 <= _GEN_2;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h3 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_3 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h3 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_3 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_3 <= _GEN_499;
+        regs_3 <= _GEN_3;
       end
     end else begin
-      regs_3 <= _GEN_499;
+      regs_3 <= _GEN_3;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h4 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_4 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h4 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_4 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_4 <= _GEN_500;
+        regs_4 <= _GEN_4;
       end
     end else begin
-      regs_4 <= _GEN_500;
+      regs_4 <= _GEN_4;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h5 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_5 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h5 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_5 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_5 <= _GEN_501;
+        regs_5 <= _GEN_5;
       end
     end else begin
-      regs_5 <= _GEN_501;
+      regs_5 <= _GEN_5;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h6 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_6 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h6 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_6 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_6 <= _GEN_502;
+        regs_6 <= _GEN_6;
       end
     end else begin
-      regs_6 <= _GEN_502;
+      regs_6 <= _GEN_6;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h7 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_7 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h7 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_7 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_7 <= _GEN_503;
+        regs_7 <= _GEN_7;
       end
     end else begin
-      regs_7 <= _GEN_503;
+      regs_7 <= _GEN_7;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h8 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_8 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h8 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_8 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_8 <= _GEN_504;
+        regs_8 <= _GEN_8;
       end
     end else begin
-      regs_8 <= _GEN_504;
+      regs_8 <= _GEN_8;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h9 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_9 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h9 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_9 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_9 <= _GEN_505;
+        regs_9 <= _GEN_9;
       end
     end else begin
-      regs_9 <= _GEN_505;
+      regs_9 <= _GEN_9;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'ha == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_10 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'ha == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_10 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_10 <= _GEN_506;
+        regs_10 <= _GEN_10;
       end
     end else begin
-      regs_10 <= _GEN_506;
+      regs_10 <= _GEN_10;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'hb == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_11 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'hb == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_11 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_11 <= _GEN_507;
+        regs_11 <= _GEN_11;
       end
     end else begin
-      regs_11 <= _GEN_507;
+      regs_11 <= _GEN_11;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'hc == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_12 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'hc == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_12 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_12 <= _GEN_508;
+        regs_12 <= _GEN_12;
       end
     end else begin
-      regs_12 <= _GEN_508;
+      regs_12 <= _GEN_12;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'hd == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_13 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'hd == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_13 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_13 <= _GEN_509;
+        regs_13 <= _GEN_13;
       end
     end else begin
-      regs_13 <= _GEN_509;
+      regs_13 <= _GEN_13;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'he == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_14 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'he == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_14 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_14 <= _GEN_510;
+        regs_14 <= _GEN_14;
       end
     end else begin
-      regs_14 <= _GEN_510;
+      regs_14 <= _GEN_14;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'hf == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_15 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'hf == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_15 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_15 <= _GEN_511;
+        regs_15 <= _GEN_15;
       end
     end else begin
-      regs_15 <= _GEN_511;
+      regs_15 <= _GEN_15;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h10 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_16 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h10 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_16 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_16 <= _GEN_512;
+        regs_16 <= _GEN_16;
       end
     end else begin
-      regs_16 <= _GEN_512;
+      regs_16 <= _GEN_16;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h11 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_17 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h11 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_17 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_17 <= _GEN_513;
+        regs_17 <= _GEN_17;
       end
     end else begin
-      regs_17 <= _GEN_513;
+      regs_17 <= _GEN_17;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h12 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_18 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h12 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_18 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_18 <= _GEN_514;
+        regs_18 <= _GEN_18;
       end
     end else begin
-      regs_18 <= _GEN_514;
+      regs_18 <= _GEN_18;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h13 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_19 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h13 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_19 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_19 <= _GEN_515;
+        regs_19 <= _GEN_19;
       end
     end else begin
-      regs_19 <= _GEN_515;
+      regs_19 <= _GEN_19;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h14 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_20 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h14 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_20 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_20 <= _GEN_516;
+        regs_20 <= _GEN_20;
       end
     end else begin
-      regs_20 <= _GEN_516;
+      regs_20 <= _GEN_20;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h15 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_21 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h15 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_21 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_21 <= _GEN_517;
+        regs_21 <= _GEN_21;
       end
     end else begin
-      regs_21 <= _GEN_517;
+      regs_21 <= _GEN_21;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h16 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_22 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h16 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_22 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_22 <= _GEN_518;
+        regs_22 <= _GEN_22;
       end
     end else begin
-      regs_22 <= _GEN_518;
+      regs_22 <= _GEN_22;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h17 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_23 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h17 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_23 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_23 <= _GEN_519;
+        regs_23 <= _GEN_23;
       end
     end else begin
-      regs_23 <= _GEN_519;
+      regs_23 <= _GEN_23;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h18 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_24 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h18 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_24 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_24 <= _GEN_520;
+        regs_24 <= _GEN_24;
       end
     end else begin
-      regs_24 <= _GEN_520;
+      regs_24 <= _GEN_24;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h19 == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_25 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h19 == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_25 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_25 <= _GEN_521;
+        regs_25 <= _GEN_25;
       end
     end else begin
-      regs_25 <= _GEN_521;
+      regs_25 <= _GEN_25;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1a == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_26 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1a == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_26 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_26 <= _GEN_522;
+        regs_26 <= _GEN_26;
       end
     end else begin
-      regs_26 <= _GEN_522;
+      regs_26 <= _GEN_26;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1b == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_27 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1b == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_27 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_27 <= _GEN_523;
+        regs_27 <= _GEN_27;
       end
     end else begin
-      regs_27 <= _GEN_523;
+      regs_27 <= _GEN_27;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1c == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_28 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1c == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_28 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_28 <= _GEN_524;
+        regs_28 <= _GEN_28;
       end
     end else begin
-      regs_28 <= _GEN_524;
+      regs_28 <= _GEN_28;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1d == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_29 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1d == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_29 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_29 <= _GEN_525;
+        regs_29 <= _GEN_29;
       end
     end else begin
-      regs_29 <= _GEN_525;
+      regs_29 <= _GEN_29;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1e == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_30 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1e == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_30 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_30 <= _GEN_526;
+        regs_30 <= _GEN_30;
       end
     end else begin
-      regs_30 <= _GEN_526;
+      regs_30 <= _GEN_30;
     end
-    if (io_w_3_en & _writeVec_T_14) begin // @[RegFile.scala 173:33]
-      if (5'h1f == io_w_3_addr) begin // @[RegFile.scala 174:20]
-        regs_31 <= io_w_3_data; // @[RegFile.scala 174:20]
+    if (io_w_0_en & _writeVec_T_2) begin // @[RegFile.scala 173:33]
+      if (5'h1f == io_w_0_addr) begin // @[RegFile.scala 174:20]
+        regs_31 <= io_w_0_data; // @[RegFile.scala 174:20]
       end else begin
-        regs_31 <= _GEN_527;
+        regs_31 <= _GEN_31;
       end
     end else begin
-      regs_31 <= _GEN_527;
+      regs_31 <= _GEN_31;
     end
     `ifndef SYNTHESIS
     `ifdef PRINTF_COND

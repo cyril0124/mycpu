@@ -6,6 +6,7 @@ module StorePipe(
   input  [31:0] io_store_req_bits_addr,
   input  [31:0] io_store_req_bits_data,
   input  [3:0]  io_store_req_bits_mask,
+  input         io_store_resp_ready,
   output        io_store_resp_valid,
   output        io_dir_read_req_valid,
   output [31:0] io_dir_read_req_bits_addr,
@@ -57,7 +58,8 @@ module StorePipe(
   output [31:0] io_mshr_bits_data_2,
   output [31:0] io_mshr_bits_data_3,
   output [31:0] io_mshr_bits_storeData,
-  output [3:0]  io_mshr_bits_storeMask
+  output [3:0]  io_mshr_bits_storeMask,
+  input         io_flush
 );
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
@@ -96,33 +98,34 @@ module StorePipe(
   reg [31:0] _RAND_33;
   reg [31:0] _RAND_34;
 `endif // RANDOMIZE_REG_INIT
-  reg  s0_full; // @[StorePipe.scala 30:26]
+  reg  s0_full; // @[StorePipe.scala 31:26]
   wire  s0_latch = io_store_req_ready & io_store_req_valid; // @[Decoupled.scala 51:35]
-  reg  s0_valid_REG; // @[StorePipe.scala 56:25]
-  reg  s0_validReg; // @[StorePipe.scala 53:30]
-  wire  s0_valid = (s0_valid_REG | s0_validReg) & io_dir_read_req_valid & io_dataBank_read_req_valid; // @[StorePipe.scala 56:77]
-  reg  s1_full; // @[StorePipe.scala 63:26]
+  reg  s0_valid_REG; // @[StorePipe.scala 57:25]
+  reg  s0_validReg; // @[StorePipe.scala 54:30]
+  wire  s0_valid = (s0_valid_REG | s0_validReg) & io_dir_read_req_valid & io_dataBank_read_req_valid; // @[StorePipe.scala 57:77]
+  reg  s1_full; // @[StorePipe.scala 64:26]
   reg  s1_dirInfo_hit; // @[Reg.scala 19:16]
-  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[StorePipe.scala 114:21]
+  wire  _s1_valid_T = ~s1_dirInfo_hit; // @[StorePipe.scala 115:21]
   wire  _s1_valid_T_1 = io_mshr_ready & io_mshr_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_6 = s1_dirInfo_hit & io_dataBank_write_req_valid & io_dir_write_req_valid; // @[StorePipe.scala 115:60]
-  wire  _s1_valid_T_7 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_6; // @[StorePipe.scala 114:47]
-  wire  s1_valid = s1_full & _s1_valid_T_7; // @[StorePipe.scala 113:25]
-  reg  s2_full; // @[StorePipe.scala 121:26]
+  wire  _s1_valid_T_6 = s1_dirInfo_hit & io_dataBank_write_req_valid & io_dir_write_req_valid; // @[StorePipe.scala 116:60]
+  wire  _s1_valid_T_7 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_6; // @[StorePipe.scala 115:47]
+  wire  s1_valid = s1_full & _s1_valid_T_7; // @[StorePipe.scala 114:25]
+  reg  s2_full; // @[StorePipe.scala 122:26]
+  wire  _s2_valid_T = io_store_resp_ready & io_store_resp_valid; // @[Decoupled.scala 51:35]
   reg  s2_isHit; // @[Reg.scala 19:16]
-  wire  s2_fire = io_store_resp_valid & s2_full & s2_isHit | ~s2_isHit; // @[StorePipe.scala 133:59]
-  wire  s2_ready = ~s2_full | s2_fire; // @[StorePipe.scala 126:26]
-  wire  s1_fire = s1_valid & s2_ready; // @[StorePipe.scala 65:28]
-  wire  s1_ready = ~s1_full | s1_fire; // @[StorePipe.scala 80:26]
-  wire  s0_fire = s0_valid & s1_ready; // @[StorePipe.scala 32:28]
+  wire  s2_fire = _s2_valid_T & s2_full & s2_isHit | ~s2_isHit; // @[StorePipe.scala 134:59]
+  wire  s2_ready = ~s2_full | s2_fire; // @[StorePipe.scala 127:26]
+  wire  s1_fire = s1_valid & s2_ready; // @[StorePipe.scala 66:28]
+  wire  s1_ready = (~s1_full | s1_fire) & io_mshr_ready; // @[StorePipe.scala 81:39]
+  wire  s0_fire = s0_valid & s1_ready; // @[StorePipe.scala 33:28]
   reg [31:0] s0_reqReg_addr; // @[Reg.scala 19:16]
   reg [31:0] s0_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s0_reqReg_mask; // @[Reg.scala 19:16]
   wire [31:0] _GEN_0 = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
-  wire  _GEN_3 = s0_full & s0_fire ? 1'h0 : s0_full; // @[StorePipe.scala 30:26 40:{35,45}]
-  wire  _GEN_4 = s0_latch | _GEN_3; // @[StorePipe.scala 39:{20,30}]
-  wire  _GEN_5 = s0_fire ? 1'h0 : s0_validReg; // @[StorePipe.scala 55:24 53:30 55:38]
-  wire  _GEN_6 = s0_latch | _GEN_5; // @[StorePipe.scala 54:{20,34}]
+  wire  _GEN_3 = s0_full & s0_fire ? 1'h0 : s0_full; // @[StorePipe.scala 31:26 41:{35,45}]
+  wire  _GEN_4 = s0_latch | _GEN_3; // @[StorePipe.scala 40:{20,30}]
+  wire  _GEN_5 = s0_fire ? 1'h0 : s0_validReg; // @[StorePipe.scala 56:24 54:30 56:38]
+  wire  _GEN_6 = s0_latch | _GEN_5; // @[StorePipe.scala 55:{20,34}]
   reg [31:0] s1_reqReg_addr; // @[Reg.scala 19:16]
   reg [31:0] s1_reqReg_data; // @[Reg.scala 19:16]
   reg [3:0] s1_reqReg_mask; // @[Reg.scala 19:16]
@@ -190,8 +193,8 @@ module StorePipe(
   wire [18:0] _s1_dirtyTag_T_7 = s1_dirInfo_chosenWay[3] ? s1_tagRdVec_3 : 19'h0; // @[Mux.scala 27:73]
   wire [18:0] _s1_dirtyTag_T_8 = _s1_dirtyTag_T_4 | _s1_dirtyTag_T_5; // @[Mux.scala 27:73]
   wire [18:0] _s1_dirtyTag_T_9 = _s1_dirtyTag_T_8 | _s1_dirtyTag_T_6; // @[Mux.scala 27:73]
-  wire  _GEN_37 = s1_full & s1_fire ? 1'h0 : s1_full; // @[StorePipe.scala 63:26 82:{35,45}]
-  wire  _GEN_38 = s0_fire | _GEN_37; // @[StorePipe.scala 81:{20,30}]
+  wire  _GEN_37 = s1_full & s1_fire ? 1'h0 : s1_full; // @[StorePipe.scala 64:26 83:{35,45}]
+  wire  _GEN_38 = s0_fire | _GEN_37; // @[StorePipe.scala 82:{20,30}]
   wire [1:0] hi = s1_dataBlockSelOH[3:2]; // @[OneHot.scala 30:18]
   wire [1:0] lo = s1_dataBlockSelOH[1:0]; // @[OneHot.scala 31:18]
   wire  _T_2 = |hi; // @[OneHot.scala 32:14]
@@ -207,59 +210,65 @@ module StorePipe(
   wire [31:0] _tempWrData_T_1 = _tempWrData_T & s1_rdData; // @[Parameters.scala 67:18]
   wire [31:0] _tempWrData_T_2 = tempWrData_tempMask & s1_reqReg_data; // @[Parameters.scala 67:41]
   wire [31:0] _tempWrData_T_3 = _tempWrData_T_1 | _tempWrData_T_2; // @[Parameters.scala 67:29]
-  wire  _GEN_44 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe.scala 121:26 128:{35,45}]
-  wire  _GEN_45 = s1_fire | _GEN_44; // @[StorePipe.scala 127:{20,30}]
-  assign io_store_req_ready = ~s0_full; // @[StorePipe.scala 38:27]
-  assign io_store_resp_valid = s2_isHit & s2_full; // @[StorePipe.scala 130:37]
-  assign io_dir_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 43:39]
-  assign io_dir_read_req_bits_addr = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[StorePipe.scala 34:23]
-  assign io_dir_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 94:40]
-  assign io_dir_write_req_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 96:32]
-  assign io_dir_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 101:31]
-  assign io_dataBank_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 46:44]
+  wire  _GEN_44 = s2_full & s2_fire ? 1'h0 : s2_full; // @[StorePipe.scala 122:26 129:{35,45}]
+  wire  _GEN_45 = s1_fire | _GEN_44; // @[StorePipe.scala 128:{20,30}]
+  assign io_store_req_ready = ~s0_full; // @[StorePipe.scala 39:27]
+  assign io_store_resp_valid = s2_isHit & s2_full & ~io_flush; // @[StorePipe.scala 131:48]
+  assign io_dir_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 44:39]
+  assign io_dir_read_req_bits_addr = s0_latch ? io_store_req_bits_addr : s0_reqReg_addr; // @[StorePipe.scala 35:23]
+  assign io_dir_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 95:40]
+  assign io_dir_write_req_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 97:32]
+  assign io_dir_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 102:31]
+  assign io_dataBank_read_req_valid = s0_latch | s0_full; // @[StorePipe.scala 47:44]
   assign io_dataBank_read_req_bits_set = _GEN_0[12:4]; // @[Parameters.scala 50:11]
-  assign io_dataBank_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 103:45]
+  assign io_dataBank_write_req_valid = s1_dirInfo_hit & s1_full; // @[StorePipe.scala 104:45]
   assign io_dataBank_write_req_bits_set = s1_reqReg_addr[12:4]; // @[Parameters.scala 50:11]
-  assign io_dataBank_write_req_bits_data_0 = 2'h0 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 108:30 109:{45,45}]
-  assign io_dataBank_write_req_bits_data_1 = 2'h1 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 108:30 109:{45,45}]
-  assign io_dataBank_write_req_bits_data_2 = 2'h2 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 108:30 109:{45,45}]
-  assign io_dataBank_write_req_bits_data_3 = 2'h3 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 108:30 109:{45,45}]
+  assign io_dataBank_write_req_bits_data_0 = 2'h0 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 109:30 110:{45,45}]
+  assign io_dataBank_write_req_bits_data_1 = 2'h1 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 109:30 110:{45,45}]
+  assign io_dataBank_write_req_bits_data_2 = 2'h2 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 109:30 110:{45,45}]
+  assign io_dataBank_write_req_bits_data_3 = 2'h3 == _T_5 ? _tempWrData_T_3 : 32'h0; // @[StorePipe.scala 109:30 110:{45,45}]
   assign io_dataBank_write_req_bits_blockMask = 4'h1 << s1_reqReg_addr[3:2]; // @[OneHot.scala 57:35]
-  assign io_dataBank_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 107:36]
-  assign io_mshr_valid = _s1_valid_T & s1_full; // @[StorePipe.scala 84:32]
-  assign io_mshr_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 86:23]
-  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[StorePipe.scala 87:26]
-  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[StorePipe.scala 87:26]
-  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[StorePipe.scala 87:26]
+  assign io_dataBank_write_req_bits_way = s1_dirInfo_chosenWay; // @[StorePipe.scala 108:36]
+  assign io_mshr_valid = _s1_valid_T & s1_full; // @[StorePipe.scala 85:32]
+  assign io_mshr_bits_addr = s1_reqReg_addr; // @[StorePipe.scala 87:23]
+  assign io_mshr_bits_dirInfo_hit = s1_dirInfo_hit; // @[StorePipe.scala 88:26]
+  assign io_mshr_bits_dirInfo_chosenWay = s1_dirInfo_chosenWay; // @[StorePipe.scala 88:26]
+  assign io_mshr_bits_dirInfo_isDirtyWay = s1_dirInfo_isDirtyWay; // @[StorePipe.scala 88:26]
   assign io_mshr_bits_dirtyTag = _s1_dirtyTag_T_9 | _s1_dirtyTag_T_7; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_0 = _s1_rdBlockData_T_9 | _s1_rdBlockData_T_7; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_1 = _s1_rdBlockData_T_16 | _s1_rdBlockData_T_14; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_2 = _s1_rdBlockData_T_23 | _s1_rdBlockData_T_21; // @[Mux.scala 27:73]
   assign io_mshr_bits_data_3 = _s1_rdBlockData_T_30 | _s1_rdBlockData_T_28; // @[Mux.scala 27:73]
-  assign io_mshr_bits_storeData = s1_reqReg_data; // @[StorePipe.scala 91:28]
-  assign io_mshr_bits_storeMask = s1_reqReg_mask; // @[StorePipe.scala 92:28]
+  assign io_mshr_bits_storeData = s1_reqReg_data; // @[StorePipe.scala 92:28]
+  assign io_mshr_bits_storeMask = s1_reqReg_mask; // @[StorePipe.scala 93:28]
   always @(posedge clock) begin
-    if (reset) begin // @[StorePipe.scala 30:26]
-      s0_full <= 1'h0; // @[StorePipe.scala 30:26]
+    if (reset) begin // @[StorePipe.scala 31:26]
+      s0_full <= 1'h0; // @[StorePipe.scala 31:26]
+    end else if (io_flush) begin // @[StorePipe.scala 136:20]
+      s0_full <= 1'h0; // @[StorePipe.scala 137:17]
     end else begin
       s0_full <= _GEN_4;
     end
     s0_valid_REG <= io_store_req_ready & io_store_req_valid; // @[Decoupled.scala 51:35]
-    if (reset) begin // @[StorePipe.scala 53:30]
-      s0_validReg <= 1'h0; // @[StorePipe.scala 53:30]
+    if (reset) begin // @[StorePipe.scala 54:30]
+      s0_validReg <= 1'h0; // @[StorePipe.scala 54:30]
     end else begin
       s0_validReg <= _GEN_6;
     end
-    if (reset) begin // @[StorePipe.scala 63:26]
-      s1_full <= 1'h0; // @[StorePipe.scala 63:26]
+    if (reset) begin // @[StorePipe.scala 64:26]
+      s1_full <= 1'h0; // @[StorePipe.scala 64:26]
+    end else if (io_flush) begin // @[StorePipe.scala 136:20]
+      s1_full <= 1'h0; // @[StorePipe.scala 138:17]
     end else begin
       s1_full <= _GEN_38;
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_dirInfo_hit <= io_dir_read_resp_bits_hit; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[StorePipe.scala 121:26]
-      s2_full <= 1'h0; // @[StorePipe.scala 121:26]
+    if (reset) begin // @[StorePipe.scala 122:26]
+      s2_full <= 1'h0; // @[StorePipe.scala 122:26]
+    end else if (io_flush) begin // @[StorePipe.scala 136:20]
+      s2_full <= 1'h0; // @[StorePipe.scala 139:17]
     end else begin
       s2_full <= _GEN_45;
     end

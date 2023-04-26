@@ -200,6 +200,7 @@ class ALUStageIO_1()(implicit val p: Parameters) extends MyBundle {
     val out = Decoupled(new Bundle{
         val data = UInt(xlen.W)
         val id = UInt(8.W)
+        val rd = UInt(5.W)
     })
     val flush = Input(Bool())
 }
@@ -220,7 +221,7 @@ class ALUStage_1()(implicit val p: Parameters) extends MyModule {
     val s0_full = RegInit(false.B)
     val s0_fire = s0_valid & s1_ready
     val s0_info = RegEnable(io.in.bits, s0_latch)
-    s0_ready := !s0_full || s0_fire
+    s0_ready := !s0_full //|| s0_fire
 
     when(s0_latch) { s0_full := true.B }
     .elsewhen(s0_fire && s0_full) { s0_full := false.B }
@@ -245,6 +246,7 @@ class ALUStage_1()(implicit val p: Parameters) extends MyModule {
     val s1_latch = s0_valid && s1_ready
     val s1_full = RegInit(false.B)
     val s1_fire = s1_valid
+    val s1_rd = RegEnable(InstField(s0_info.inst, "rd"), s1_latch)
     val s1_aluOp = RegEnable(s0_info.aluOp, s1_latch)
     val s1_aluInVec = RegEnable(s0_aluInVec, s1_latch)
     val s1_id = RegEnable(s0_info.id, s1_latch)
@@ -260,6 +262,7 @@ class ALUStage_1()(implicit val p: Parameters) extends MyModule {
 
     io.out.bits.data := alu.io.out
     io.out.bits.id := s1_id
+    io.out.bits.rd := s1_rd
     io.out.valid := s1_full
 
     s1_valid := io.out.fire

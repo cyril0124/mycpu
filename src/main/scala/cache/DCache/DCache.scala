@@ -50,6 +50,7 @@ class DCacheIO()(implicit val p: Parameters) extends MyBundle{
     val write = new CacheWriteBus
 
     val tlbus = new TLMasterBusUL
+    val flush = Input(Bool())
 }
 
 object ReplacePolicy{
@@ -85,6 +86,9 @@ class DCache()(implicit val p: Parameters) extends MyModule {
     val wb = Module(new WritebackQueue)
     val db = Module(new DataBankArray)
     val dir = Module(new DCacheDirectory)
+
+    storePipe.io.flush := io.flush
+    mshr.io.flush := io.flush
 
     loadPipe.io.dir.resp.valid := dir.io.read.resp.valid
     loadPipe.io.dir.resp.bits <> dir.io.read.resp.bits

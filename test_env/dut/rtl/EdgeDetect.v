@@ -6,10 +6,10 @@ module EdgeDetect(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
-  reg  prev; // @[Core_1.scala 26:23]
-  assign io_change = prev & ~io_in; // @[Core_1.scala 30:27]
+  reg  prev; // @[Core_1.scala 27:23]
+  assign io_change = prev & ~io_in; // @[Core_1.scala 31:27]
   always @(posedge clock) begin
-    prev <= io_in; // @[Core_1.scala 26:23]
+    prev <= io_in; // @[Core_1.scala 27:23]
   end
 // Register and memory initialization
 `ifdef RANDOMIZE_GARBAGE_ASSIGN

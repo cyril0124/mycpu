@@ -43,7 +43,7 @@ class CoreIO()(implicit val p: Parameters) extends MyBundle{
             }
 }
 
-class Core()(implicit val p: Parameters) extends MyModule{
+class Core_1()(implicit val p: Parameters) extends MyModule{
     val io = IO(new CoreIO)
 
     val stallDec = Wire(Bool())
@@ -349,7 +349,7 @@ if( testCase == 0 ) {
 
 }
 
-object CoreGenRTL extends App {
+object Core_1GenRTL extends App {
     val defaultConfig = new Config((_,_,_) => {
         case MyCpuParamsKey => MyCpuParameters(
             simulation = true,

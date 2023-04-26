@@ -42,6 +42,7 @@ class MSHRIO()(implicit val p: Parameters) extends MyBundle {
     val busy = Output(Bool())
     val dirWrite = Flipped(new DirectoryWriteBus)
     val dataWrite = Flipped(new DataBankArrayWrite)
+    val flush = Input(Bool())
 }
 
 object MSHR {
@@ -151,7 +152,7 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
     io.dirWrite.req.bits.way := reqReg.dirInfo.chosenWay
 
     // write store data into dataBanks
-    io.dataWrite.req.valid := state === sWriteData || willWriteStore
+    io.dataWrite.req.valid := (state === sWriteData || willWriteStore) && !io.flush
     io.dataWrite.req.bits.blockMask := addrToDCacheBlockOH(reqReg.addr)
     io.dataWrite.req.bits.set := addrToDCacheSet(reqReg.addr)
     io.dataWrite.req.bits.way := reqReg.dirInfo.chosenWay
@@ -163,13 +164,17 @@ class MSHR()(implicit val p: Parameters) extends MyModule {
 
 
 
-    io.resp.load.valid := !req.isStore && (state === sResp || willRespLoad)
+    io.resp.load.valid := !req.isStore && (state === sResp || willRespLoad) && !io.flush
     io.resp.load.bits.data := Mux(io.tasks.refill.resp.fire, 
                                 io.tasks.refill.resp.bits.data, 
                                 RegEnable(io.tasks.refill.resp.bits.data, io.tasks.refill.resp.fire)
                             )
 
     io.resp.store.valid := req.isStore && (state === sResp || willRespStore)
+
+    when(io.flush) {
+        state := sIdle
+    }
 }
 
 object MSHRGenRTL extends App {

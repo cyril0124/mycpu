@@ -16,6 +16,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
         val dir = Flipped(new DirectoryIO)
         val dataBank = Flipped(new DataBankArrayIO) 
         val mshr =  Decoupled(new MissReq)
+        val flush = Input(Bool())
     })
     // io <> DontCare
 
@@ -77,7 +78,7 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     val s1_tagRdVec = RegEnable(io.dir.read.resp.bits.tagRdVec, s1_latch)
     val s1_dirtyTag      = Mux1H(s1_chosenWayOH, s1_tagRdVec)
 
-    s1_ready := !s1_full || s1_fire
+    s1_ready := (!s1_full || s1_fire) && io.mshr.ready // TODO: when mshr is not ready, new dirinfo should be updated according to the last req
     when(s1_latch) { s1_full := true.B } 
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
@@ -127,9 +128,14 @@ class StorePipe()(implicit val p: Parameters) extends MyModule {
     when(s2_latch) { s2_full := true.B }
     .elsewhen(s2_full && s2_fire) { s2_full := false.B }
 
-    io.store.resp.valid := s2_isHit && s2_full
+    io.store.resp.valid := s2_isHit && s2_full && !io.flush
     io.store.resp.bits <> DontCare
 
     s2_valid := io.store.resp.fire && s2_full && s2_isHit || !s2_isHit
 
+    when(io.flush) {
+        s0_full := false.B
+        s1_full := false.B
+        s2_full := false.B
+    }
 }

@@ -106,7 +106,7 @@ module DCacheDirectory_1(
   wire [7:0] replaceWay_lfsr = {replaceWay_lfsr_prng_io_out_7,replaceWay_lfsr_prng_io_out_6,
     replaceWay_lfsr_prng_io_out_5,replaceWay_lfsr_prng_io_out_4,replaceWay_lfsr_prng_io_out_3,
     replaceWay_lfsr_prng_io_out_2,replaceWay_lfsr_prng_io_out_1,replaceWay_lfsr_prng_io_out_0}; // @[PRNG.scala 95:17]
-  wire [1:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[1:0]; // @[DCache.scala 60:39]
+  wire [1:0] replaceWay_outputWay_shiftAmount = replaceWay_lfsr[1:0]; // @[DCache.scala 61:39]
   wire [3:0] replaceWay = 4'h1 << replaceWay_outputWay_shiftAmount; // @[OneHot.scala 64:12]
   wire  _replaceWayReg_T = ~io_read_req_valid; // @[Directory.scala 93:65]
   reg [3:0] replaceWayReg; // @[Reg.scala 19:16]

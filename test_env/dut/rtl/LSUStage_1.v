@@ -1,27 +1,18 @@
-module LSUStage(
+module LSUStage_1(
   input         clock,
   input         reset,
   output        io_in_ready,
   input         io_in_valid,
   input  [4:0]  io_in_bits_lsuOp,
   input  [2:0]  io_in_bits_immSrc,
+  input  [31:0] io_in_bits_rs1Val,
+  input  [31:0] io_in_bits_rs2Val,
   input  [31:0] io_in_bits_inst,
-  input  [31:0] io_in_bits_pc,
   input  [7:0]  io_in_bits_id,
-  input         io_out_ready,
   output        io_out_valid,
-  output [31:0] io_out_bits_data,
   output [4:0]  io_out_bits_rd,
-  output        io_out_bits_wrEn,
-  output [31:0] io_out_bits_inst,
-  output [31:0] io_out_bits_pc,
+  output [31:0] io_out_bits_data,
   output [7:0]  io_out_bits_id,
-  output [4:0]  io_rfRd_0_addr,
-  output        io_rfRd_0_en,
-  input  [31:0] io_rfRd_0_data,
-  output [4:0]  io_rfRd_1_addr,
-  input  [31:0] io_rfRd_1_data,
-  input         io_rfRdReady,
   input         io_cache_read_req_ready,
   output        io_cache_read_req_valid,
   output [31:0] io_cache_read_req_bits_addr,
@@ -63,54 +54,53 @@ module LSUStage(
   reg [31:0] _RAND_22;
   reg [31:0] _RAND_23;
   reg [31:0] _RAND_24;
-  reg [31:0] _RAND_25;
 `endif // RANDOMIZE_REG_INIT
-  wire [31:0] immGen_io_inst; // @[LSU.scala 86:24]
-  wire [2:0] immGen_io_immSrc; // @[LSU.scala 86:24]
-  wire  immGen_io_immSign; // @[LSU.scala 86:24]
-  wire [31:0] immGen_io_imm; // @[LSU.scala 86:24]
-  reg  s0_full; // @[LSU.scala 63:26]
+  wire [31:0] immGen_io_inst; // @[LSU.scala 270:24]
+  wire [2:0] immGen_io_immSrc; // @[LSU.scala 270:24]
+  wire  immGen_io_immSign; // @[LSU.scala 270:24]
+  wire [31:0] immGen_io_imm; // @[LSU.scala 270:24]
+  reg  s0_full; // @[LSU.scala 262:26]
   reg [4:0] s0_info_lsuOp; // @[Reg.scala 19:16]
-  wire  _s0_valid_T_2 = s0_info_lsuOp == 5'h14; // @[LSU.scala 94:93]
-  wire  _s0_valid_T_3 = io_out_ready & io_out_valid; // @[Decoupled.scala 51:35]
-  wire  s0_valid = s0_full & (s0_info_lsuOp != 5'h14 & io_rfRdReady | s0_info_lsuOp == 5'h14 & _s0_valid_T_3); // @[LSU.scala 94:25]
-  reg  s1_full; // @[LSU.scala 101:26]
-  wire  _s1_valid_T = io_cache_read_req_ready & io_cache_read_req_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_1 = io_cache_write_req_ready & io_cache_write_req_valid; // @[Decoupled.scala 51:35]
-  reg  s1_reqSend; // @[LSU.scala 136:29]
-  wire  _s1_valid_T_3 = _s1_valid_T | _s1_valid_T_1 | s1_reqSend; // @[LSU.scala 160:79]
-  wire  s1_valid = s1_full & (_s1_valid_T | _s1_valid_T_1 | s1_reqSend); // @[LSU.scala 160:25]
-  reg  s2_full; // @[LSU.scala 167:26]
+  wire  _s0_valid_T_1 = s0_info_lsuOp == 5'h14; // @[LSU.scala 278:75]
+  wire  s0_valid = s0_full & (s0_info_lsuOp != 5'h14 | s0_info_lsuOp == 5'h14 & io_out_valid); // @[LSU.scala 278:25]
+  reg  s1_full; // @[LSU.scala 285:26]
+  reg  s2_full; // @[LSU.scala 352:26]
   wire  _s2_loadRespValid_T = io_cache_read_resp_ready & io_cache_read_resp_valid; // @[Decoupled.scala 51:35]
   reg  s2_loadRespValid_holdReg; // @[Reg.scala 19:16]
   wire  s2_loadRespValid = _s2_loadRespValid_T ? io_cache_read_resp_valid : s2_loadRespValid_holdReg; // @[util.scala 26:12]
   wire  _s2_storeRespValid_T = io_cache_write_resp_ready & io_cache_write_resp_valid; // @[Decoupled.scala 51:35]
   reg  s2_storeRespValid_holdReg; // @[Reg.scala 19:16]
   wire  s2_storeRespValid = _s2_storeRespValid_T ? io_cache_write_resp_valid : s2_storeRespValid_holdReg; // @[util.scala 26:12]
-  wire  s2_valid = s2_full & (s2_loadRespValid | s2_storeRespValid); // @[LSU.scala 204:25]
-  wire  s2_fire = s2_valid & io_out_ready; // @[LSU.scala 168:28]
-  wire  s2_ready = ~s2_full | s2_fire; // @[LSU.scala 178:26]
-  wire  s1_fire = s1_valid & s2_ready; // @[LSU.scala 102:28]
-  wire  s1_ready = ~s1_full | s1_fire; // @[LSU.scala 113:26]
-  wire  s0_fire = s0_valid & s1_ready; // @[LSU.scala 64:28]
-  wire  s0_ready = ~s0_full | s0_fire; // @[LSU.scala 66:26]
-  wire  s0_latch = io_in_valid & s0_ready; // @[LSU.scala 62:32]
+  wire  s2_valid = s2_full & (s2_loadRespValid | s2_storeRespValid); // @[LSU.scala 387:25]
+  wire  s2_fire = s2_valid & io_out_valid; // @[LSU.scala 353:28]
+  wire  s2_ready = ~s2_full | s2_fire; // @[LSU.scala 361:26]
+  wire  s1_ready = ~s1_full & s2_ready; // @[LSU.scala 296:30]
+  wire  s0_fire = s0_valid & s1_ready; // @[LSU.scala 263:28]
+  wire  s0_ready = ~s0_full | s0_fire; // @[LSU.scala 265:26]
+  wire  s0_latch = io_in_valid & s0_ready; // @[LSU.scala 261:32]
   reg [2:0] s0_info_immSrc; // @[Reg.scala 19:16]
+  reg [31:0] s0_info_rs1Val; // @[Reg.scala 19:16]
+  reg [31:0] s0_info_rs2Val; // @[Reg.scala 19:16]
   reg [31:0] s0_info_inst; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_pc; // @[Reg.scala 19:16]
   reg [7:0] s0_info_id; // @[Reg.scala 19:16]
-  wire  _GEN_7 = s0_fire & s0_full ? 1'h0 : s0_full; // @[LSU.scala 63:26 69:{35,45}]
-  wire  _GEN_8 = s0_latch | _GEN_7; // @[LSU.scala 68:{20,30}]
-  wire [31:0] s0_addr = immGen_io_imm + io_rfRd_0_data; // @[LSU.scala 92:26]
+  wire  _GEN_6 = s0_fire & s0_full ? 1'h0 : s0_full; // @[LSU.scala 262:26 268:{35,45}]
+  wire  _GEN_7 = s0_latch | _GEN_6; // @[LSU.scala 267:{20,30}]
+  wire [31:0] s0_addr = immGen_io_imm + s0_info_rs1Val; // @[LSU.scala 276:26]
+  wire  _s1_valid_T = io_cache_read_req_ready & io_cache_read_req_valid; // @[Decoupled.scala 51:35]
+  wire  _s1_valid_T_1 = io_cache_write_req_ready & io_cache_write_req_valid; // @[Decoupled.scala 51:35]
+  reg  s1_reqSend; // @[LSU.scala 321:29]
+  wire  _s1_valid_T_3 = _s1_valid_T | _s1_valid_T_1 | s1_reqSend; // @[LSU.scala 345:79]
+  wire  s1_valid = s1_full & (_s1_valid_T | _s1_valid_T_1 | s1_reqSend); // @[LSU.scala 345:25]
+  wire  s1_fire = s1_valid & s2_ready; // @[LSU.scala 286:28]
+  wire [4:0] rd = s0_info_inst[11:7]; // @[util.scala 71:31]
+  reg [4:0] s1_rd; // @[Reg.scala 19:16]
   reg [4:0] s1_lsuOp; // @[Reg.scala 19:16]
-  reg [31:0] s1_rsValVec_1; // @[Reg.scala 19:16]
+  reg [31:0] s1_rs2Val; // @[Reg.scala 19:16]
   reg [31:0] s1_addr; // @[Reg.scala 19:16]
-  reg [31:0] s1_pc; // @[Reg.scala 19:16]
-  reg [31:0] s1_inst; // @[Reg.scala 19:16]
-  wire [1:0] s1_offset = s1_addr[1:0]; // @[LSU.scala 111:28]
+  wire [1:0] s1_offset = s1_addr[1:0]; // @[LSU.scala 294:28]
   reg [7:0] s1_id; // @[Reg.scala 19:16]
-  wire  _GEN_18 = s1_fire & s1_full ? 1'h0 : s1_full; // @[LSU.scala 101:26 116:{35,45}]
-  wire  _GEN_19 = s0_fire | _GEN_18; // @[LSU.scala 115:{20,30}]
+  wire  _GEN_13 = s1_fire & s1_full ? 1'h0 : s1_full; // @[LSU.scala 285:26 301:{35,45}]
+  wire  _GEN_14 = s0_fire | _GEN_13; // @[LSU.scala 300:{20,30}]
   wire  _T_3 = 5'h1 == s1_lsuOp; // @[Lookup.scala 31:38]
   wire  _T_5 = 5'h2 == s1_lsuOp; // @[Lookup.scala 31:38]
   wire  _T_7 = 5'h3 == s1_lsuOp; // @[Lookup.scala 31:38]
@@ -135,35 +125,34 @@ module LSUStage(
   wire [1:0] _T_51 = _T_5 ? 2'h1 : _T_50; // @[Lookup.scala 34:39]
   wire [1:0] s1_width = _T_3 ? 2'h0 : _T_51; // @[Lookup.scala 34:39]
   wire  s1_signed = _T_3 | (_T_5 | (_T_7 | _T_33)); // @[Lookup.scala 34:39]
-  wire  _io_cache_read_req_valid_T_1 = ~s1_reqSend; // @[LSU.scala 141:54]
-  wire  _io_cache_read_req_valid_T_3 = ~io_flush; // @[LSU.scala 141:69]
-  wire [4:0] _io_cache_write_req_bits_data_T = {s1_offset, 3'h0}; // @[LSU.scala 146:60]
-  wire [62:0] _GEN_0 = {{31'd0}, s1_rsValVec_1}; // @[LSU.scala 146:46]
-  wire [62:0] _io_cache_write_req_bits_data_T_1 = _GEN_0 << _io_cache_write_req_bits_data_T; // @[LSU.scala 146:46]
+  wire  _io_cache_read_req_valid_T_1 = ~s1_reqSend; // @[LSU.scala 326:54]
+  wire  _io_cache_read_req_valid_T_3 = ~io_flush; // @[LSU.scala 326:69]
+  wire [4:0] _io_cache_write_req_bits_data_T = {s1_offset, 3'h0}; // @[LSU.scala 331:60]
+  wire [62:0] _GEN_0 = {{31'd0}, s1_rs2Val}; // @[LSU.scala 331:46]
+  wire [62:0] _io_cache_write_req_bits_data_T_1 = _GEN_0 << _io_cache_write_req_bits_data_T; // @[LSU.scala 331:46]
   wire [3:0] _s1_storeMask_T_1 = 4'h1 << s1_offset; // @[OneHot.scala 57:35]
   wire [2:0] _s1_storeMask_T_6 = 2'h1 == s1_offset ? 3'h6 : 3'h3; // @[Mux.scala 81:58]
   wire [3:0] _s1_storeMask_T_8 = 2'h2 == s1_offset ? 4'hc : {{1'd0}, _s1_storeMask_T_6}; // @[Mux.scala 81:58]
   wire [3:0] _s1_storeMask_T_10 = 2'h0 == s1_width ? _s1_storeMask_T_1 : 4'hf; // @[Mux.scala 81:58]
   wire [3:0] _s1_storeMask_T_12 = 2'h1 == s1_width ? _s1_storeMask_T_8 : _s1_storeMask_T_10; // @[Mux.scala 81:58]
+  reg [4:0] s2_rd; // @[Reg.scala 19:16]
   reg  s2_load; // @[Reg.scala 19:16]
   reg  s2_en; // @[Reg.scala 19:16]
   reg  s2_signed; // @[Reg.scala 19:16]
   reg [1:0] s2_width; // @[Reg.scala 19:16]
   reg [1:0] s2_offset; // @[Reg.scala 19:16]
-  reg [31:0] s2_pc; // @[Reg.scala 19:16]
-  reg [31:0] s2_inst; // @[Reg.scala 19:16]
   reg [7:0] s2_id; // @[Reg.scala 19:16]
-  wire  _GEN_30 = s2_fire & s2_full ? 1'h0 : s2_full; // @[LSU.scala 167:26 181:{35,45}]
-  wire  _GEN_31 = s1_fire | _GEN_30; // @[LSU.scala 180:{20,30}]
+  wire  _GEN_24 = s2_fire & s2_full ? 1'h0 : s2_full; // @[LSU.scala 352:26 364:{35,45}]
+  wire  _GEN_25 = s1_fire | _GEN_24; // @[LSU.scala 363:{20,30}]
   reg [31:0] s2_loadResp_holdReg_data; // @[Reg.scala 19:16]
-  wire [31:0] _GEN_32 = _s2_loadRespValid_T ? io_cache_read_resp_bits_data : s2_loadResp_holdReg_data; // @[Reg.scala 19:16 20:{18,22}]
-  wire [31:0] _s2_loadDataRaw_T_2 = {8'h0,_GEN_32[31:8]}; // @[Cat.scala 33:92]
-  wire [31:0] _s2_loadDataRaw_T_5 = {16'h0,_GEN_32[31:16]}; // @[Cat.scala 33:92]
-  wire [31:0] _s2_loadDataRaw_T_8 = {24'h0,_GEN_32[31:24]}; // @[Cat.scala 33:92]
-  wire [31:0] _s2_loadDataRaw_T_10 = 2'h1 == s2_offset ? _s2_loadDataRaw_T_2 : _GEN_32; // @[Mux.scala 81:58]
+  wire [31:0] _GEN_26 = _s2_loadRespValid_T ? io_cache_read_resp_bits_data : s2_loadResp_holdReg_data; // @[Reg.scala 19:16 20:{18,22}]
+  wire [31:0] _s2_loadDataRaw_T_2 = {8'h0,_GEN_26[31:8]}; // @[Cat.scala 33:92]
+  wire [31:0] _s2_loadDataRaw_T_5 = {16'h0,_GEN_26[31:16]}; // @[Cat.scala 33:92]
+  wire [31:0] _s2_loadDataRaw_T_8 = {24'h0,_GEN_26[31:24]}; // @[Cat.scala 33:92]
+  wire [31:0] _s2_loadDataRaw_T_10 = 2'h1 == s2_offset ? _s2_loadDataRaw_T_2 : _GEN_26; // @[Mux.scala 81:58]
   wire [31:0] _s2_loadDataRaw_T_12 = 2'h2 == s2_offset ? _s2_loadDataRaw_T_5 : _s2_loadDataRaw_T_10; // @[Mux.scala 81:58]
   wire [31:0] s2_loadDataRaw = 2'h3 == s2_offset ? _s2_loadDataRaw_T_8 : _s2_loadDataRaw_T_12; // @[Mux.scala 81:58]
-  wire [7:0] _s2_loadData_T_1 = s2_loadDataRaw[7:0]; // @[LSU.scala 198:88]
+  wire [7:0] _s2_loadData_T_1 = s2_loadDataRaw[7:0]; // @[LSU.scala 381:88]
   wire  s2_loadData_signBit = _s2_loadData_T_1[7]; // @[util.scala 42:27]
   wire [5:0] s2_loadData_out_lo_lo = {s2_loadData_signBit,s2_loadData_signBit,s2_loadData_signBit,s2_loadData_signBit,
     s2_loadData_signBit,s2_loadData_signBit}; // @[Cat.scala 33:92]
@@ -173,8 +162,8 @@ module LSUStage(
   wire [31:0] s2_loadData_out = {s2_loadData_signBit,s2_loadData_signBit,s2_loadData_signBit,s2_loadData_signBit,
     s2_loadData_signBit,s2_loadData_signBit,s2_loadData_out_lo_lo,s2_loadData_out_lo,_s2_loadData_out_T_1}; // @[Cat.scala 33:92]
   wire [31:0] s2_loadData_out_1 = {{24'd0}, s2_loadDataRaw[7:0]}; // @[util.scala 62:36]
-  wire [31:0] _s2_loadData_T_3 = s2_signed ? s2_loadData_out : s2_loadData_out_1; // @[LSU.scala 198:48]
-  wire [15:0] _s2_loadData_T_5 = s2_loadDataRaw[15:0]; // @[LSU.scala 199:89]
+  wire [31:0] _s2_loadData_T_3 = s2_signed ? s2_loadData_out : s2_loadData_out_1; // @[LSU.scala 381:48]
+  wire [15:0] _s2_loadData_T_5 = s2_loadDataRaw[15:0]; // @[LSU.scala 382:89]
   wire  s2_loadData_signBit_1 = _s2_loadData_T_5[15]; // @[util.scala 42:27]
   wire [7:0] s2_loadData_out_lo_1 = {s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,
     s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1}; // @[Cat.scala 33:92]
@@ -183,71 +172,58 @@ module LSUStage(
     s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,s2_loadData_signBit_1,
     s2_loadData_out_lo_1,_s2_loadData_out_T_3}; // @[Cat.scala 33:92]
   wire [31:0] s2_loadData_out_3 = {{16'd0}, s2_loadDataRaw[15:0]}; // @[util.scala 62:36]
-  wire [31:0] _s2_loadData_T_7 = s2_signed ? s2_loadData_out_2 : s2_loadData_out_3; // @[LSU.scala 199:48]
+  wire [31:0] _s2_loadData_T_7 = s2_signed ? s2_loadData_out_2 : s2_loadData_out_3; // @[LSU.scala 382:48]
   wire [31:0] _s2_loadData_T_10 = 2'h3 == s2_offset ? _s2_loadDataRaw_T_8 : _s2_loadDataRaw_T_12; // @[util.scala 44:18]
-  wire [31:0] _s2_loadData_T_12 = s2_signed ? _s2_loadData_T_10 : s2_loadDataRaw; // @[LSU.scala 200:48]
+  wire [31:0] _s2_loadData_T_12 = s2_signed ? _s2_loadData_T_10 : s2_loadDataRaw; // @[LSU.scala 383:48]
   wire [31:0] _s2_loadData_T_14 = 2'h0 == s2_width ? _s2_loadData_T_3 : s2_loadDataRaw; // @[Mux.scala 81:58]
   wire [31:0] _s2_loadData_T_16 = 2'h1 == s2_width ? _s2_loadData_T_7 : _s2_loadData_T_14; // @[Mux.scala 81:58]
-  wire  s0_fence = s0_full & _s0_valid_T_2; // @[LSU.scala 206:28]
-  ImmGen immGen ( // @[LSU.scala 86:24]
+  wire  s0_fence = s0_full & _s0_valid_T_1; // @[LSU.scala 389:28]
+  ImmGen immGen ( // @[LSU.scala 270:24]
     .io_inst(immGen_io_inst),
     .io_immSrc(immGen_io_immSrc),
     .io_immSign(immGen_io_immSign),
     .io_imm(immGen_io_imm)
   );
-  assign io_in_ready = ~s0_full | s0_fire; // @[LSU.scala 66:26]
-  assign io_out_valid = s2_valid & s2_en | s0_fence; // @[LSU.scala 207:39]
+  assign io_in_ready = ~s0_full | s0_fire; // @[LSU.scala 265:26]
+  assign io_out_valid = s2_valid & s2_en | s0_fence; // @[LSU.scala 390:39]
+  assign io_out_bits_rd = s2_rd; // @[LSU.scala 391:20]
   assign io_out_bits_data = 2'h2 == s2_width ? _s2_loadData_T_12 : _s2_loadData_T_16; // @[Mux.scala 81:58]
-  assign io_out_bits_rd = s2_inst[11:7]; // @[util.scala 71:31]
-  assign io_out_bits_wrEn = s0_fence ? 1'h0 : s2_load & s2_en; // @[LSU.scala 212:28]
-  assign io_out_bits_inst = s0_fence ? s0_info_inst : s2_inst; // @[LSU.scala 210:28]
-  assign io_out_bits_pc = s0_fence ? s0_info_pc : s2_pc; // @[LSU.scala 209:26]
-  assign io_out_bits_id = s0_fence ? s0_info_id : s2_id; // @[LSU.scala 213:26]
-  assign io_rfRd_0_addr = s0_info_inst[19:15]; // @[util.scala 72:31]
-  assign io_rfRd_0_en = s0_full; // @[LSU.scala 81:23]
-  assign io_rfRd_1_addr = s0_info_inst[24:20]; // @[util.scala 73:31]
-  assign io_cache_read_req_valid = s1_load & s1_full & ~s1_reqSend & ~io_flush; // @[LSU.scala 141:66]
+  assign io_out_bits_id = s0_fence ? s0_info_id : s2_id; // @[LSU.scala 393:26]
+  assign io_cache_read_req_valid = s1_load & s1_full & ~s1_reqSend & ~io_flush; // @[LSU.scala 326:66]
   assign io_cache_read_req_bits_addr = {s1_addr[31:2],2'h0}; // @[Cat.scala 33:92]
-  assign io_cache_read_resp_ready = 1'h1; // @[LSU.scala 183:30]
-  assign io_cache_write_req_valid = s1_wen & s1_full & _io_cache_read_req_valid_T_1 & _io_cache_read_req_valid_T_3; // @[LSU.scala 144:66]
+  assign io_cache_read_resp_ready = s2_load; // @[LSU.scala 366:30]
+  assign io_cache_write_req_valid = s1_wen & s1_full & _io_cache_read_req_valid_T_1 & _io_cache_read_req_valid_T_3; // @[LSU.scala 329:66]
   assign io_cache_write_req_bits_addr = {s1_addr[31:2],2'h0}; // @[Cat.scala 33:92]
-  assign io_cache_write_req_bits_data = _io_cache_write_req_bits_data_T_1[31:0]; // @[LSU.scala 146:34]
+  assign io_cache_write_req_bits_data = _io_cache_write_req_bits_data_T_1[31:0]; // @[LSU.scala 331:34]
   assign io_cache_write_req_bits_mask = 2'h2 == s1_width ? 4'hf : _s1_storeMask_T_12; // @[Mux.scala 81:58]
-  assign io_cache_write_resp_ready = 1'h1; // @[LSU.scala 184:31]
-  assign immGen_io_inst = s0_info_inst; // @[LSU.scala 90:20]
-  assign immGen_io_immSrc = s0_info_immSrc; // @[LSU.scala 88:22]
-  assign immGen_io_immSign = 1'h1; // @[LSU.scala 89:23]
+  assign io_cache_write_resp_ready = ~s2_load; // @[LSU.scala 367:34]
+  assign immGen_io_inst = s0_info_inst; // @[LSU.scala 274:20]
+  assign immGen_io_immSrc = s0_info_immSrc; // @[LSU.scala 272:22]
+  assign immGen_io_immSign = 1'h1; // @[LSU.scala 273:23]
   always @(posedge clock) begin
-    if (reset) begin // @[LSU.scala 63:26]
-      s0_full <= 1'h0; // @[LSU.scala 63:26]
-    end else if (io_flush) begin // @[LSU.scala 216:20]
-      s0_full <= 1'h0; // @[LSU.scala 217:17]
+    if (reset) begin // @[LSU.scala 262:26]
+      s0_full <= 1'h0; // @[LSU.scala 262:26]
+    end else if (io_flush) begin // @[LSU.scala 396:20]
+      s0_full <= 1'h0; // @[LSU.scala 397:17]
     end else begin
-      s0_full <= _GEN_8;
+      s0_full <= _GEN_7;
     end
     if (s0_latch) begin // @[Reg.scala 20:18]
       s0_info_lsuOp <= io_in_bits_lsuOp; // @[Reg.scala 20:22]
     end
-    if (reset) begin // @[LSU.scala 101:26]
-      s1_full <= 1'h0; // @[LSU.scala 101:26]
-    end else if (io_flush) begin // @[LSU.scala 216:20]
-      s1_full <= 1'h0; // @[LSU.scala 218:17]
+    if (reset) begin // @[LSU.scala 285:26]
+      s1_full <= 1'h0; // @[LSU.scala 285:26]
+    end else if (io_flush) begin // @[LSU.scala 396:20]
+      s1_full <= 1'h0; // @[LSU.scala 398:17]
     end else begin
-      s1_full <= _GEN_19;
+      s1_full <= _GEN_14;
     end
-    if (reset) begin // @[LSU.scala 136:29]
-      s1_reqSend <= 1'h0; // @[LSU.scala 136:29]
-    end else if (s1_fire) begin // @[LSU.scala 137:19]
-      s1_reqSend <= 1'h0; // @[LSU.scala 137:32]
+    if (reset) begin // @[LSU.scala 352:26]
+      s2_full <= 1'h0; // @[LSU.scala 352:26]
+    end else if (io_flush) begin // @[LSU.scala 396:20]
+      s2_full <= 1'h0; // @[LSU.scala 399:17]
     end else begin
-      s1_reqSend <= _s1_valid_T_3;
-    end
-    if (reset) begin // @[LSU.scala 167:26]
-      s2_full <= 1'h0; // @[LSU.scala 167:26]
-    end else if (io_flush) begin // @[LSU.scala 216:20]
-      s2_full <= 1'h0; // @[LSU.scala 219:17]
-    end else begin
-      s2_full <= _GEN_31;
+      s2_full <= _GEN_25;
     end
     if (s1_fire) begin // @[util.scala 25:21]
       s2_loadRespValid_holdReg <= 1'h0; // @[util.scala 25:31]
@@ -263,31 +239,45 @@ module LSUStage(
       s0_info_immSrc <= io_in_bits_immSrc; // @[Reg.scala 20:22]
     end
     if (s0_latch) begin // @[Reg.scala 20:18]
+      s0_info_rs1Val <= io_in_bits_rs1Val; // @[Reg.scala 20:22]
+    end
+    if (s0_latch) begin // @[Reg.scala 20:18]
+      s0_info_rs2Val <= io_in_bits_rs2Val; // @[Reg.scala 20:22]
+    end
+    if (s0_latch) begin // @[Reg.scala 20:18]
       s0_info_inst <= io_in_bits_inst; // @[Reg.scala 20:22]
     end
     if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_pc <= io_in_bits_pc; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
       s0_info_id <= io_in_bits_id; // @[Reg.scala 20:22]
+    end
+    if (reset) begin // @[LSU.scala 321:29]
+      s1_reqSend <= 1'h0; // @[LSU.scala 321:29]
+    end else if (s1_fire) begin // @[LSU.scala 322:19]
+      s1_reqSend <= 1'h0; // @[LSU.scala 322:32]
+    end else begin
+      s1_reqSend <= _s1_valid_T_3;
+    end
+    if (s0_fire) begin // @[Reg.scala 20:18]
+      if (s0_info_lsuOp == 5'h8 | s0_info_lsuOp == 5'h7 | s0_info_lsuOp == 5'h6 | _s0_valid_T_1) begin // @[LSU.scala 289:30]
+        s1_rd <= 5'h0;
+      end else begin
+        s1_rd <= rd;
+      end
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_lsuOp <= s0_info_lsuOp; // @[Reg.scala 20:22]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_rsValVec_1 <= io_rfRd_1_data; // @[Reg.scala 20:22]
+      s1_rs2Val <= s0_info_rs2Val; // @[Reg.scala 20:22]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
       s1_addr <= s0_addr; // @[Reg.scala 20:22]
     end
     if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_pc <= s0_info_pc; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_inst <= s0_info_inst; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
       s1_id <= s0_info_id; // @[Reg.scala 20:22]
+    end
+    if (s1_fire) begin // @[Reg.scala 20:18]
+      s2_rd <= s1_rd; // @[Reg.scala 20:22]
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_load <= s1_load; // @[Reg.scala 20:22]
@@ -311,12 +301,6 @@ module LSUStage(
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_offset <= s1_offset; // @[Reg.scala 20:22]
-    end
-    if (s1_fire) begin // @[Reg.scala 20:18]
-      s2_pc <= s1_pc; // @[Reg.scala 20:22]
-    end
-    if (s1_fire) begin // @[Reg.scala 20:18]
-      s2_inst <= s1_inst; // @[Reg.scala 20:22]
     end
     if (s1_fire) begin // @[Reg.scala 20:18]
       s2_id <= s1_id; // @[Reg.scala 20:22]
@@ -370,51 +354,49 @@ initial begin
   _RAND_2 = {1{`RANDOM}};
   s1_full = _RAND_2[0:0];
   _RAND_3 = {1{`RANDOM}};
-  s1_reqSend = _RAND_3[0:0];
+  s2_full = _RAND_3[0:0];
   _RAND_4 = {1{`RANDOM}};
-  s2_full = _RAND_4[0:0];
+  s2_loadRespValid_holdReg = _RAND_4[0:0];
   _RAND_5 = {1{`RANDOM}};
-  s2_loadRespValid_holdReg = _RAND_5[0:0];
+  s2_storeRespValid_holdReg = _RAND_5[0:0];
   _RAND_6 = {1{`RANDOM}};
-  s2_storeRespValid_holdReg = _RAND_6[0:0];
+  s0_info_immSrc = _RAND_6[2:0];
   _RAND_7 = {1{`RANDOM}};
-  s0_info_immSrc = _RAND_7[2:0];
+  s0_info_rs1Val = _RAND_7[31:0];
   _RAND_8 = {1{`RANDOM}};
-  s0_info_inst = _RAND_8[31:0];
+  s0_info_rs2Val = _RAND_8[31:0];
   _RAND_9 = {1{`RANDOM}};
-  s0_info_pc = _RAND_9[31:0];
+  s0_info_inst = _RAND_9[31:0];
   _RAND_10 = {1{`RANDOM}};
   s0_info_id = _RAND_10[7:0];
   _RAND_11 = {1{`RANDOM}};
-  s1_lsuOp = _RAND_11[4:0];
+  s1_reqSend = _RAND_11[0:0];
   _RAND_12 = {1{`RANDOM}};
-  s1_rsValVec_1 = _RAND_12[31:0];
+  s1_rd = _RAND_12[4:0];
   _RAND_13 = {1{`RANDOM}};
-  s1_addr = _RAND_13[31:0];
+  s1_lsuOp = _RAND_13[4:0];
   _RAND_14 = {1{`RANDOM}};
-  s1_pc = _RAND_14[31:0];
+  s1_rs2Val = _RAND_14[31:0];
   _RAND_15 = {1{`RANDOM}};
-  s1_inst = _RAND_15[31:0];
+  s1_addr = _RAND_15[31:0];
   _RAND_16 = {1{`RANDOM}};
   s1_id = _RAND_16[7:0];
   _RAND_17 = {1{`RANDOM}};
-  s2_load = _RAND_17[0:0];
+  s2_rd = _RAND_17[4:0];
   _RAND_18 = {1{`RANDOM}};
-  s2_en = _RAND_18[0:0];
+  s2_load = _RAND_18[0:0];
   _RAND_19 = {1{`RANDOM}};
-  s2_signed = _RAND_19[0:0];
+  s2_en = _RAND_19[0:0];
   _RAND_20 = {1{`RANDOM}};
-  s2_width = _RAND_20[1:0];
+  s2_signed = _RAND_20[0:0];
   _RAND_21 = {1{`RANDOM}};
-  s2_offset = _RAND_21[1:0];
+  s2_width = _RAND_21[1:0];
   _RAND_22 = {1{`RANDOM}};
-  s2_pc = _RAND_22[31:0];
+  s2_offset = _RAND_22[1:0];
   _RAND_23 = {1{`RANDOM}};
-  s2_inst = _RAND_23[31:0];
+  s2_id = _RAND_23[7:0];
   _RAND_24 = {1{`RANDOM}};
-  s2_id = _RAND_24[7:0];
-  _RAND_25 = {1{`RANDOM}};
-  s2_loadResp_holdReg_data = _RAND_25[31:0];
+  s2_loadResp_holdReg_data = _RAND_24[31:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

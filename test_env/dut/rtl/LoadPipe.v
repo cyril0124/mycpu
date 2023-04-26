@@ -4,6 +4,7 @@ module LoadPipe(
   output        io_load_req_ready,
   input         io_load_req_valid,
   input  [31:0] io_load_req_bits_addr,
+  input         io_load_resp_ready,
   output        io_load_resp_valid,
   output [31:0] io_load_resp_bits_data,
   input         io_dir_req_ready,
@@ -89,7 +90,8 @@ module LoadPipe(
   reg  s1_dirInfo_hit; // @[Reg.scala 19:16]
   wire  _s1_valid_T = ~s1_dirInfo_hit; // @[LoadPipe.scala 92:21]
   wire  _s1_valid_T_1 = io_mshr_ready & io_mshr_valid; // @[Decoupled.scala 51:35]
-  wire  _s1_valid_T_4 = s1_dirInfo_hit & io_load_resp_valid; // @[LoadPipe.scala 93:30]
+  wire  _s1_valid_T_3 = io_load_resp_ready & io_load_resp_valid; // @[Decoupled.scala 51:35]
+  wire  _s1_valid_T_4 = s1_dirInfo_hit & _s1_valid_T_3; // @[LoadPipe.scala 93:30]
   wire  _s1_valid_T_5 = ~s1_dirInfo_hit & _s1_valid_T_1 | _s1_valid_T_4; // @[LoadPipe.scala 92:47]
   wire  s1_fire = s1_full & _s1_valid_T_5; // @[LoadPipe.scala 91:25]
   wire  s1_ready = ~s1_full | s1_fire; // @[LoadPipe.scala 75:26]

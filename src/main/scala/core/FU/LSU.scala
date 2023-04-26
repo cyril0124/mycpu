@@ -232,6 +232,7 @@ class LSUStageIO_1()(implicit val p: Parameters) extends MyBundle {
         val id = UInt(8.W)
     }))
     val out = Decoupled(new Bundle{
+        val rd = UInt(5.W)
         val data = UInt(xlen.W)
         val id = UInt(8.W)
     })
@@ -283,13 +284,18 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
     val s1_latch = s0_valid && s1_ready
     val s1_full = RegInit(false.B)
     val s1_fire = s1_valid && s2_ready
+    val rd = InstField(s0_info.inst, "rd")
+    val op = s0_info.lsuOp
+    val s1_rd = RegEnable(Mux(op === LSU_SW || op === LSU_SH || op === LSU_SB || op === LSU_FENC, 0.U, rd), s1_latch)
     val s1_lsuOp = RegEnable(s0_info.lsuOp, s1_latch)
     val s1_rs2Val = RegEnable(s0_info.rs2Val, s1_latch)
     val s1_addr = RegEnable(s0_addr, s1_latch)
     val s1_wdata = s1_rs2Val // rs2
     val s1_offset = s1_addr(blockOffsetBits-1, 0)
     val s1_id = RegEnable(s0_info.id, s1_latch)
-    s1_ready := !s1_full || s1_fire
+    s1_ready := ( !s1_full ) && s2_ready
+    // s1_ready := ( !s1_full || s1_fire ) && s2_ready
+
 
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_fire && s1_full) { s1_full := false.B }
@@ -316,7 +322,7 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
     when(s1_fire) { s1_reqSend := false.B }
     .elsewhen(io.cache.read.req.fire || io.cache.write.req.fire) { s1_reqSend := true.B }
     
-
+    // TODO: enable load FIFO
     io.cache.read.req.valid := s1_load && s1_full && !s1_reqSend && !io.flush
     io.cache.read.req.bits.addr := Cat(s1_addr(xlen-1, blockOffsetBits), Fill(blockOffsetBits, 0.U))
 
@@ -344,7 +350,8 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
     // Receive cache resp
     val s2_latch = s1_valid && s2_ready
     val s2_full = RegInit(false.B)
-    val s2_fire = s2_valid && io.out.ready
+    val s2_fire = s2_valid && io.out.fire
+    val s2_rd = RegEnable(s1_rd, s2_latch)
     val s2_load = RegEnable(s1_load, s2_latch)
     val s2_en = RegEnable(s1_en, s2_latch)
     val s2_signed = RegEnable(s1_signed, s2_latch)
@@ -356,8 +363,8 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
     when(s2_latch) { s2_full := true.B }
     .elsewhen(s2_fire && s2_full) { s2_full := false.B }
 
-    io.cache.read.resp.ready := true.B
-    io.cache.write.resp.ready := true.B
+    io.cache.read.resp.ready := s2_load // true.B
+    io.cache.write.resp.ready := !s2_load // true.B
 
     val s2_loadResp = Hold(io.cache.read.resp.bits, io.cache.read.resp.fire, s2_latch)
     val s2_storeRespValid = Hold(io.cache.write.resp.valid, io.cache.write.resp.fire, s2_latch)
@@ -381,6 +388,7 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
 
     val s0_fence = s0_full && s0_info.lsuOp === LSU_FENC
     io.out.valid := s2_valid && s2_en || s0_fence
+    io.out.bits.rd := s2_rd
     io.out.bits.data := s2_loadData
     io.out.bits.id := Mux(s0_fence, s0_info.id, s2_id)
 
@@ -390,5 +398,6 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
         s1_full := false.B
         s2_full := false.B
     }
+
 }
 

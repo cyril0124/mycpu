@@ -18,6 +18,7 @@ class RSEntry()(implicit val p: Parameters) extends MyBundle {
     val opr2 = UInt(OPR_WIDTH.W)
     val rs1 = UInt(5.W)
     val rs2 = UInt(5.W)
+    val rd =  UInt(5.W)
     val rs1Val = UInt(xlen.W)
     val rs2Val = UInt(xlen.W)
     val rs1ROBId = UInt(8.W)
@@ -25,11 +26,6 @@ class RSEntry()(implicit val p: Parameters) extends MyBundle {
     val immSrc = UInt(IMM_TYP_WIDTH.W)
     val immSign = UInt(1.W)
     val excpType = UInt(EXC_TYPE_WIDTH.W)
-    // val tempData = UInt(xlen.W) // store imm or other address data depending on what type of instruction it is
-    //                             // for ALU    tempData <==>  imm
-    //                             // for BRU    tempData <==>  imm
-    //                             // for LSU    tempData <==>  addr = rs1Val + imm
-    //                             // for CSR    tempData <==>  csrAddr
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
 }
@@ -40,6 +36,7 @@ class RSInput()(implicit val p: Parameters) extends MyBundle {
     val opr2 = UInt(OPR_WIDTH.W)
     val rs1 = UInt(5.W)
     val rs2 = UInt(5.W)
+    val rd = UInt(5.W)  // TODO: optimize repeat and unnassary data field
     val ROBId = UInt(8.W)
     val rs1ROBId = UInt(8.W)
     val rs2ROBId = UInt(8.W)
@@ -65,12 +62,23 @@ class RSOutput()(implicit val p: Parameters) extends MyBundle {
     val inst = UInt(ilen.W)
 }
 
-class ReservationStation(numEntries: Int, numROBEntries: Int)(implicit val p: Parameters) extends MyModule {
+class CommonDataBus()(implicit val p: Parameters) extends MyBundle {
+    val data = UInt(xlen.W)
+    val id = UInt(8.W)
+    val rd = UInt(5.W)
+}
+
+import ROBStates._
+
+class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModule {
     val io = IO(new Bundle {
         val enq = Flipped(Decoupled(new RSInput)) // from issue stage
         val deq = Decoupled(Output(new RSOutput)) // for Functional Unit
-        val rob = Valid(new ROBRsInput(numROBEntries))
+        val robOut = Valid(new ROBRsInput(numROBEntries)) // for ROB
+        val robRead = Vec(numROBEntries, Input(new ROBReadInfo))
         val regStatus = Input(Vec(rfSets, new RegResult))
+        val cdb = Input(Vec(nrFu, Valid(new CommonDataBus)))
+        val rf = Flipped(Vec(2, new ReadPort(UInt(xlen.W))))
         val flush = Input(Bool())
     })
 
@@ -84,8 +92,8 @@ class ReservationStation(numEntries: Int, numROBEntries: Int)(implicit val p: Pa
 
     val chosenEntry = entries(head)
     val oprReady = chosenEntry.rs1ROBId === 0.U && chosenEntry.rs2ROBId === 0.U
-    io.enq.ready := !full
-    io.deq.valid := !empty && oprReady && chosenEntry.busy
+    io.enq.ready := !full && !entries(tail).busy
+    io.deq.valid := oprReady && chosenEntry.busy
     io.deq.bits.op := chosenEntry.op
     io.deq.bits.ROBId := chosenEntry.ROBId
     io.deq.bits.opr1 := chosenEntry.opr1
@@ -98,11 +106,17 @@ class ReservationStation(numEntries: Int, numROBEntries: Int)(implicit val p: Pa
     io.deq.bits.pc := chosenEntry.pc
     io.deq.bits.inst := chosenEntry.inst
 
-    io.rob.valid := false.B
-    io.rob.bits.id := 0.U
+    io.robOut.valid := false.B
+    io.robOut.bits.id := 0.U
+    io.robOut.bits.rd := 0.U
 
-    val rs1 = InstField(io.enq.bits.inst, "rs1")
-    val rs2 = InstField(io.enq.bits.inst, "rs2")
+    io.rf.foreach{ r => 
+        r.en := true.B
+        r.addr := 0.U
+    }
+    
+    val rs1Enq = InstField(io.enq.bits.inst, "rs1")
+    val rs2Enq = InstField(io.enq.bits.inst, "rs2")
     when (io.enq.fire) {
         entries(tail).busy := true.B
         entries(tail).ROBId := io.enq.bits.ROBId
@@ -114,48 +128,86 @@ class ReservationStation(numEntries: Int, numROBEntries: Int)(implicit val p: Pa
         entries(tail).opr2 := io.enq.bits.opr2
         entries(tail).rs1 := io.enq.bits.rs1
         entries(tail).rs2 := io.enq.bits.rs2
+        entries(tail).rd := io.enq.bits.rd
         entries(tail).immSrc := io.enq.bits.immSrc
         entries(tail).immSign := io.enq.bits.immSign
         entries(tail).excpType := io.enq.bits.excpType
         entries(tail).pc := io.enq.bits.pc
         entries(tail).inst := io.enq.bits.inst
 
-        entries(tail).rs1ROBId := io.regStatus(entries(tail).rs1).owner
-        entries(tail).rs2ROBId := io.regStatus(entries(tail).rs2).owner
+        val rs1 = io.enq.bits.rs1
+        val rs2 = io.enq.bits.rs2
+        entries(tail).rs1ROBId := io.regStatus(rs1).owner
+        entries(tail).rs2ROBId := io.regStatus(rs2).owner
         
-        when(io.regStatus(io.enq.bits.rs1).owner === 0.U) {
-            entries(tail).rs1Val := io.regStatus(io.enq.bits.rs1).data
-        }
-        when(io.regStatus(io.enq.bits.rs2).owner === 0.U) {
-            entries(tail).rs2Val := io.regStatus(io.enq.bits.rs2).data
-        }
+        // Read register file
+        io.rf(0).addr := io.enq.bits.rs1
+        io.rf(1).addr := io.enq.bits.rs2
+        entries(tail).rs1Val := io.rf(0).data
+        entries(tail).rs2Val := io.rf(1).data
 
         tail := Mux(tail === (numEntries - 1).U, 0.U, tail + 1.U)
-        count := count + 1.U
     }
 
     when (io.deq.fire) {
         entries(head).busy := false.B
-        io.rob.valid := true.B
-        io.rob.bits.id := entries(head).ROBId
+        io.robOut.valid := true.B
+        io.robOut.bits.id := entries(head).ROBId
+        io.robOut.bits.rd := entries(head).rd
 
         head := Mux(head === (numEntries - 1).U, 0.U, head + 1.U)
-        count := count - 1.U
     }
 
-    entries.foreach{ 
-        e => 
-            when(e.busy) {
-                e.rs1ROBId := io.regStatus(e.rs1).owner
-                e.rs2ROBId := io.regStatus(e.rs2).owner
-                
-                when(io.regStatus(e.rs1).owner === 0.U) {
-                    e.rs1Val := io.regStatus(e.rs1).data
-                }
-                when(io.regStatus(e.rs2).owner === 0.U) {
-                    e.rs2Val := io.regStatus(e.rs2).data
-                }
+    when( !(io.deq.fire && io.enq.fire) ) {
+        when(io.enq.fire) {
+            count := count + 1.U
+        }
+        when(io.deq.fire) {
+            count := count - 1.U
+        }
+    }
+
+    entries.foreach{ e => 
+        when(e.busy) {
+            // Operands has three sources:
+            // (1) from RegFile
+            // (2) from ROB
+            // (3) from CDB(Common Data Bus)
+
+            // Bypass from ROB entry
+            val rs1ROBEntry = io.robRead(e.rs1ROBId - 1.U)
+            val rs2ROBEntry = io.robRead(e.rs2ROBId - 1.U)
+            val rs1FromROB = (rs1ROBEntry.busy && rs1ROBEntry.state === sWrite || rs1ROBEntry.state === sCommit) && rs1ROBEntry.rd === e.rs1 && e.rs1 =/= 0.U
+            val rs2FromROB = (rs2ROBEntry.busy && rs2ROBEntry.state === sWrite || rs2ROBEntry.state === sCommit) && rs2ROBEntry.rd === e.rs2 && e.rs2 =/= 0.U
+            when(rs1FromROB) {
+                e.rs1Val := rs1ROBEntry.data
+                e.rs1ROBId := 0.U
             }
+            when(rs2FromROB) {
+                e.rs2Val := rs2ROBEntry.data
+                e.rs2ROBId := 0.U
+            }
+
+            val rs1MatchVec = Cat(io.cdb.map(c => c.bits.rd === e.rs1).reverse)
+            val rs2MatchVec = Cat(io.cdb.map(c => c.bits.rd === e.rs2).reverse)
+            val rs1IDMatchVec = Cat(io.cdb.map(c => c.bits.id === e.rs1ROBId).reverse)
+            val rs2IDMatchVec = Cat(io.cdb.map(c => c.bits.id === e.rs2ROBId).reverse)
+            val cdbValidVec = Cat(io.cdb.map(c => c.valid).reverse)
+            val cdbBypassRs1 = cdbValidVec & rs1MatchVec & rs1IDMatchVec
+            val cdbBypassRs2 = cdbValidVec & rs2MatchVec & rs2IDMatchVec
+            val cdbDataVec = io.cdb.map(c => c.bits.data)
+            val bypassRs1 = cdbBypassRs1.orR
+            val bypassRs2 = cdbBypassRs2.orR
+            // Bypass from CDB(Common Data Bus)
+            when(bypassRs1) {
+                e.rs1Val := Mux1H(cdbBypassRs1, cdbDataVec)
+                e.rs1ROBId := 0.U
+            }
+            when(bypassRs2) {
+                e.rs2Val := Mux1H(cdbBypassRs2, cdbDataVec)
+                e.rs2ROBId := 0.U
+            }
+        }
     }
 
     when (io.flush) {
@@ -164,9 +216,6 @@ class ReservationStation(numEntries: Int, numROBEntries: Int)(implicit val p: Pa
         tail := 0.U
         count := 0.U
     }
-
-
-
 }
 
 object ReservationStationGenRTL extends App {
@@ -181,6 +230,6 @@ object ReservationStationGenRTL extends App {
     })
 
     println("Generating the ReservationStation hardware")
-    (new chisel3.stage.ChiselStage).emitVerilog(new ReservationStation(3, 3)(defaultConfig), Array("--target-dir", "build"))
+    (new chisel3.stage.ChiselStage).emitVerilog(new ReservationStation(3, 3, 4)(defaultConfig), Array("--target-dir", "build"))
 }
 

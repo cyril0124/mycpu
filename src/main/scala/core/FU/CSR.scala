@@ -167,6 +167,7 @@ class CSRStageIO_1()(implicit val p: Parameters) extends MyBundle {
         val id = UInt(8.W)
     }))
     val out = Decoupled(new Bundle{
+        val rd = UInt(5.W)
         val data = UInt(xlen.W)
 
         val excpAddr = UInt(xlen.W)
@@ -238,6 +239,7 @@ class CSRStage_1()(implicit val p: Parameters) extends MyModule {
     val s1_latch = s0_valid && s1_ready
     val s1_full = RegInit(false.B)
     val s1_fire = s1_valid
+    val s1_rd = RegEnable(InstField(s0_info.inst, "rd"), s1_latch)
     val s1_csrOp = RegEnable(s0_csrOp, s1_latch)
     val s1_excpType = RegEnable(s0_excpType, s1_latch)
     val s1_csrAddr = RegEnable(s0_csrAddr, s1_latch)
@@ -259,6 +261,7 @@ class CSRStage_1()(implicit val p: Parameters) extends MyModule {
                             EXC_MRET -> csrFile.io.mepc,
                         ))
     io.out.bits.data := s1_csrRdData
+    io.out.bits.rd := s1_rd
     io.out.bits.id := s1_id
     io.out.valid := s1_full
 

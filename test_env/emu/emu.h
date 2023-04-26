@@ -37,7 +37,7 @@ class Emu {
         UcEngine *engine;
 
         uint64_t seed = 0, wave_begin = 0, wave_end = -1;
-        bool enable_wave = false;
+        bool enable_wave = true;
         bool step_check_pc = true;
         bool step_check_inst = true;
         bool step_check_int_reg = true;

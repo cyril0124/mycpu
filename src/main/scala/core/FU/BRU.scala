@@ -196,6 +196,7 @@ class BRUStageIO_1()(implicit val p: Parameters) extends MyBundle {
         val brTaken = Bool()
         val brAddr = UInt(xlen.W)
 
+        val rd = UInt(5.W)
         val data = UInt(xlen.W)
         val wrEn = Bool()
 
@@ -268,6 +269,7 @@ class BRUStage_1()(implicit val p: Parameters) extends MyModule {
 
     io.out.bits.brTaken := bru.io.brTaken && s1_full
     io.out.bits.brAddr := bru.io.brAddr
+    io.out.bits.rd := Mux(s1_bruOp =/= BR_JALR || s1_bruOp =/= BR_JAL, 0.U, InstField(s1_inst, "rd"))
     io.out.bits.wrEn := ( s1_bruOp === BR_JAL | s1_bruOp === BR_JALR ) && s1_full
     io.out.bits.data := s1_pc + 4.U // for jalr instruction
     io.out.bits.id := s1_id
