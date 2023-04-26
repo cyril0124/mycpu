@@ -9,7 +9,7 @@ import mycpu.common._
 import mycpu.util._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
-import  LsuDecode._
+import LsuDecode._
 import BusMaster._
 import FUType._
 
@@ -240,6 +240,7 @@ class LSUStageIO_1()(implicit val p: Parameters) extends MyBundle {
         val read = new CacheReadBus
         val write =  new CacheWriteBus
     })
+    val rob = Flipped(Valid(new LSUQueueROBInput))
     val flush = Input(Bool())
 }
 
@@ -254,14 +255,22 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
 
     io.in.ready := s0_ready
 
+    val lsuQueueEntry = 4
+    val lsuQueue = Module(new LSUQueue(lsuQueueEntry))
+    lsuQueue.io.rob <> io.rob
+    lsuQueue.io.flush := io.flush
+
     // --------------------------------------------------------------------------------
     // Stage 0
     // --------------------------------------------------------------------------------
     // Read oprand & Generate imm
     val s0_latch = io.in.valid && s0_ready
     val s0_full = RegInit(false.B)
-    val s0_fire = s0_valid & s1_ready
+    val s0_fire = s0_valid & lsuQueue.io.enq.ready
     val s0_info = RegEnable(io.in.bits, s0_latch)
+    val op = s0_info.lsuOp
+    val rd = InstField(s0_info.inst, "rd")
+    val s0_rd = Mux(op === LSU_SW || op === LSU_SH || op === LSU_SB || op === LSU_FENC, 0.U, rd)
     s0_ready := !s0_full || s0_fire
 
     when(s0_latch) { s0_full := true.B }
@@ -269,39 +278,56 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
 
     val immGen = Module(new ImmGen)
     val s0_imm = immGen.io.imm
+    val s0_addr = s0_imm + s0_info.rs1Val
     immGen.io.immSrc := s0_info.immSrc
     immGen.io.immSign := IMM_SE
     immGen.io.inst := s0_info.inst
-
-    val s0_addr = s0_imm + s0_info.rs1Val
+    
+    val s0_decInfo = WireInit(0.U.asTypeOf(new LSUDecodeInfo))
+    val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
+        ListLookup(s0_info.lsuOp, default, table)
+    s0_decInfo.en := en
+    s0_decInfo.wen := wen
+    s0_decInfo.load := load
+    s0_decInfo.wd := width
+    s0_decInfo.signed := signed
 
     s0_valid := s0_full && ( s0_info.lsuOp =/= LSU_FENC || (s0_info.lsuOp === LSU_FENC && io.out.fire) )
 
+    
+    lsuQueue.io.enq.valid := s0_valid
+    lsuQueue.io.enq.bits.addr := s0_addr
+    lsuQueue.io.enq.bits.decInfo := s0_decInfo
+    lsuQueue.io.enq.bits.id := s0_info.id
+    lsuQueue.io.enq.bits.rd := s0_rd
+    lsuQueue.io.enq.bits.rs2Val := s0_info.rs2Val
+
+    lsuQueue.io.deq.ready := s1_ready
     // --------------------------------------------------------------------------------
     // Stage 1
     // --------------------------------------------------------------------------------
     // Send cache req
-    val s1_latch = s0_valid && s1_ready
+    val s1_latch = lsuQueue.io.deq.valid && s1_ready
     val s1_full = RegInit(false.B)
     val s1_fire = s1_valid && s2_ready
-    val rd = InstField(s0_info.inst, "rd")
-    val op = s0_info.lsuOp
-    val s1_rd = RegEnable(Mux(op === LSU_SW || op === LSU_SH || op === LSU_SB || op === LSU_FENC, 0.U, rd), s1_latch)
-    val s1_lsuOp = RegEnable(s0_info.lsuOp, s1_latch)
-    val s1_rs2Val = RegEnable(s0_info.rs2Val, s1_latch)
-    val s1_addr = RegEnable(s0_addr, s1_latch)
-    val s1_wdata = s1_rs2Val // rs2
+    val s1_rd = RegEnable(lsuQueue.io.deq.bits.rd, s1_latch)
+    val s1_rs2Val = RegEnable(lsuQueue.io.deq.bits.rs2Val, s1_latch)
+    val s1_addr = RegEnable(lsuQueue.io.deq.bits.addr, s1_latch)
+    val s1_wdata = s1_rs2Val 
     val s1_offset = s1_addr(blockOffsetBits-1, 0)
-    val s1_id = RegEnable(s0_info.id, s1_latch)
+    val s1_id = RegEnable(lsuQueue.io.deq.bits.id, s1_latch)
+    val s1_decInfo = RegEnable(lsuQueue.io.deq.bits.decInfo, s1_latch)
     s1_ready := ( !s1_full ) && s2_ready
     // s1_ready := ( !s1_full || s1_fire ) && s2_ready
-
 
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_fire && s1_full) { s1_full := false.B }
 
-    val ((s1_en: Bool) :: (s1_wen: Bool) :: (s1_load: Bool) :: s1_width :: (s1_signed: Bool) :: Nil) = 
-        ListLookup(s1_lsuOp, default, table)
+    val s1_en = s1_decInfo.en
+    val s1_wen = s1_decInfo.wen
+    val s1_load = s1_decInfo.load
+    val s1_width = s1_decInfo.wd
+    val s1_signed = s1_decInfo.signed
 
     // when(wen) {
     //     io.excp.storeUnalign := MuxLookup(width, false.B, Seq(
@@ -363,8 +389,8 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
     when(s2_latch) { s2_full := true.B }
     .elsewhen(s2_fire && s2_full) { s2_full := false.B }
 
-    io.cache.read.resp.ready := s2_load // true.B
-    io.cache.write.resp.ready := !s2_load // true.B
+    io.cache.read.resp.ready := s2_load
+    io.cache.write.resp.ready := !s2_load
 
     val s2_loadResp = Hold(io.cache.read.resp.bits, io.cache.read.resp.fire, s2_latch)
     val s2_storeRespValid = Hold(io.cache.write.resp.valid, io.cache.write.resp.fire, s2_latch)
@@ -401,3 +427,50 @@ class LSUStage_1()(implicit val p: Parameters) extends MyModule {
 
 }
 
+
+    // val s0_latch = io.in.valid && s0_ready
+    // val s0_full = RegInit(false.B)
+    // val s0_fire = s0_valid & s1_ready
+    // val s0_info = RegEnable(io.in.bits, s0_latch)
+    // val op = s0_info.lsuOp
+    // val rd = InstField(s0_info.inst, "rd")
+    // val s0_rd = Mux(op === LSU_SW || op === LSU_SH || op === LSU_SB || op === LSU_FENC, 0.U, rd)
+    // s0_ready := !s0_full || s0_fire
+
+    // when(s0_latch) { s0_full := true.B }
+    // .elsewhen(s0_fire && s0_full) { s0_full := false.B }
+
+    // val immGen = Module(new ImmGen)
+    // val s0_imm = immGen.io.imm
+    // val s0_addr = s0_imm + s0_info.rs1Val
+    // immGen.io.immSrc := s0_info.immSrc
+    // immGen.io.immSign := IMM_SE
+    // immGen.io.inst := s0_info.inst
+    
+    // val s0_decInfo = WireInit(0.U.asTypeOf(new LSUDecodeInfo))
+    // val ((en: Bool) :: (wen: Bool) :: (load: Bool) :: width :: (signed: Bool) :: Nil) = 
+    //     ListLookup(s0_info.lsuOp, default, table)
+    // s0_decInfo.en := en
+    // s0_decInfo.wen := wen
+    // s0_decInfo.load := load
+    // s0_decInfo.wd := width
+    // s0_decInfo.signed := signed
+
+    // s0_valid := s0_full && ( s0_info.lsuOp =/= LSU_FENC || (s0_info.lsuOp === LSU_FENC && io.out.fire) )
+
+    //  val s1_latch = s0_valid && s1_ready
+    // val s1_full = RegInit(false.B)
+    // val s1_fire = s1_valid && s2_ready
+    // val s1_rd = RegEnable(s0_rd, s1_latch)
+    // val s1_lsuOp = RegEnable(s0_info.lsuOp, s1_latch)
+    // val s1_rs2Val = RegEnable(s0_info.rs2Val, s1_latch)
+    // val s1_addr = RegEnable(s0_addr, s1_latch)
+    // val s1_wdata = s1_rs2Val 
+    // val s1_offset = s1_addr(blockOffsetBits-1, 0)
+    // val s1_id = RegEnable(s0_info.id, s1_latch)
+    // val s1_decInfo = RegEnable(s0_decInfo, s1_latch)
+    // s1_ready := ( !s1_full ) && s2_ready
+    // // s1_ready := ( !s1_full || s1_fire ) && s2_ready
+
+    // when(s1_latch) { s1_full := true.B }
+    // .elsewhen(s1_fire && s1_full) { s1_full := false.B }

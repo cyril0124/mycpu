@@ -33,7 +33,17 @@ object LsuDecode {
         BitPat(LSU_SW)   ->   List(Y,  Y,   N,   LS_DATA_WORD, Y),
         BitPat(LSU_FENC) ->   List(N,  N,   N,   LS_DATA_BYTE, N)
     )
+
+    class LSUDecodeInfo extends Bundle {
+        val en = Bool()
+        val wen = Bool()
+        val load = Bool()
+        val wd = UInt(LS_DATA_WIDTH.W)
+        val signed = Bool()
+    }
 }
+
+
 
 sealed class LsuStatusBundle()(implicit val p: Parameters) extends MyBundle {
     val storeUnalign = Bool()

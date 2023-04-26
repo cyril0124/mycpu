@@ -179,11 +179,11 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
             val rs2ROBEntry = io.robRead(e.rs2ROBId - 1.U)
             val rs1FromROB = (rs1ROBEntry.busy && rs1ROBEntry.state === sWrite || rs1ROBEntry.state === sCommit) && rs1ROBEntry.rd === e.rs1 && e.rs1 =/= 0.U
             val rs2FromROB = (rs2ROBEntry.busy && rs2ROBEntry.state === sWrite || rs2ROBEntry.state === sCommit) && rs2ROBEntry.rd === e.rs2 && e.rs2 =/= 0.U
-            when(rs1FromROB) {
+            when(rs1FromROB && e.rs1ROBId =/= 0.U) {
                 e.rs1Val := rs1ROBEntry.data
                 e.rs1ROBId := 0.U
             }
-            when(rs2FromROB) {
+            when(rs2FromROB && e.rs2ROBId =/= 0.U) {
                 e.rs2Val := rs2ROBEntry.data
                 e.rs2ROBId := 0.U
             }
@@ -199,11 +199,11 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
             val bypassRs1 = cdbBypassRs1.orR
             val bypassRs2 = cdbBypassRs2.orR
             // Bypass from CDB(Common Data Bus)
-            when(bypassRs1) {
+            when(bypassRs1 && e.rs1ROBId =/= 0.U) {
                 e.rs1Val := Mux1H(cdbBypassRs1, cdbDataVec)
                 e.rs1ROBId := 0.U
             }
-            when(bypassRs2) {
+            when(bypassRs2 && e.rs2ROBId =/= 0.U) {
                 e.rs2Val := Mux1H(cdbBypassRs2, cdbDataVec)
                 e.rs2ROBId := 0.U
             }

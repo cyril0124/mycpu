@@ -13,6 +13,7 @@ module ROB(
   output        io_deq_bits_rdWrEn,
   output [4:0]  io_deq_bits_rd,
   output [31:0] io_deq_bits_data,
+  output [7:0]  io_deq_bits_id,
   output [31:0] io_deq_bits_brAddr,
   output        io_deq_bits_brTaken,
   output [31:0] io_deq_bits_excpAddr,
@@ -695,6 +696,7 @@ module ROB(
   assign io_deq_bits_rdWrEn = _GEN_24 != 5'h0; // @[ROB.scala 138:44]
   assign io_deq_bits_rd = 3'h4 == head ? entries_4_rd : _GEN_23; // @[ROB.scala 137:{20,20}]
   assign io_deq_bits_data = 3'h4 == head ? entries_4_data : _GEN_18; // @[ROB.scala 136:{22,22}]
+  assign io_deq_bits_id = {{5'd0}, _io_deq_bits_id_T_1}; // @[ROB.scala 145:20]
   assign io_deq_bits_brAddr = 3'h4 == head ? entries_4_brAddr : _GEN_38; // @[ROB.scala 141:{24,24}]
   assign io_deq_bits_brTaken = 3'h4 == head ? entries_4_brTaken : _GEN_43; // @[ROB.scala 142:{25,25}]
   assign io_deq_bits_excpAddr = 3'h4 == head ? entries_4_excpAddr : _GEN_48; // @[ROB.scala 143:{26,26}]
