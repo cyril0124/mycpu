@@ -132,7 +132,7 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
     io.regStatus <> regResStat
     io.id := tail + 1.U
     io.enq.ready := !full && !entries(tail).busy
-    io.deq.valid := entries(head).state === sWrite && entries(head).busy // && !empty
+    io.deq.valid := entries(head).state === sWrite && entries(head).busy
     io.deq.bits.data := entries(head).data
     io.deq.bits.rd := entries(head).rd
     io.deq.bits.rdWrEn := entries(head).rd =/= 0.U

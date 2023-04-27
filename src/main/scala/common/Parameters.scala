@@ -171,3 +171,20 @@ case class MyCpuParameters
 {
 
 }
+
+object Parameters {
+  val ADDR_WIDTH        = 32
+  val ADDR_ALIGN_WIDTH  = log2Ceil(ADDR_WIDTH / 8)
+  val DATA_WIDTH        = 32
+  val INST_WIDTH        = 32
+  val XLEN              = DATA_WIDTH
+  val ILEN              = INST_WIDTH
+
+  // branch predictor
+  val GHR_WIDTH         = 5
+  val PHT_SIZE          = 1 << GHR_WIDTH
+  val BTB_INDEX_WIDTH   = 6
+  val BTB_PC_WIDTH      = ADDR_WIDTH - BTB_INDEX_WIDTH - ADDR_ALIGN_WIDTH
+  val BTB_TARGET_WIDTH  = ADDR_WIDTH - ADDR_ALIGN_WIDTH
+  val BTB_SIZE          = 1 << BTB_INDEX_WIDTH
+}

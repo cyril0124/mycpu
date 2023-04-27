@@ -7,7 +7,6 @@ class CircularShiftRegister(width: Int, init: Int) extends Module {
     val io = IO(new Bundle {
         val shiftLeft  = Input(Bool())
         val shiftRight = Input(Bool())
-        // val in         = Input(UInt(width.W))
         val out        = Output(UInt(width.W))
         val reset = Input(Bool())
     })
@@ -19,9 +18,6 @@ class CircularShiftRegister(width: Int, init: Int) extends Module {
     }.elsewhen(io.shiftRight) {
         register := Cat(register(0), register(width-1, 1))
     }
-    // .otherwise {
-    //     register := io.in
-    // }
 
     when(io.reset) {
         register := init.U(width.W)

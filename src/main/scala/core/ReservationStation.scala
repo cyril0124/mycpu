@@ -188,6 +188,7 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
                 e.rs2ROBId := 0.U
             }
 
+            // Bypass from CDB(Common Data Bus)
             val rs1MatchVec = Cat(io.cdb.map(c => c.bits.rd === e.rs1).reverse)
             val rs2MatchVec = Cat(io.cdb.map(c => c.bits.rd === e.rs2).reverse)
             val rs1IDMatchVec = Cat(io.cdb.map(c => c.bits.id === e.rs1ROBId).reverse)
@@ -198,7 +199,6 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
             val cdbDataVec = io.cdb.map(c => c.bits.data)
             val bypassRs1 = cdbBypassRs1.orR
             val bypassRs2 = cdbBypassRs2.orR
-            // Bypass from CDB(Common Data Bus)
             when(bypassRs1 && e.rs1ROBId =/= 0.U) {
                 e.rs1Val := Mux1H(cdbBypassRs1, cdbDataVec)
                 e.rs1ROBId := 0.U

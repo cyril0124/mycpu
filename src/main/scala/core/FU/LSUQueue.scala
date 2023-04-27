@@ -20,7 +20,7 @@ class LSUQueueEntry()(implicit val p: Parameters) extends MyBundle {
     val rd = UInt(5.W)
 }
 
-class  LSUQueueInput()(implicit val p: Parameters) extends MyBundle {
+class LSUQueueInput()(implicit val p: Parameters) extends MyBundle {
     val decInfo = new LSUDecodeInfo
     val addr = UInt(xlen.W)
     val rs2Val = UInt(xlen.W)

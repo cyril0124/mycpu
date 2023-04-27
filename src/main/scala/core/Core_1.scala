@@ -122,7 +122,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
                     ) 
 
     val fetch_instValid = RegInit(false.B)
-    val fetch_fire = fetch_valid || fetch_instValid
+    val fetch_fire = fetch_valid //|| fetch_instValid
     
     when(icache.io.read.resp.fire) { fetch_instValid := true.B }
     .elsewhen(fetch_instValid && icache.io.read.req.fire) { fetch_instValid := false.B }
@@ -214,6 +214,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
         dec_inst.foreach( d => d.valid := false.B )
     }
 
+    // TODO: Instruction Queue 4 in 1 out
     // --------------------------------------------------------------------------------
     // Issue stage 
     // --------------------------------------------------------------------------------
@@ -221,7 +222,6 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val issue_latch = dec_valid && issue_ready
     val issue_fire = issue_valid // indicate that all of the instrcution are issued
     val issue_full = RegInit(false.B)
-    // Pipeline data signals
     val issue_pc = RegEnable(dec_pc, issue_latch)
     val issue_decodeSigs = Reg(Vec(icacheRdWays, new DecodeSigs_1))
     val issue_instValid = RegEnable(Cat(dec_inst.map{d => d.valid}).asUInt, issue_latch)
@@ -450,10 +450,9 @@ class Core()(implicit val p: Parameters) extends MyModule {
     // instState.pc := Mux1H(instCommitVec, Seq(aluStage.io.out.bits.pc, bruStage.io.out.bits.pc, lsuStage.io.out.bits.pc, csrStage.io.out.bits.pc))
 
 
-    // --------------------------------------------------------------------------------------------------------
-    rob.io.fu <> DontCare
-    rob.io.rs <> DontCare
-
+    // --------------------------------------------------------------------------------
+    // Out-of-Order scheduler components
+    // --------------------------------------------------------------------------------
     val rsReady = MuxCase(false.B, Seq(
                             issue_aluValid -> aluRS.io.enq.ready,
                             issue_bruValid -> bruRS.io.enq.ready,
@@ -474,14 +473,12 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val rd = InstField(issue_chosenInst, "rd")
     val invalidBRU = enq.fuValid(BRU) && (enq.fuOp =/= BR_JALR && enq.fuOp =/= BR_JAL)
     val invalidLSU = enq.fuValid(LSU) && (enq.fuOp === LSU_SW || enq.fuOp === LSU_SH || enq.fuOp === LSU_SB || enq.fuOp === LSU_FENC)
-    dontTouch(invalidBRU)
-    dontTouch(invalidLSU)
     val invalidRd = invalidBRU || invalidLSU || rd === 0.U
     val issue_rd = Mux(invalidRd, 0.U, rd)
     rob.io.enq.bits.rd := issue_rd
     rob.io.flush := globalBrTaken || reset.asBool
 
-
+    // Reservation Station common input signals
     val rsInput = Wire(new RSInput)
     rsInput.ROBId := rob.io.id
     rsInput.excpType := issue_chosenDecodesigs.excpType
@@ -503,13 +500,14 @@ class Core()(implicit val p: Parameters) extends MyModule {
     rsInput.rs1ROBId := rob.io.regStatus(issue_rs1).owner
     rsInput.rs2ROBId := rob.io.regStatus(issue_rs1).owner
 
-
+    
+    // ALU Stage RS
     aluRS.io.enq.valid := rob.io.enq.fire && issue_aluValid //&& issue_full
     aluRS.io.enq.bits := rsInput
     aluRS.io.regStatus := rob.io.regStatus
     aluRS.io.flush := globalBrTaken || reset.asBool
-    
     aluRS.io.deq.ready := aluStage_1.io.in.ready
+    // ALU Stage
     aluStage_1.io.in.valid := aluRS.io.deq.valid
     aluStage_1.io.in.bits.aluOp := aluRS.io.deq.bits.op
     aluStage_1.io.in.bits.immSrc := aluRS.io.deq.bits.immSrc
@@ -522,15 +520,17 @@ class Core()(implicit val p: Parameters) extends MyModule {
     aluStage_1.io.in.bits.rs1Val := aluRS.io.deq.bits.rs1Val
     aluStage_1.io.in.bits.rs2Val := aluRS.io.deq.bits.rs2Val
     aluStage_1.io.flush := globalBrTaken || reset.asBool
+    aluStage_1.io.out.ready := true.B
 
 
     // TODO: Multiple instruction issue
+    // BRU Stage RS
     bruRS.io.enq.valid := rob.io.enq.fire && issue_bruValid
     bruRS.io.enq.bits := rsInput
     bruRS.io.regStatus := rob.io.regStatus
     bruRS.io.flush := globalBrTaken || reset.asBool
-
     bruRS.io.deq.ready := bruStage_1.io.in.ready
+    // BRU Stage
     bruStage_1.io.in.valid := bruRS.io.deq.valid
     bruStage_1.io.in.bits.bruOp := bruRS.io.deq.bits.op
     bruStage_1.io.in.bits.immSrc := bruRS.io.deq.bits.immSrc
@@ -542,15 +542,16 @@ class Core()(implicit val p: Parameters) extends MyModule {
     bruStage_1.io.in.bits.rs1Val := bruRS.io.deq.bits.rs1Val
     bruStage_1.io.in.bits.rs2Val := bruRS.io.deq.bits.rs2Val
     bruStage_1.io.flush := globalBrTaken || reset.asBool
+    bruStage_1.io.out.ready := true.B
 
 
-
+    // LSU Stage RS
     lsuRS.io.enq.valid := rob.io.enq.fire && issue_lsuValid
     lsuRS.io.enq.bits := rsInput
     lsuRS.io.regStatus := rob.io.regStatus
     lsuRS.io.flush := globalBrTaken || reset.asBool
-
     lsuRS.io.deq.ready := lsuStage_1.io.in.ready
+    // LSU Stage
     lsuStage_1.io.in.valid := lsuRS.io.deq.valid
     lsuStage_1.io.in.bits.lsuOp := lsuRS.io.deq.bits.op
     lsuStage_1.io.in.bits.immSrc := lsuRS.io.deq.bits.immSrc
@@ -559,20 +560,26 @@ class Core()(implicit val p: Parameters) extends MyModule {
     lsuStage_1.io.in.bits.rs1Val := lsuRS.io.deq.bits.rs1Val
     lsuStage_1.io.in.bits.rs2Val := lsuRS.io.deq.bits.rs2Val
     lsuStage_1.io.flush := globalBrTaken || reset.asBool
+    lsuStage_1.io.out.ready := true.B
+    // This is used to wake up Store instruction
+    // Store instruction will send store req when Store instruction is on the top of ROB
+    //      e.g.     jal x1, 0x12; sw x2, 0(x0)  
     lsuStage_1.io.rob.bits.id := rob.io.deq.bits.id
     lsuStage_1.io.rob.valid := true.B
 
     val dcache = Module(new DCache)
+    dcache.io.flush := globalBrTaken
     lsuStage_1.io.cache.read <> dcache.io.read
     lsuStage_1.io.cache.write <> dcache.io.write
 
 
+    // CSR Stage RS
     csrRS.io.enq.valid := rob.io.enq.fire && issue_csrValid
     csrRS.io.enq.bits := rsInput
     csrRS.io.regStatus := rob.io.regStatus
     csrRS.io.flush := globalBrTaken || reset.asBool
-
     csrRS.io.deq.ready := csrStage_1.io.in.ready
+    // CSR Stage
     csrStage_1.io.in.valid := csrRS.io.deq.valid
     csrStage_1.io.in.bits.excpType := csrRS.io.deq.bits.excpType
     csrStage_1.io.in.bits.csrOp := csrRS.io.deq.bits.op
@@ -581,17 +588,17 @@ class Core()(implicit val p: Parameters) extends MyModule {
     csrStage_1.io.in.bits.rs1Val := csrRS.io.deq.bits.rs1Val
     csrStage_1.io.in.bits.rs2Val := csrRS.io.deq.bits.rs2Val
     csrStage_1.io.flush := globalBrTaken || reset.asBool
+    csrStage_1.io.out.ready := true.B
 
     
-    aluStage_1.io.out.ready := true.B
+    // ROB Functional Unit connection 
     rob.io.fu(ALU).valid := aluStage_1.io.out.valid
     rob.io.fu(ALU).bits := DontCare
     rob.io.fu(ALU).bits.data := aluStage_1.io.out.bits.data
     rob.io.fu(ALU).bits.id := aluStage_1.io.out.bits.id
     rob.io.fu(ALU).bits.rd := aluStage_1.io.out.bits.rd
     rob.io.rs(ALU) <> aluRS.io.robOut
-
-    bruStage_1.io.out.ready := true.B
+    
     rob.io.fu(BRU).valid := bruStage_1.io.out.valid
     rob.io.fu(BRU).bits := DontCare
     rob.io.fu(BRU).bits.data := bruStage_1.io.out.bits.data
@@ -601,15 +608,13 @@ class Core()(implicit val p: Parameters) extends MyModule {
     rob.io.fu(BRU).bits.brTaken := bruStage_1.io.out.bits.brTaken
     rob.io.rs(BRU) <> bruRS.io.robOut
 
-    lsuStage_1.io.out.ready := true.B
     rob.io.fu(LSU).valid := lsuStage_1.io.out.valid
     rob.io.fu(LSU).bits := DontCare
     rob.io.fu(LSU).bits.data := lsuStage_1.io.out.bits.data
     rob.io.fu(LSU).bits.id := lsuStage_1.io.out.bits.id
     rob.io.fu(LSU).bits.rd := lsuStage_1.io.out.bits.rd
     rob.io.rs(LSU) <> lsuRS.io.robOut
-
-    csrStage_1.io.out.ready := true.B
+    
     rob.io.fu(CSR).valid := csrStage_1.io.out.valid
     rob.io.fu(CSR).bits := DontCare
     rob.io.fu(CSR).bits.data := csrStage_1.io.out.bits.data
@@ -621,6 +626,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     rob.io.deq.ready := true.B
 
+    // Common Data Bus
     val fuStageOutputVec = Seq(aluStage_1.io.out, bruStage_1.io.out, lsuStage_1.io.out, csrStage_1.io.out)
     val rsCDBVec = Seq(aluRS.io.cdb, bruRS.io.cdb, lsuRS.io.cdb, csrRS.io.cdb)
     rsCDBVec.foreach{ r => 
@@ -632,6 +638,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
         }
     }
     
+    // Reservation Station ROB read port, operand can be fetch from ROB when there is valid ROB entry and match both rd and id
     val rs = Seq(aluRS, bruRS, lsuRS, csrRS)
     rs.foreach{ r => 
         // Read reg data from ROB
@@ -639,6 +646,8 @@ class Core()(implicit val p: Parameters) extends MyModule {
             rs <> rob
         }
     }
+
+    // Reservation Station will read reg data from RegFile when instruction is fired into RS
     aluRS.io.rf(0) <> rf.io.r(0)
     aluRS.io.rf(1) <> rf.io.r(1)
     bruRS.io.rf(0) <> rf.io.r(2)
@@ -648,17 +657,19 @@ class Core()(implicit val p: Parameters) extends MyModule {
     csrRS.io.rf(0) <> rf.io.r(6)
     csrRS.io.rf(1) <> rf.io.r(7)
 
-    dcache.io.flush := globalBrTaken
-
+    
+    // Branch Taken and Exception Taken
     bruBrTaken := rob.io.deq.bits.brTaken && rob.io.deq.fire
     bruBrAddr := rob.io.deq.bits.brAddr
     csrExcpValid := rob.io.deq.bits.excpValid && rob.io.deq.fire
     csrExcpAddr := rob.io.deq.bits.excpAddr
 
+    // Write back RegFile
     rf.io.w(0).addr := rob.io.deq.bits.rd
     rf.io.w(0).data := rob.io.deq.bits.data
     rf.io.w(0).en := rob.io.deq.bits.rdWrEn && rob.io.deq.fire
 
+    // Instruction State report
     val instState = Wire(new InstState)
     instState.commit := rob.io.deq.fire
     instState.inst := rob.io.deq.bits.inst
