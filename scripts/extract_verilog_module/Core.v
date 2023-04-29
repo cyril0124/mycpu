@@ -297,7 +297,6 @@ module InstBuffer(
   input  [31:0] io_in_bits_icache_inst_3,
   input  [2:0]  io_in_bits_icache_size,
   input  [31:0] io_in_bits_pc,
-  input         io_in_bits_flush,
   input         io_out_ready,
   output        io_out_valid,
   output [31:0] io_out_bits_inst_0_inst,
@@ -310,7 +309,8 @@ module InstBuffer(
   output        io_out_bits_inst_3_valid,
   output [31:0] io_out_bits_pc,
   output        io_status_back_pressure,
-  output        io_status_full
+  output        io_status_full,
+  input         io_flush
 );
   wire  entries_0_clock; // @[InstBuffer.scala 37:48]
   wire  entries_0_reset; // @[InstBuffer.scala 37:48]
@@ -369,8 +369,8 @@ module InstBuffer(
   wire  pcQueue_io_deq_valid; // @[InstBuffer.scala 38:25]
   wire [31:0] pcQueue_io_deq_bits; // @[InstBuffer.scala 38:25]
   wire  pcQueue_io_flush; // @[InstBuffer.scala 38:25]
-  wire [2:0] _mask_T_2 = 3'h4 - io_in_bits_icache_size; // @[InstBuffer.scala 46:56]
-  wire [3:0] mask = 4'hf >> _mask_T_2; // @[InstBuffer.scala 46:37]
+  wire [2:0] _mask_T_2 = 3'h4 - io_in_bits_icache_size; // @[InstBuffer.scala 47:56]
+  wire [3:0] mask = 4'hf >> _mask_T_2; // @[InstBuffer.scala 47:37]
   Queue entries_0 ( // @[InstBuffer.scala 37:48]
     .clock(entries_0_clock),
     .reset(entries_0_reset),
@@ -438,19 +438,17 @@ module InstBuffer(
     .io_deq_bits(pcQueue_io_deq_bits),
     .io_flush(pcQueue_io_flush)
   );
-  assign io_in_ready = entries_0_io_enq_ready & entries_1_io_enq_ready & entries_2_io_enq_ready & entries_3_io_enq_ready
-    ; // @[InstBuffer.scala 42:61]
-  assign io_out_valid = entries_0_io_deq_valid & entries_1_io_deq_valid & entries_2_io_deq_valid &
-    entries_3_io_deq_valid; // @[InstBuffer.scala 43:62]
-  assign io_out_bits_inst_0_inst = entries_0_io_deq_bits_inst; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_0_valid = entries_0_io_deq_bits_valid; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_1_inst = entries_1_io_deq_bits_inst; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_1_valid = entries_1_io_deq_bits_valid; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_2_inst = entries_2_io_deq_bits_inst; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_2_valid = entries_2_io_deq_bits_valid; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_3_inst = entries_3_io_deq_bits_inst; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_inst_3_valid = entries_3_io_deq_bits_valid; // @[InstBuffer.scala 53:29]
-  assign io_out_bits_pc = pcQueue_io_deq_bits; // @[InstBuffer.scala 60:20]
+  assign io_in_ready = entries_0_io_enq_ready; // @[InstBuffer.scala 43:17]
+  assign io_out_valid = entries_0_io_deq_valid; // @[InstBuffer.scala 44:18]
+  assign io_out_bits_inst_0_inst = entries_0_io_deq_bits_inst; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_0_valid = entries_0_io_deq_bits_valid; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_1_inst = entries_1_io_deq_bits_inst; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_1_valid = entries_1_io_deq_bits_valid; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_2_inst = entries_2_io_deq_bits_inst; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_2_valid = entries_2_io_deq_bits_valid; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_3_inst = entries_3_io_deq_bits_inst; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_inst_3_valid = entries_3_io_deq_bits_valid; // @[InstBuffer.scala 54:29]
+  assign io_out_bits_pc = pcQueue_io_deq_bits; // @[InstBuffer.scala 63:20]
   assign io_status_back_pressure = entries_0_io_count >= 4'h5; // @[InstBuffer.scala 40:52]
   assign io_status_full = entries_0_io_count == 4'h6; // @[InstBuffer.scala 41:43]
   assign entries_0_clock = clock;
@@ -458,35 +456,35 @@ module InstBuffer(
   assign entries_0_io_enq_valid = io_in_valid; // @[InstBuffer.scala 49:33]
   assign entries_0_io_enq_bits_inst = io_in_bits_icache_inst_0; // @[InstBuffer.scala 50:37]
   assign entries_0_io_enq_bits_valid = mask[0]; // @[InstBuffer.scala 51:45]
-  assign entries_0_io_deq_ready = io_out_ready; // @[InstBuffer.scala 52:33]
-  assign entries_0_io_flush = io_in_bits_flush; // @[InstBuffer.scala 48:33]
+  assign entries_0_io_deq_ready = io_out_ready; // @[InstBuffer.scala 53:33]
+  assign entries_0_io_flush = io_flush; // @[InstBuffer.scala 56:33]
   assign entries_1_clock = clock;
   assign entries_1_reset = reset;
   assign entries_1_io_enq_valid = io_in_valid; // @[InstBuffer.scala 49:33]
   assign entries_1_io_enq_bits_inst = io_in_bits_icache_inst_1; // @[InstBuffer.scala 50:37]
   assign entries_1_io_enq_bits_valid = mask[1]; // @[InstBuffer.scala 51:45]
-  assign entries_1_io_deq_ready = io_out_ready; // @[InstBuffer.scala 52:33]
-  assign entries_1_io_flush = io_in_bits_flush; // @[InstBuffer.scala 48:33]
+  assign entries_1_io_deq_ready = io_out_ready; // @[InstBuffer.scala 53:33]
+  assign entries_1_io_flush = io_flush; // @[InstBuffer.scala 56:33]
   assign entries_2_clock = clock;
   assign entries_2_reset = reset;
   assign entries_2_io_enq_valid = io_in_valid; // @[InstBuffer.scala 49:33]
   assign entries_2_io_enq_bits_inst = io_in_bits_icache_inst_2; // @[InstBuffer.scala 50:37]
   assign entries_2_io_enq_bits_valid = mask[2]; // @[InstBuffer.scala 51:45]
-  assign entries_2_io_deq_ready = io_out_ready; // @[InstBuffer.scala 52:33]
-  assign entries_2_io_flush = io_in_bits_flush; // @[InstBuffer.scala 48:33]
+  assign entries_2_io_deq_ready = io_out_ready; // @[InstBuffer.scala 53:33]
+  assign entries_2_io_flush = io_flush; // @[InstBuffer.scala 56:33]
   assign entries_3_clock = clock;
   assign entries_3_reset = reset;
   assign entries_3_io_enq_valid = io_in_valid; // @[InstBuffer.scala 49:33]
   assign entries_3_io_enq_bits_inst = io_in_bits_icache_inst_3; // @[InstBuffer.scala 50:37]
   assign entries_3_io_enq_bits_valid = mask[3]; // @[InstBuffer.scala 51:45]
-  assign entries_3_io_deq_ready = io_out_ready; // @[InstBuffer.scala 52:33]
-  assign entries_3_io_flush = io_in_bits_flush; // @[InstBuffer.scala 48:33]
+  assign entries_3_io_deq_ready = io_out_ready; // @[InstBuffer.scala 53:33]
+  assign entries_3_io_flush = io_flush; // @[InstBuffer.scala 56:33]
   assign pcQueue_clock = clock;
   assign pcQueue_reset = reset;
-  assign pcQueue_io_enq_valid = io_in_valid; // @[InstBuffer.scala 58:26]
-  assign pcQueue_io_enq_bits = io_in_bits_pc; // @[InstBuffer.scala 57:25]
-  assign pcQueue_io_deq_ready = io_out_ready; // @[InstBuffer.scala 61:26]
-  assign pcQueue_io_flush = io_in_bits_flush; // @[InstBuffer.scala 56:26]
+  assign pcQueue_io_enq_valid = io_in_valid; // @[InstBuffer.scala 61:26]
+  assign pcQueue_io_enq_bits = io_in_bits_pc; // @[InstBuffer.scala 60:25]
+  assign pcQueue_io_deq_ready = io_out_ready; // @[InstBuffer.scala 64:26]
+  assign pcQueue_io_flush = io_flush; // @[InstBuffer.scala 59:26]
 endmodule
 module BankRAM_2P(
   input         clock,
@@ -37940,7 +37938,6 @@ module Core(
   wire [31:0] ib_io_in_bits_icache_inst_3; // @[Core_1.scala 50:20]
   wire [2:0] ib_io_in_bits_icache_size; // @[Core_1.scala 50:20]
   wire [31:0] ib_io_in_bits_pc; // @[Core_1.scala 50:20]
-  wire  ib_io_in_bits_flush; // @[Core_1.scala 50:20]
   wire  ib_io_out_ready; // @[Core_1.scala 50:20]
   wire  ib_io_out_valid; // @[Core_1.scala 50:20]
   wire [31:0] ib_io_out_bits_inst_0_inst; // @[Core_1.scala 50:20]
@@ -37954,6 +37951,7 @@ module Core(
   wire [31:0] ib_io_out_bits_pc; // @[Core_1.scala 50:20]
   wire  ib_io_status_back_pressure; // @[Core_1.scala 50:20]
   wire  ib_io_status_full; // @[Core_1.scala 50:20]
+  wire  ib_io_flush; // @[Core_1.scala 50:20]
   wire  icache_clock; // @[Core_1.scala 52:24]
   wire  icache_reset; // @[Core_1.scala 52:24]
   wire  icache_io_read_req_ready; // @[Core_1.scala 52:24]
@@ -38790,10 +38788,10 @@ module Core(
   wire  icacheRespIsAlignAddr = ~(|icache_io_read_resp_bits_addr[3:0]); // @[Core_1.scala 109:9]
   wire [2:0] _GEN_110 = {{1'd0}, icache_io_read_resp_bits_addr[3:2]}; // @[Core_1.scala 177:93]
   wire [2:0] _ib_io_in_bits_icache_size_T_2 = 3'h4 - _GEN_110; // @[Core_1.scala 177:93]
-  wire  _ib_io_in_bits_flush_T_1 = globalBrTaken | reset; // @[Core_1.scala 179:42]
+  wire  _ib_io_flush_T_1 = globalBrTaken | reset; // @[Core_1.scala 179:34]
   reg  dec_full; // @[Core_1.scala 186:27]
-  wire  _dec_valid_T = ~_ib_io_in_bits_flush_T_1; // @[Core_1.scala 209:30]
-  wire  dec_valid = dec_full & ~_ib_io_in_bits_flush_T_1; // @[Core_1.scala 209:27]
+  wire  _dec_valid_T = ~_ib_io_flush_T_1; // @[Core_1.scala 209:30]
+  wire  dec_valid = dec_full & ~_ib_io_flush_T_1; // @[Core_1.scala 209:27]
   reg  issue_full; // @[Core_1.scala 224:29]
   wire  _issue_ready_T = ~issue_full; // @[Core_1.scala 241:20]
   reg [1:0] issue_ptr; // @[Core_1.scala 231:28]
@@ -39045,7 +39043,6 @@ module Core(
     .io_in_bits_icache_inst_3(ib_io_in_bits_icache_inst_3),
     .io_in_bits_icache_size(ib_io_in_bits_icache_size),
     .io_in_bits_pc(ib_io_in_bits_pc),
-    .io_in_bits_flush(ib_io_in_bits_flush),
     .io_out_ready(ib_io_out_ready),
     .io_out_valid(ib_io_out_valid),
     .io_out_bits_inst_0_inst(ib_io_out_bits_inst_0_inst),
@@ -39058,7 +39055,8 @@ module Core(
     .io_out_bits_inst_3_valid(ib_io_out_bits_inst_3_valid),
     .io_out_bits_pc(ib_io_out_bits_pc),
     .io_status_back_pressure(ib_io_status_back_pressure),
-    .io_status_full(ib_io_status_full)
+    .io_status_full(ib_io_status_full),
+    .io_flush(ib_io_flush)
   );
   ICache icache ( // @[Core_1.scala 52:24]
     .clock(icache_clock),
@@ -39947,8 +39945,8 @@ module Core(
   assign ib_io_in_bits_icache_size = icacheRespIsAlignAddr ? icache_io_read_resp_bits_size :
     _ib_io_in_bits_icache_size_T_2; // @[Core_1.scala 177:37]
   assign ib_io_in_bits_pc = icache_io_read_resp_bits_addr; // @[Core_1.scala 178:22]
-  assign ib_io_in_bits_flush = globalBrTaken | reset; // @[Core_1.scala 179:42]
   assign ib_io_out_ready = ~dec_full | dec_fire; // @[Core_1.scala 193:28]
+  assign ib_io_flush = globalBrTaken | reset; // @[Core_1.scala 179:34]
   assign icache_clock = clock;
   assign icache_reset = reset;
   assign icache_io_read_req_valid = preFetchInst & io_in_start; // @[Core_1.scala 150:46]
@@ -40495,21 +40493,21 @@ module Core(
     end
     if (reset) begin // @[Core_1.scala 186:27]
       dec_full <= 1'h0; // @[Core_1.scala 186:27]
-    end else if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 212:21]
+    end else if (_ib_io_flush_T_1) begin // @[Core_1.scala 212:21]
       dec_full <= 1'h0; // @[Core_1.scala 213:18]
     end else begin
       dec_full <= _GEN_18;
     end
     if (reset) begin // @[Core_1.scala 224:29]
       issue_full <= 1'h0; // @[Core_1.scala 224:29]
-    end else if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 257:23]
+    end else if (_ib_io_flush_T_1) begin // @[Core_1.scala 257:23]
       issue_full <= 1'h0; // @[Core_1.scala 258:20]
     end else begin
       issue_full <= _GEN_71;
     end
     if (reset) begin // @[Core_1.scala 231:28]
       issue_ptr <= 2'h0; // @[Core_1.scala 231:28]
-    end else if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 257:23]
+    end else if (_ib_io_flush_T_1) begin // @[Core_1.scala 257:23]
       issue_ptr <= 2'h0; // @[Core_1.scala 259:19]
     end else if (issue_fire) begin // @[Core_1.scala 248:22]
       issue_ptr <= 2'h0; // @[Core_1.scala 248:34]
@@ -40522,7 +40520,7 @@ module Core(
     if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_0_inst <= ib_io_out_bits_inst_0_inst; // @[Reg.scala 20:22]
     end
-    if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 212:21]
+    if (_ib_io_flush_T_1) begin // @[Core_1.scala 212:21]
       dec_inst_0_valid <= 1'h0; // @[Core_1.scala 214:40]
     end else if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_0_valid <= ib_io_out_bits_inst_0_valid; // @[Reg.scala 20:22]
@@ -40530,7 +40528,7 @@ module Core(
     if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_1_inst <= ib_io_out_bits_inst_1_inst; // @[Reg.scala 20:22]
     end
-    if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 212:21]
+    if (_ib_io_flush_T_1) begin // @[Core_1.scala 212:21]
       dec_inst_1_valid <= 1'h0; // @[Core_1.scala 214:40]
     end else if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_1_valid <= ib_io_out_bits_inst_1_valid; // @[Reg.scala 20:22]
@@ -40538,7 +40536,7 @@ module Core(
     if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_2_inst <= ib_io_out_bits_inst_2_inst; // @[Reg.scala 20:22]
     end
-    if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 212:21]
+    if (_ib_io_flush_T_1) begin // @[Core_1.scala 212:21]
       dec_inst_2_valid <= 1'h0; // @[Core_1.scala 214:40]
     end else if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_2_valid <= ib_io_out_bits_inst_2_valid; // @[Reg.scala 20:22]
@@ -40546,7 +40544,7 @@ module Core(
     if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_3_inst <= ib_io_out_bits_inst_3_inst; // @[Reg.scala 20:22]
     end
-    if (_ib_io_in_bits_flush_T_1) begin // @[Core_1.scala 212:21]
+    if (_ib_io_flush_T_1) begin // @[Core_1.scala 212:21]
       dec_inst_3_valid <= 1'h0; // @[Core_1.scala 214:40]
     end else if (dec_latch) begin // @[Reg.scala 20:18]
       dec_inst_3_valid <= ib_io_out_bits_inst_3_valid; // @[Reg.scala 20:22]

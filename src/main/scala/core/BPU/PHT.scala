@@ -2,20 +2,21 @@ package mycpu
 
 import chisel3._
 import chisel3.util._
+import mycpu.common.Parameters._
 
 // Pattern History Table
-class PHT(size: Int) extends Module {
+class PHT extends Module {
     val io = IO(new Bundle{
         val update = Flipped(Valid(new Bundle{
-            val idx = UInt(log2Ceil(size).W)
+            val idx = UInt(log2Ceil(PHT_SIZE).W)
             val brTaken = Bool()
         }))
-        val index = Input(UInt(log2Ceil(size).W))
+        val index = Input(UInt(log2Ceil(PHT_SIZE).W))
         val brTaken = Output(Bool())
     })
 
     val initVal = "b10".U(2.W)
-    val init = Seq.fill(size)(initVal)
+    val init = Seq.fill(PHT_SIZE)(initVal)
     val counters = RegInit(VecInit(init))
     
     val strongTaken = "b11".U(2.W)

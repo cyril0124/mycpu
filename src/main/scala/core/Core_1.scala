@@ -176,7 +176,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
     dontTouch(icacheRespIsAlignAddr)
     ib.io.in.bits.icache.size := Mux(icacheRespIsAlignAddr, icacheResp.size, icacheRdWays.U - icacheResp.addr(log2Ceil(icacheRdWays)+2-1, 2))
     ib.io.in.bits.pc := icache.io.read.resp.bits.addr
-    ib.io.in.bits.flush := globalBrTaken || reset.asBool
+    ib.io.flush := globalBrTaken || reset.asBool
     ib.io.out.ready := dec_ready
     
     // --------------------------------------------------------------------------------
