@@ -1,47 +1,47 @@
-module SRAMArray_2P_15(
-  input        clock,
-  input        reset,
-  input  [8:0] io_r_addr,
-  output [1:0] io_r_data_0,
-  output [1:0] io_r_data_1,
-  output [1:0] io_r_data_2,
-  output [1:0] io_r_data_3,
-  input        io_w_en,
-  input  [8:0] io_w_addr,
-  input  [1:0] io_w_data_0,
-  input  [1:0] io_w_data_1,
-  input  [1:0] io_w_data_2,
-  input  [1:0] io_w_data_3,
-  input  [3:0] io_w_maskOH
+module SRAMArray_2P_18(
+  input         clock,
+  input         reset,
+  input  [8:0]  io_r_addr,
+  output [18:0] io_r_data_0,
+  output [18:0] io_r_data_1,
+  output [18:0] io_r_data_2,
+  output [18:0] io_r_data_3,
+  input         io_w_en,
+  input  [8:0]  io_w_addr,
+  input  [18:0] io_w_data_0,
+  input  [18:0] io_w_data_1,
+  input  [18:0] io_w_data_2,
+  input  [18:0] io_w_data_3,
+  input  [3:0]  io_w_maskOH
 );
   wire  brams_0_clock; // @[SRAM_1.scala 202:38]
   wire  brams_0_reset; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_0_io_r_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_0_io_r_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_0_io_r_data; // @[SRAM_1.scala 202:38]
   wire  brams_0_io_w_en; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_0_io_w_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_0_io_w_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_0_io_w_data; // @[SRAM_1.scala 202:38]
   wire  brams_1_clock; // @[SRAM_1.scala 202:38]
   wire  brams_1_reset; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_1_io_r_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_1_io_r_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_1_io_r_data; // @[SRAM_1.scala 202:38]
   wire  brams_1_io_w_en; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_1_io_w_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_1_io_w_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_1_io_w_data; // @[SRAM_1.scala 202:38]
   wire  brams_2_clock; // @[SRAM_1.scala 202:38]
   wire  brams_2_reset; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_2_io_r_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_2_io_r_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_2_io_r_data; // @[SRAM_1.scala 202:38]
   wire  brams_2_io_w_en; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_2_io_w_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_2_io_w_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_2_io_w_data; // @[SRAM_1.scala 202:38]
   wire  brams_3_clock; // @[SRAM_1.scala 202:38]
   wire  brams_3_reset; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_3_io_r_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_3_io_r_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_3_io_r_data; // @[SRAM_1.scala 202:38]
   wire  brams_3_io_w_en; // @[SRAM_1.scala 202:38]
   wire [8:0] brams_3_io_w_addr; // @[SRAM_1.scala 202:38]
-  wire [1:0] brams_3_io_w_data; // @[SRAM_1.scala 202:38]
+  wire [18:0] brams_3_io_w_data; // @[SRAM_1.scala 202:38]
   BankRAM_2P_100 brams_0 ( // @[SRAM_1.scala 202:38]
     .clock(brams_0_clock),
     .reset(brams_0_reset),

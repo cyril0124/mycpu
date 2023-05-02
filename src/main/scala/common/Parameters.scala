@@ -182,8 +182,9 @@ object Parameters {
 
   // branch predictor
   val GHR_WIDTH         = 5
+  val PRED_IDX_WIDTH    = GHR_WIDTH - 1
   val PHT_SIZE          = 1 << GHR_WIDTH
-  val BTB_INDEX_WIDTH   = 6
+  val BTB_INDEX_WIDTH   = 8
   val BTB_PC_WIDTH      = ADDR_WIDTH - BTB_INDEX_WIDTH - ADDR_ALIGN_WIDTH
   val BTB_TARGET_WIDTH  = ADDR_WIDTH - ADDR_ALIGN_WIDTH
   val BTB_SIZE          = 1 << BTB_INDEX_WIDTH

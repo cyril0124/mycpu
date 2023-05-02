@@ -85,7 +85,7 @@ module DataBankArray_1(
   wire [31:0] dataBanks_3_io_w_data_3; // @[SRAM_1.scala 256:31]
   wire [3:0] dataBanks_3_io_w_maskOH; // @[SRAM_1.scala 256:31]
   wire  _wen_T_1 = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  SRAMArray_2P_10 dataBanks_0 ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_14 dataBanks_0 ( // @[SRAM_1.scala 256:31]
     .clock(dataBanks_0_clock),
     .reset(dataBanks_0_reset),
     .io_r_addr(dataBanks_0_io_r_addr),
@@ -101,7 +101,7 @@ module DataBankArray_1(
     .io_w_data_3(dataBanks_0_io_w_data_3),
     .io_w_maskOH(dataBanks_0_io_w_maskOH)
   );
-  SRAMArray_2P_10 dataBanks_1 ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_14 dataBanks_1 ( // @[SRAM_1.scala 256:31]
     .clock(dataBanks_1_clock),
     .reset(dataBanks_1_reset),
     .io_r_addr(dataBanks_1_io_r_addr),
@@ -117,7 +117,7 @@ module DataBankArray_1(
     .io_w_data_3(dataBanks_1_io_w_data_3),
     .io_w_maskOH(dataBanks_1_io_w_maskOH)
   );
-  SRAMArray_2P_10 dataBanks_2 ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_14 dataBanks_2 ( // @[SRAM_1.scala 256:31]
     .clock(dataBanks_2_clock),
     .reset(dataBanks_2_reset),
     .io_r_addr(dataBanks_2_io_r_addr),
@@ -133,7 +133,7 @@ module DataBankArray_1(
     .io_w_data_3(dataBanks_2_io_w_data_3),
     .io_w_maskOH(dataBanks_2_io_w_maskOH)
   );
-  SRAMArray_2P_10 dataBanks_3 ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_14 dataBanks_3 ( // @[SRAM_1.scala 256:31]
     .clock(dataBanks_3_clock),
     .reset(dataBanks_3_reset),
     .io_r_addr(dataBanks_3_io_r_addr),

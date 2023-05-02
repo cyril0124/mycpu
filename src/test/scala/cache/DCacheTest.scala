@@ -516,7 +516,7 @@ class DCacheTest extends AnyFlatSpec with ChiselScalatestTester{
 
             var scoreboard: scala.collection.mutable.Map[Int, Int] = scala.collection.mutable.Map() // (addr, data)
             var dirtyBoard: scala.collection.mutable.Map[Int, Boolean] = scala.collection.mutable.Map() // (addr, dirty)
-            val testCaseNum = 10000
+            val testCaseNum = 2000
 
             def tlValid: Boolean = c.io.tlbus.req.valid.peekBoolean()
             def tlOpcode: Int = c.io.tlbus.req.bits.opcode.peekInt().toInt

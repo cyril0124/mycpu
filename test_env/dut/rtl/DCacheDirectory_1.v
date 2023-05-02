@@ -112,7 +112,7 @@ module DCacheDirectory_1(
   wire [1:0] _T_37 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_39 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_41 = _T_37 + _T_39; // @[Bitwise.scala 51:90]
-  SRAMArray_2P_14 tagArray ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_18 tagArray ( // @[SRAM_1.scala 256:31]
     .clock(tagArray_clock),
     .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
@@ -128,7 +128,7 @@ module DCacheDirectory_1(
     .io_w_data_3(tagArray_io_w_data_3),
     .io_w_maskOH(tagArray_io_w_maskOH)
   );
-  SRAMArray_2P_15 metaArray ( // @[SRAM_1.scala 256:31]
+  SRAMArray_2P_19 metaArray ( // @[SRAM_1.scala 256:31]
     .clock(metaArray_clock),
     .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),

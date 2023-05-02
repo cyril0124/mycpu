@@ -11,10 +11,10 @@ import mycpu.util._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
 import mycpu.common.consts.AluOp._
-import firrtl.Utils
 import mycpu.common.consts.CsrOp._
 import mycpu.common.consts.ExceptType._
 import mycpu.FUType._
+import mycpu.common.Parameters._
 
 
 class EdgeDetect(typ: String = "faling") extends Module{
@@ -49,26 +49,9 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     val ib = Module(new InstBuffer) // TODO: Optimize code architecture of InstBuffer(too messy for now)
     dontTouch(ib.io)
-    // val icache = Module(new ICache()(p.alterPartial(
-    //     {
-    //         case MyCpuParamsKey => MyCpuParameters(
-    //             simulation = simulation,
-    //             dcacheSets = 128,
-    //             dcacheWays = 8,
-    //             dcacheBlockSize = 8,
-    //             busBeatSize = busBeatSize,
-    //             logEnable = logEnable,
-    //         )
-    //     }
-    // )))
     val rf = Module(new RegFile2(UInt(xlen.W)))
     rf.io.r <> DontCare
     rf.io.w <> DontCare
-    
-    // val aluStage = Module(new ALUStage)
-    // val bruStage = Module(new BRUStage)
-    // val lsuStage = Module(new LSUStage)
-    // val csrStage = Module(new CSRStage)
 
     val robEntry = 12
     val aluRSEntry = 5
@@ -104,81 +87,10 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val globalBrTaken = csrExcpValid || bruBrTaken
     val globalBrAddr = Mux(csrExcpValid, csrExcpAddr, bruBrAddr)
     val globalBrPC = rob.io.deq.bits.pc
+    val globalPredictID = rob.io.deq.bits.predictID
+    val globalPredictIdx = rob.io.deq.bits.predictIdx
     dontTouch(globalBrTaken)
 
-    // --------------------------------------------------------------------------------
-    // Fetch stage
-    // --------------------------------------------------------------------------------
-    // val pcReg = RegInit(resetPc.U(xlen.W))
-    // val pcNext = Wire(UInt(xlen.W))
-    // val step = icacheRdWays * ( ilen / 8 )
-    // val isAlignAddr = ~Cat( pcReg(log2Ceil(step)-1, 0) & Fill(log2Ceil(step), 1.U) ).orR
-    // val lastPc = RegEnable(icache.io.read.req.bits.addr, icache.io.read.req.fire)
-    // val pcNext4 = Mux(isAlignAddr, 
-    //                     pcReg + step.U, 
-    //                     lastPc + ( ( step.U - lastPc(log2Ceil(step)-1, 0) ) >> 2 << 2) // fix unalign address
-    //                 ) 
-
-    // val fetch_instValid = RegInit(false.B)
-    // val fetch_fire = fetch_valid //|| fetch_instValid
-    
-    // when(icache.io.read.resp.fire) { fetch_instValid := true.B }
-    // .elsewhen(fetch_instValid && icache.io.read.req.fire) { fetch_instValid := false.B }
-    
-    // val edgeBackPressure = Module(new EdgeDetect("faling"))
-    // edgeBackPressure.io.in := ib.io.status.back_pressure
-    
-    // val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
-    
-    // val fetch_pendingBranch = Module(new Queue(UInt(xlen.W), 4, flow = true))
-    // fetch_pendingBranch.io.enq.bits := globalBrAddr
-    // fetch_pendingBranch.io.enq.valid := globalBrTaken 
-    // fetch_pendingBranch.io.deq.ready := icache.io.read.req.ready 
-    // val brTaken = fetch_pendingBranch.io.deq.fire
-    // val brAddr = fetch_pendingBranch.io.deq.bits
-
-    // val preFetchInst = (firstFire && pcReg === resetPc.U) || 
-    //                     (!firstFire && (
-    //                             (fetch_fire || edgeBackPressure.io.change) && !ib.io.status.back_pressure ||
-    //                             brTaken
-    //                         )
-    //                     )
-
-    // // Send icache request
-    // icache.io.read.req.valid := preFetchInst && io.in.start 
-    // icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), Mux(brTaken, brAddr, pcReg))
-    // icache.io.read.resp.ready := ib.io.in.ready
-    // icache.io.flush := globalBrTaken
-
-    // // Update PC register
-    // when(icache.io.read.req.fire && !firstFire) { 
-    //     pcReg := pcNext
-    // }
-    // pcNext := Mux(brTaken, brAddr, pcNext4)
-    
-    // fetch_valid := icache.io.read.resp.valid
-    // --------------------------------------------------------------------------------
-    // Instruction Buffer
-    // --------------------------------------------------------------------------------
-    // val blockAddr = RegEnable(globalBrAddr, globalBrTaken)
-    // val blockValid = RegInit(false.B)
-    // val willBlock = (globalBrTaken || brTaken) && icache.io.read.resp.bits.addr =/= globalBrAddr 
-    // val willWakeUp = blockValid && icache.io.read.resp.valid && icache.io.read.resp.bits.addr === blockAddr
-    // when(willBlock) { blockValid := true.B }
-    // .elsewhen(willWakeUp) { blockValid := false.B}
-
-    // ib.io.in.valid := fetch_valid && (!blockValid || willWakeUp) && !willBlock
-    // ib.io.in.bits.icache := icache.io.read.resp.bits
-    // val icacheResp = icache.io.read.resp.bits
-    // val icacheRespIsAlignAddr = isAlignAddr_1(icacheResp.addr)
-    // dontTouch(icacheRespIsAlignAddr)
-    // ib.io.in.bits.icache.size := Mux(icacheRespIsAlignAddr, icacheResp.size, icacheRdWays.U - icacheResp.addr(log2Ceil(icacheRdWays)+2-1, 2))
-    // ib.io.in.bits.pc := icache.io.read.resp.bits.addr
-    // ib.io.flush := globalBrTaken || reset.asBool
-    // ib.io.out.ready := dec_ready
-    
-
-    
 
     // --------------------------------------------------------------------------------
     // Instruction Fetch Unit
@@ -187,9 +99,11 @@ class Core()(implicit val p: Parameters) extends MyModule {
     ifu.io.start := io.in.start
     ifu.io.ib.backPressure := ib.io.status.backPressure
     ifu.io.redirect.valid := globalBrTaken
-    ifu.io.redirect.bits.brTaken := globalBrTaken
+    ifu.io.redirect.bits.brTaken := rob.io.deq.bits.brTaken
     ifu.io.redirect.bits.pc := globalBrPC
     ifu.io.redirect.bits.targetAddr := globalBrAddr
+    ifu.io.redirect.bits.way := globalPredictID
+    ifu.io.redirect.bits.idx := globalPredictIdx
     
     ib.io.in <> ifu.io.output
     ib.io.flush := globalBrTaken || reset.asBool
@@ -243,6 +157,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val issue_instValid = RegEnable(Cat(dec_inst.map{d => d.valid}).asUInt, issue_latch)
     val issue_inst = Reg(Vec(icacheRdWays, UInt(ilen.W))) 
     val issue_predictBrTaken = Reg(Vec(icacheRdWays, Bool()))
+    val issue_predictIdx = Reg(Vec(icacheRdWays, UInt(PRED_IDX_WIDTH.W)))
     val issue_instSize = PopCount(issue_instValid) - 1.U
     val issue_instFire = Wire(Bool())
     val issue_ptr = RegInit(0.U(log2Ceil(icacheRdWays).W))
@@ -252,6 +167,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
             issue_decodeSigs(i) := dec_decodeSigs(i)
             issue_inst(i) := dec_inst(i).inst
             issue_predictBrTaken(i) := dec_inst(i).predictBrTaken
+            issue_predictIdx(i) := dec_inst(i).predictIdx
         }
     }
 
@@ -266,12 +182,12 @@ class Core()(implicit val p: Parameters) extends MyModule {
     when(issue_fire) { issue_ptr := 0.U }
     .elsewhen(issue_instFire) { issue_ptr := issue_ptr + 1.U }
 
-    // issue_instFire := aluStage.io.in.fire || bruStage.io.in.fire || lsuStage.io.in.fire || csrStage.io.in.fire //! indicate that one instruction are issued
     issue_instFire := rob.io.enq.fire 
 
     val issue_chosenDecodesigs = Mux1H(UIntToOH(issue_ptr), issue_decodeSigs)
     val issue_chosenInst = Mux1H(UIntToOH(issue_ptr), issue_inst)
     val issue_chosenPredictBrTaken = Mux1H(UIntToOH(issue_ptr), issue_predictBrTaken)
+    val issue_chosenPredictIdx = Mux1H(UIntToOH(issue_ptr), issue_predictIdx)
 
     when(issue_flush) {
         issue_full := false.B
@@ -284,7 +200,6 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val rs2 = InstField(issue_chosenInst, "rs2")
     val issue_rs1 = Mux(decOpr1 === OPR_REG1, rs1, 0.U)
     val issue_rs2 = Mux(decOpr2 === OPR_REG2, rs2, 0.U)
-    // val issue_rd = InstField(issue_chosenInst, "rd")
 
 
     // Functional Unit issue valid signals
@@ -299,175 +214,8 @@ class Core()(implicit val p: Parameters) extends MyModule {
             cf"csrOp=> ${issue_chosenDecodesigs.csrOp} excpType=> ${issue_chosenDecodesigs.excpType}"
         )
 
-    // Read scoreboard info before issue an instruction in case of WAW hazard
-    // val scoreboard = Module(new Scoreboard(nrFu))
-    // scoreboard.io <> DontCare
-    // dontTouch(scoreboard.io)
-    // scoreboard.io.issue.valid := (issue_aluValid || issue_bruValid || issue_lsuValid || issue_csrValid) && issue_full
-    // scoreboard.io.issue.bits.fuId := MuxCase(ALU, Seq(
-    //                                         issue_aluValid -> ALU,
-    //                                         issue_bruValid -> BRU,
-    //                                         issue_lsuValid -> LSU,
-    //                                         issue_csrValid -> CSR,
-    //                                     ))
-    // scoreboard.io.issue.bits.op := MuxCase(ALU_ADD, Seq(
-    //                                         issue_aluValid -> issue_chosenDecodesigs.aluOp,
-    //                                         issue_bruValid -> issue_chosenDecodesigs.brType,
-    //                                         issue_lsuValid -> issue_chosenDecodesigs.lsuOp,
-    //                                         issue_csrValid -> issue_chosenDecodesigs.csrOp,
-    //                                     ))
-    // scoreboard.io.issue.bits.rs1 := issue_rs1
-    // scoreboard.io.issue.bits.rs2 := issue_rs2
-    // scoreboard.io.issue.bits.rd  := issue_rd
-
-    // scoreboard.io.flush := globalBrTaken || reset.asBool
-
-    // val csrIssue = Module(new CircularShiftRegister(3, 0x5))
-    // val issueID = csrIssue.io.out
-    // csrIssue.io <> DontCare
-    // csrIssue.io.shiftLeft := issue_instFire
-    // csrIssue.io.reset := globalBrTaken || reset.asBool
-
-
-    // val csrCommit = Module(new CircularShiftRegister(3, 0x5))
-    // val commitID = csrCommit.io.out
-    // csrCommit.io <> DontCare
-    // csrCommit.io.shiftLeft := aluStage.io.out.fire || bruStage.io.out.fire || lsuStage.io.out.fire || csrStage.io.out.fire
-    // csrCommit.io.reset := globalBrTaken || reset.asBool
-
     val issue_stagePc = issue_pc + (issue_ptr << 2)
     dontTouch(issue_stagePc)
-    // --------------------------------------------------------------------------------
-    // ALU stage
-    // --------------------------------------------------------------------------------
-    // aluStage.io.in.bits.id := issueID
-    // aluStage.io.in.bits.pc := issue_stagePc
-    // aluStage.io.in.bits.aluOp := issue_chosenDecodesigs.aluOp
-    // aluStage.io.in.bits.immSrc := issue_chosenDecodesigs.immSrc
-    // aluStage.io.in.bits.immSign := issue_chosenDecodesigs.immSign
-    // aluStage.io.in.bits.inst := issue_chosenInst
-    // aluStage.io.in.bits.opr1 := issue_chosenDecodesigs.opr1
-    // aluStage.io.in.bits.opr2 := issue_chosenDecodesigs.opr2
-    // aluStage.io.in.valid := issue_aluValid & scoreboard.io.issue.fire
-    // aluStage.io.rfRd(0) <> rf.io.r(0)
-    // aluStage.io.rfRd(1) <> rf.io.r(1)
-    // aluStage.io.rfRdReady := scoreboard.io.readOpr(ALU).ready
-    // aluStage.io.out.ready := scoreboard.io.writeback(ALU).ready && (aluStage.io.out.bits.id === commitID)
-    // scoreboard.io.readOpr(ALU).valid := aluStage.io.rfRd(0).en
-    // scoreboard.io.execute(ALU) := RegNext(scoreboard.io.readOpr(ALU).fire)
-    // scoreboard.io.writeback(ALU).valid := aluStage.io.out.valid && (aluStage.io.out.bits.id === commitID)
-
-    // aluStage.io.flush := globalBrTaken || reset.asBool
-
-    // --------------------------------------------------------------------------------
-    // BRU stage
-    // --------------------------------------------------------------------------------
-    // bruStage.io.in.bits.id := issueID
-    // bruStage.io.in.bits.pc := issue_stagePc
-    // bruStage.io.in.bits.bruOp := issue_chosenDecodesigs.brType
-    // bruStage.io.in.bits.immSrc := issue_chosenDecodesigs.immSrc
-    // bruStage.io.in.bits.inst := issue_chosenInst
-    // bruStage.io.in.bits.opr1 := issue_chosenDecodesigs.opr1
-    // bruStage.io.in.bits.opr2 := issue_chosenDecodesigs.opr2
-    // bruStage.io.in.valid := issue_bruValid & scoreboard.io.issue.fire
-    // bruStage.io.rfRd(0) <> rf.io.r(2)
-    // bruStage.io.rfRd(1) <> rf.io.r(3)
-    // bruStage.io.rfRdReady := scoreboard.io.readOpr(BRU).ready
-    // bruStage.io.out.ready := scoreboard.io.writeback(BRU).ready && fetch_pendingBranch.io.enq.ready && (bruStage.io.out.bits.id === commitID)
-    // scoreboard.io.readOpr(BRU).valid := bruStage.io.rfRd(0).en
-    // scoreboard.io.execute(BRU) := RegNext(scoreboard.io.readOpr(BRU).fire)
-    // scoreboard.io.writeback(BRU).valid := bruStage.io.out.valid && fetch_pendingBranch.io.enq.ready && (bruStage.io.out.bits.id === commitID)
-
-    // bruStage.io.flush := globalBrTaken || reset.asBool
-
-    // bruBrTaken := bruStage.io.out.fire && bruStage.io.out.bits.brTaken
-    // bruBrAddr := bruStage.io.out.bits.brAddr
-
-
-    // --------------------------------------------------------------------------------
-    // LSU stage
-    // --------------------------------------------------------------------------------
-    // lsuStage.io.in.bits.id := issueID
-    // lsuStage.io.in.bits.pc := issue_stagePc
-    // lsuStage.io.in.bits.lsuOp := issue_chosenDecodesigs.lsuOp
-    // lsuStage.io.in.bits.immSrc := issue_chosenDecodesigs.immSrc
-    // lsuStage.io.in.bits.inst := issue_chosenInst
-    // lsuStage.io.in.bits.opr1 := issue_chosenDecodesigs.opr1
-    // lsuStage.io.in.bits.opr2 := issue_chosenDecodesigs.opr2
-    // lsuStage.io.in.valid := issue_lsuValid & scoreboard.io.issue.fire
-    // lsuStage.io.rfRd(0) <> rf.io.r(4)
-    // lsuStage.io.rfRd(1) <> rf.io.r(5)
-    // lsuStage.io.rfRdReady := scoreboard.io.readOpr(LSU).ready
-    // lsuStage.io.out.ready := scoreboard.io.writeback(LSU).ready && (lsuStage.io.out.bits.id === commitID)
-    // scoreboard.io.readOpr(LSU).valid := lsuStage.io.rfRd(0).en
-    // scoreboard.io.execute(LSU) := RegNext(scoreboard.io.readOpr(LSU).fire)
-    // scoreboard.io.writeback(LSU).valid := lsuStage.io.out.valid && (lsuStage.io.out.bits.id === commitID)
-
-    // lsuStage.io.flush := globalBrTaken || reset.asBool
-
-    // val dcache = Module(new DCache)
-    // lsuStage.io.cache.read <> dcache.io.read
-    // lsuStage.io.cache.write <> dcache.io.write
-
-
-    // --------------------------------------------------------------------------------
-    // CSR stage
-    // --------------------------------------------------------------------------------
-    // csrStage.io <> DontCare
-    // csrStage.io.in.bits.id := issueID
-    // csrStage.io.in.bits.pc := issue_stagePc
-    // csrStage.io.in.bits.excpType := issue_chosenDecodesigs.excpType
-    // csrStage.io.in.bits.csrOp := issue_chosenDecodesigs.csrOp
-    // csrStage.io.in.bits.inst := issue_chosenInst
-    // csrStage.io.in.valid := issue_csrValid & scoreboard.io.issue.fire
-    // csrStage.io.rfRd(0) <> rf.io.r(6)
-    // csrStage.io.rfRd(1) <> rf.io.r(7)
-    // csrStage.io.rfRdReady := scoreboard.io.readOpr(CSR).ready
-    // csrStage.io.out.ready := scoreboard.io.writeback(CSR).ready && (csrStage.io.out.bits.id === commitID)
-    // scoreboard.io.readOpr(CSR).valid := csrStage.io.rfRd(0).en
-    // scoreboard.io.execute(CSR) := RegNext(scoreboard.io.readOpr(CSR).fire)
-    // scoreboard.io.writeback(CSR).valid := csrStage.io.out.valid && (csrStage.io.out.bits.id === commitID)
-
-    // csrStage.io.flush := globalBrTaken || reset.asBool
-
-    // csrExcpValid := csrStage.io.out.bits.excpValid && csrStage.io.out.fire
-    // csrExcpAddr := csrStage.io.out.bits.excpAddr
-
-
-    // --------------------------------------------------------------------------------
-    // Commit logic
-    // --------------------------------------------------------------------------------
-    // // Read RegFile
-    // rf.io.w(0).en := aluStage.io.out.fire
-    // rf.io.w(0).addr := aluStage.io.out.bits.rd
-    // rf.io.w(0).data := aluStage.io.out.bits.data
-
-    // rf.io.w(1).en := bruStage.io.out.fire && bruStage.io.out.bits.wrEn
-    // rf.io.w(1).addr := bruStage.io.out.bits.rd
-    // rf.io.w(1).data := bruStage.io.out.bits.data
-
-    // rf.io.w(2).en := lsuStage.io.out.fire && lsuStage.io.out.bits.wrEn
-    // rf.io.w(2).addr := lsuStage.io.out.bits.rd
-    // rf.io.w(2).data := lsuStage.io.out.bits.data
-
-    // rf.io.w(3).en := csrStage.io.out.fire && csrStage.io.out.bits.wrEn
-    // rf.io.w(3).addr := csrStage.io.out.bits.rd
-    // rf.io.w(3).data := csrStage.io.out.bits.data
-
-    // val rfw = rf.io.w
-    // val rfWrVec = Cat(rf.io.w.map(w => w.en).reverse)
-    // assert(PopCount(rfWrVec) <= 1.U, cf"Write multiple reg at the same time! alu:${rfw(0)} bru:${rfw(1)} lsu:${rfw(2)} csr:${rfw(3)}" )
-
-    // // Instruction Commit
-    // val instCommitVec = Cat(Seq(aluStage.io.out.fire, bruStage.io.out.fire, lsuStage.io.out.fire, csrStage.io.out.fire).reverse)
-    // assert(PopCount(instCommitVec) <= 1.U, cf"Commit multiple inst at the same time! alu:${instCommitVec(0)} bru:${instCommitVec(1)} lsu:${instCommitVec(2)}" )
-    // dontTouch(instCommitVec)
-
-    // val instState = Wire(new InstState)
-    // instState.commit := instCommitVec.orR
-    // instState.inst := Mux1H(instCommitVec, Seq(aluStage.io.out.bits.inst, bruStage.io.out.bits.inst, lsuStage.io.out.bits.inst, csrStage.io.out.bits.inst))
-    // instState.pc := Mux1H(instCommitVec, Seq(aluStage.io.out.bits.pc, bruStage.io.out.bits.pc, lsuStage.io.out.bits.pc, csrStage.io.out.bits.pc))
-
 
     // --------------------------------------------------------------------------------
     // Out-of-Order scheduler components
@@ -489,6 +237,8 @@ class Core()(implicit val p: Parameters) extends MyModule {
     rob.io.enq.bits.inst := issue_chosenInst
     rob.io.enq.bits.pc := issue_stagePc
     rob.io.enq.bits.predictBrTaken := issue_chosenPredictBrTaken
+    rob.io.enq.bits.predictID := issue_ptr
+    rob.io.enq.bits.predictIdx := issue_chosenPredictIdx
     val enq = rob.io.enq.bits
     val rd = InstField(issue_chosenInst, "rd")
     val invalidBRU = enq.fuValid(BRU) && (enq.fuOp =/= BR_JALR && enq.fuOp =/= BR_JAL)
@@ -679,9 +429,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     
     // Branch Taken and Exception Taken
-    // bruBrTaken := rob.io.deq.bits.brTaken && rob.io.deq.fire && rob.io.deq.bits.predictBrTaken =/= rob.io.deq.bits.brTaken\
     bruBrTaken := rob.io.deq.fire && rob.io.deq.bits.predictBrTaken =/= rob.io.deq.bits.brTaken
-    // bruBrAddr := rob.io.deq.bits.brAddr
     bruBrAddr := Mux(rob.io.deq.bits.brTaken, rob.io.deq.bits.brAddr, rob.io.deq.bits.pc + 4.U)
     csrExcpValid := rob.io.deq.bits.excpValid && rob.io.deq.fire
     csrExcpAddr := rob.io.deq.bits.excpAddr
@@ -717,8 +465,6 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val xbar = Module(new TLXbar)
     val rom = Module(new SingleROM)
     xbar.io <> DontCare
-    // icache.io.tlbus.req <> xbar.io.masterFace.in(0)
-    // icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
     ifu.io.tlbus.req <> xbar.io.masterFace.in(0)
     ifu.io.tlbus.resp <> xbar.io.masterFace.out(0)
 

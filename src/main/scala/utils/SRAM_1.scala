@@ -102,8 +102,8 @@ abstract class SRAMBase extends Module {
         // when(enable) {
         //     rdata := read(addr)
         // }
-        // rdata
         read(addr)
+        // rdata
     }
 }
 

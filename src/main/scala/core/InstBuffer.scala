@@ -7,19 +7,16 @@ import chisel3.experimental.ChiselEnum
 
 import mycpu.common._
 import mycpu.util._
-import firrtl.Utils
+import mycpu.common.Parameters._
 
 class InstBufferEntry()(implicit val p: Parameters) extends MyBundle {
     val inst = UInt(ilen.W)
     val valid = Bool()
     val predictBrTaken = Bool()
+    val predictIdx = UInt(PRED_IDX_WIDTH.W)
 }
 
 class InstBufferIO()(implicit val p: Parameters) extends MyBundle {
-    // val in = Flipped(Decoupled(new Bundle{
-    //     val icache = (new ICacheReadResp)
-    //     val pc = UInt(xlen.W)
-    // }))
     val in = Flipped(Decoupled(new IFUOutput))
     val out = Decoupled(new Bundle{
         val inst = Vec(icacheRdWays, new InstBufferEntry)
@@ -46,14 +43,14 @@ class InstBuffer()(implicit val p: Parameters) extends MyModule {
     io.out.valid := entries(0).io.deq.valid
 
     val mask = Wire(UInt(icacheRdWays.W)) 
-    // mask := Fill(icacheRdWays, 1.U) >> (icacheRdWays.U - io.in.bits.icache.size)
     mask := Fill(icacheRdWays, 1.U) >> (icacheRdWays.U - io.in.bits.size)
     for( i <- 0 until icacheRdWays) {
         entries(i).io.enq.valid := io.in.valid
-        // entries(i).io.enq.bits.inst := io.in.bits.icache.inst(i)
         entries(i).io.enq.bits.inst := io.in.bits.inst(i)
         entries(i).io.enq.bits.predictBrTaken := io.in.bits.predictBrTaken(i)
+        entries(i).io.enq.bits.predictIdx := io.in.bits.predictIdx(i)
         entries(i).io.enq.bits.valid := mask(i)
+        
 
         entries(i).io.deq.ready := io.out.ready
         io.out.bits.inst(i) := entries(i).io.deq.bits

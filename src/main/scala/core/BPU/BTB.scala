@@ -37,7 +37,7 @@ class BTB extends Module {
         }
     })
 
-    val entries = SRAM_1((new BTBEntry(XLEN)).getWidth, BTB_SIZE, ways = 1, singlePort = true)
+    val entries = SRAM_1((new BTBEntry(XLEN)).getWidth, BTB_SIZE, ways = 1, singlePort = false)
 
     val wrIdx = io.write.bits.pc(BTB_INDEX_WIDTH + ADDR_ALIGN_WIDTH - 1, ADDR_ALIGN_WIDTH)
     val wrPc = io.write.bits.pc(ADDR_WIDTH - 1, BTB_INDEX_WIDTH + ADDR_ALIGN_WIDTH)
@@ -61,6 +61,11 @@ class BTB extends Module {
     io.read.resp.target := rdEntry.target
     io.read.resp.jump := rdEntry.jump
 
+    dontTouch(wrEntry)
+    dontTouch(wrIdx)
+    dontTouch(wrPc)
+    dontTouch(rdIdx)
+    dontTouch(rdPc)
 }
 
 object BTBGenRTL extends App {

@@ -123,7 +123,7 @@ class ICache()(implicit val p: Parameters) extends MyModule {
     val s1_bypassIdx = OHToUInt(Cat(bypassVec.reverse))
     val s1_bypassBlockData = refillBuffer.io.read.cacheLineData(s1_bypassIdx)
     val s1_bypassData = Mux1H(s1_blockSel, s1_bypassBlockData)
-    
+
     refillPipe.io.req.valid := !s1_info.dirInfo.hit && s1_full && !s1_bypass
     refillPipe.io.req.bits.addr := s1_addr
     refillPipe.io.req.bits.chosenWay := s1_info.dirInfo.chosenWay

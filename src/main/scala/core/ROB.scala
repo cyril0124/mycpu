@@ -9,6 +9,7 @@ import mycpu.util._
 import mycpu.FUType._
 import mycpu.common.consts.Control._
 import mycpu.common.consts.LsuOp._
+import mycpu.common.Parameters._
 
 object ROBStates{
     val ROB_STATE_WIDTH = log2Ceil(4)
@@ -32,6 +33,8 @@ class ROBEntry()(implicit val p: Parameters) extends MyBundle {
     val brTaken = Bool()
 
     val predictBrTaken = Bool()
+    val predictID = UInt(8.W)
+    val predictIdx = UInt(PRED_IDX_WIDTH.W)
 
     // for CSR only
     val excpAddr = UInt(xlen.W)
@@ -50,7 +53,6 @@ class ROBReadInfo()(implicit val p: Parameters) extends MyBundle {
 
 class RegResult()(implicit val p: Parameters) extends MyBundle {
     val owner = UInt(8.W) // from which ROB Entry, should be fill wieh ROBId
-    // val data = UInt(xlen.W)
 }
 
 class ROBInput()(implicit val p: Parameters) extends MyBundle {
@@ -61,6 +63,8 @@ class ROBInput()(implicit val p: Parameters) extends MyBundle {
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
     val predictBrTaken = Bool()
+    val predictID = UInt(8.W) // use for locating which pht entry is this predict info come from
+    val predictIdx = UInt(PRED_IDX_WIDTH.W)
 }
 
 class ROBOutput()(implicit val p: Parameters) extends MyBundle {
@@ -80,6 +84,8 @@ class ROBOutput()(implicit val p: Parameters) extends MyBundle {
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
     val predictBrTaken = Bool()
+    val predictID = UInt(8.W) 
+    val predictIdx = UInt(PRED_IDX_WIDTH.W)
 }
 
 class ROBFuInput(numEntries: Int)(implicit val p: Parameters) extends MyBundle {
@@ -145,6 +151,8 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
     io.deq.bits.brAddr := entries(head).brAddr
     io.deq.bits.brTaken := entries(head).brTaken
     io.deq.bits.predictBrTaken := entries(head).predictBrTaken
+    io.deq.bits.predictIdx := entries(head).predictIdx
+    io.deq.bits.predictID := entries(head).predictID
     io.deq.bits.excpAddr := entries(head).excpAddr
     io.deq.bits.excpValid := entries(head).excpValid
     io.deq.bits.id := head + 1.U
@@ -158,6 +166,8 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
         entries(tail).pc := io.enq.bits.pc
         entries(tail).inst := io.enq.bits.inst
         entries(tail).predictBrTaken := io.enq.bits.predictBrTaken
+        entries(tail).predictID := io.enq.bits.predictID
+        entries(tail).predictIdx := io.enq.bits.predictIdx
         
         val rd = io.enq.bits.rd
         regResStat(rd).owner := Mux(rd === 0.U, 0.U, tail + 1.U)
