@@ -24,6 +24,7 @@ class RedirectInfo()(implicit val p: Parameters) extends MyBundle {
     val targetAddr = UInt(xlen.W)
     val brTaken = Bool()
     val pc = UInt(xlen.W)
+    // val way = UInt(8.W)
 }
 
 class IFUOutput()(implicit val p: Parameters) extends MyBundle {
@@ -38,12 +39,8 @@ class IFU()(implicit val p: Parameters) extends MyModule {
         val start = Input(Bool())
         val ib = Input(new Bundle{
             val backPressure = Bool()
-        })
-        val redirect = Valid(new Bundle{ // from backend / frontend
-            val targetAddr = UInt(xlen.W)
-            val brTaken = Bool()
-            val pc = UInt(xlen.W)
-        })  
+        }) 
+        val redirect = Flipped(Valid(new RedirectInfo)) // from backend
         val output = Decoupled(new IFUOutput) // for InstBuffer
         val tlbus = new TLMasterBusUL
     })
@@ -71,6 +68,11 @@ class IFU()(implicit val p: Parameters) extends MyModule {
     
     val s1_redirect = Wire(Bool())
     val s1_targetAddr = Wire(UInt(xlen.W))
+
+    def isAlignAddr_1(addr: UInt): Bool = {
+        val step = icacheRdWays * ( ilen / 8 )
+        ~Cat( addr(log2Ceil(step)-1, 0) & Fill(log2Ceil(step), 1.U) ).orR
+    }
     
     // --------------------------------------------------------------------------------
     // Stage 0 
@@ -87,7 +89,7 @@ class IFU()(implicit val p: Parameters) extends MyModule {
                     ) 
 
     val backendRedirectQueue = Module(new Queue(new RedirectInfo, 4, flow = true))
-    backendRedirectQueue.io.enq.bits := io.redirect.bits.targetAddr
+    backendRedirectQueue.io.enq.bits := io.redirect.bits
     backendRedirectQueue.io.enq.valid := io.redirect.fire 
     backendRedirectQueue.io.deq.ready := icache.io.read.req.ready 
     val s0_redirect = backendRedirectQueue.io.deq.fire
@@ -97,7 +99,7 @@ class IFU()(implicit val p: Parameters) extends MyModule {
     val s0_preFetchInst = (s0_firstFire && s0_pcReg === resetPc.U) || 
                     (!s0_firstFire && (
                             io.output.fire ||
-                            s0_redirect
+                            s0_redirect 
                         )
                     )
     val s0_brTaken = WireInit(false.B)
@@ -114,13 +116,13 @@ class IFU()(implicit val p: Parameters) extends MyModule {
     when(icache.io.read.req.fire && !s0_firstFire) { 
         s0_pcReg := s0_pcNext
     }
-    s0_pcNext := Mux(s0_redirect, s0_redirectInfo.targetAddr, s0_pcNext4)
+    s0_pcNext := Mux(s0_redirect, s0_redirectInfo.targetAddr, Mux(s1_redirect, s1_targetAddr, s0_pcNext4))
 
     // Read BTB & PHT
     val icachePC = icache.io.read.req.bits.addr
 
-    ghr.io.update.valid := io.redirect.fire
-    ghr.io.update.bits.brTaken := io.redirect.bits.brTaken
+    ghr.io.update.valid := s0_redirect
+    ghr.io.update.bits.brTaken := s0_redirectInfo.brTaken
 
     btbs.zipWithIndex.foreach{ case(btb, i) => 
         btb.io.read.req.valid := icache.io.read.req.fire
@@ -131,7 +133,7 @@ class IFU()(implicit val p: Parameters) extends MyModule {
         pht.io.index := (icachePC + (i * 4).U) ^ ghr.io.out // G-share
     }
 
-    s0_valid := RegNext(icache.io.read.req.fire)
+    s0_valid := RegNext(icache.io.read.req.fire) && !io.redirect.fire
     // --------------------------------------------------------------------------------
     // Stage 1 
     // --------------------------------------------------------------------------------
@@ -147,12 +149,16 @@ class IFU()(implicit val p: Parameters) extends MyModule {
     when(s1_latch) { s1_full := true.B }
     .elsewhen(s1_full && s1_fire) { s1_full := false.B }
 
-
     val resp = icache.io.read.resp
+    resp.ready := true.B
     val s1_insts = RegEnable(Cat(resp.bits.inst.reverse), resp.fire).asTypeOf(Vec(icacheRdWays, UInt(xlen.W)))
     val s1_instPC = RegEnable(resp.bits.addr, resp.fire)
     val s1_instSize = RegEnable(resp.bits.size, resp.fire)
-    val s1_instValidOH = UIntToOH(s1_instSize, icacheRdWays)
+
+    val icacheRespIsAlignAddr = isAlignAddr_1(resp.bits.addr)
+    val s1_instValidSize = Mux(icacheRespIsAlignAddr, s1_instSize, icacheRdWays.U - s1_instPC(log2Ceil(icacheRdWays)+2-1, 2))
+    val s1_instValidMask_1 = ( Fill(icacheRdWays, 1.U) << (icacheRdWays.U - s1_instSize) )(icacheRdWays - 1, 0)
+    val s1_instValidMask = ( Fill(icacheRdWays, 1.U) << (icacheRdWays.U - s1_instValidSize) )(icacheRdWays - 1, 0)
 
     val preDecoders = Seq.fill(icacheRdWays)(Module(new Decoder_1))
     preDecoders.zipWithIndex.foreach{ case(d, i) => 
@@ -160,12 +166,12 @@ class IFU()(implicit val p: Parameters) extends MyModule {
     }
     val preDecodeSigs = VecInit((0 until icacheRdWays).map( i => preDecoders(i).io.out))
 
-    val s1_isBranchVec = preDecodeSigs.map(p => p.brType =/= BR_NOP)
-    val s1_isBranchOH = Cat(s1_isBranchVec.reverse) & s1_instValidOH
+    val s1_isBranchVec = preDecodeSigs.map(p => p.brType =/= BR_NOP && p.brType =/= BR_JALR)
+    val s1_isBranchMask = Cat(s1_isBranchVec.reverse) & s1_instValidMask
     val s1_hasBranch = Cat(s1_isBranchVec).orR
 
     val s1_isJumpVec = preDecodeSigs.map(p => p.brType === BR_JAL)
-    val s1_isJumpOH = Cat(s1_isJumpVec.reverse) & s1_instValidOH
+    val s1_isJumpMask = Cat(s1_isJumpVec.reverse) & s1_instValidMask
     
 
     val immGens = Seq.fill(icacheRdWays)(Module(new ImmGen))
@@ -178,10 +184,10 @@ class IFU()(implicit val p: Parameters) extends MyModule {
 
 
     // Write BTB & PHT
-    val redirectChosenOH = UIntToOH(s0_redirectInfo.pc(log2Ceil(icacheRdWays)-1, 0), icacheRdWays)
+    val redirectChosenOH = UIntToOH(s0_redirectInfo.pc(log2Ceil(icacheRdWays)-1 + 2, 2), icacheRdWays)
     val backendRedirect = s0_redirect
 
-    val s1_redirectJumpOH = PriorityEncoderOH(s1_isJumpOH)
+    val s1_redirectJumpOH = PriorityEncoderOH(s1_isJumpMask)
     val s1_redirectJump = s1_redirectJumpOH.orR
 
     btbs.zipWithIndex.foreach{ case(btb, i) => 
@@ -197,10 +203,13 @@ class IFU()(implicit val p: Parameters) extends MyModule {
         pht.io.update.bits.idx := Mux(backendRedirect, s0_redirectInfo.targetAddr, s1_targetAddrVec(i))
     }
 
-
-    val s1_predictBrTaken = ( s1_brTaken & s1_isBranchOH ).orR
-    s1_redirect := s1_predictBrTaken || s1_redirectJump
-    s1_targetAddr := PriorityMux(Mux(s1_predictBrTaken, s1_isBranchOH, s1_redirectJumpOH), s1_targetAddrVec)
+    val s1_predictBrTaken = ( s1_brTaken & s1_isBranchMask ).orR
+    val s1_redirectOH = Mux(s1_predictBrTaken, s1_isBranchMask, s1_redirectJumpOH)
+    val s1_chosenRedirectOH = PriorityEncoderOH(s1_redirectOH)
+    dontTouch(s1_redirectOH)
+    dontTouch(s1_chosenRedirectOH)
+    s1_redirect := (s1_predictBrTaken || s1_redirectJump) && s1_full
+    s1_targetAddr := PriorityMux(s1_redirectOH, s1_targetAddrVec)
 
     val s1_instValid = RegInit(false.B)
     when(resp.fire) { s1_instValid := true.B }
@@ -208,10 +217,16 @@ class IFU()(implicit val p: Parameters) extends MyModule {
 
     s1_valid := (RegNext(resp.fire) || s1_instValid) && s1_full
     
-
-    io.output.valid := s1_valid
+    
+    io.output.valid := s1_valid && !io.redirect.fire //&& icache.io.read.req.ready
     io.output.bits.inst := s1_insts
     io.output.bits.pc := s1_instPC
-    io.output.bits.size := s1_instSize
-    io.output.bits.predictBrTaken := s1_brTaken & s1_isBranchOH | s1_isJumpOH
+    val size = Wire(UInt(log2Ceil((icacheRdWays) + 1).W))
+    size := OHToUInt(s1_chosenRedirectOH)
+    io.output.bits.size := Mux(s1_redirect, size + 1.U, s1_instValidSize) // redirect will drop instruction behind the branch/jump instruction
+    io.output.bits.predictBrTaken := (s1_brTaken & s1_isBranchMask | s1_isJumpMask).asBools
+
+    when(io.redirect.fire) {
+        s1_full := false.B
+    }
 }

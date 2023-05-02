@@ -1,7 +1,6 @@
 module DCacheDirectory_1(
   input         clock,
   input         reset,
-  output        io_read_req_ready,
   input         io_read_req_valid,
   input  [31:0] io_read_req_bits_addr,
   output        io_read_resp_bits_hit,
@@ -20,34 +19,34 @@ module DCacheDirectory_1(
 `ifdef RANDOMIZE_REG_INIT
   reg [31:0] _RAND_0;
 `endif // RANDOMIZE_REG_INIT
-  wire  tagArray_clock; // @[SRAM_1.scala 255:31]
-  wire  tagArray_reset; // @[SRAM_1.scala 255:31]
-  wire [8:0] tagArray_io_r_addr; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_r_data_0; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_r_data_1; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_r_data_2; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_r_data_3; // @[SRAM_1.scala 255:31]
-  wire  tagArray_io_w_en; // @[SRAM_1.scala 255:31]
-  wire [8:0] tagArray_io_w_addr; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_w_data_0; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_w_data_1; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_w_data_2; // @[SRAM_1.scala 255:31]
-  wire [18:0] tagArray_io_w_data_3; // @[SRAM_1.scala 255:31]
-  wire [3:0] tagArray_io_w_maskOH; // @[SRAM_1.scala 255:31]
-  wire  metaArray_clock; // @[SRAM_1.scala 255:31]
-  wire  metaArray_reset; // @[SRAM_1.scala 255:31]
-  wire [8:0] metaArray_io_r_addr; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_r_data_0; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_r_data_1; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_r_data_2; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_r_data_3; // @[SRAM_1.scala 255:31]
-  wire  metaArray_io_w_en; // @[SRAM_1.scala 255:31]
-  wire [8:0] metaArray_io_w_addr; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_w_data_0; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_w_data_1; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_w_data_2; // @[SRAM_1.scala 255:31]
-  wire [1:0] metaArray_io_w_data_3; // @[SRAM_1.scala 255:31]
-  wire [3:0] metaArray_io_w_maskOH; // @[SRAM_1.scala 255:31]
+  wire  tagArray_clock; // @[SRAM_1.scala 256:31]
+  wire  tagArray_reset; // @[SRAM_1.scala 256:31]
+  wire [8:0] tagArray_io_r_addr; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_r_data_0; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_r_data_1; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_r_data_2; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_r_data_3; // @[SRAM_1.scala 256:31]
+  wire  tagArray_io_w_en; // @[SRAM_1.scala 256:31]
+  wire [8:0] tagArray_io_w_addr; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_w_data_0; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_w_data_1; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_w_data_2; // @[SRAM_1.scala 256:31]
+  wire [18:0] tagArray_io_w_data_3; // @[SRAM_1.scala 256:31]
+  wire [3:0] tagArray_io_w_maskOH; // @[SRAM_1.scala 256:31]
+  wire  metaArray_clock; // @[SRAM_1.scala 256:31]
+  wire  metaArray_reset; // @[SRAM_1.scala 256:31]
+  wire [8:0] metaArray_io_r_addr; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_r_data_0; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_r_data_1; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_r_data_2; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_r_data_3; // @[SRAM_1.scala 256:31]
+  wire  metaArray_io_w_en; // @[SRAM_1.scala 256:31]
+  wire [8:0] metaArray_io_w_addr; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_w_data_0; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_w_data_1; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_w_data_2; // @[SRAM_1.scala 256:31]
+  wire [1:0] metaArray_io_w_data_3; // @[SRAM_1.scala 256:31]
+  wire [3:0] metaArray_io_w_maskOH; // @[SRAM_1.scala 256:31]
   wire  replaceWay_lfsr_prng_clock; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_reset; // @[PRNG.scala 91:22]
   wire  replaceWay_lfsr_prng_io_out_0; // @[PRNG.scala 91:22]
@@ -60,7 +59,6 @@ module DCacheDirectory_1(
   wire  replaceWay_lfsr_prng_io_out_7; // @[PRNG.scala 91:22]
   wire [8:0] rSet = io_read_req_bits_addr[12:4]; // @[Parameters.scala 50:11]
   wire [18:0] rTag = io_read_req_bits_addr[31:13]; // @[Parameters.scala 46:11]
-  wire  ren = io_read_req_ready & io_read_req_valid; // @[Decoupled.scala 51:35]
   wire [8:0] wSet = io_write_req_bits_addr[12:4]; // @[Parameters.scala 50:11]
   wire [18:0] wTag = io_write_req_bits_addr[31:13]; // @[Parameters.scala 46:11]
   wire  wen = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
@@ -68,15 +66,7 @@ module DCacheDirectory_1(
   wire [1:0] _T_6 = io_write_req_bits_way[2] + io_write_req_bits_way[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_8 = _T_4 + _T_6; // @[Bitwise.scala 51:90]
   wire  _T_22 = ~reset; // @[Directory.scala 69:11]
-  wire [18:0] rdata__0 = ren ? tagArray_io_r_data_0 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [18:0] rdata__1 = ren ? tagArray_io_r_data_1 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [18:0] rdata__2 = ren ? tagArray_io_r_data_2 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [18:0] rdata__3 = ren ? tagArray_io_r_data_3 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [1:0] rdata_1_0 = ren ? metaArray_io_r_data_0 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [1:0] rdata_1_1 = ren ? metaArray_io_r_data_1 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [1:0] rdata_1_2 = ren ? metaArray_io_r_data_2 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [1:0] rdata_1_3 = ren ? metaArray_io_r_data_3 : 2'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  wire [7:0] _T_24 = {rdata_1_3,rdata_1_2,rdata_1_1,rdata_1_0}; // @[Directory.scala 82:52]
+  wire [7:0] _T_24 = {metaArray_io_r_data_3,metaArray_io_r_data_2,metaArray_io_r_data_1,metaArray_io_r_data_0}; // @[Directory.scala 82:52]
   wire  metaRdVec_0_valid = _T_24[0]; // @[Directory.scala 82:52]
   wire  metaRdVec_0_dirty = _T_24[1]; // @[Directory.scala 82:52]
   wire  metaRdVec_1_valid = _T_24[2]; // @[Directory.scala 82:52]
@@ -85,10 +75,14 @@ module DCacheDirectory_1(
   wire  metaRdVec_2_dirty = _T_24[5]; // @[Directory.scala 82:52]
   wire  metaRdVec_3_valid = _T_24[6]; // @[Directory.scala 82:52]
   wire  metaRdVec_3_dirty = _T_24[7]; // @[Directory.scala 82:52]
-  wire  tagMatchVec_0 = rdata__0 == rTag; // @[Directory.scala 85:46]
-  wire  tagMatchVec_1 = rdata__1 == rTag; // @[Directory.scala 85:46]
-  wire  tagMatchVec_2 = rdata__2 == rTag; // @[Directory.scala 85:46]
-  wire  tagMatchVec_3 = rdata__3 == rTag; // @[Directory.scala 85:46]
+  wire [18:0] tagRdVec_0 = tagArray_io_r_data_0; // @[Directory.scala 78:34 79:14]
+  wire  tagMatchVec_0 = tagRdVec_0 == rTag; // @[Directory.scala 85:46]
+  wire [18:0] tagRdVec_1 = tagArray_io_r_data_1; // @[Directory.scala 78:34 79:14]
+  wire  tagMatchVec_1 = tagRdVec_1 == rTag; // @[Directory.scala 85:46]
+  wire [18:0] tagRdVec_2 = tagArray_io_r_data_2; // @[Directory.scala 78:34 79:14]
+  wire  tagMatchVec_2 = tagRdVec_2 == rTag; // @[Directory.scala 85:46]
+  wire [18:0] tagRdVec_3 = tagArray_io_r_data_3; // @[Directory.scala 78:34 79:14]
+  wire  tagMatchVec_3 = tagRdVec_3 == rTag; // @[Directory.scala 85:46]
   wire  _matchWayOH_T = tagMatchVec_0 & metaRdVec_0_valid; // @[Directory.scala 88:80]
   wire  _matchWayOH_T_1 = tagMatchVec_1 & metaRdVec_1_valid; // @[Directory.scala 88:80]
   wire  _matchWayOH_T_2 = tagMatchVec_2 & metaRdVec_2_valid; // @[Directory.scala 88:80]
@@ -118,7 +112,7 @@ module DCacheDirectory_1(
   wire [1:0] _T_37 = choseWayOH[0] + choseWayOH[1]; // @[Bitwise.scala 51:90]
   wire [1:0] _T_39 = choseWayOH[2] + choseWayOH[3]; // @[Bitwise.scala 51:90]
   wire [2:0] _T_41 = _T_37 + _T_39; // @[Bitwise.scala 51:90]
-  SRAMArray_2P_14 tagArray ( // @[SRAM_1.scala 255:31]
+  SRAMArray_2P_14 tagArray ( // @[SRAM_1.scala 256:31]
     .clock(tagArray_clock),
     .reset(tagArray_reset),
     .io_r_addr(tagArray_io_r_addr),
@@ -134,7 +128,7 @@ module DCacheDirectory_1(
     .io_w_data_3(tagArray_io_w_data_3),
     .io_w_maskOH(tagArray_io_w_maskOH)
   );
-  SRAMArray_2P_15 metaArray ( // @[SRAM_1.scala 255:31]
+  SRAMArray_2P_15 metaArray ( // @[SRAM_1.scala 256:31]
     .clock(metaArray_clock),
     .reset(metaArray_reset),
     .io_r_addr(metaArray_io_r_addr),
@@ -162,35 +156,34 @@ module DCacheDirectory_1(
     .io_out_6(replaceWay_lfsr_prng_io_out_6),
     .io_out_7(replaceWay_lfsr_prng_io_out_7)
   );
-  assign io_read_req_ready = 1'h1; // @[Directory.scala 75:29]
   assign io_read_resp_bits_hit = |matchWayOH; // @[Directory.scala 95:41]
   assign io_read_resp_bits_chosenWay = isHit ? matchWayOH : _choseWayOH_T; // @[Directory.scala 96:28]
   assign io_read_resp_bits_isDirtyWay = |_isDirtyWay_T; // @[Directory.scala 98:53]
-  assign io_read_resp_bits_tagRdVec_0 = ren ? tagArray_io_r_data_0 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  assign io_read_resp_bits_tagRdVec_1 = ren ? tagArray_io_r_data_1 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  assign io_read_resp_bits_tagRdVec_2 = ren ? tagArray_io_r_data_2 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
-  assign io_read_resp_bits_tagRdVec_3 = ren ? tagArray_io_r_data_3 : 19'h0; // @[SRAM_1.scala 102:22 103:19 101:32]
+  assign io_read_resp_bits_tagRdVec_0 = tagArray_io_r_data_0; // @[Directory.scala 78:34 79:14]
+  assign io_read_resp_bits_tagRdVec_1 = tagArray_io_r_data_1; // @[Directory.scala 78:34 79:14]
+  assign io_read_resp_bits_tagRdVec_2 = tagArray_io_r_data_2; // @[Directory.scala 78:34 79:14]
+  assign io_read_resp_bits_tagRdVec_3 = tagArray_io_r_data_3; // @[Directory.scala 78:34 79:14]
   assign io_write_req_ready = 1'h1; // @[Directory.scala 76:29]
   assign tagArray_clock = clock;
   assign tagArray_reset = reset;
-  assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
+  assign tagArray_io_r_addr = rSet; // @[SRAM_1.scala 245:19]
   assign tagArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign tagArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
-  assign tagArray_io_w_data_0 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_1 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_2 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_data_3 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
+  assign tagArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 238:19]
+  assign tagArray_io_w_data_0 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign tagArray_io_w_data_1 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign tagArray_io_w_data_2 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign tagArray_io_w_data_3 = wTag; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign tagArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 240:21]
   assign metaArray_clock = clock;
   assign metaArray_reset = reset;
-  assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 102:22 244:{19,19}]
+  assign metaArray_io_r_addr = rSet; // @[SRAM_1.scala 245:19]
   assign metaArray_io_w_en = io_write_req_ready & io_write_req_valid; // @[Decoupled.scala 51:35]
-  assign metaArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 237:19]
-  assign metaArray_io_w_data_0 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_1 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_2 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_data_3 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 238:35]
-  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 239:21]
+  assign metaArray_io_w_addr = wSet; // @[Directory.scala 112:15 SRAM_1.scala 238:19]
+  assign metaArray_io_w_data_0 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign metaArray_io_w_data_1 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign metaArray_io_w_data_2 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign metaArray_io_w_data_3 = io_write_req_bits_meta; // @[Directory.scala 112:15 SRAM_1.scala 239:35]
+  assign metaArray_io_w_maskOH = io_write_req_bits_way; // @[Directory.scala 112:15 SRAM_1.scala 240:21]
   assign replaceWay_lfsr_prng_clock = clock;
   assign replaceWay_lfsr_prng_reset = reset;
   always @(posedge clock) begin
@@ -251,8 +244,8 @@ module DCacheDirectory_1(
     `endif
         if (wen & _T_22 & ~(_T_8 <= 3'h1)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: write error, tring to write multiple ways\n    at SRAM_1.scala:235 assert(PopCount(mask) <= 1.U, \"write error, tring to write multiple ways\")\n"
-            ); // @[SRAM_1.scala 235:15]
+            "Assertion failed: write error, tring to write multiple ways\n    at SRAM_1.scala:236 assert(PopCount(mask) <= 1.U, \"write error, tring to write multiple ways\")\n"
+            ); // @[SRAM_1.scala 236:15]
         end
     `ifdef PRINTF_COND
       end
@@ -263,7 +256,7 @@ module DCacheDirectory_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_8 <= 3'h1) & (wen & _T_22)) begin
-          $fatal; // @[SRAM_1.scala 235:15]
+          $fatal; // @[SRAM_1.scala 236:15]
         end
     `ifdef STOP_COND
       end
@@ -275,8 +268,8 @@ module DCacheDirectory_1(
     `endif
         if (wen & _T_22 & ~(_T_8 <= 3'h1)) begin
           $fwrite(32'h80000002,
-            "Assertion failed: write error, tring to write multiple ways\n    at SRAM_1.scala:235 assert(PopCount(mask) <= 1.U, \"write error, tring to write multiple ways\")\n"
-            ); // @[SRAM_1.scala 235:15]
+            "Assertion failed: write error, tring to write multiple ways\n    at SRAM_1.scala:236 assert(PopCount(mask) <= 1.U, \"write error, tring to write multiple ways\")\n"
+            ); // @[SRAM_1.scala 236:15]
         end
     `ifdef PRINTF_COND
       end
@@ -287,7 +280,7 @@ module DCacheDirectory_1(
       if (`STOP_COND) begin
     `endif
         if (~(_T_8 <= 3'h1) & (wen & _T_22)) begin
-          $fatal; // @[SRAM_1.scala 235:15]
+          $fatal; // @[SRAM_1.scala 236:15]
         end
     `ifdef STOP_COND
       end

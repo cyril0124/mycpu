@@ -7,9 +7,9 @@ import mycpu.common.Parameters._
 // Global History Register
 class GHR extends Module {
     val io = IO(new Bundle{
-        val update = Valid(new Bundle{
+        val update = Flipped(Valid(new Bundle{
             val brTaken = Bool()
-        })
+        }))
         val out = UInt(GHR_WIDTH.W)
     })
 

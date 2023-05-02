@@ -90,16 +90,42 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
     val full = count === numEntries.U
     val empty = count === 0.U
 
+    val rs1BypassFromROB = WireDefault(false.B)
+    val rs2BypassFromROB = WireDefault(false.B)
+    val rs1BypassFromROBVal = WireDefault(0.U(xlen.W))
+    val rs2BypassFromROBVal = WireDefault(0.U(xlen.W))
+
+    val rs1BypassFromCDB = WireDefault(false.B)
+    val rs2BypassFromCDB = WireDefault(false.B)
+    val rs1BypassFromCDBVal = WireDefault(0.U(xlen.W))
+    val rs2BypassFromCDBVal = WireDefault(0.U(xlen.W))
+
     val chosenEntry = entries(head)
-    val oprReady = chosenEntry.rs1ROBId === 0.U && chosenEntry.rs2ROBId === 0.U
+    val oprReady = (chosenEntry.rs1ROBId === 0.U || rs1BypassFromROB || rs1BypassFromCDB) && (chosenEntry.rs2ROBId === 0.U || rs2BypassFromROB || rs2BypassFromCDB)
     io.enq.ready := !full && !entries(tail).busy
     io.deq.valid := oprReady && chosenEntry.busy
     io.deq.bits.op := chosenEntry.op
     io.deq.bits.ROBId := chosenEntry.ROBId
     io.deq.bits.opr1 := chosenEntry.opr1
     io.deq.bits.opr2 := chosenEntry.opr2
-    io.deq.bits.rs1Val := chosenEntry.rs1Val
-    io.deq.bits.rs2Val := chosenEntry.rs2Val
+    io.deq.bits.rs1Val :=   Mux(
+                                chosenEntry.rs1ROBId === 0.U, 
+                                chosenEntry.rs1Val, 
+                                Mux( 
+                                    rs1BypassFromROB, 
+                                    rs1BypassFromROBVal, 
+                                    Mux( rs1BypassFromCDB, rs1BypassFromCDBVal, chosenEntry.rs1Val ) 
+                                )
+                            )
+    io.deq.bits.rs2Val :=   Mux(
+                                chosenEntry.rs2ROBId === 0.U, 
+                                chosenEntry.rs2Val, 
+                                Mux( 
+                                    rs2BypassFromROB, 
+                                    rs2BypassFromROBVal, 
+                                    Mux( rs2BypassFromCDB, rs2BypassFromCDBVal, chosenEntry.rs2Val ) 
+                                )
+                            )
     io.deq.bits.immSrc := chosenEntry.immSrc
     io.deq.bits.immSign := chosenEntry.immSign
     io.deq.bits.excpType := chosenEntry.excpType
@@ -167,7 +193,7 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
         }
     }
 
-    entries.foreach{ e => 
+    entries.zipWithIndex.foreach{ case(e, i) => 
         when(e.busy) {
             // Operands has three sources:
             // (1) from RegFile
@@ -179,13 +205,24 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
             val rs2ROBEntry = io.robRead(e.rs2ROBId - 1.U)
             val rs1FromROB = (rs1ROBEntry.busy && rs1ROBEntry.state === sWrite || rs1ROBEntry.state === sCommit) && rs1ROBEntry.rd === e.rs1 && e.rs1 =/= 0.U
             val rs2FromROB = (rs2ROBEntry.busy && rs2ROBEntry.state === sWrite || rs2ROBEntry.state === sCommit) && rs2ROBEntry.rd === e.rs2 && e.rs2 =/= 0.U
+            
             when(rs1FromROB && e.rs1ROBId =/= 0.U) {
                 e.rs1Val := rs1ROBEntry.data
                 e.rs1ROBId := 0.U
+
+                when(head === i.U) {
+                    rs1BypassFromROB := true.B
+                    rs1BypassFromROBVal := rs1ROBEntry.data
+                }
             }
             when(rs2FromROB && e.rs2ROBId =/= 0.U) {
                 e.rs2Val := rs2ROBEntry.data
                 e.rs2ROBId := 0.U
+                
+                when(head === i.U) {
+                    rs2BypassFromROB := true.B
+                    rs2BypassFromROBVal := rs2ROBEntry.data
+                }
             }
 
             // Bypass from CDB(Common Data Bus)
@@ -199,13 +236,26 @@ class ReservationStation(numEntries: Int, numROBEntries: Int, nrFu: Int)(implici
             val cdbDataVec = io.cdb.map(c => c.bits.data)
             val bypassRs1 = cdbBypassRs1.orR
             val bypassRs2 = cdbBypassRs2.orR
+
             when(bypassRs1 && e.rs1ROBId =/= 0.U) {
-                e.rs1Val := Mux1H(cdbBypassRs1, cdbDataVec)
+                val bypassRs1 = Mux1H(cdbBypassRs1, cdbDataVec)
+                e.rs1Val := bypassRs1
                 e.rs1ROBId := 0.U
+
+                when(head === i.U) {
+                    rs1BypassFromCDB := true.B
+                    rs1BypassFromCDBVal := bypassRs1
+                }
             }
             when(bypassRs2 && e.rs2ROBId =/= 0.U) {
-                e.rs2Val := Mux1H(cdbBypassRs2, cdbDataVec)
+                val bypassRs2 = Mux1H(cdbBypassRs2, cdbDataVec)
+                e.rs2Val := bypassRs2
                 e.rs2ROBId := 0.U
+
+                when(head === i.U) {
+                    rs2BypassFromCDB := true.B
+                    rs2BypassFromCDBVal := bypassRs2
+                }
             }
         }
     }

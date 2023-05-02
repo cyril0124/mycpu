@@ -229,8 +229,6 @@ module DCache(
   wire  wb_io_tlbus_resp_valid; // @[DCache.scala 86:20]
   wire  db_clock; // @[DCache.scala 87:20]
   wire  db_reset; // @[DCache.scala 87:20]
-  wire  db_io_read_req_ready; // @[DCache.scala 87:20]
-  wire  db_io_read_req_valid; // @[DCache.scala 87:20]
   wire [8:0] db_io_read_req_bits_set; // @[DCache.scala 87:20]
   wire [31:0] db_io_read_resp_0_0; // @[DCache.scala 87:20]
   wire [31:0] db_io_read_resp_0_1; // @[DCache.scala 87:20]
@@ -259,7 +257,6 @@ module DCache(
   wire [3:0] db_io_write_req_bits_way; // @[DCache.scala 87:20]
   wire  dir_clock; // @[DCache.scala 88:21]
   wire  dir_reset; // @[DCache.scala 88:21]
-  wire  dir_io_read_req_ready; // @[DCache.scala 88:21]
   wire  dir_io_read_req_valid; // @[DCache.scala 88:21]
   wire [31:0] dir_io_read_req_bits_addr; // @[DCache.scala 88:21]
   wire  dir_io_read_resp_bits_hit; // @[DCache.scala 88:21]
@@ -342,9 +339,7 @@ module DCache(
   wire  dbRdReqArb_io_in_0_valid; // @[DCache.scala 137:28]
   wire [8:0] dbRdReqArb_io_in_0_bits_set; // @[DCache.scala 137:28]
   wire  dbRdReqArb_io_in_1_ready; // @[DCache.scala 137:28]
-  wire  dbRdReqArb_io_in_1_valid; // @[DCache.scala 137:28]
   wire [8:0] dbRdReqArb_io_in_1_bits_set; // @[DCache.scala 137:28]
-  wire  dbRdReqArb_io_out_valid; // @[DCache.scala 137:28]
   wire [8:0] dbRdReqArb_io_out_bits_set; // @[DCache.scala 137:28]
   wire  dirRdReqArb_io_in_0_valid; // @[DCache.scala 142:29]
   wire [31:0] dirRdReqArb_io_in_0_bits_addr; // @[DCache.scala 142:29]
@@ -617,8 +612,6 @@ module DCache(
   DataBankArray_1 db ( // @[DCache.scala 87:20]
     .clock(db_clock),
     .reset(db_reset),
-    .io_read_req_ready(db_io_read_req_ready),
-    .io_read_req_valid(db_io_read_req_valid),
     .io_read_req_bits_set(db_io_read_req_bits_set),
     .io_read_resp_0_0(db_io_read_resp_0_0),
     .io_read_resp_0_1(db_io_read_resp_0_1),
@@ -649,7 +642,6 @@ module DCache(
   DCacheDirectory_1 dir ( // @[DCache.scala 88:21]
     .clock(dir_clock),
     .reset(dir_reset),
-    .io_read_req_ready(dir_io_read_req_ready),
     .io_read_req_valid(dir_io_read_req_valid),
     .io_read_req_bits_addr(dir_io_read_req_bits_addr),
     .io_read_resp_bits_hit(dir_io_read_resp_bits_hit),
@@ -742,9 +734,7 @@ module DCache(
     .io_in_0_valid(dbRdReqArb_io_in_0_valid),
     .io_in_0_bits_set(dbRdReqArb_io_in_0_bits_set),
     .io_in_1_ready(dbRdReqArb_io_in_1_ready),
-    .io_in_1_valid(dbRdReqArb_io_in_1_valid),
     .io_in_1_bits_set(dbRdReqArb_io_in_1_bits_set),
-    .io_out_valid(dbRdReqArb_io_out_valid),
     .io_out_bits_set(dbRdReqArb_io_out_bits_set)
   );
   Arbiter_6 dirRdReqArb ( // @[DCache.scala 142:29]
@@ -927,7 +917,6 @@ module DCache(
   assign wb_io_tlbus_resp_valid = io_tlbus_resp_valid; // @[DCache.scala 119:28]
   assign db_clock = clock;
   assign db_reset = reset;
-  assign db_io_read_req_valid = dbRdReqArb_io_out_valid; // @[DCache.scala 140:20]
   assign db_io_read_req_bits_set = dbRdReqArb_io_out_bits_set; // @[DCache.scala 140:20]
   assign db_io_write_req_valid = dataBankWrArb_io_out_valid; // @[DCache.scala 152:21]
   assign db_io_write_req_bits_set = dataBankWrArb_io_out_bits_set; // @[DCache.scala 152:21]
@@ -984,7 +973,6 @@ module DCache(
   assign storeRespArb_io_out_ready = io_write_resp_ready; // @[DCache.scala 134:19]
   assign dbRdReqArb_io_in_0_valid = storePipe_io_dataBank_read_req_valid; // @[DCache.scala 138:25]
   assign dbRdReqArb_io_in_0_bits_set = storePipe_io_dataBank_read_req_bits_set; // @[DCache.scala 138:25]
-  assign dbRdReqArb_io_in_1_valid = loadPipe_io_dataBank_req_valid; // @[DCache.scala 139:25]
   assign dbRdReqArb_io_in_1_bits_set = loadPipe_io_dataBank_req_bits_set; // @[DCache.scala 139:25]
   assign dirRdReqArb_io_in_0_valid = storePipe_io_dir_read_req_valid; // @[DCache.scala 143:26]
   assign dirRdReqArb_io_in_0_bits_addr = storePipe_io_dir_read_req_bits_addr; // @[DCache.scala 143:26]

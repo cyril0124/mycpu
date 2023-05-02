@@ -28,12 +28,6 @@ module CSRStage_1(
   reg [31:0] _RAND_6;
   reg [31:0] _RAND_7;
   reg [31:0] _RAND_8;
-  reg [31:0] _RAND_9;
-  reg [31:0] _RAND_10;
-  reg [31:0] _RAND_11;
-  reg [31:0] _RAND_12;
-  reg [31:0] _RAND_13;
-  reg [31:0] _RAND_14;
 `endif // RANDOMIZE_REG_INIT
   wire  csrFile_clock; // @[CSR.scala 190:25]
   wire  csrFile_reset; // @[CSR.scala 190:25]
@@ -48,25 +42,16 @@ module CSRStage_1(
   wire [31:0] csrFile_io_trapVec; // @[CSR.scala 190:25]
   wire [31:0] csrFile_csrState_0_mcycle; // @[CSR.scala 190:25]
   wire [31:0] csrFile_csrState_0_mcycleh; // @[CSR.scala 190:25]
-  wire [31:0] immGen_io_inst; // @[CSR.scala 214:24]
-  wire [2:0] immGen_io_immSrc; // @[CSR.scala 214:24]
-  wire  immGen_io_immSign; // @[CSR.scala 214:24]
-  wire [31:0] immGen_io_imm; // @[CSR.scala 214:24]
-  reg  s0_full; // @[CSR.scala 206:26]
-  reg  s1_full; // @[CSR.scala 240:26]
-  wire  s1_ready = ~s1_full | io_out_valid; // @[CSR.scala 250:26]
-  wire  s0_fire = s0_full & s1_ready; // @[CSR.scala 207:28]
-  wire  s0_ready = ~s0_full | s0_fire; // @[CSR.scala 209:26]
-  wire  s0_latch = io_in_valid & s0_ready; // @[CSR.scala 205:32]
-  reg [2:0] s0_info_csrOp; // @[Reg.scala 19:16]
-  reg [3:0] s0_info_excpType; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_rs1Val; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_inst; // @[Reg.scala 19:16]
-  reg [7:0] s0_info_id; // @[Reg.scala 19:16]
-  wire  _GEN_6 = s0_fire & s0_full ? 1'h0 : s0_full; // @[CSR.scala 206:26 212:{35,45}]
-  wire  _GEN_7 = s0_latch | _GEN_6; // @[CSR.scala 211:{20,30}]
-  wire [11:0] s0_csrAddr = s0_info_inst[31:20]; // @[util.scala 78:36]
-  wire  s0_csrWrEn = s0_info_csrOp != 3'h0 & csrFile_io_read_valid; // @[CSR.scala 230:43]
+  wire [31:0] immGen_io_inst; // @[CSR.scala 216:24]
+  wire [2:0] immGen_io_immSrc; // @[CSR.scala 216:24]
+  wire  immGen_io_immSign; // @[CSR.scala 216:24]
+  wire [31:0] immGen_io_imm; // @[CSR.scala 216:24]
+  reg  s1_full; // @[CSR.scala 243:26]
+  wire  s1_ready = ~s1_full | io_out_valid; // @[CSR.scala 253:26]
+  wire  s0_latch = io_in_valid & s1_ready; // @[CSR.scala 206:32]
+  wire [11:0] s0_csrAddr = io_in_bits_inst[31:20]; // @[util.scala 78:36]
+  wire  s0_csrWrEn = io_in_bits_csrOp != 3'h0 & csrFile_io_read_valid; // @[CSR.scala 232:43]
+  wire  s1_latch = s0_latch & s1_ready; // @[CSR.scala 242:29]
   reg [4:0] s1_rd; // @[Reg.scala 19:16]
   reg [2:0] s1_csrOp; // @[Reg.scala 19:16]
   reg [3:0] s1_excpType; // @[Reg.scala 19:16]
@@ -75,8 +60,8 @@ module CSRStage_1(
   reg [31:0] s1_csrWrData; // @[Reg.scala 19:16]
   reg [31:0] s1_csrRdData; // @[Reg.scala 19:16]
   reg [7:0] s1_id; // @[Reg.scala 19:16]
-  wire  _GEN_16 = io_out_valid & s1_full ? 1'h0 : s1_full; // @[CSR.scala 240:26 253:{35,45}]
-  wire  _GEN_17 = s0_fire | _GEN_16; // @[CSR.scala 252:{20,30}]
+  wire  _GEN_8 = io_out_valid & s1_full ? 1'h0 : s1_full; // @[CSR.scala 243:26 256:{35,45}]
+  wire  _GEN_9 = s1_latch | _GEN_8; // @[CSR.scala 255:{20,30}]
   CsrFile csrFile ( // @[CSR.scala 190:25]
     .clock(csrFile_clock),
     .reset(csrFile_reset),
@@ -92,84 +77,62 @@ module CSRStage_1(
     .csrState_0_mcycle(csrFile_csrState_0_mcycle),
     .csrState_0_mcycleh(csrFile_csrState_0_mcycleh)
   );
-  ImmGen immGen ( // @[CSR.scala 214:24]
+  ImmGen immGen ( // @[CSR.scala 216:24]
     .io_inst(immGen_io_inst),
     .io_immSrc(immGen_io_immSrc),
     .io_immSign(immGen_io_immSign),
     .io_imm(immGen_io_imm)
   );
-  assign io_in_ready = ~s0_full | s0_fire; // @[CSR.scala 209:26]
-  assign io_out_valid = s1_full; // @[CSR.scala 266:18]
-  assign io_out_bits_rd = s1_rd; // @[CSR.scala 264:20]
-  assign io_out_bits_data = s1_csrRdData; // @[CSR.scala 263:22]
+  assign io_in_ready = ~s1_full | io_out_valid; // @[CSR.scala 253:26]
+  assign io_out_valid = s1_full; // @[CSR.scala 269:18]
+  assign io_out_bits_rd = s1_rd; // @[CSR.scala 267:20]
+  assign io_out_bits_data = s1_csrRdData; // @[CSR.scala 266:22]
   assign io_out_bits_excpAddr = 4'h4 == s1_excpType ? csrFile_io_mepc : csrFile_io_trapVec; // @[Mux.scala 81:58]
-  assign io_out_bits_excpValid = s1_excpType != 4'h0; // @[CSR.scala 259:42]
-  assign io_out_bits_id = s1_id; // @[CSR.scala 265:20]
+  assign io_out_bits_excpValid = s1_excpType != 4'h0; // @[CSR.scala 262:42]
+  assign io_out_bits_id = s1_id; // @[CSR.scala 268:20]
   assign csrState_mcycle = csrFile_csrState_0_mcycle;
   assign csrState_mcycleh = csrFile_csrState_0_mcycleh;
   assign csrFile_clock = clock;
   assign csrFile_reset = reset;
-  assign csrFile_io_read_op = s0_info_csrOp; // @[CSR.scala 227:24]
-  assign csrFile_io_read_addr = s0_info_inst[31:20]; // @[util.scala 78:36]
-  assign csrFile_io_write_op = s1_csrWrEn ? s1_csrOp : 3'h1; // @[CSR.scala 257:31]
-  assign csrFile_io_write_addr = s1_csrAddr; // @[CSR.scala 255:27]
-  assign csrFile_io_write_data = s1_csrWrData; // @[CSR.scala 256:27]
-  assign immGen_io_inst = s0_info_inst; // @[CSR.scala 218:20]
-  assign immGen_io_immSrc = 3'h5; // @[CSR.scala 216:22]
-  assign immGen_io_immSign = 1'h0; // @[CSR.scala 217:23]
+  assign csrFile_io_read_op = io_in_bits_csrOp; // @[CSR.scala 229:24]
+  assign csrFile_io_read_addr = io_in_bits_inst[31:20]; // @[util.scala 78:36]
+  assign csrFile_io_write_op = s1_csrWrEn ? s1_csrOp : 3'h1; // @[CSR.scala 260:31]
+  assign csrFile_io_write_addr = s1_csrAddr; // @[CSR.scala 258:27]
+  assign csrFile_io_write_data = s1_csrWrData; // @[CSR.scala 259:27]
+  assign immGen_io_inst = io_in_bits_inst; // @[CSR.scala 220:20]
+  assign immGen_io_immSrc = 3'h5; // @[CSR.scala 218:22]
+  assign immGen_io_immSign = 1'h0; // @[CSR.scala 219:23]
   always @(posedge clock) begin
-    if (reset) begin // @[CSR.scala 206:26]
-      s0_full <= 1'h0; // @[CSR.scala 206:26]
-    end else if (io_flush) begin // @[CSR.scala 270:20]
-      s0_full <= 1'h0; // @[CSR.scala 271:17]
+    if (reset) begin // @[CSR.scala 243:26]
+      s1_full <= 1'h0; // @[CSR.scala 243:26]
+    end else if (io_flush) begin // @[CSR.scala 273:20]
+      s1_full <= 1'h0; // @[CSR.scala 275:17]
     end else begin
-      s0_full <= _GEN_7;
+      s1_full <= _GEN_9;
     end
-    if (reset) begin // @[CSR.scala 240:26]
-      s1_full <= 1'h0; // @[CSR.scala 240:26]
-    end else if (io_flush) begin // @[CSR.scala 270:20]
-      s1_full <= 1'h0; // @[CSR.scala 272:17]
-    end else begin
-      s1_full <= _GEN_17;
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_rd <= io_in_bits_inst[11:7]; // @[Reg.scala 20:22]
     end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_csrOp <= io_in_bits_csrOp; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_csrOp <= io_in_bits_csrOp; // @[Reg.scala 20:22]
     end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_excpType <= io_in_bits_excpType; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_excpType <= io_in_bits_excpType; // @[Reg.scala 20:22]
     end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_rs1Val <= io_in_bits_rs1Val; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_inst <= io_in_bits_inst; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_id <= io_in_bits_id; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_rd <= s0_info_inst[11:7]; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_csrOp <= s0_info_csrOp; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_excpType <= s0_info_excpType; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
+    if (s1_latch) begin // @[Reg.scala 20:18]
       s1_csrAddr <= s0_csrAddr; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
+    if (s1_latch) begin // @[Reg.scala 20:18]
       s1_csrWrEn <= s0_csrWrEn; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_csrWrData <= s0_info_rs1Val; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_csrWrData <= io_in_bits_rs1Val; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
+    if (s1_latch) begin // @[Reg.scala 20:18]
       s1_csrRdData <= csrFile_io_read_data; // @[Reg.scala 20:22]
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_id <= s0_info_id; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_id <= io_in_bits_id; // @[Reg.scala 20:22]
     end
   end
 // Register and memory initialization
@@ -209,35 +172,23 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  s0_full = _RAND_0[0:0];
+  s1_full = _RAND_0[0:0];
   _RAND_1 = {1{`RANDOM}};
-  s1_full = _RAND_1[0:0];
+  s1_rd = _RAND_1[4:0];
   _RAND_2 = {1{`RANDOM}};
-  s0_info_csrOp = _RAND_2[2:0];
+  s1_csrOp = _RAND_2[2:0];
   _RAND_3 = {1{`RANDOM}};
-  s0_info_excpType = _RAND_3[3:0];
+  s1_excpType = _RAND_3[3:0];
   _RAND_4 = {1{`RANDOM}};
-  s0_info_rs1Val = _RAND_4[31:0];
+  s1_csrAddr = _RAND_4[11:0];
   _RAND_5 = {1{`RANDOM}};
-  s0_info_inst = _RAND_5[31:0];
+  s1_csrWrEn = _RAND_5[0:0];
   _RAND_6 = {1{`RANDOM}};
-  s0_info_id = _RAND_6[7:0];
+  s1_csrWrData = _RAND_6[31:0];
   _RAND_7 = {1{`RANDOM}};
-  s1_rd = _RAND_7[4:0];
+  s1_csrRdData = _RAND_7[31:0];
   _RAND_8 = {1{`RANDOM}};
-  s1_csrOp = _RAND_8[2:0];
-  _RAND_9 = {1{`RANDOM}};
-  s1_excpType = _RAND_9[3:0];
-  _RAND_10 = {1{`RANDOM}};
-  s1_csrAddr = _RAND_10[11:0];
-  _RAND_11 = {1{`RANDOM}};
-  s1_csrWrEn = _RAND_11[0:0];
-  _RAND_12 = {1{`RANDOM}};
-  s1_csrWrData = _RAND_12[31:0];
-  _RAND_13 = {1{`RANDOM}};
-  s1_csrRdData = _RAND_13[31:0];
-  _RAND_14 = {1{`RANDOM}};
-  s1_id = _RAND_14[7:0];
+  s1_id = _RAND_8[7:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial

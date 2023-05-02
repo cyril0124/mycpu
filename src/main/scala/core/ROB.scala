@@ -31,6 +31,8 @@ class ROBEntry()(implicit val p: Parameters) extends MyBundle {
     val brAddr = UInt(xlen.W)
     val brTaken = Bool()
 
+    val predictBrTaken = Bool()
+
     // for CSR only
     val excpAddr = UInt(xlen.W)
     val excpValid = Bool()
@@ -58,6 +60,7 @@ class ROBInput()(implicit val p: Parameters) extends MyBundle {
 
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
+    val predictBrTaken = Bool()
 }
 
 class ROBOutput()(implicit val p: Parameters) extends MyBundle {
@@ -76,6 +79,7 @@ class ROBOutput()(implicit val p: Parameters) extends MyBundle {
 
     val pc = UInt(xlen.W)
     val inst = UInt(ilen.W)
+    val predictBrTaken = Bool()
 }
 
 class ROBFuInput(numEntries: Int)(implicit val p: Parameters) extends MyBundle {
@@ -140,6 +144,7 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
     io.deq.bits.inst := entries(head).inst
     io.deq.bits.brAddr := entries(head).brAddr
     io.deq.bits.brTaken := entries(head).brTaken
+    io.deq.bits.predictBrTaken := entries(head).predictBrTaken
     io.deq.bits.excpAddr := entries(head).excpAddr
     io.deq.bits.excpValid := entries(head).excpValid
     io.deq.bits.id := head + 1.U
@@ -152,6 +157,7 @@ class ROB(numEntries: Int, nrFu: Int)(implicit val p: Parameters) extends MyModu
         entries(tail).rd := io.enq.bits.rd
         entries(tail).pc := io.enq.bits.pc
         entries(tail).inst := io.enq.bits.inst
+        entries(tail).predictBrTaken := io.enq.bits.predictBrTaken
         
         val rd = io.enq.bits.rd
         regResStat(rd).owner := Mux(rd === 0.U, 0.U, tail + 1.U)

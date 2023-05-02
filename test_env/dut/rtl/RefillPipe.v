@@ -7,7 +7,6 @@ module RefillPipe(
   input  [7:0]   io_req_bits_chosenWay,
   input          io_resp_ready,
   output         io_resp_valid,
-  output [31:0]  io_resp_bits_data,
   output [31:0]  io_resp_bits_blockData_0,
   output [31:0]  io_resp_bits_blockData_1,
   output [31:0]  io_resp_bits_blockData_2,
@@ -58,7 +57,6 @@ module RefillPipe(
   wire [31:0] _GEN_0 = _reqReg_T ? io_req_bits_addr : reqReg_addr; // @[Reg.scala 19:16 20:{18,22}]
   reg  reqValidReg; // @[Reg.scala 19:16]
   wire  _GEN_2 = _reqReg_T | reqValidReg; // @[Reg.scala 19:16 20:{18,22}]
-  wire [7:0] dataBlockSelOH = 8'h1 << reqReg_addr[4:2]; // @[OneHot.scala 57:35]
   reg  beatCounter_value; // @[Counter.scala 61:40]
   wire [1:0] beatOH = 2'h1 << beatCounter_value; // @[OneHot.scala 64:12]
   wire  _refillFire_T = io_tlbus_resp_ready & io_tlbus_resp_valid; // @[Decoupled.scala 51:35]
@@ -71,8 +69,7 @@ module RefillPipe(
   wire  _GEN_7 = _io_req_ready_T ? _GEN_5 : _GEN_2; // @[RefillPipe.scala 66:27]
   wire [1:0] _GEN_8 = _T_2 ? 2'h2 : 2'h1; // @[RefillPipe.scala 80:19 81:33 82:23]
   wire  _T_5 = state == 2'h2; // @[RefillPipe.scala 89:16]
-  wire  _T_6 = io_resp_ready & io_resp_valid; // @[Decoupled.scala 51:35]
-  wire [1:0] _GEN_12 = _T_6 ? 2'h0 : 2'h3; // @[RefillPipe.scala 92:23 93:32 94:27]
+  wire [1:0] _GEN_12 = io_resp_valid ? 2'h0 : 2'h3; // @[RefillPipe.scala 92:23 93:32 94:27]
   wire  _T_7 = state == 2'h3; // @[RefillPipe.scala 105:16]
   wire  refillSafe = refillFire & _T_5; // @[RefillPipe.scala 115:33]
   wire [3:0] _blockMask_T_3 = beatOH[0] ? 4'hf : 4'h0; // @[Bitwise.scala 77:12]
@@ -84,23 +81,8 @@ module RefillPipe(
   reg [31:0] refillBlockDataArray_0_3; // @[RefillPipe.scala 133:39]
   wire [255:0] _io_resp_bits_data_T = {io_tlbus_resp_bits_data,refillBlockDataArray_0_3,refillBlockDataArray_0_2,
     refillBlockDataArray_0_1,refillBlockDataArray_0_0}; // @[RefillPipe.scala 141:72]
-  wire [31:0] _io_resp_bits_data_T_17 = dataBlockSelOH[0] ? _io_resp_bits_data_T[31:0] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_18 = dataBlockSelOH[1] ? _io_resp_bits_data_T[63:32] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_19 = dataBlockSelOH[2] ? _io_resp_bits_data_T[95:64] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_20 = dataBlockSelOH[3] ? _io_resp_bits_data_T[127:96] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_21 = dataBlockSelOH[4] ? _io_resp_bits_data_T[159:128] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_22 = dataBlockSelOH[5] ? _io_resp_bits_data_T[191:160] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_23 = dataBlockSelOH[6] ? _io_resp_bits_data_T[223:192] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_24 = dataBlockSelOH[7] ? _io_resp_bits_data_T[255:224] : 32'h0; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_25 = _io_resp_bits_data_T_17 | _io_resp_bits_data_T_18; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_26 = _io_resp_bits_data_T_25 | _io_resp_bits_data_T_19; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_27 = _io_resp_bits_data_T_26 | _io_resp_bits_data_T_20; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_28 = _io_resp_bits_data_T_27 | _io_resp_bits_data_T_21; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_29 = _io_resp_bits_data_T_28 | _io_resp_bits_data_T_22; // @[Mux.scala 27:73]
-  wire [31:0] _io_resp_bits_data_T_30 = _io_resp_bits_data_T_29 | _io_resp_bits_data_T_23; // @[Mux.scala 27:73]
   assign io_req_ready = state == 2'h0; // @[RefillPipe.scala 45:27]
   assign io_resp_valid = _T_7 | refillLastBeat; // @[RefillPipe.scala 140:38]
-  assign io_resp_bits_data = _io_resp_bits_data_T_30 | _io_resp_bits_data_T_24; // @[Mux.scala 27:73]
   assign io_resp_bits_blockData_0 = _io_resp_bits_data_T[31:0]; // @[RefillPipe.scala 142:55]
   assign io_resp_bits_blockData_1 = _io_resp_bits_data_T[63:32]; // @[RefillPipe.scala 142:55]
   assign io_resp_bits_blockData_2 = _io_resp_bits_data_T[95:64]; // @[RefillPipe.scala 142:55]

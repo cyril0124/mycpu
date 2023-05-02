@@ -208,22 +208,24 @@ class BRUStageIO_1()(implicit val p: Parameters) extends MyBundle {
 class BRUStage_1()(implicit val p: Parameters) extends MyModule {
     val io = IO(new BRUStageIO_1)
 
-    val s0_valid, s0_ready = Wire(Bool())
+    // val s0_valid, s0_ready = Wire(Bool())
+    val s0_valid = Wire(Bool())
     val s1_valid, s1_ready = Wire(Bool()) 
 
-    io.in.ready := s0_ready
+    io.in.ready := s1_ready
     // --------------------------------------------------------------------------------
     // Stage 0
     // --------------------------------------------------------------------------------
     // Read oprand & Generate imm
-    val s0_latch = io.in.valid && s0_ready // TODO: Cancle handshake ?
+    val s0_latch = io.in.valid && s1_ready // TODO: Cancle handshake ?
     val s0_full = RegInit(false.B)
-    val s0_fire = s0_valid & s1_ready
-    val s0_info = RegEnable(io.in.bits, s0_latch)
-    s0_ready := !s0_full || s0_fire
+    // val s0_fire = s0_valid & s1_ready
+    // val s0_info = RegEnable(io.in.bits, s0_latch)
+    val s0_info = io.in.bits
+    // s0_ready := !s0_full || s0_fire
 
-    when(s0_latch) { s0_full := true.B }
-    .elsewhen(s0_fire && s0_full) { s0_full := false.B }
+    // when(s0_latch) { s0_full := true.B }
+    // .elsewhen(s0_fire && s0_full) { s0_full := false.B }
 
     val immGen = Module(new ImmGen)
     val s0_imm = immGen.io.imm
@@ -241,7 +243,8 @@ class BRUStage_1()(implicit val p: Parameters) extends MyModule {
                         OPR_REG2 -> s0_info.rs2Val,
                     ))
     
-    s0_valid := s0_full
+    // s0_valid := s0_full
+    s0_valid := s0_latch
     // --------------------------------------------------------------------------------
     // Stage 1
     // --------------------------------------------------------------------------------

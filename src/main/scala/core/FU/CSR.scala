@@ -194,22 +194,24 @@ class CSRStage_1()(implicit val p: Parameters) extends MyModule {
     io.csr.mode := csrFile.io.mode
     io.csr.trapVec := csrFile.io.trapVec
 
-    val s0_valid, s0_ready = Wire(Bool())
+    // val s0_valid, s0_ready = Wire(Bool())
+    val s0_valid = Wire(Bool())
     val s1_valid, s1_ready = Wire(Bool()) 
     
-    io.in.ready := s0_ready
+    io.in.ready := s1_ready
     // --------------------------------------------------------------------------------
     // Stage 0
     // --------------------------------------------------------------------------------
     // CSR read & Read regfile
-    val s0_latch = io.in.valid && s0_ready
-    val s0_full = RegInit(false.B)
-    val s0_fire = s0_valid & s1_ready
-    val s0_info = RegEnable(io.in.bits, s0_latch)
-    s0_ready := !s0_full || s0_fire
+    val s0_latch = io.in.valid && s1_ready
+    // val s0_full = RegInit(false.B)
+    // val s0_fire = s0_valid & s1_ready
+    // val s0_info = RegEnable(io.in.bits, s0_latch)
+    val s0_info = io.in.bits
+    // s0_ready := !s0_full || s0_fire
 
-    when(s0_latch) { s0_full := true.B }
-    .elsewhen(s0_fire && s0_full) { s0_full := false.B }
+    // when(s0_latch) { s0_full := true.B }
+    // .elsewhen(s0_fire && s0_full) { s0_full := false.B }
 
     val immGen = Module(new ImmGen)
     val s0_imm = immGen.io.imm
@@ -230,7 +232,8 @@ class CSRStage_1()(implicit val p: Parameters) extends MyModule {
     val s0_csrWrEn = s0_csrOp =/= CSR_NOP && csrFile.io.read.valid
     dontTouch(s0_csrWrEn)
 
-    s0_valid := s0_full
+    // s0_valid := s0_full
+    s0_valid := s0_latch
 
     // --------------------------------------------------------------------------------
     // Stage 1
@@ -268,7 +271,7 @@ class CSRStage_1()(implicit val p: Parameters) extends MyModule {
     s1_valid := io.out.fire
     
     when(io.flush) {
-        s0_full := false.B
+        // s0_full := false.B
         s1_full := false.B
     }
 }

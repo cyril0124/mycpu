@@ -98,11 +98,12 @@ abstract class SRAMBase extends Module {
     def write(addr: UInt, data: Vec[UInt]): Unit
     def read(addr: UInt): Vec[UInt]
     def read(addr: UInt, enable: Bool): Vec[UInt] = {
-        val rdata = WireDefault(0.U.asTypeOf(chiselTypeOf(read(addr))))
-        when(enable) {
-            rdata := read(addr)
-        }
-        rdata
+        // val rdata = WireInit(0.U.asTypeOf(chiselTypeOf(read(addr))))
+        // when(enable) {
+        //     rdata := read(addr)
+        // }
+        // rdata
+        read(addr)
     }
 }
 

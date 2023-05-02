@@ -49,18 +49,18 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     val ib = Module(new InstBuffer) // TODO: Optimize code architecture of InstBuffer(too messy for now)
     dontTouch(ib.io)
-    val icache = Module(new ICache()(p.alterPartial(
-        {
-            case MyCpuParamsKey => MyCpuParameters(
-                simulation = simulation,
-                dcacheSets = 128,
-                dcacheWays = 8,
-                dcacheBlockSize = 8,
-                busBeatSize = busBeatSize,
-                logEnable = logEnable,
-            )
-        }
-    )))
+    // val icache = Module(new ICache()(p.alterPartial(
+    //     {
+    //         case MyCpuParamsKey => MyCpuParameters(
+    //             simulation = simulation,
+    //             dcacheSets = 128,
+    //             dcacheWays = 8,
+    //             dcacheBlockSize = 8,
+    //             busBeatSize = busBeatSize,
+    //             logEnable = logEnable,
+    //         )
+    //     }
+    // )))
     val rf = Module(new RegFile2(UInt(xlen.W)))
     rf.io.r <> DontCare
     rf.io.w <> DontCare
@@ -70,11 +70,11 @@ class Core()(implicit val p: Parameters) extends MyModule {
     // val lsuStage = Module(new LSUStage)
     // val csrStage = Module(new CSRStage)
 
-    val robEntry = 5
-    val aluRSEntry = 3
-    val bruRSEntry = 3
-    val lsuRSEntry = 3
-    val csrRSEntry = 3
+    val robEntry = 12
+    val aluRSEntry = 5
+    val bruRSEntry = 5
+    val lsuRSEntry = 5
+    val csrRSEntry = 5
     val nrFu = 4
     val rob = Module(new ROB(robEntry, nrFu))
 
@@ -91,7 +91,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val csrRS = Module(new ReservationStation(csrRSEntry, robEntry, nrFu))
 
 
-    val fetch_valid = Wire(Bool())
+    // val fetch_valid = Wire(Bool())
     val dec_valid, dec_ready = Wire(Bool())
     val issue_valid, issue_ready = Wire(Bool())
     
@@ -103,82 +103,98 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     val globalBrTaken = csrExcpValid || bruBrTaken
     val globalBrAddr = Mux(csrExcpValid, csrExcpAddr, bruBrAddr)
+    val globalBrPC = rob.io.deq.bits.pc
     dontTouch(globalBrTaken)
 
-    def isAlignAddr_1(addr: UInt): Bool = {
-        ~Cat( addr(log2Ceil(step)-1, 0) & Fill(log2Ceil(step), 1.U) ).orR
-    }
     // --------------------------------------------------------------------------------
     // Fetch stage
     // --------------------------------------------------------------------------------
-    val pcReg = RegInit(resetPc.U(xlen.W))
-    val pcNext = Wire(UInt(xlen.W))
-    val step = icacheRdWays * ( ilen / 8 )
-    val isAlignAddr = ~Cat( pcReg(log2Ceil(step)-1, 0) & Fill(log2Ceil(step), 1.U) ).orR
-    val lastPc = RegEnable(icache.io.read.req.bits.addr, icache.io.read.req.fire)
-    val pcNext4 = Mux(isAlignAddr, 
-                        pcReg + step.U, 
-                        lastPc + ( ( step.U - lastPc(log2Ceil(step)-1, 0) ) >> 2 << 2) // fix unalign address
-                    ) 
+    // val pcReg = RegInit(resetPc.U(xlen.W))
+    // val pcNext = Wire(UInt(xlen.W))
+    // val step = icacheRdWays * ( ilen / 8 )
+    // val isAlignAddr = ~Cat( pcReg(log2Ceil(step)-1, 0) & Fill(log2Ceil(step), 1.U) ).orR
+    // val lastPc = RegEnable(icache.io.read.req.bits.addr, icache.io.read.req.fire)
+    // val pcNext4 = Mux(isAlignAddr, 
+    //                     pcReg + step.U, 
+    //                     lastPc + ( ( step.U - lastPc(log2Ceil(step)-1, 0) ) >> 2 << 2) // fix unalign address
+    //                 ) 
 
-    val fetch_instValid = RegInit(false.B)
-    val fetch_fire = fetch_valid //|| fetch_instValid
+    // val fetch_instValid = RegInit(false.B)
+    // val fetch_fire = fetch_valid //|| fetch_instValid
     
-    when(icache.io.read.resp.fire) { fetch_instValid := true.B }
-    .elsewhen(fetch_instValid && icache.io.read.req.fire) { fetch_instValid := false.B }
+    // when(icache.io.read.resp.fire) { fetch_instValid := true.B }
+    // .elsewhen(fetch_instValid && icache.io.read.req.fire) { fetch_instValid := false.B }
     
-    val edgeBackPressure = Module(new EdgeDetect("faling"))
-    edgeBackPressure.io.in := ib.io.status.back_pressure
+    // val edgeBackPressure = Module(new EdgeDetect("faling"))
+    // edgeBackPressure.io.in := ib.io.status.back_pressure
     
-    val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
+    // val firstFire    = RegEnable(false.B, true.B, icache.io.read.req.fire)
     
-    val fetch_pendingBranch = Module(new Queue(UInt(xlen.W), 4, flow = true))
-    fetch_pendingBranch.io.enq.bits := globalBrAddr
-    fetch_pendingBranch.io.enq.valid := globalBrTaken 
-    fetch_pendingBranch.io.deq.ready := icache.io.read.req.ready 
-    val brTaken = fetch_pendingBranch.io.deq.fire
-    val brAddr = fetch_pendingBranch.io.deq.bits
+    // val fetch_pendingBranch = Module(new Queue(UInt(xlen.W), 4, flow = true))
+    // fetch_pendingBranch.io.enq.bits := globalBrAddr
+    // fetch_pendingBranch.io.enq.valid := globalBrTaken 
+    // fetch_pendingBranch.io.deq.ready := icache.io.read.req.ready 
+    // val brTaken = fetch_pendingBranch.io.deq.fire
+    // val brAddr = fetch_pendingBranch.io.deq.bits
 
-    val preFetchInst = (firstFire && pcReg === resetPc.U) || 
-                        (!firstFire && (
-                                (fetch_fire || edgeBackPressure.io.change) && !ib.io.status.back_pressure ||
-                                brTaken
-                            )
-                        )
+    // val preFetchInst = (firstFire && pcReg === resetPc.U) || 
+    //                     (!firstFire && (
+    //                             (fetch_fire || edgeBackPressure.io.change) && !ib.io.status.back_pressure ||
+    //                             brTaken
+    //                         )
+    //                     )
 
-    // Send icache request
-    icache.io.read.req.valid := preFetchInst && io.in.start 
-    icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), Mux(brTaken, brAddr, pcReg))
-    icache.io.read.resp.ready := ib.io.in.ready
-    icache.io.flush := globalBrTaken
+    // // Send icache request
+    // icache.io.read.req.valid := preFetchInst && io.in.start 
+    // icache.io.read.req.bits.addr := Mux(icache.io.read.req.fire, Mux(firstFire, pcReg, pcNext), Mux(brTaken, brAddr, pcReg))
+    // icache.io.read.resp.ready := ib.io.in.ready
+    // icache.io.flush := globalBrTaken
 
-    // Update PC register
-    when(icache.io.read.req.fire && !firstFire) { 
-        pcReg := pcNext
-    }
-    pcNext := Mux(brTaken, brAddr, pcNext4)
+    // // Update PC register
+    // when(icache.io.read.req.fire && !firstFire) { 
+    //     pcReg := pcNext
+    // }
+    // pcNext := Mux(brTaken, brAddr, pcNext4)
     
-    fetch_valid := icache.io.read.resp.valid
+    // fetch_valid := icache.io.read.resp.valid
     // --------------------------------------------------------------------------------
     // Instruction Buffer
     // --------------------------------------------------------------------------------
-    val blockAddr = RegEnable(globalBrAddr, globalBrTaken)
-    val blockValid = RegInit(false.B)
-    val willBlock = (globalBrTaken || brTaken) && icache.io.read.resp.bits.addr =/= globalBrAddr 
-    val willWakeUp = blockValid && icache.io.read.resp.valid && icache.io.read.resp.bits.addr === blockAddr
-    when(willBlock) { blockValid := true.B }
-    .elsewhen(willWakeUp) { blockValid := false.B}
+    // val blockAddr = RegEnable(globalBrAddr, globalBrTaken)
+    // val blockValid = RegInit(false.B)
+    // val willBlock = (globalBrTaken || brTaken) && icache.io.read.resp.bits.addr =/= globalBrAddr 
+    // val willWakeUp = blockValid && icache.io.read.resp.valid && icache.io.read.resp.bits.addr === blockAddr
+    // when(willBlock) { blockValid := true.B }
+    // .elsewhen(willWakeUp) { blockValid := false.B}
 
-    ib.io.in.valid := fetch_valid && (!blockValid || willWakeUp) && !willBlock
-    ib.io.in.bits.icache := icache.io.read.resp.bits
-    val icacheResp = icache.io.read.resp.bits
-    val icacheRespIsAlignAddr = isAlignAddr_1(icacheResp.addr)
-    dontTouch(icacheRespIsAlignAddr)
-    ib.io.in.bits.icache.size := Mux(icacheRespIsAlignAddr, icacheResp.size, icacheRdWays.U - icacheResp.addr(log2Ceil(icacheRdWays)+2-1, 2))
-    ib.io.in.bits.pc := icache.io.read.resp.bits.addr
+    // ib.io.in.valid := fetch_valid && (!blockValid || willWakeUp) && !willBlock
+    // ib.io.in.bits.icache := icache.io.read.resp.bits
+    // val icacheResp = icache.io.read.resp.bits
+    // val icacheRespIsAlignAddr = isAlignAddr_1(icacheResp.addr)
+    // dontTouch(icacheRespIsAlignAddr)
+    // ib.io.in.bits.icache.size := Mux(icacheRespIsAlignAddr, icacheResp.size, icacheRdWays.U - icacheResp.addr(log2Ceil(icacheRdWays)+2-1, 2))
+    // ib.io.in.bits.pc := icache.io.read.resp.bits.addr
+    // ib.io.flush := globalBrTaken || reset.asBool
+    // ib.io.out.ready := dec_ready
+    
+
+    
+
+    // --------------------------------------------------------------------------------
+    // Instruction Fetch Unit
+    // --------------------------------------------------------------------------------
+    val ifu = Module(new IFU)
+    ifu.io.start := io.in.start
+    ifu.io.ib.backPressure := ib.io.status.backPressure
+    ifu.io.redirect.valid := globalBrTaken
+    ifu.io.redirect.bits.brTaken := globalBrTaken
+    ifu.io.redirect.bits.pc := globalBrPC
+    ifu.io.redirect.bits.targetAddr := globalBrAddr
+    
+    ib.io.in <> ifu.io.output
     ib.io.flush := globalBrTaken || reset.asBool
     ib.io.out.ready := dec_ready
-    
+
     // --------------------------------------------------------------------------------
     // Decode stage
     // --------------------------------------------------------------------------------
@@ -226,6 +242,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val issue_decodeSigs = Reg(Vec(icacheRdWays, new DecodeSigs_1))
     val issue_instValid = RegEnable(Cat(dec_inst.map{d => d.valid}).asUInt, issue_latch)
     val issue_inst = Reg(Vec(icacheRdWays, UInt(ilen.W))) 
+    val issue_predictBrTaken = Reg(Vec(icacheRdWays, Bool()))
     val issue_instSize = PopCount(issue_instValid) - 1.U
     val issue_instFire = Wire(Bool())
     val issue_ptr = RegInit(0.U(log2Ceil(icacheRdWays).W))
@@ -234,6 +251,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
         when(issue_latch) {
             issue_decodeSigs(i) := dec_decodeSigs(i)
             issue_inst(i) := dec_inst(i).inst
+            issue_predictBrTaken(i) := dec_inst(i).predictBrTaken
         }
     }
 
@@ -252,7 +270,8 @@ class Core()(implicit val p: Parameters) extends MyModule {
     issue_instFire := rob.io.enq.fire 
 
     val issue_chosenDecodesigs = Mux1H(UIntToOH(issue_ptr), issue_decodeSigs)
-    val issue_chosenInst = Mux1H(UIntToOH(issue_ptr), issue_inst) 
+    val issue_chosenInst = Mux1H(UIntToOH(issue_ptr), issue_inst)
+    val issue_chosenPredictBrTaken = Mux1H(UIntToOH(issue_ptr), issue_predictBrTaken)
 
     when(issue_flush) {
         issue_full := false.B
@@ -469,6 +488,7 @@ class Core()(implicit val p: Parameters) extends MyModule {
     rob.io.enq.bits.fuValid := Cat(VecInit(issue_aluValid, issue_bruValid, issue_lsuValid, issue_csrValid).reverse)
     rob.io.enq.bits.inst := issue_chosenInst
     rob.io.enq.bits.pc := issue_stagePc
+    rob.io.enq.bits.predictBrTaken := issue_chosenPredictBrTaken
     val enq = rob.io.enq.bits
     val rd = InstField(issue_chosenInst, "rd")
     val invalidBRU = enq.fuValid(BRU) && (enq.fuOp =/= BR_JALR && enq.fuOp =/= BR_JAL)
@@ -659,8 +679,10 @@ class Core()(implicit val p: Parameters) extends MyModule {
 
     
     // Branch Taken and Exception Taken
-    bruBrTaken := rob.io.deq.bits.brTaken && rob.io.deq.fire
-    bruBrAddr := rob.io.deq.bits.brAddr
+    // bruBrTaken := rob.io.deq.bits.brTaken && rob.io.deq.fire && rob.io.deq.bits.predictBrTaken =/= rob.io.deq.bits.brTaken\
+    bruBrTaken := rob.io.deq.fire && rob.io.deq.bits.predictBrTaken =/= rob.io.deq.bits.brTaken
+    // bruBrAddr := rob.io.deq.bits.brAddr
+    bruBrAddr := Mux(rob.io.deq.bits.brTaken, rob.io.deq.bits.brAddr, rob.io.deq.bits.pc + 4.U)
     csrExcpValid := rob.io.deq.bits.excpValid && rob.io.deq.fire
     csrExcpAddr := rob.io.deq.bits.excpAddr
 
@@ -695,8 +717,10 @@ class Core()(implicit val p: Parameters) extends MyModule {
     val xbar = Module(new TLXbar)
     val rom = Module(new SingleROM)
     xbar.io <> DontCare
-    icache.io.tlbus.req <> xbar.io.masterFace.in(0)
-    icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
+    // icache.io.tlbus.req <> xbar.io.masterFace.in(0)
+    // icache.io.tlbus.resp <> xbar.io.masterFace.out(0)
+    ifu.io.tlbus.req <> xbar.io.masterFace.in(0)
+    ifu.io.tlbus.resp <> xbar.io.masterFace.out(0)
 
     dcache.io.tlbus.req <> xbar.io.masterFace.in(1)
     dcache.io.tlbus.resp <> xbar.io.masterFace.out(1)

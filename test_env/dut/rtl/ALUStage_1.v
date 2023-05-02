@@ -26,145 +26,83 @@ module ALUStage_1(
   reg [31:0] _RAND_3;
   reg [31:0] _RAND_4;
   reg [31:0] _RAND_5;
-  reg [31:0] _RAND_6;
-  reg [31:0] _RAND_7;
-  reg [31:0] _RAND_8;
-  reg [31:0] _RAND_9;
-  reg [31:0] _RAND_10;
-  reg [31:0] _RAND_11;
-  reg [31:0] _RAND_12;
-  reg [31:0] _RAND_13;
-  reg [31:0] _RAND_14;
-  reg [31:0] _RAND_15;
-  reg [31:0] _RAND_16;
 `endif // RANDOMIZE_REG_INIT
-  wire [31:0] immGen_io_inst; // @[ALU.scala 230:24]
-  wire [2:0] immGen_io_immSrc; // @[ALU.scala 230:24]
-  wire  immGen_io_immSign; // @[ALU.scala 230:24]
-  wire [31:0] immGen_io_imm; // @[ALU.scala 230:24]
-  wire [31:0] alu_io_in1; // @[ALU.scala 258:21]
-  wire [31:0] alu_io_in2; // @[ALU.scala 258:21]
-  wire [4:0] alu_io_opSel; // @[ALU.scala 258:21]
-  wire [31:0] alu_io_out; // @[ALU.scala 258:21]
-  reg  s0_full; // @[ALU.scala 221:26]
-  wire  s0_ready = ~s0_full; // @[ALU.scala 224:17]
-  wire  s0_latch = io_in_valid & s0_ready; // @[ALU.scala 220:32]
-  reg  s1_full; // @[ALU.scala 247:26]
-  wire  s1_ready = ~s1_full | io_out_valid; // @[ALU.scala 253:26]
-  wire  s0_fire = s0_full & s1_ready; // @[ALU.scala 222:28]
-  reg [3:0] s0_info_opr1; // @[Reg.scala 19:16]
-  reg [3:0] s0_info_opr2; // @[Reg.scala 19:16]
-  reg [4:0] s0_info_aluOp; // @[Reg.scala 19:16]
-  reg [2:0] s0_info_immSrc; // @[Reg.scala 19:16]
-  reg  s0_info_immSign; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_rs1Val; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_rs2Val; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_inst; // @[Reg.scala 19:16]
-  reg [31:0] s0_info_pc; // @[Reg.scala 19:16]
-  reg [7:0] s0_info_id; // @[Reg.scala 19:16]
-  wire  _GEN_10 = s0_fire & s0_full ? 1'h0 : s0_full; // @[ALU.scala 221:26 227:{35,45}]
-  wire  _GEN_11 = s0_latch | _GEN_10; // @[ALU.scala 226:{20,30}]
+  wire [31:0] immGen_io_inst; // @[ALU.scala 232:24]
+  wire [2:0] immGen_io_immSrc; // @[ALU.scala 232:24]
+  wire  immGen_io_immSign; // @[ALU.scala 232:24]
+  wire [31:0] immGen_io_imm; // @[ALU.scala 232:24]
+  wire [31:0] alu_io_in1; // @[ALU.scala 260:21]
+  wire [31:0] alu_io_in2; // @[ALU.scala 260:21]
+  wire [4:0] alu_io_opSel; // @[ALU.scala 260:21]
+  wire [31:0] alu_io_out; // @[ALU.scala 260:21]
+  reg  s1_full; // @[ALU.scala 249:26]
+  wire  s1_ready = ~s1_full | io_out_valid; // @[ALU.scala 255:26]
+  wire  s0_latch = io_in_valid & s1_ready; // @[ALU.scala 221:32]
+  wire  s1_latch = s0_latch & s1_ready; // @[ALU.scala 248:29]
   reg [4:0] s1_rd; // @[Reg.scala 19:16]
   reg [4:0] s1_aluOp; // @[Reg.scala 19:16]
   reg [31:0] s1_aluInVec_0; // @[Reg.scala 19:16]
   reg [31:0] s1_aluInVec_1; // @[Reg.scala 19:16]
   reg [7:0] s1_id; // @[Reg.scala 19:16]
-  wire  _GEN_17 = io_out_valid & s1_full ? 1'h0 : s1_full; // @[ALU.scala 247:26 256:{35,45}]
-  wire  _GEN_18 = s0_fire | _GEN_17; // @[ALU.scala 255:{20,30}]
-  ImmGen immGen ( // @[ALU.scala 230:24]
+  wire  _GEN_5 = io_out_valid & s1_full ? 1'h0 : s1_full; // @[ALU.scala 249:26 258:{35,45}]
+  wire  _GEN_6 = s1_latch | _GEN_5; // @[ALU.scala 257:{20,30}]
+  ImmGen immGen ( // @[ALU.scala 232:24]
     .io_inst(immGen_io_inst),
     .io_immSrc(immGen_io_immSrc),
     .io_immSign(immGen_io_immSign),
     .io_imm(immGen_io_imm)
   );
-  ALU_1 alu ( // @[ALU.scala 258:21]
+  ALU_1 alu ( // @[ALU.scala 260:21]
     .io_in1(alu_io_in1),
     .io_in2(alu_io_in2),
     .io_opSel(alu_io_opSel),
     .io_out(alu_io_out)
   );
-  assign io_in_ready = ~s0_full; // @[ALU.scala 224:17]
-  assign io_out_valid = s1_full; // @[ALU.scala 266:18]
-  assign io_out_bits_data = alu_io_out; // @[ALU.scala 263:22]
-  assign io_out_bits_id = s1_id; // @[ALU.scala 264:20]
-  assign io_out_bits_rd = s1_rd; // @[ALU.scala 265:20]
-  assign immGen_io_inst = s0_info_inst; // @[ALU.scala 234:20]
-  assign immGen_io_immSrc = s0_info_immSrc; // @[ALU.scala 232:22]
-  assign immGen_io_immSign = s0_info_immSign; // @[ALU.scala 233:23]
-  assign alu_io_in1 = s1_aluInVec_0; // @[ALU.scala 259:16]
-  assign alu_io_in2 = s1_aluInVec_1; // @[ALU.scala 260:16]
-  assign alu_io_opSel = s1_aluOp; // @[ALU.scala 261:18]
+  assign io_in_ready = ~s1_full | io_out_valid; // @[ALU.scala 255:26]
+  assign io_out_valid = s1_full; // @[ALU.scala 268:18]
+  assign io_out_bits_data = alu_io_out; // @[ALU.scala 265:22]
+  assign io_out_bits_id = s1_id; // @[ALU.scala 266:20]
+  assign io_out_bits_rd = s1_rd; // @[ALU.scala 267:20]
+  assign immGen_io_inst = io_in_bits_inst; // @[ALU.scala 236:20]
+  assign immGen_io_immSrc = io_in_bits_immSrc; // @[ALU.scala 234:22]
+  assign immGen_io_immSign = io_in_bits_immSign; // @[ALU.scala 235:23]
+  assign alu_io_in1 = s1_aluInVec_0; // @[ALU.scala 261:16]
+  assign alu_io_in2 = s1_aluInVec_1; // @[ALU.scala 262:16]
+  assign alu_io_opSel = s1_aluOp; // @[ALU.scala 263:18]
   always @(posedge clock) begin
-    if (reset) begin // @[ALU.scala 221:26]
-      s0_full <= 1'h0; // @[ALU.scala 221:26]
-    end else if (io_flush) begin // @[ALU.scala 270:20]
-      s0_full <= 1'h0; // @[ALU.scala 271:17]
+    if (reset) begin // @[ALU.scala 249:26]
+      s1_full <= 1'h0; // @[ALU.scala 249:26]
+    end else if (io_flush) begin // @[ALU.scala 272:20]
+      s1_full <= 1'h0; // @[ALU.scala 274:17]
     end else begin
-      s0_full <= _GEN_11;
+      s1_full <= _GEN_6;
     end
-    if (reset) begin // @[ALU.scala 247:26]
-      s1_full <= 1'h0; // @[ALU.scala 247:26]
-    end else if (io_flush) begin // @[ALU.scala 270:20]
-      s1_full <= 1'h0; // @[ALU.scala 272:17]
-    end else begin
-      s1_full <= _GEN_18;
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_rd <= io_in_bits_inst[11:7]; // @[Reg.scala 20:22]
     end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_opr1 <= io_in_bits_opr1; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_aluOp <= io_in_bits_aluOp; // @[Reg.scala 20:22]
     end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_opr2 <= io_in_bits_opr2; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_aluOp <= io_in_bits_aluOp; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_immSrc <= io_in_bits_immSrc; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_immSign <= io_in_bits_immSign; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_rs1Val <= io_in_bits_rs1Val; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_rs2Val <= io_in_bits_rs2Val; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_inst <= io_in_bits_inst; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_pc <= io_in_bits_pc; // @[Reg.scala 20:22]
-    end
-    if (s0_latch) begin // @[Reg.scala 20:18]
-      s0_info_id <= io_in_bits_id; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_rd <= s0_info_inst[11:7]; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_aluOp <= s0_info_aluOp; // @[Reg.scala 20:22]
-    end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      if (s0_info_opr1 == 4'h0) begin // @[ALU.scala 237:26]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      if (io_in_bits_opr1 == 4'h0) begin // @[ALU.scala 239:26]
         s1_aluInVec_0 <= 32'h0;
-      end else if (s0_info_opr1 == 4'h7) begin // @[ALU.scala 237:62]
-        s1_aluInVec_0 <= s0_info_pc;
+      end else if (io_in_bits_opr1 == 4'h7) begin // @[ALU.scala 239:62]
+        s1_aluInVec_0 <= io_in_bits_pc;
       end else begin
-        s1_aluInVec_0 <= s0_info_rs1Val;
+        s1_aluInVec_0 <= io_in_bits_rs1Val;
       end
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      if (s0_info_opr2 == 4'h0) begin // @[ALU.scala 238:26]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      if (io_in_bits_opr2 == 4'h0) begin // @[ALU.scala 240:26]
         s1_aluInVec_1 <= 32'h0;
-      end else if (s0_info_opr2 == 4'h3) begin // @[ALU.scala 238:62]
+      end else if (io_in_bits_opr2 == 4'h3) begin // @[ALU.scala 240:62]
         s1_aluInVec_1 <= immGen_io_imm;
       end else begin
-        s1_aluInVec_1 <= s0_info_rs2Val;
+        s1_aluInVec_1 <= io_in_bits_rs2Val;
       end
     end
-    if (s0_fire) begin // @[Reg.scala 20:18]
-      s1_id <= s0_info_id; // @[Reg.scala 20:22]
+    if (s1_latch) begin // @[Reg.scala 20:18]
+      s1_id <= io_in_bits_id; // @[Reg.scala 20:22]
     end
   end
 // Register and memory initialization
@@ -204,39 +142,17 @@ initial begin
     `endif
 `ifdef RANDOMIZE_REG_INIT
   _RAND_0 = {1{`RANDOM}};
-  s0_full = _RAND_0[0:0];
+  s1_full = _RAND_0[0:0];
   _RAND_1 = {1{`RANDOM}};
-  s1_full = _RAND_1[0:0];
+  s1_rd = _RAND_1[4:0];
   _RAND_2 = {1{`RANDOM}};
-  s0_info_opr1 = _RAND_2[3:0];
+  s1_aluOp = _RAND_2[4:0];
   _RAND_3 = {1{`RANDOM}};
-  s0_info_opr2 = _RAND_3[3:0];
+  s1_aluInVec_0 = _RAND_3[31:0];
   _RAND_4 = {1{`RANDOM}};
-  s0_info_aluOp = _RAND_4[4:0];
+  s1_aluInVec_1 = _RAND_4[31:0];
   _RAND_5 = {1{`RANDOM}};
-  s0_info_immSrc = _RAND_5[2:0];
-  _RAND_6 = {1{`RANDOM}};
-  s0_info_immSign = _RAND_6[0:0];
-  _RAND_7 = {1{`RANDOM}};
-  s0_info_rs1Val = _RAND_7[31:0];
-  _RAND_8 = {1{`RANDOM}};
-  s0_info_rs2Val = _RAND_8[31:0];
-  _RAND_9 = {1{`RANDOM}};
-  s0_info_inst = _RAND_9[31:0];
-  _RAND_10 = {1{`RANDOM}};
-  s0_info_pc = _RAND_10[31:0];
-  _RAND_11 = {1{`RANDOM}};
-  s0_info_id = _RAND_11[7:0];
-  _RAND_12 = {1{`RANDOM}};
-  s1_rd = _RAND_12[4:0];
-  _RAND_13 = {1{`RANDOM}};
-  s1_aluOp = _RAND_13[4:0];
-  _RAND_14 = {1{`RANDOM}};
-  s1_aluInVec_0 = _RAND_14[31:0];
-  _RAND_15 = {1{`RANDOM}};
-  s1_aluInVec_1 = _RAND_15[31:0];
-  _RAND_16 = {1{`RANDOM}};
-  s1_id = _RAND_16[7:0];
+  s1_id = _RAND_5[7:0];
 `endif // RANDOMIZE_REG_INIT
   `endif // RANDOMIZE
 end // initial
